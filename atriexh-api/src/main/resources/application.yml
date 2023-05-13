@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: atriexh-api
+  datasource:
+    url: jdbc:mariadb://localhost:3306/artiexh_backend
+    username: artiexh-backend
+    password: artiexh@123
+    type: io.agroal.springframework.boot.AgroalDataSource
+    agroal:
+      auto-commit: false
+  jpa:
+    open-in-view: false
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+  jackson:
+    serialization:
+      write-dates-as-timestamps: true
+      write-date-timestamps-as-nanoseconds: false
+    deserialization:
+      read-date-timestamps-as-nanoseconds: false
+    default-property-inclusion: non_null
+  main:
+    allow-circular-references: true
+server:
+  error:
+    include-message: always
+    include-stacktrace: never
+    whitelabel:
+      enabled: false
+springdoc:
+  show-actuator: true
+  swagger-ui:
+    path: /swagger
+    disable-swagger-default-url: true
+    csrf:
+      enabled: true
+artiexh.jwt.secret:
+  key: supersecret
+  info: Auth.js Generated Encryption Key
