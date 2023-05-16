@@ -43,14 +43,14 @@ public class UserEntity {
     @Column(name = "email", length = 254)
     private String email;
 
-    @Column(name = "twitter_id")
-    private Long twitterId;
+    @Column(name = "twitter_id", length = 20)
+    private String twitterId;
 
-    @Column(name = "facebook_id")
-    private Long facebookId;
+    @Column(name = "facebook_id", length = 20)
+    private String facebookId;
 
-    @Column(name = "google_id")
-    private Long googleId;
+    @Column(name = "google_id", length = 21)
+    private String googleId;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private Set<SubscriptionEntity> subscriptionsTo = new LinkedHashSet<>();

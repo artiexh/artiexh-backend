@@ -21,8 +21,8 @@ public class User {
     private UserStatus status;
     private String avatarUrl;
     private String email;
-    private Long googleId;
-    private Long twitterId;
-    private Long facebookId;
+    private String googleId;
+    private String twitterId;
+    private String facebookId;
     private Set<Subscription> subscriptionsTo;
 }

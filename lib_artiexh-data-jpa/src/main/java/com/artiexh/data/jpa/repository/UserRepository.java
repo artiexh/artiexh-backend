@@ -11,10 +11,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     Optional<UserEntity> findByUsername(String username);
 
-    Optional<UserEntity> findByGoogleId(Long googleId);
+    Optional<UserEntity> findByGoogleId(String googleId);
 
-    Optional<UserEntity> findByFacebookId(Long facebookId);
+    Optional<UserEntity> findByFacebookId(String facebookId);
 
-    Optional<UserEntity> findByTwitterId(Long twitterId);
+    Optional<UserEntity> findByTwitterId(String twitterId);
 
 }

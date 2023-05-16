@@ -22,7 +22,6 @@ class VerifyServiceImpl implements VerifyUserService {
     public Optional<User> verifyFromUsernamePassword(String username, String password) {
         return userRepository.findByUsername(username)
                 .map(userEntity -> {
-                    //var encodedPassword = passwordEncoder.encode(userEntity.getPassword());
                     if (passwordEncoder.matches(password, userEntity.getPassword())) {
                         return userMapper.entityToDomain(userEntity);
                     }
@@ -32,20 +31,17 @@ class VerifyServiceImpl implements VerifyUserService {
 
     @Override
     public Optional<User> verifyFromGoogleProvider(String sub) {
-        return userRepository.findByGoogleId(Long.valueOf(sub))
-                .map(userMapper::entityToDomain);
+        return userRepository.findByGoogleId(sub).map(userMapper::entityToDomain);
     }
 
     @Override
     public Optional<User> verifyFromFacebookProvider(String sub) {
-        return userRepository.findByFacebookId(Long.valueOf(sub))
-                .map(userMapper::entityToDomain);
+        return userRepository.findByFacebookId(sub).map(userMapper::entityToDomain);
     }
 
     @Override
     public Optional<User> verifyFromTwitterProvider(String sub) {
-        return userRepository.findByTwitterId(Long.valueOf(sub))
-                .map(userMapper::entityToDomain);
+        return userRepository.findByTwitterId(sub).map(userMapper::entityToDomain);
     }
 
 }

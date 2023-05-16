@@ -1,6 +1,6 @@
 spring:
   application:
-    name: artiexh-api
+    name: artiexh-authorization-client
   datasource:
     url: jdbc:mariadb://localhost:3306/artiexh_backend
     username: artiexh-backend
@@ -22,19 +22,23 @@ spring:
     default-property-inclusion: non_null
   main:
     allow-circular-references: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: 439778912071-u1dajb2a9r49piflunr86vnipeplbig8.apps.googleusercontent.com
+            clientSecret: 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
+            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+            scope:
+              - email
+              - profile
 server:
   error:
     include-message: always
     include-stacktrace: never
     whitelabel:
       enabled: false
-springdoc:
-  show-actuator: true
-  swagger-ui:
-    path: /swagger
-    disable-swagger-default-url: true
-    csrf:
-      enabled: true
 artiexh:
   security:
     jwt:
@@ -43,3 +47,5 @@ artiexh:
       audiences:
         - http://artiexh.com/
         - http://localhost:8080/
+      access-token-expiration: 30
+      refresh-token-expiration: 43200

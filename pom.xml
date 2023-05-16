@@ -21,6 +21,7 @@
         <module>lib_artiexh-model</module>
         <module>atriexh-api</module>
         <module>lib_artiexh-auth</module>
+        <module>artiexh-authorization-client</module>
     </modules>
 
     <properties>
@@ -30,8 +31,7 @@
         <springdoc.version>2.1.0</springdoc.version>
         <io.hypersistence.version>3.3.2</io.hypersistence.version>
         <io.agroal.version>2.1</io.agroal.version>
-        <com.nimbusds.version>9.31</com.nimbusds.version>
-        <com.google.crypto.version>1.9.0</com.google.crypto.version>
+        <java-jwt.version>4.4.0</java-jwt.version>
     </properties>
 
     <dependencyManagement>
@@ -57,14 +57,9 @@
                 <version>${io.agroal.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.nimbusds</groupId>
-                <artifactId>nimbus-jose-jwt</artifactId>
-                <version>${com.nimbusds.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.crypto.tink</groupId>
-                <artifactId>tink</artifactId>
-                <version>${com.google.crypto.version}</version>
+                <groupId>com.auth0</groupId>
+                <artifactId>java-jwt</artifactId>
+                <version>${java-jwt.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

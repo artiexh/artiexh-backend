@@ -1,6 +1,6 @@
 package com.artiexh.auth.authentication;
 
-import com.nimbusds.jwt.JWTClaimsSet;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,7 +20,7 @@ public class JwtAuthenticationToken implements Authentication, CredentialsContai
     private final Collection<GrantedAuthority> authorities;
     private final boolean authenticated;
     private String credentials;
-    private JWTClaimsSet details;
+    private DecodedJWT details;
 
     public JwtAuthenticationToken(String credentials) {
         this.principal = null;
@@ -30,7 +30,7 @@ public class JwtAuthenticationToken implements Authentication, CredentialsContai
         this.authenticated = false;
     }
 
-    public JwtAuthenticationToken(Long principal, String credentials, JWTClaimsSet details, GrantedAuthority authority) {
+    public JwtAuthenticationToken(Long principal, String credentials, DecodedJWT details, GrantedAuthority authority) {
         this.principal = principal;
         this.credentials = credentials;
         this.details = details;
