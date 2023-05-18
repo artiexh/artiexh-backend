@@ -22,6 +22,7 @@
         <module>atriexh-api</module>
         <module>lib_artiexh-auth</module>
         <module>artiexh-authorization-client</module>
+        <module>lib_atriexh-api-base</module>
     </modules>
 
     <properties>

@@ -1,5 +1,6 @@
 package com.artiexh.authorization.client.config;
 
+import com.artiexh.auth.authentication.CookiesLogoutHandler;
 import com.artiexh.authorization.client.authentication.ArtiexhOAuth2UserService;
 import com.artiexh.authorization.client.authentication.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.artiexh.authorization.client.authentication.OAuth2AuthenticationFailureHandler;
@@ -20,7 +21,8 @@ public class SecurityConfig {
                                            HttpCookieOAuth2AuthorizationRequestRepository authorizationRequestRepository,
                                            ArtiexhOAuth2UserService artiexhOAuth2UserService,
                                            OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler,
-                                           OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler) throws Exception {
+                                           OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler,
+                                           CookiesLogoutHandler cookiesLogoutHandler) throws Exception {
         httpSecurity
                 .csrf().disable()
                 .cors().and()
@@ -47,6 +49,10 @@ public class SecurityConfig {
                         )
                         .successHandler(oAuth2AuthenticationSuccessHandler)
                         .failureHandler(oAuth2AuthenticationFailureHandler)
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/oauth2/logout")
+                        .addLogoutHandler(cookiesLogoutHandler)
                 );
         return httpSecurity.build();
     }

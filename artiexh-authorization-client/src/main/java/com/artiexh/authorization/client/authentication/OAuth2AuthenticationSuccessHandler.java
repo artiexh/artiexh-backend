@@ -3,6 +3,7 @@ package com.artiexh.authorization.client.authentication;
 import com.artiexh.auth.common.CookieUtil;
 import com.artiexh.auth.jwt.JwtConfiguration;
 import com.artiexh.auth.jwt.JwtProcessor;
+import com.artiexh.auth.service.ActiveTokenService;
 import com.artiexh.model.domain.Role;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,12 +30,14 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
     private final JwtProcessor jwtProcessor;
     private final JwtConfiguration jwtConfiguration;
+    private final ActiveTokenService activeTokenService;
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
-    public OAuth2AuthenticationSuccessHandler(HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository, JwtProcessor jwtProcessor, JwtConfiguration jwtConfiguration) {
+    public OAuth2AuthenticationSuccessHandler(HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository, JwtProcessor jwtProcessor, JwtConfiguration jwtConfiguration, ActiveTokenService activeTokenService) {
         this.httpCookieOAuth2AuthorizationRequestRepository = httpCookieOAuth2AuthorizationRequestRepository;
         this.jwtProcessor = jwtProcessor;
         this.jwtConfiguration = jwtConfiguration;
+        this.activeTokenService = activeTokenService;
     }
 
     @Override
@@ -58,6 +61,8 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
         String refreshToken = jwtProcessor.encode(authentication.getName(), role, JwtProcessor.TokenType.REFRESH_TOKEN);
         CookieUtil.addCookies(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, (int) jwtConfiguration.getRefreshTokenExpiration().getSeconds());
+
+        activeTokenService.put(authentication.getName(), accessToken, refreshToken);
 
         clearAuthenticationAttributes(request, response);
         redirectStrategy.sendRedirect(request, response, targetUrl);

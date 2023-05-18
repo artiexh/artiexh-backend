@@ -1,6 +1,7 @@
 package com.artiexh.auth.authentication;
 
 import com.artiexh.auth.jwt.JwtProcessor;
+import com.artiexh.auth.service.ActiveTokenService;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.RequiredArgsConstructor;
@@ -20,16 +21,12 @@ import org.springframework.stereotype.Component;
 public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     private final JwtProcessor jwtProcessor;
+    private final ActiveTokenService activeTokenService;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         JwtAuthenticationToken authenticationToken = (JwtAuthenticationToken) authentication;
         String token = authenticationToken.getCredentials().toString();
-
-        if (isSignedOut(token)) {
-            log.trace("Token is signed out");
-            throw new DisabledException("Token is signed out");
-        }
 
         DecodedJWT decodedJwt;
         try {
@@ -40,14 +37,16 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         }
 
         String sub = decodedJwt.getSubject();
+
+        if (!activeTokenService.containAccessToken(sub, token)) {
+            log.trace("Token is destroyed");
+            throw new DisabledException("Token is signed out");
+        }
+
         String authority = decodedJwt.getClaim("authority").asString();
 
         GrantedAuthority authorities = new SimpleGrantedAuthority(authority);
         return new JwtAuthenticationToken(Long.valueOf(sub), token, decodedJwt, authorities);
-    }
-
-    private boolean isSignedOut(String token) {
-        return false;
     }
 
 

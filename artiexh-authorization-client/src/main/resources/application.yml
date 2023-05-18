@@ -13,6 +13,11 @@ spring:
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+  data:
+    redis:
+      host: "localhost"
+      port: 6379
+      password: artiexh@123
   jackson:
     serialization:
       write-dates-as-timestamps: true
