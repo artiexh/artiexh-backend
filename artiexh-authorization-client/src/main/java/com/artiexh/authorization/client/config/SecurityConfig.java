@@ -20,10 +20,20 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity httpSecurity, HttpCookieOAuth2AuthorizationRequestRepository authorizationRequestRepository, ArtiexhOAuth2UserService artiexhOAuth2UserService, OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler, OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler, CookiesLogoutHandler cookiesLogoutHandler) throws Exception {
-		httpSecurity.csrf().disable().cors().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().formLogin().disable().httpBasic().disable().authorizeHttpRequests(authz -> authz.requestMatchers("/actuator/**").permitAll().requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll().requestMatchers("/error").permitAll()
-				.requestMatchers("/api/v1/oauth2/**").permitAll()
-				.requestMatchers("/api/v1/registration/**").permitAll()
-				.requestMatchers("/api/v1/auth/login").permitAll()
+		httpSecurity
+			.csrf().disable()
+			.cors().and()
+			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+			.formLogin().disable()
+			.httpBasic().disable()
+			.authorizeHttpRequests(authz -> authz
+				.requestMatchers("/actuator/**").permitAll()
+				.requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
+				.permitAll().requestMatchers("/error").permitAll()
+				.requestMatchers(Endpoint.OAuth2.ROOT + "/**").permitAll()
+				.requestMatchers(Endpoint.Registration.ROOT + "/**").permitAll()
+				.requestMatchers(Endpoint.Auth.ROOT + Endpoint.Auth.LOGIN).permitAll()
+				.requestMatchers(Endpoint.Auth.ROOT + Endpoint.Auth.REFRESH).permitAll()
 				.anyRequest().denyAll()
 			)
 			.exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(new Http401UnauthorizedEntryPoint())

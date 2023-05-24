@@ -15,25 +15,25 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Set;
 
 @Mapper(
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-        uses = {UserStatusMapper.class, RoleMapper.class, MerchMapper.class}
+	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+	uses = {UserStatusMapper.class, RoleMapper.class, MerchMapper.class}
 )
 public abstract class UserMapper {
 
-    @Autowired
-    protected PasswordEncoder passwordEncoder;
+	@Autowired
+	protected PasswordEncoder passwordEncoder;
 
-    public abstract User entityToDomain(UserEntity userEntity);
+	public abstract User entityToDomain(UserEntity userEntity);
 
-    public abstract UserEntity domainToEntity(User user);
+	public abstract UserEntity domainToEntity(User user);
 
-    @Mapping(target = "role", constant = "USER")
-    @Mapping(target = "status", constant = "ACTIVE")
-    @Mapping(target = "password", expression = "java(passwordEncoder.encode(request.password()))")
-    public abstract User registerUserRequestToDomain(RegisterUserRequest request);
+	@Mapping(target = "role", constant = "USER")
+	@Mapping(target = "status", constant = "ACTIVE")
+	@Mapping(target = "password", expression = "java(passwordEncoder.encode(request.password()))")
+	public abstract User registerUserRequestToDomain(RegisterUserRequest request);
 
-    @Condition
-    public boolean isNotLazyLoadedSubscriptionsTo(Set<SubscriptionEntity> subscriptionsTo) {
-        return Hibernate.isInitialized(subscriptionsTo);
-    }
+	@Condition
+	public boolean isNotLazyLoadedSubscriptionsTo(Set<SubscriptionEntity> subscriptionsTo) {
+		return Hibernate.isInitialized(subscriptionsTo);
+	}
 }

@@ -4,13 +4,19 @@ import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.auth.common.CookieUtil;
 import com.artiexh.auth.jwt.JwtConfiguration;
 import com.artiexh.auth.jwt.JwtProcessor;
+import com.artiexh.auth.service.ActiveTokenService;
 import com.artiexh.authorization.client.service.AuthenticationService;
+import com.artiexh.model.domain.Role;
 import com.artiexh.model.domain.User;
 import com.artiexh.model.request.LoginRequest;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,24 +29,58 @@ import static com.artiexh.auth.common.AuthConstant.REFRESH_TOKEN_COOKIE_NAME;
 @RestController
 @RequestMapping(Endpoint.Auth.ROOT)
 @RequiredArgsConstructor
+@Log4j2
 public class AuthenticationController {
 
-    private final AuthenticationService authenticationService;
-    private final JwtConfiguration jwtConfiguration;
-    private final JwtProcessor jwtProcessor;
+	private final AuthenticationService authenticationService;
+	private final JwtConfiguration jwtConfiguration;
+	private final JwtProcessor jwtProcessor;
+	private final ActiveTokenService activeTokenService;
 
-    @PostMapping(Endpoint.Auth.LOGIN)
-    public User login(HttpServletResponse response, @RequestBody @Valid LoginRequest loginRequest) {
-        User user = authenticationService.login(loginRequest.username(), loginRequest.password())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password"));
+	@PostMapping(Endpoint.Auth.LOGIN)
+	public User login(HttpServletResponse response, @RequestBody @Valid LoginRequest loginRequest) {
+		User user = authenticationService.login(loginRequest.username(), loginRequest.password())
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password"));
 
-        String accessToken = jwtProcessor.encode(user.getId().toString(), user.getRole(), JwtProcessor.TokenType.ACCESS_TOKEN);
-        CookieUtil.addCookies(response, ACCESS_TOKEN_COOKIE_NAME, accessToken, (int) jwtConfiguration.getAccessTokenExpiration().getSeconds());
+		String accessToken = jwtProcessor.encode(user.getId().toString(), user.getRole(), JwtProcessor.TokenType.ACCESS_TOKEN);
+		CookieUtil.addCookies(response, ACCESS_TOKEN_COOKIE_NAME, accessToken, (int) jwtConfiguration.getAccessTokenExpiration().getSeconds());
 
-        String refreshToken = jwtProcessor.encode(user.getId().toString(), user.getRole(), JwtProcessor.TokenType.REFRESH_TOKEN);
-        CookieUtil.addCookies(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, (int) jwtConfiguration.getRefreshTokenExpiration().getSeconds());
+		String refreshToken = jwtProcessor.encode(user.getId().toString(), user.getRole(), JwtProcessor.TokenType.REFRESH_TOKEN);
+		CookieUtil.addCookies(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, (int) jwtConfiguration.getRefreshTokenExpiration().getSeconds());
 
-        return user;
-    }
+		activeTokenService.put(user.getId().toString(), accessToken, refreshToken);
+
+		return user;
+	}
+
+	@PostMapping(Endpoint.Auth.REFRESH)
+	public ResponseEntity<Void> refreshToken(HttpServletRequest request, HttpServletResponse response) {
+		String refreshToken = CookieUtil.getCookies(request, REFRESH_TOKEN_COOKIE_NAME)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token is not found"));
+
+		DecodedJWT decodedJwt;
+		try {
+			decodedJwt = jwtProcessor.decode(refreshToken);
+		} catch (Exception ex) {
+			log.trace("Failed to parse or decode token", ex);
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
+		}
+
+		String sub = decodedJwt.getSubject();
+		if (!activeTokenService.containRefreshToken(sub, refreshToken)) {
+			log.trace("Token is destroyed");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token is expired");
+		}
+
+		Role role = Role.valueOf(decodedJwt.getClaim("authority").asString());
+		String newAccessToken = jwtProcessor.encode(sub, role, JwtProcessor.TokenType.ACCESS_TOKEN);
+		String newRefreshToken = jwtProcessor.encode(sub, role, JwtProcessor.TokenType.REFRESH_TOKEN);
+
+		activeTokenService.put(sub, newAccessToken, newRefreshToken);
+		CookieUtil.addCookies(response, ACCESS_TOKEN_COOKIE_NAME, newAccessToken, (int) jwtConfiguration.getAccessTokenExpiration().getSeconds());
+		CookieUtil.addCookies(response, REFRESH_TOKEN_COOKIE_NAME, newRefreshToken, (int) jwtConfiguration.getRefreshTokenExpiration().getSeconds());
+
+		return ResponseEntity.ok().build();
+	}
 
 }

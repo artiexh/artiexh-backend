@@ -19,7 +19,8 @@ public final class Endpoint {
     public static final class Auth {
         public static final String ROOT = PREFIX + "/auth";
         public static final String LOGIN = "/login";
-        public static final String LOGOUT = "/logout";
+		public static final String REFRESH = "/refresh";
+		public static final String LOGOUT = "/logout";
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
