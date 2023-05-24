@@ -35,6 +35,22 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.artiexh</groupId>
+            <artifactId>lib_artiexh-auth</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.artiexh</groupId>
+            <artifactId>lib_artiexh-data-jpa</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.artiexh</groupId>
+            <artifactId>lib_artiexh-model</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>

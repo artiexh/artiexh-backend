@@ -1,4 +1,4 @@
-package com.artiexh.config;
+package com.artiexh.api.base.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;

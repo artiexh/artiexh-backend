@@ -1,4 +1,4 @@
-package com.artiexh.monitor.filter;
+package com.artiexh.api.base.monitor.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -36,7 +36,7 @@ public class AccessLoggingFilter extends OncePerRequestFilter {
 
         Instant requestTime = Instant.now();
         ThreadContext.put("requestId", UUID.randomUUID().toString());
-        log.debug("Request {} {} {} {} headers=[{}] parameters=[{}]",
+        log.info("Request {} {} {} {} headers=[{}] parameters=[{}]",
                 requestWrapper::getRemoteAddr,
                 requestWrapper::getProtocol,
                 requestWrapper::getMethod,
@@ -48,7 +48,7 @@ public class AccessLoggingFilter extends OncePerRequestFilter {
             filterChain.doFilter(requestWrapper, responseWrapper);
         } finally {
             Duration processingTime = Duration.between(requestTime, Instant.now());
-            log.debug("Response processingTime={} status={} {}",
+            log.info("Response processingTime={}ms status={} {}",
                     processingTime::toMillis,
                     responseWrapper::getStatus,
                     () -> HttpStatus.valueOf(responseWrapper.getStatus()).getReasonPhrase());

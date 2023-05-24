@@ -1,5 +1,6 @@
 package com.artiexh.authorization.client.config;
 
+import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.auth.authentication.CookiesLogoutHandler;
 import com.artiexh.authorization.client.authentication.ArtiexhOAuth2UserService;
 import com.artiexh.authorization.client.authentication.HttpCookieOAuth2AuthorizationRequestRepository;
@@ -33,16 +34,18 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers("/oauth2/**").permitAll()
+                        .requestMatchers("/api/v1/oauth2/**").permitAll()
+                        .requestMatchers("/api/v1/registration/**").permitAll()
+                        .requestMatchers("/api/v1/auth/login").permitAll()
                         .anyRequest().denyAll()
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint
-                                .baseUri("/oauth2/authorization")
+                                .baseUri(Endpoint.OAuth2.ROOT + Endpoint.OAuth2.AUTHORIZATION)
                                 .authorizationRequestRepository(authorizationRequestRepository)
                         )
                         .redirectionEndpoint(redirectionEndpoint -> redirectionEndpoint
-                                .baseUri("/oauth2/callback/*")
+                                .baseUri(Endpoint.OAuth2.ROOT + Endpoint.OAuth2.CALLBACK)
                         )
                         .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
                                 .userService(artiexhOAuth2UserService)
@@ -51,7 +54,7 @@ public class SecurityConfig {
                         .failureHandler(oAuth2AuthenticationFailureHandler)
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/oauth2/logout")
+                        .logoutUrl(Endpoint.Auth.ROOT + Endpoint.Auth.LOGOUT)
                         .addLogoutHandler(cookiesLogoutHandler)
                 );
         return httpSecurity.build();

@@ -1,7 +1,7 @@
-package com.artiexh.api.controller.auth;
+package com.artiexh.authorization.client.controller;
 
-import com.artiexh.api.common.Endpoint;
-import com.artiexh.api.service.auth.UserService;
+import com.artiexh.api.base.common.Endpoint;
+import com.artiexh.authorization.client.service.RegistrationService;
 import com.artiexh.model.domain.User;
 import com.artiexh.model.mapper.UserMapper;
 import com.artiexh.model.request.RegisterUserRequest;
@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class RegistrationController {
 
-    private final UserService userService;
     private final UserMapper userMapper;
+    private final RegistrationService registrationService;
 
     @PostMapping(Endpoint.Registration.USER)
     public User register(@RequestBody @Valid RegisterUserRequest registerUserRequest) {
-        return userService.createUser(userMapper.registerUserRequestToDomain(registerUserRequest));
+        return registrationService.createUser(userMapper.registerUserRequestToDomain(registerUserRequest));
     }
 
 }
