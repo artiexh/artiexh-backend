@@ -21,8 +21,11 @@ public class User {
     private UserStatus status;
     private String avatarUrl;
     private String email;
-    private String googleId;
-    private String twitterId;
-    private String facebookId;
+	@JsonIgnore
+	private String googleId;
+	@JsonIgnore
+	private String twitterId;
+	@JsonIgnore
+	private String facebookId;
     private Set<Subscription> subscriptionsTo;
 }
