@@ -6,12 +6,12 @@ import org.mapstruct.Mapper;
 @Mapper
 public interface RoleMapper {
 
-    default int toValue(Role role) {
-        return role.getValue();
-    }
+	default int toValue(Role role) {
+		return role.getValue();
+	}
 
-    default Role toRole(int value) {
-        return Role.fromValue(value);
-    }
+	default Role toRole(int value) {
+		return Role.fromValue(value);
+	}
 
 }

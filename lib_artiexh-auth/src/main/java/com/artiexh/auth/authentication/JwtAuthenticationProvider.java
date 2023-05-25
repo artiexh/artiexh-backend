@@ -20,39 +20,39 @@ import org.springframework.stereotype.Component;
 @Log4j2
 public class JwtAuthenticationProvider implements AuthenticationProvider {
 
-    private final JwtProcessor jwtProcessor;
-    private final ActiveTokenService activeTokenService;
+	private final JwtProcessor jwtProcessor;
+	private final ActiveTokenService activeTokenService;
 
-    @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        JwtAuthenticationToken authenticationToken = (JwtAuthenticationToken) authentication;
-        String token = authenticationToken.getCredentials().toString();
+	@Override
+	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+		JwtAuthenticationToken authenticationToken = (JwtAuthenticationToken) authentication;
+		String token = authenticationToken.getCredentials().toString();
 
-        DecodedJWT decodedJwt;
-        try {
-            decodedJwt = jwtProcessor.decode(token);
-        } catch (JWTVerificationException ex) {
-            log.trace("Failed to parse or decode token", ex);
-            throw new BadCredentialsException("Failed to parse token", ex);
-        }
+		DecodedJWT decodedJwt;
+		try {
+			decodedJwt = jwtProcessor.decode(token);
+		} catch (JWTVerificationException ex) {
+			log.trace("Failed to parse or decode token", ex);
+			throw new BadCredentialsException("Failed to parse token", ex);
+		}
 
-        String sub = decodedJwt.getSubject();
+		String sub = decodedJwt.getSubject();
 
-        if (!activeTokenService.containAccessToken(sub, token)) {
-            log.trace("Token is destroyed");
-            throw new DisabledException("Token is signed out");
-        }
+		if (!activeTokenService.containAccessToken(sub, token)) {
+			log.trace("Token is destroyed");
+			throw new DisabledException("Token is signed out");
+		}
 
-        String authority = decodedJwt.getClaim("authority").asString();
+		String authority = decodedJwt.getClaim("authority").asString();
 
-        GrantedAuthority authorities = new SimpleGrantedAuthority(authority);
-        return new JwtAuthenticationToken(Long.valueOf(sub), token, decodedJwt, authorities);
-    }
+		GrantedAuthority authorities = new SimpleGrantedAuthority(authority);
+		return new JwtAuthenticationToken(Long.valueOf(sub), token, decodedJwt, authorities);
+	}
 
 
-    @Override
-    public boolean supports(Class<?> authentication) {
-        return JwtAuthenticationToken.class.isAssignableFrom(authentication);
-    }
+	@Override
+	public boolean supports(Class<?> authentication) {
+		return JwtAuthenticationToken.class.isAssignableFrom(authentication);
+	}
 
 }

@@ -23,50 +23,50 @@ import java.io.IOException;
 @Log4j2
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final AuthenticationManager authenticationManager;
-    private final AuthenticationEntryPoint authenticationEntryPoint = new Http401UnauthorizedEntryPoint();
-    private final AuthenticationFailureHandler authenticationFailureHandler = new AuthenticationEntryPointFailureHandler(authenticationEntryPoint);
-    private final JwtTokenResolver jwtTokenResolver = new CookieJwtTokenResolver();
-    private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
-    private final SecurityContextRepository securityContextRepository = new RequestAttributeSecurityContextRepository();
+	private final AuthenticationManager authenticationManager;
+	private final AuthenticationEntryPoint authenticationEntryPoint = new Http401UnauthorizedEntryPoint();
+	private final AuthenticationFailureHandler authenticationFailureHandler = new AuthenticationEntryPointFailureHandler(authenticationEntryPoint);
+	private final JwtTokenResolver jwtTokenResolver = new CookieJwtTokenResolver();
+	private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
+	private final SecurityContextRepository securityContextRepository = new RequestAttributeSecurityContextRepository();
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
+	public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+		this.authenticationManager = authenticationManager;
+	}
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token;
-        try {
-            token = jwtTokenResolver.resolve(request);
-        } catch (AuthenticationException invalid) {
-            log.trace("Sending to authentication entry point since failed to resolve bearer token", invalid);
-            this.authenticationEntryPoint.commence(request, response, invalid);
-            return;
-        }
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+		String token;
+		try {
+			token = jwtTokenResolver.resolve(request);
+		} catch (AuthenticationException invalid) {
+			log.trace("Sending to authentication entry point since failed to resolve bearer token", invalid);
+			this.authenticationEntryPoint.commence(request, response, invalid);
+			return;
+		}
 
-        if (token == null) {
-            log.trace("Did not process request since did not find bearer token");
-            filterChain.doFilter(request, response);
-            return;
-        }
+		if (token == null) {
+			log.trace("Did not process request since did not find bearer token");
+			filterChain.doFilter(request, response);
+			return;
+		}
 
-        JwtAuthenticationToken authenticationRequest = new JwtAuthenticationToken(token);
-        try {
-            Authentication authenticationResult = authenticationManager.authenticate(authenticationRequest);
-            SecurityContext context = this.securityContextHolderStrategy.createEmptyContext();
-            context.setAuthentication(authenticationResult);
-            this.securityContextHolderStrategy.setContext(context);
-            this.securityContextRepository.saveContext(context, request, response);
-            if (log.isDebugEnabled()) {
-                log.debug("Set SecurityContextHolder to " + authenticationResult);
-            }
-            filterChain.doFilter(request, response);
-        } catch (AuthenticationException ex) {
-            this.securityContextHolderStrategy.clearContext();
-            log.trace("Failed to process authentication request", ex);
-            this.authenticationFailureHandler.onAuthenticationFailure(request, response, ex);
-        }
-    }
+		JwtAuthenticationToken authenticationRequest = new JwtAuthenticationToken(token);
+		try {
+			Authentication authenticationResult = authenticationManager.authenticate(authenticationRequest);
+			SecurityContext context = this.securityContextHolderStrategy.createEmptyContext();
+			context.setAuthentication(authenticationResult);
+			this.securityContextHolderStrategy.setContext(context);
+			this.securityContextRepository.saveContext(context, request, response);
+			if (log.isDebugEnabled()) {
+				log.debug("Set SecurityContextHolder to " + authenticationResult);
+			}
+			filterChain.doFilter(request, response);
+		} catch (AuthenticationException ex) {
+			this.securityContextHolderStrategy.clearContext();
+			log.trace("Failed to process authentication request", ex);
+			this.authenticationFailureHandler.onAuthenticationFailure(request, response, ex);
+		}
+	}
 
 }

@@ -6,12 +6,12 @@ import org.mapstruct.Mapper;
 @Mapper
 public interface DeliveryTypeMapper {
 
-    default Integer toValue(DeliveryType type) {
-        return type.getValue();
-    }
+	default Integer toValue(DeliveryType type) {
+		return type.getValue();
+	}
 
-    default DeliveryType toDeliveryType(Integer value) {
-        return DeliveryType.fromValue(value);
-    }
+	default DeliveryType toDeliveryType(Integer value) {
+		return DeliveryType.fromValue(value);
+	}
 
 }

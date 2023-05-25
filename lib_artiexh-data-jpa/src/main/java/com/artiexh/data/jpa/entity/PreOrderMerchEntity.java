@@ -20,10 +20,10 @@ import java.time.LocalDateTime;
 @Table(name = "pre_order_merch")
 public class PreOrderMerchEntity extends MerchEntity {
 
-    @Column(name = "start_datetime", nullable = false)
-    private LocalDateTime startDatetime;
+	@Column(name = "start_datetime", nullable = false)
+	private LocalDateTime startDatetime;
 
-    @Column(name = "end_datetime", nullable = false)
-    private LocalDateTime endDatetime;
+	@Column(name = "end_datetime", nullable = false)
+	private LocalDateTime endDatetime;
 
 }

@@ -10,11 +10,11 @@ import java.time.temporal.ChronoUnit;
 @ConfigurationProperties(prefix = "artiexh.security.jwt")
 @Data
 public class JwtConfiguration {
-    private String secretKey;
-    private String issuer;
-    private String[] audiences;
-    @DurationUnit(ChronoUnit.MINUTES)
-    private Duration accessTokenExpiration;
-    @DurationUnit(ChronoUnit.MINUTES)
-    private Duration refreshTokenExpiration;
+	private String secretKey;
+	private String issuer;
+	private String[] audiences;
+	@DurationUnit(ChronoUnit.MINUTES)
+	private Duration accessTokenExpiration;
+	@DurationUnit(ChronoUnit.MINUTES)
+	private Duration refreshTokenExpiration;
 }

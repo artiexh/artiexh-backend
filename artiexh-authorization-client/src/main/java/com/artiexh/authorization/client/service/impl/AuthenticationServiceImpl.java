@@ -14,15 +14,15 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    private final UserMapper userMapper;
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+	private final UserMapper userMapper;
+	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
 
-    @Override
-    public Optional<User> login(String username, String password) {
-        return userRepository.findByUsername(username)
-                .filter(user -> passwordEncoder.matches(password, user.getPassword()))
-                .map(userMapper::entityToDomain);
-    }
+	@Override
+	public Optional<User> login(String username, String password) {
+		return userRepository.findByUsername(username)
+			.filter(user -> passwordEncoder.matches(password, user.getPassword()))
+			.map(userMapper::entityToDomain);
+	}
 
 }

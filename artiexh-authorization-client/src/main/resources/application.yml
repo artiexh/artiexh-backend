@@ -44,6 +44,13 @@ server:
     include-stacktrace: never
     whitelabel:
       enabled: false
+springdoc:
+  show-actuator: true
+  swagger-ui:
+    path: /swagger-ui
+    disable-swagger-default-url: true
+    csrf:
+      enabled: true
 artiexh:
   security:
     jwt:

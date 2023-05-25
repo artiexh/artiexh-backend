@@ -13,9 +13,9 @@ import java.io.IOException;
 @Log4j2
 @Component
 public class Http401UnauthorizedEntryPoint implements AuthenticationEntryPoint {
-    @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        log.debug("Authentication failed, sending 401", authException);
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
-    }
+	@Override
+	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+		log.debug("Authentication failed, sending 401", authException);
+		response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
+	}
 }

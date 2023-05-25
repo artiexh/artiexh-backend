@@ -14,6 +14,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @SuperBuilder
 public class PreOrderMerch extends Merch {
-    private LocalDateTime startDatetime;
-    private LocalDateTime endDatetime;
+	private LocalDateTime startDatetime;
+	private LocalDateTime endDatetime;
 }

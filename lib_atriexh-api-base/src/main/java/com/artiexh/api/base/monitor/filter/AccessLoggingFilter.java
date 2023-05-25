@@ -29,51 +29,51 @@ import java.util.UUID;
 @Log4j2
 public class AccessLoggingFilter extends OncePerRequestFilter {
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        var requestWrapper = new ContentCachingRequestWrapper(request);
-        var responseWrapper = new ContentCachingResponseWrapper(response);
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+		var requestWrapper = new ContentCachingRequestWrapper(request);
+		var responseWrapper = new ContentCachingResponseWrapper(response);
 
-        Instant requestTime = Instant.now();
-        ThreadContext.put("requestId", UUID.randomUUID().toString());
-        log.info("Request {} {} {} {} headers=[{}] parameters=[{}]",
-                requestWrapper::getRemoteAddr,
-                requestWrapper::getProtocol,
-                requestWrapper::getMethod,
-                requestWrapper::getServletPath,
-                () -> getHeaderAsString(requestWrapper),
-                () -> getParametersAsString(requestWrapper));
+		Instant requestTime = Instant.now();
+		ThreadContext.put("requestId", UUID.randomUUID().toString());
+		log.info("Request {} {} {} {} headers=[{}] parameters=[{}]",
+			requestWrapper::getRemoteAddr,
+			requestWrapper::getProtocol,
+			requestWrapper::getMethod,
+			requestWrapper::getServletPath,
+			() -> getHeaderAsString(requestWrapper),
+			() -> getParametersAsString(requestWrapper));
 
-        try {
-            filterChain.doFilter(requestWrapper, responseWrapper);
-        } finally {
-            Duration processingTime = Duration.between(requestTime, Instant.now());
-            log.info("Response processingTime={}ms status={} {}",
-                    processingTime::toMillis,
-                    responseWrapper::getStatus,
-                    () -> HttpStatus.valueOf(responseWrapper.getStatus()).getReasonPhrase());
+		try {
+			filterChain.doFilter(requestWrapper, responseWrapper);
+		} finally {
+			Duration processingTime = Duration.between(requestTime, Instant.now());
+			log.info("Response processingTime={}ms status={} {}",
+				processingTime::toMillis,
+				responseWrapper::getStatus,
+				() -> HttpStatus.valueOf(responseWrapper.getStatus()).getReasonPhrase());
 
-            responseWrapper.copyBodyToResponse();
+			responseWrapper.copyBodyToResponse();
 
-            ThreadContext.clearAll();
-        }
-    }
+			ThreadContext.clearAll();
+		}
+	}
 
-    private String getHeaderAsString(ContentCachingRequestWrapper requestWrapper) {
-        var headerNames = requestWrapper.getHeaderNames();
-        List<String> headers = new ArrayList<>();
-        while (headerNames.hasMoreElements()) {
-            var headerName = headerNames.nextElement();
-            headers.add(headerName + "=" + requestWrapper.getHeader(headerName));
-        }
-        return StringUtils.collectionToCommaDelimitedString(headers);
-    }
+	private String getHeaderAsString(ContentCachingRequestWrapper requestWrapper) {
+		var headerNames = requestWrapper.getHeaderNames();
+		List<String> headers = new ArrayList<>();
+		while (headerNames.hasMoreElements()) {
+			var headerName = headerNames.nextElement();
+			headers.add(headerName + "=" + requestWrapper.getHeader(headerName));
+		}
+		return StringUtils.collectionToCommaDelimitedString(headers);
+	}
 
-    private String getParametersAsString(ContentCachingRequestWrapper requestWrapper) {
-        var parametersArray = requestWrapper.getParameterMap().entrySet().stream()
-                .map(entry -> entry.getKey() + "=" + StringUtils.arrayToCommaDelimitedString(entry.getValue()))
-                .toArray();
-        return StringUtils.arrayToCommaDelimitedString(parametersArray);
-    }
+	private String getParametersAsString(ContentCachingRequestWrapper requestWrapper) {
+		var parametersArray = requestWrapper.getParameterMap().entrySet().stream()
+			.map(entry -> entry.getKey() + "=" + StringUtils.arrayToCommaDelimitedString(entry.getValue()))
+			.toArray();
+		return StringUtils.arrayToCommaDelimitedString(parametersArray);
+	}
 
 }

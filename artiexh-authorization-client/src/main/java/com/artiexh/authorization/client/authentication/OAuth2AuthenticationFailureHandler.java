@@ -19,24 +19,24 @@ import static com.artiexh.auth.common.AuthConstant.REDIRECT_URI_PARAM_COOKIE_NAM
 
 @Component
 public class OAuth2AuthenticationFailureHandler implements AuthenticationFailureHandler {
-    private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
-    private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+	private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
+	private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
-    public OAuth2AuthenticationFailureHandler(HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
-        this.httpCookieOAuth2AuthorizationRequestRepository = httpCookieOAuth2AuthorizationRequestRepository;
-    }
+	public OAuth2AuthenticationFailureHandler(HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
+		this.httpCookieOAuth2AuthorizationRequestRepository = httpCookieOAuth2AuthorizationRequestRepository;
+	}
 
-    @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        String targetUrl = CookieUtil.getCookies(request, REDIRECT_URI_PARAM_COOKIE_NAME)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not found or invalid redirect uri"));
+	@Override
+	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+		String targetUrl = CookieUtil.getCookies(request, REDIRECT_URI_PARAM_COOKIE_NAME)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not found or invalid redirect uri"));
 
-        String targetUrlWithError = UriComponentsBuilder.fromUriString(targetUrl)
-                .queryParam("error", exception.getLocalizedMessage())
-                .build().toUriString();
+		String targetUrlWithError = UriComponentsBuilder.fromUriString(targetUrl)
+			.queryParam("error", exception.getLocalizedMessage())
+			.build().toUriString();
 
-        httpCookieOAuth2AuthorizationRequestRepository.removeAuthorizationRequest(request, response);
-        redirectStrategy.sendRedirect(request, response, targetUrlWithError);
-    }
+		httpCookieOAuth2AuthorizationRequestRepository.removeAuthorizationRequest(request, response);
+		redirectStrategy.sendRedirect(request, response, targetUrlWithError);
+	}
 
 }

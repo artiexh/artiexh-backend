@@ -5,13 +5,13 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 
 public interface JwtProcessor {
 
-    String encode(String id, Role role, TokenType type);
+	String encode(String id, Role role, TokenType type);
 
-    DecodedJWT decode(String token);
+	DecodedJWT decode(String token);
 
-    enum TokenType {
-        ACCESS_TOKEN,
-        REFRESH_TOKEN
-    }
+	enum TokenType {
+		ACCESS_TOKEN,
+		REFRESH_TOKEN
+	}
 
 }

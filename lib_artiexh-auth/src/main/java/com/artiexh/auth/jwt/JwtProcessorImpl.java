@@ -14,42 +14,42 @@ import java.util.UUID;
 @Component
 class JwtProcessorImpl implements JwtProcessor {
 
-    private final JwtConfiguration configuration;
-    private final Algorithm algorithm;
-    private final JWTVerifier verifier;
+	private final JwtConfiguration configuration;
+	private final Algorithm algorithm;
+	private final JWTVerifier verifier;
 
-    public JwtProcessorImpl(JwtConfiguration configuration) {
-        this.configuration = configuration;
-        algorithm = Algorithm.HMAC256(configuration.getSecretKey());
-        verifier = JWT.require(algorithm)
-                .withIssuer(configuration.getIssuer())
-                .withAudience(configuration.getAudiences())
-                .withClaimPresence("sub")
-                .withClaimPresence("authority")
-                .build();
-    }
+	public JwtProcessorImpl(JwtConfiguration configuration) {
+		this.configuration = configuration;
+		algorithm = Algorithm.HMAC256(configuration.getSecretKey());
+		verifier = JWT.require(algorithm)
+			.withIssuer(configuration.getIssuer())
+			.withAudience(configuration.getAudiences())
+			.withClaimPresence("sub")
+			.withClaimPresence("authority")
+			.build();
+	}
 
-    @Override
-    public String encode(String id, Role role, TokenType type) {
-        Instant now = Instant.now();
-        Duration expiration = switch (type) {
-            case ACCESS_TOKEN -> configuration.getAccessTokenExpiration();
-            case REFRESH_TOKEN -> configuration.getRefreshTokenExpiration();
-        };
-        return JWT.create()
-                .withIssuer(configuration.getIssuer())
-                .withAudience(configuration.getAudiences())
-                .withSubject(id)
-                .withClaim("authority", role.name())
-                .withJWTId(UUID.randomUUID().toString())
-                .withIssuedAt(now)
-                .withExpiresAt(now.plus(expiration))
-                .sign(algorithm);
-    }
+	@Override
+	public String encode(String id, Role role, TokenType type) {
+		Instant now = Instant.now();
+		Duration expiration = switch (type) {
+			case ACCESS_TOKEN -> configuration.getAccessTokenExpiration();
+			case REFRESH_TOKEN -> configuration.getRefreshTokenExpiration();
+		};
+		return JWT.create()
+			.withIssuer(configuration.getIssuer())
+			.withAudience(configuration.getAudiences())
+			.withSubject(id)
+			.withClaim("authority", role.name())
+			.withJWTId(UUID.randomUUID().toString())
+			.withIssuedAt(now)
+			.withExpiresAt(now.plus(expiration))
+			.sign(algorithm);
+	}
 
-    @Override
-    public DecodedJWT decode(String token) {
-        return verifier.verify(token);
-    }
+	@Override
+	public DecodedJWT decode(String token) {
+		return verifier.verify(token);
+	}
 
 }

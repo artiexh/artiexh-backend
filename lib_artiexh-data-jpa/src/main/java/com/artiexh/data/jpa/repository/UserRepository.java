@@ -9,12 +9,12 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
-    Optional<UserEntity> findByUsername(String username);
+	Optional<UserEntity> findByUsername(String username);
 
-    Optional<UserEntity> findByGoogleId(String googleId);
+	Optional<UserEntity> findByGoogleId(String googleId);
 
-    Optional<UserEntity> findByFacebookId(String facebookId);
+	Optional<UserEntity> findByFacebookId(String facebookId);
 
-    Optional<UserEntity> findByTwitterId(String twitterId);
+	Optional<UserEntity> findByTwitterId(String twitterId);
 
 }

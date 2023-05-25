@@ -6,12 +6,12 @@ import org.mapstruct.Mapper;
 @Mapper
 public interface MerchStatusMapper {
 
-    default Integer toValue(MerchStatus status) {
-        return status.getValue();
-    }
+	default Integer toValue(MerchStatus status) {
+		return status.getValue();
+	}
 
-    default MerchStatus toMerchStatus(Integer value) {
-        return MerchStatus.fromValue(value);
-    }
+	default MerchStatus toMerchStatus(Integer value) {
+		return MerchStatus.fromValue(value);
+	}
 
 }

@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RegistrationServiceImpl implements RegistrationService {
 
-    private final UserMapper userMapper;
-    private final UserRepository userRepository;
+	private final UserMapper userMapper;
+	private final UserRepository userRepository;
 
-    @Override
-    public User createUser(User user) {
-        var userEntity = userRepository.save(userMapper.domainToEntity(user));
-        return userMapper.entityToDomain(userEntity);
-    }
+	@Override
+	public User createUser(User user) {
+		var userEntity = userRepository.save(userMapper.domainToEntity(user));
+		return userMapper.entityToDomain(userEntity);
+	}
 
 }

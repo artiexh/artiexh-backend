@@ -9,9 +9,9 @@ import org.springframework.core.env.Environment;
 @Configuration
 public class SpringDocConfig {
 
-    @Bean
-    public OpenAPI openAPI(Environment environment) {
-        return new OpenAPI().info(new Info().title(environment.getProperty("spring.application.name")).version("v1"));
-    }
+	@Bean
+	public OpenAPI openAPI(Environment environment) {
+		return new OpenAPI().info(new Info().title(environment.getProperty("spring.application.name")).version("v1"));
+	}
 
 }

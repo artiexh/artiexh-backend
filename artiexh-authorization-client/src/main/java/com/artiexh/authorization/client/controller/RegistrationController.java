@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class RegistrationController {
 
-    private final UserMapper userMapper;
-    private final RegistrationService registrationService;
+	private final UserMapper userMapper;
+	private final RegistrationService registrationService;
 
-    @PostMapping(Endpoint.Registration.USER)
-    public User register(@RequestBody @Valid RegisterUserRequest registerUserRequest) {
-        return registrationService.createUser(userMapper.registerUserRequestToDomain(registerUserRequest));
-    }
+	@PostMapping(Endpoint.Registration.USER)
+	public User register(@RequestBody @Valid RegisterUserRequest registerUserRequest) {
+		return registrationService.createUser(userMapper.registerUserRequestToDomain(registerUserRequest));
+	}
 
 }

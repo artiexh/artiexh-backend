@@ -6,12 +6,12 @@ import org.mapstruct.Mapper;
 @Mapper
 public interface MerchTypeMapper {
 
-    default Integer toValue(MerchType type) {
-        return type.getValue();
-    }
+	default Integer toValue(MerchType type) {
+		return type.getValue();
+	}
 
-    default MerchType toMerchType(Integer value) {
-        return MerchType.fromValue(value);
-    }
+	default MerchType toMerchType(Integer value) {
+		return MerchType.fromValue(value);
+	}
 
 }

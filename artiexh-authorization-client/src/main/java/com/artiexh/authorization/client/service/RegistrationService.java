@@ -4,6 +4,6 @@ import com.artiexh.model.domain.User;
 
 public interface RegistrationService {
 
-    User createUser(User user);
+	User createUser(User user);
 
 }

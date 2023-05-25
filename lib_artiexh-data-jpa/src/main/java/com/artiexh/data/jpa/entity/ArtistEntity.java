@@ -21,16 +21,16 @@ import java.util.Set;
 @Table(name = "artist")
 public class ArtistEntity extends UserEntity {
 
-    @MapsId
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "id", nullable = false)
-    private UserEntity user;
+	@MapsId
+	@OneToOne(fetch = FetchType.LAZY, optional = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@JoinColumn(name = "id", nullable = false)
+	private UserEntity user;
 
-    @OneToMany(mappedBy = "owner")
-    private Set<MerchEntity> merch = new LinkedHashSet<>();
+	@OneToMany(mappedBy = "owner")
+	private Set<MerchEntity> merch = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "artist")
-    private Set<SubscriptionEntity> subscriptionsFrom = new LinkedHashSet<>();
+	@OneToMany(mappedBy = "artist")
+	private Set<SubscriptionEntity> subscriptionsFrom = new LinkedHashSet<>();
 
 }

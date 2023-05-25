@@ -17,17 +17,17 @@ import static com.artiexh.auth.common.AuthConstant.REFRESH_TOKEN_COOKIE_NAME;
 @RequiredArgsConstructor
 public class CookiesLogoutHandler implements LogoutHandler {
 
-    private final ActiveTokenService activeTokenService;
-    private final JwtProcessor jwtProcessor;
+	private final ActiveTokenService activeTokenService;
+	private final JwtProcessor jwtProcessor;
 
-    @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        JwtAuthenticationToken authenticationToken = (JwtAuthenticationToken) authentication;
-        if (authenticationToken.isAuthenticated()) {
-            String sub = authenticationToken.getPrincipal().toString();
+	@Override
+	public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+		JwtAuthenticationToken authenticationToken = (JwtAuthenticationToken) authentication;
+		if (authenticationToken.isAuthenticated()) {
+			String sub = authenticationToken.getPrincipal().toString();
 
-            CookieUtil.deleteCookies(request, response, ACCESS_TOKEN_COOKIE_NAME, REFRESH_TOKEN_COOKIE_NAME);
-            activeTokenService.remove(sub);
-        }
-    }
+			CookieUtil.deleteCookies(request, response, ACCESS_TOKEN_COOKIE_NAME, REFRESH_TOKEN_COOKIE_NAME);
+			activeTokenService.remove(sub);
+		}
+	}
 }

@@ -15,18 +15,18 @@ import java.util.Set;
 @Entity
 @Table(name = "merch_tag")
 public class MerchTagEntity {
-    @Id
-    @GenericGenerator(name = "tsid", strategy = "io.hypersistence.utils.hibernate.id.TsidGenerator")
-    @Column(name = "id", nullable = false)
-    private Long id;
+	@Id
+	@GenericGenerator(name = "tsid", strategy = "io.hypersistence.utils.hibernate.id.TsidGenerator")
+	@Column(name = "id", nullable = false)
+	private Long id;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+	@Column(name = "name", nullable = false)
+	private String name;
 
-    @ManyToMany
-    @JoinTable(name = "merch_tag_mapping",
-            joinColumns = @JoinColumn(name = "tag_id"),
-            inverseJoinColumns = @JoinColumn(name = "merch_id"))
-    private Set<MerchEntity> merches = new LinkedHashSet<>();
+	@ManyToMany
+	@JoinTable(name = "merch_tag_mapping",
+		joinColumns = @JoinColumn(name = "tag_id"),
+		inverseJoinColumns = @JoinColumn(name = "merch_id"))
+	private Set<MerchEntity> merches = new LinkedHashSet<>();
 
 }

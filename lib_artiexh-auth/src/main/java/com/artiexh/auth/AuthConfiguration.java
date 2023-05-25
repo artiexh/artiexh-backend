@@ -15,16 +15,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableConfigurationProperties(JwtConfiguration.class)
 public class AuthConfiguration {
 
-    @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity httpSecurity, JwtAuthenticationProvider jwtAuthenticationProvider) throws Exception {
-        AuthenticationManagerBuilder builder = httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
-        builder.authenticationProvider(jwtAuthenticationProvider);
-        return builder.build();
-    }
+	@Bean
+	public AuthenticationManager authenticationManager(HttpSecurity httpSecurity, JwtAuthenticationProvider jwtAuthenticationProvider) throws Exception {
+		AuthenticationManagerBuilder builder = httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
+		builder.authenticationProvider(jwtAuthenticationProvider);
+		return builder.build();
+	}
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 
 }

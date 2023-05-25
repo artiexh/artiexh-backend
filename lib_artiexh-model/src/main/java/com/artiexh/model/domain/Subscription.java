@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class Subscription {
-    private User user;
-    private Artist artist;
-    private LocalDateTime expiredDatetime;
+	private User user;
+	private Artist artist;
+	private LocalDateTime expiredDatetime;
 }

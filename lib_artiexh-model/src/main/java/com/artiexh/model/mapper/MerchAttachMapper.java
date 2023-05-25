@@ -6,12 +6,12 @@ import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
-    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-    uses = {MerchAttachTypeMapper.class}
+	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+	uses = {MerchAttachTypeMapper.class}
 )
 public interface MerchAttachMapper {
 
-    MerchAttach entityToDomain(MerchAttachEntity merchAttachEntity);
+	MerchAttach entityToDomain(MerchAttachEntity merchAttachEntity);
 
-    MerchAttachEntity domainToEntity(MerchAttach merchAttach);
+	MerchAttachEntity domainToEntity(MerchAttach merchAttach);
 }
