@@ -1,5 +1,6 @@
 package com.artiexh.data.jpa.entity;
 
+import io.hypersistence.utils.hibernate.id.TsidGenerator;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -15,18 +16,17 @@ import java.util.Set;
 @Entity
 @Table(name = "merch_tag")
 public class MerchTagEntity {
-	@Id
-	@GenericGenerator(name = "tsid", strategy = "io.hypersistence.utils.hibernate.id.TsidGenerator")
-	@Column(name = "id", nullable = false)
-	private Long id;
-
-	@Column(name = "name", nullable = false)
-	private String name;
-
 	@ManyToMany
 	@JoinTable(name = "merch_tag_mapping",
 		joinColumns = @JoinColumn(name = "tag_id"),
 		inverseJoinColumns = @JoinColumn(name = "merch_id"))
-	private Set<MerchEntity> merches = new LinkedHashSet<>();
+	private final Set<MerchEntity> merches = new LinkedHashSet<>();
+
+	@Column(name = "name", nullable = false)
+	private String name;
+	@Id
+	@GenericGenerator(name = "tsid", type = TsidGenerator.class)
+	@Column(name = "id", nullable = false)
+	private Long id;
 
 }

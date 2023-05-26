@@ -2,11 +2,10 @@ spring:
   application:
     name: artiexh-authorization-client
   datasource:
-    url: jdbc:mariadb://localhost:3306/artiexh_backend
-    username: artiexh-backend
-    password: artiexh@123
-    type: io.agroal.springframework.boot.AgroalDataSource
-    agroal:
+    url: jdbc:mariadb://${DB_URL}/artiexh_backend
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
       auto-commit: false
   jpa:
     open-in-view: false
@@ -15,9 +14,9 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
   data:
     redis:
-      host: "localhost"
-      port: 6379
-      password: artiexh@123
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
   jackson:
     serialization:
       write-dates-as-timestamps: true
@@ -32,8 +31,8 @@ spring:
       client:
         registration:
           google:
-            clientId: 439778912071-u1dajb2a9r49piflunr86vnipeplbig8.apps.googleusercontent.com
-            clientSecret: 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
+            clientId: ${OAUTH2_GOOGLE_CLIENT_ID}
+            clientSecret: ${OAUTH2_GOOGLE_CLIENT_SECRET}
             redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
             scope:
               - email
@@ -54,10 +53,11 @@ springdoc:
 artiexh:
   security:
     jwt:
-      secret-key: artiexh@123
+      secret-key: ${JWT_SECRET_KEY}
       issuer: http://artiexh.com/api/
       audiences:
         - http://artiexh.com/
         - http://localhost:8080/
-      access-token-expiration: 30
-      refresh-token-expiration: 43200
+        - http://localhost:3000/
+      access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
+      refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}

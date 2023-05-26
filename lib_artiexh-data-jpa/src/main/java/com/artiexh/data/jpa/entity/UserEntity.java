@@ -53,6 +53,6 @@ public class UserEntity {
 	private String googleId;
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-	private Set<SubscriptionEntity> subscriptionsTo = new LinkedHashSet<>();
+	private final Set<SubscriptionEntity> subscriptionsTo = new LinkedHashSet<>();
 
 }

@@ -28,9 +28,9 @@ public class ArtistEntity extends UserEntity {
 	private UserEntity user;
 
 	@OneToMany(mappedBy = "owner")
-	private Set<MerchEntity> merch = new LinkedHashSet<>();
+	private final Set<MerchEntity> merch = new LinkedHashSet<>();
 
 	@OneToMany(mappedBy = "artist")
-	private Set<SubscriptionEntity> subscriptionsFrom = new LinkedHashSet<>();
+	private final Set<SubscriptionEntity> subscriptionsFrom = new LinkedHashSet<>();
 
 }

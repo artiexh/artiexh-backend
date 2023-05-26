@@ -7,6 +7,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -20,9 +24,11 @@ public class SecurityConfig {
 		httpSecurity
 			.authenticationManager(authenticationManager)
 			.addFilterAt(new JwtAuthenticationFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
-			.csrf().disable()
-			.cors().and()
-			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+			.csrf(CsrfConfigurer::disable)
+			.cors(CorsConfigurer::disable)
+			.sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.formLogin(FormLoginConfigurer::disable)
+			.httpBasic(HttpBasicConfigurer::disable)
 			.authorizeHttpRequests(authz -> authz
 				.requestMatchers("/actuator/**").permitAll()
 				.requestMatchers("/swagger*/**", "/v3/api-docs/**").permitAll()

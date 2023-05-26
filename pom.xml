@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.0.6</version>
+		<version>3.1.0</version>
 		<relativePath/>
 	</parent>
 
@@ -31,7 +31,6 @@
 		<lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
 		<springdoc.version>2.1.0</springdoc.version>
 		<io.hypersistence.version>3.3.2</io.hypersistence.version>
-		<io.agroal.version>2.1</io.agroal.version>
 		<java-jwt.version>4.4.0</java-jwt.version>
 	</properties>
 
@@ -51,11 +50,6 @@
 				<groupId>io.hypersistence</groupId>
 				<artifactId>hypersistence-utils-hibernate-60</artifactId>
 				<version>${io.hypersistence.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.agroal</groupId>
-				<artifactId>agroal-spring-boot-starter</artifactId>
-				<version>${io.agroal.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.auth0</groupId>

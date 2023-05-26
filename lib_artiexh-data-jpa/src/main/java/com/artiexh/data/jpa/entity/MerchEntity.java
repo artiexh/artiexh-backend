@@ -1,5 +1,6 @@
 package com.artiexh.data.jpa.entity;
 
+import io.hypersistence.utils.hibernate.id.TsidGenerator;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,10 +24,11 @@ import java.util.Set;
 @Table(name = "merch")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class MerchEntity {
-	@Id
-	@GenericGenerator(name = "tsid", strategy = "io.hypersistence.utils.hibernate.id.TsidGenerator")
-	@Column(name = "id", nullable = false)
-	private Long id;
+	@ManyToMany
+	@JoinTable(name = "merch_category_mapping",
+		joinColumns = @JoinColumn(name = "merch_id"),
+		inverseJoinColumns = @JoinColumn(name = "category_id"))
+	private final Set<MerchCategoryEntity> categories = new LinkedHashSet<>();
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@OnDelete(action = OnDeleteAction.CASCADE)
@@ -59,21 +61,17 @@ public class MerchEntity {
 
 	@Column(name = "delivery_type", nullable = false)
 	private Byte deliveryType;
-
-	@ManyToMany
-	@JoinTable(name = "merch_category_mapping",
-		joinColumns = @JoinColumn(name = "merch_id"),
-		inverseJoinColumns = @JoinColumn(name = "category_id"))
-	private Set<MerchCategoryEntity> categories = new LinkedHashSet<>();
-
 	@ManyToMany
 	@JoinTable(name = "merch_tag_mapping",
 		joinColumns = @JoinColumn(name = "merch_id"),
 		inverseJoinColumns = @JoinColumn(name = "tag_id"))
-	private Set<MerchTagEntity> tags = new LinkedHashSet<>();
-
+	private final Set<MerchTagEntity> tags = new LinkedHashSet<>();
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "merch_id")
-	private Set<MerchAttachEntity> attaches = new LinkedHashSet<>();
+	private final Set<MerchAttachEntity> attaches = new LinkedHashSet<>();
+	@Id
+	@GenericGenerator(name = "tsid", type = TsidGenerator.class)
+	@Column(name = "id", nullable = false)
+	private Long id;
 
 }
