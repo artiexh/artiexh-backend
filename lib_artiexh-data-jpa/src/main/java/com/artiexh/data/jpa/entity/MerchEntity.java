@@ -24,44 +24,57 @@ import java.util.Set;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class MerchEntity {
 
-	@ManyToMany
-	@JoinTable(name = "merch_category_mapping",
-			joinColumns = @JoinColumn(name = "merch_id"),
-			inverseJoinColumns = @JoinColumn(name = "category_id"))
-	private final Set<MerchCategoryEntity> categories = new LinkedHashSet<>();
-	@ManyToMany
-	@JoinTable(name = "merch_tag_mapping",
-			joinColumns = @JoinColumn(name = "merch_id"),
-			inverseJoinColumns = @JoinColumn(name = "tag_id"))
-	private final Set<MerchTagEntity> tags = new LinkedHashSet<>();
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "merch_id")
-	private final Set<MerchAttachEntity> attaches = new LinkedHashSet<>();
 	@Id
 	@Tsid
 	@Column(name = "id", nullable = false)
 	private Long id;
+
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "owner_id", nullable = false)
 	private ArtistEntity owner;
+
 	@Column(name = "status", nullable = false)
 	private Byte status;
+
 	@Column(name = "name", nullable = false)
 	private String name;
+
 	@Column(name = "price", nullable = false)
 	private Double price;
+
 	@Column(name = "description")
 	private String description;
+
 	@Column(name = "type", nullable = false)
 	private Byte type;
+
 	@Column(name = "remaining_quantity", columnDefinition = "INT UNSIGNED not null")
 	private Long remainingQuantity;
+
 	@Column(name = "publish_datetime")
 	private Instant publishDatetime;
+
 	@Column(name = "max_items_per_order", columnDefinition = "INT UNSIGNED")
 	private Long maxItemsPerOrder;
+
 	@Column(name = "delivery_type", nullable = false)
 	private Byte deliveryType;
+
+	@ManyToMany
+	@JoinTable(name = "merch_category_mapping",
+		joinColumns = @JoinColumn(name = "merch_id"),
+		inverseJoinColumns = @JoinColumn(name = "category_id"))
+	private final Set<MerchCategoryEntity> categories = new LinkedHashSet<>();
+
+	@ManyToMany
+	@JoinTable(name = "merch_tag_mapping",
+		joinColumns = @JoinColumn(name = "merch_id"),
+		inverseJoinColumns = @JoinColumn(name = "tag_id"))
+	private final Set<MerchTagEntity> tags = new LinkedHashSet<>();
+
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "merch_id")
+	private final Set<MerchAttachEntity> attaches = new LinkedHashSet<>();
 
 }
