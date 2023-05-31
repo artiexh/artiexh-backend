@@ -6,8 +6,12 @@ import com.artiexh.api.service.ProductService;
 import com.artiexh.model.common.model.PageResponse;
 import com.artiexh.model.common.model.PaginationAndSortingRequest;
 import com.artiexh.model.domain.Merch;
-import com.artiexh.model.request.GetAllProductFilter;
+import com.artiexh.model.mapper.MerchMapper;
+import com.artiexh.model.mapper.UserMapper;
+import com.artiexh.model.request.product.GetAllProductFilter;
+import com.artiexh.model.request.product.UpdateProductRequest;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,12 +19,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = Endpoint.Product.ROOT)
+@RequestMapping(path ="/test" + Endpoint.Product.ROOT)
 public class ProductController {
+	private final MerchMapper merchMapper;
 	private final ProductService productService;
 
 	@GetMapping(path = Endpoint.Product.PRODUCT_DETAIL)
-	public ResponseEntity<Merch> getDetail(@PathVariable("id") int id) {
+	public ResponseEntity<Merch> getDetail(@PathVariable("id") long id) {
 		try {
 			Merch product = productService.getDetail(id);
 			return ResponseEntity.ok(product);
@@ -32,9 +37,10 @@ public class ProductController {
 	@PostMapping(path = Endpoint.Product.PRODUCT_DETAIL)
 	public ResponseEntity<Merch> update(
 		@PathVariable("id") long id,
-		@RequestBody Merch productModel) {
+		@RequestBody UpdateProductRequest request) {
 		try {
-			productModel.setId(id);
+			request.setId(id);
+			Merch productModel = merchMapper.requestToDomainModel(request);
 			Merch product = productService.update(productModel);
 			return ResponseEntity.ok(product);
 		} catch (Exception e) {
@@ -53,7 +59,7 @@ public class ProductController {
 	}
 
 	@DeleteMapping(path = Endpoint.Product.PRODUCT_DETAIL)
-	public ResponseEntity<Void> delete(@PathVariable("id") int id) {
+	public ResponseEntity<Void> delete(@PathVariable("id") long id) {
 		try {
 			productService.delete(id);
 			return ResponseEntity.ok().build();
@@ -64,8 +70,8 @@ public class ProductController {
 
 	@GetMapping(path = Endpoint.Product.PRODUCT_PAGE)
 	public ResponseEntity<PageResponse<Merch>> getPage(
-		@RequestParam PaginationAndSortingRequest paginationAndSortingRequest,
-		@RequestParam GetAllProductFilter filter
+		@ParameterObject PaginationAndSortingRequest paginationAndSortingRequest,
+		@ParameterObject GetAllProductFilter filter
 		) {
 		try {
 			PageResponse<Merch> productPage = productService.getInPage(filter.getSpecification(), paginationAndSortingRequest.getPageable());
@@ -76,7 +82,7 @@ public class ProductController {
 	}
 
 	@GetMapping(path = Endpoint.Product.PRODUCT_LIST)
-	public ResponseEntity<List<Merch>> getList(@RequestParam GetAllProductFilter filter) {
+	public ResponseEntity<List<Merch>> getList(@ParameterObject GetAllProductFilter filter) {
 		try {
 			List<Merch> productList = productService.getInList(filter.getSpecification());
 			return ResponseEntity.ok(productList);

@@ -20,9 +20,9 @@ import java.util.Set;
 public class ArtistEntity extends UserEntity {
 
 	@OneToMany(mappedBy = "owner")
-	private final Set<MerchEntity> merch = new LinkedHashSet<>();
+	private Set<MerchEntity> merch;
 
 	@OneToMany(mappedBy = "artist")
-	private final Set<SubscriptionEntity> subscriptionsFrom = new LinkedHashSet<>();
+	private Set<SubscriptionEntity> subscriptionsFrom;
 
 }

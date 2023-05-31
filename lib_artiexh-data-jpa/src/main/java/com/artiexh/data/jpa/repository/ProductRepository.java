@@ -19,6 +19,6 @@ public interface ProductRepository extends JpaRepository<MerchEntity, Long>, Jpa
 	Page<MerchEntity> findAll(Specification<MerchEntity> specification, Pageable pageable);
 	List<MerchEntity> findAll(Specification<MerchEntity> specification);
 	@Modifying
-	@Query("update MerchEntity entity set entity.isDeleted = false where entity.id=:id")
-	void delete(long id);
+	@Query("update MerchEntity entity set entity.status = :deleted where entity.id=:id")
+	void delete(long id, Byte deleted);
 }

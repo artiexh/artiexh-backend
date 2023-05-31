@@ -1,6 +1,5 @@
 package com.artiexh.data.jpa.entity;
 
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,27 +17,10 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "user")
-@Inheritance(strategy = InheritanceType.JOINED)
-public class UserEntity {
+public class UserEntity extends AccountEntity {
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private final Set<SubscriptionEntity> subscriptionsTo = new LinkedHashSet<>();
-	@Id
-	@Tsid
-	@Column(name = "id", nullable = false)
-	private Long id;
-	@Column(name = "username", nullable = false)
-	private String username;
-	@Column(name = "password", nullable = false, length = 60)
-	private String password;
-	@Column(name = "role", nullable = false)
-	private Byte role;
-	@Column(name = "status", nullable = false)
-	private Byte status;
-	@Column(name = "avatar_url", length = 2048)
-	private String avatarUrl;
-	@Column(name = "email", length = 254)
-	private String email;
 	@Column(name = "twitter_id", length = 20)
 	private String twitterId;
 	@Column(name = "facebook_id", length = 20)

@@ -1,9 +1,6 @@
 package com.artiexh.model.common.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -12,6 +9,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class PageResponse<T> {
 	private Integer page;
 	private Integer pageSize;
@@ -19,7 +17,7 @@ public class PageResponse<T> {
 	private Integer totalPage;
 	private List<T> items;
 
-	public PageResponse(Page page) {
+	public PageResponse(Page<T> page) {
 		if (page == null) {
 			return;
 		}
@@ -27,6 +25,7 @@ public class PageResponse<T> {
 		this.pageSize = page.getSize();
 		this.totalSize = page.getTotalElements();
 		this.totalPage = page.getTotalPages();
+		this.items = page.getContent();
 	}
 
 }

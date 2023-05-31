@@ -16,7 +16,7 @@ import java.util.Set;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {UserStatusMapper.class, RoleMapper.class, MerchMapper.class}
+	uses = {AccountMapper.class, RoleMapper.class, UserStatusMapper.class, MerchMapper.class}
 )
 public abstract class UserMapper {
 

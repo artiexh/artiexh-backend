@@ -1,4 +1,4 @@
-package com.artiexh.model.request;
+package com.artiexh.model.request.product;
 
 import com.artiexh.data.jpa.entity.MerchEntity;
 import com.artiexh.model.common.model.PaginationAndSortingRequest;
@@ -21,9 +21,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetAllProductFilter {
-	public String keyword;
-	public BigDecimal minPrice;
-	public BigDecimal maxPrice;
+	private String keyword;
+	private BigDecimal minPrice;
+	private BigDecimal maxPrice;
 
 	public Specification<MerchEntity> getSpecification() {
 		return (root, cQuery, builder) -> {
