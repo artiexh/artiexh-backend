@@ -16,16 +16,18 @@ import java.util.Set;
 @Table(name = "merch_tag")
 public class MerchTagEntity {
 
+	@Id
+	@Tsid
+	@Column(name = "id", nullable = false)
+	private Long id;
+
+	@Column(name = "name", nullable = false)
+	private String name;
+
 	@ManyToMany
 	@JoinTable(name = "merch_tag_mapping",
 		joinColumns = @JoinColumn(name = "tag_id"),
 		inverseJoinColumns = @JoinColumn(name = "merch_id"))
 	private final Set<MerchEntity> merches = new LinkedHashSet<>();
-	@Id
-	@Tsid
-	@Column(name = "id", nullable = false)
-	private Long id;
-	@Column(name = "name", nullable = false)
-	private String name;
 
 }
