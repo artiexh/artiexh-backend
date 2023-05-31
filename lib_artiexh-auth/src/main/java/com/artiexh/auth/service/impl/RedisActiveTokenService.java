@@ -1,9 +1,9 @@
-package com.artiexh.auth.service;
+package com.artiexh.auth.service.impl;
 
 import com.artiexh.auth.jwt.JwtConfiguration;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import com.artiexh.auth.service.ActiveTokenService;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -14,12 +14,7 @@ public class RedisActiveTokenService implements ActiveTokenService {
 	private final StringRedisTemplate redisTemplate;
 	private final JwtConfiguration jwtConfiguration;
 
-	public RedisActiveTokenService(RedisProperties redisProperties, JwtConfiguration jwtConfiguration) {
-		RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration(redisProperties.getHost(), redisProperties.getPort());
-		configuration.setPassword(redisProperties.getPassword());
-		configuration.setDatabase(1);
-		LettuceConnectionFactory connectionFactory = new LettuceConnectionFactory(configuration);
-		connectionFactory.afterPropertiesSet();
+	public RedisActiveTokenService(@Qualifier("authRedis") RedisConnectionFactory connectionFactory, JwtConfiguration jwtConfiguration) {
 		redisTemplate = new StringRedisTemplate(connectionFactory);
 		this.jwtConfiguration = jwtConfiguration;
 	}

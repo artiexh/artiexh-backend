@@ -34,7 +34,6 @@ public class ArtiexhOAuth2UserService implements OAuth2UserService<OAuth2UserReq
 	private static final String MISSING_USER_NAME_ATTRIBUTE_ERROR_CODE = "missing_user_name_attribute";
 	private static final String INVALID_USER_INFO_RESPONSE_ERROR_CODE = "invalid_user_info_response";
 	private static final String UNKNOWN_OAUTH2_PROVIDER = "unknown_oauth2_provider";
-	private static final String NOT_EXIST_USER = "not_exist_user";
 	private static final ParameterizedTypeReference<Map<String, Object>> PARAMETERIZED_RESPONSE_TYPE =
 		new ParameterizedTypeReference<>() {
 		};
@@ -61,6 +60,9 @@ public class ArtiexhOAuth2UserService implements OAuth2UserService<OAuth2UserReq
 		String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
 		User user = queryUserByProviderId(sub, registrationId);
+		if (user == null) {
+			throw new Oauth2UserNotExistedException("User not existed", registrationId, userAttributes);
+		}
 
 		return new ArtiexhOAuth2User(user.getId().toString(), user.getUsername(), new SimpleGrantedAuthority(user.getRole().name()), userAttributes);
 	}
@@ -130,7 +132,7 @@ public class ArtiexhOAuth2UserService implements OAuth2UserService<OAuth2UserReq
 			case "twitter" -> userRepository.findByTwitterId(sub);
 			default -> throw new OAuth2AuthenticationException(UNKNOWN_OAUTH2_PROVIDER);
 		};
-		return userEntity.map(userMapper::entityToDomain).orElseThrow(() -> new OAuth2AuthenticationException(NOT_EXIST_USER));
+		return userEntity.map(userMapper::entityToDomain).orElse(null);
 	}
 
 }

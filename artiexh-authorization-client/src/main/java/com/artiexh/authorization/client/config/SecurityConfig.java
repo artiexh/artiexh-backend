@@ -3,13 +3,13 @@ package com.artiexh.authorization.client.config;
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.auth.authentication.CookiesLogoutHandler;
 import com.artiexh.auth.authentication.JwtAuthenticationFilter;
+import com.artiexh.auth.authentication.JwtAuthenticationProvider;
 import com.artiexh.authorization.client.authentication.ArtiexhOAuth2UserService;
 import com.artiexh.authorization.client.authentication.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.artiexh.authorization.client.authentication.OAuth2AuthenticationFailureHandler;
 import com.artiexh.authorization.client.authentication.OAuth2AuthenticationSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,7 +28,7 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity httpSecurity,
-										   AuthenticationManager authenticationManager,
+		/*AuthenticationManager authenticationManager,*/
 										   JwtAuthenticationFilter jwtAuthenticationFilter,
 										   HttpCookieOAuth2AuthorizationRequestRepository authorizationRequestRepository,
 										   ArtiexhOAuth2UserService artiexhOAuth2UserService,
@@ -36,9 +36,11 @@ public class SecurityConfig {
 										   OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler,
 										   CookiesLogoutHandler cookiesLogoutHandler,
 										   AuthenticationEntryPoint http401UnauthorizedEntryPoint,
-										   LogoutSuccessHandler logoutSuccessHandler) throws Exception {
+										   LogoutSuccessHandler logoutSuccessHandler,
+										   JwtAuthenticationProvider jwtAuthenticationProvider) throws Exception {
+		httpSecurity.authenticationProvider(jwtAuthenticationProvider);
 		httpSecurity
-			.authenticationManager(authenticationManager)
+			//.authenticationManager(authenticationManager)
 			.addFilterAt(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 			.csrf(CsrfConfigurer::disable)
 			.cors(Customizer.withDefaults())
@@ -61,7 +63,7 @@ public class SecurityConfig {
 					.authorizationRequestRepository(authorizationRequestRepository)
 				)
 				.redirectionEndpoint(redirectionEndpoint -> redirectionEndpoint
-					.baseUri(Endpoint.OAuth2.ROOT + Endpoint.OAuth2.CALLBACK)
+					.baseUri("/api/v1/oauth2/callback/*")
 				)
 				.userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
 					.userService(artiexhOAuth2UserService)
