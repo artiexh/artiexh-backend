@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -53,7 +53,7 @@ public class MerchEntity {
 	private Long remainingQuantity;
 
 	@Column(name = "publish_datetime")
-	private LocalDateTime publishDatetime;
+	private Instant publishDatetime;
 
 	@Column(name = "max_items_per_order", columnDefinition = "INT UNSIGNED")
 	private Long maxItemsPerOrder;

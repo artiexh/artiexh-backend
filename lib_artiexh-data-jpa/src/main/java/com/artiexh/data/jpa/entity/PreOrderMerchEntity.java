@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @SuperBuilder
 @AllArgsConstructor
@@ -21,9 +21,9 @@ import java.time.LocalDateTime;
 public class PreOrderMerchEntity extends MerchEntity {
 
 	@Column(name = "start_datetime", nullable = false)
-	private LocalDateTime startDatetime;
+	private Instant startDatetime;
 
 	@Column(name = "end_datetime", nullable = false)
-	private LocalDateTime endDatetime;
+	private Instant endDatetime;
 
 }

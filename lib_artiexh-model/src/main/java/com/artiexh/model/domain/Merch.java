@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Set;
 
 @Data
@@ -21,7 +21,7 @@ public class Merch {
 	private String description;
 	private MerchType type;
 	private Long remainingQuantity;
-	private LocalDateTime publishDatetime;
+	private Instant publishDatetime;
 	private Long maxItemsPerOrder;
 	private DeliveryType deliveryType;
 	private Set<String> categories;

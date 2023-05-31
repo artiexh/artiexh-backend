@@ -29,7 +29,7 @@ public abstract class UserMapper {
 
 	@Mapping(target = "role", constant = "USER")
 	@Mapping(target = "status", constant = "ACTIVE")
-	@Mapping(target = "password", expression = "java(passwordEncoder.encode(request.password()))")
+	@Mapping(target = "password", expression = "java(passwordEncoder.encode(request.password()))", ignore = true)
 	public abstract User registerUserRequestToDomain(RegisterUserRequest request);
 
 	@Condition

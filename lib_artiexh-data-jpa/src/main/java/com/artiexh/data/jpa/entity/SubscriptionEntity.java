@@ -5,7 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Builder
 @AllArgsConstructor
@@ -31,6 +31,6 @@ public class SubscriptionEntity {
 	private UserEntity user;
 
 	@Column(name = "expired_datetime", nullable = false)
-	private LocalDateTime expiredDatetime;
+	private Instant expiredDatetime;
 
 }
