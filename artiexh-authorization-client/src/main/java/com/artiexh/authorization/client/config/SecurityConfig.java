@@ -28,7 +28,6 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity httpSecurity,
-		/*AuthenticationManager authenticationManager,*/
 										   JwtAuthenticationFilter jwtAuthenticationFilter,
 										   HttpCookieOAuth2AuthorizationRequestRepository authorizationRequestRepository,
 										   ArtiexhOAuth2UserService artiexhOAuth2UserService,
@@ -40,7 +39,6 @@ public class SecurityConfig {
 										   JwtAuthenticationProvider jwtAuthenticationProvider) throws Exception {
 		httpSecurity.authenticationProvider(jwtAuthenticationProvider);
 		httpSecurity
-			//.authenticationManager(authenticationManager)
 			.addFilterAt(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 			.csrf(CsrfConfigurer::disable)
 			.cors(Customizer.withDefaults())
