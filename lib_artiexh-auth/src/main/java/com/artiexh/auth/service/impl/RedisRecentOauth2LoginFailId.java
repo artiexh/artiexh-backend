@@ -25,6 +25,7 @@ public class RedisRecentOauth2LoginFailId implements RecentOauth2LoginFailId {
 	public RedisRecentOauth2LoginFailId(@Qualifier("authRedis") RedisConnectionFactory redisConnectionFactory) {
 		this.redisTemplate = new RedisTemplate<>();
 		this.redisTemplate.setConnectionFactory(redisConnectionFactory);
+		redisTemplate.afterPropertiesSet();
 	}
 
 	@Override

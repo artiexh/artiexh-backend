@@ -40,13 +40,13 @@ public class OAuth2AuthenticationFailureHandler implements AuthenticationFailure
 		if (exception instanceof Oauth2UserNotExistedException oauth2UserNotExistedException) {
 			var attributes = oauth2UserNotExistedException.getAttributes();
 			var sub = (String) attributes.get("sub");
-			var providerId = (String) attributes.get("providerId");
+			var providerId = oauth2UserNotExistedException.getProviderId();
 			String targetUrlWithSub = UriComponentsBuilder.fromUriString(targetUrl)
 				.queryParam("providerId", providerId)
 				.queryParam("sub", sub)
 				.build().toUriString();
-			redirectStrategy.sendRedirect(request, response, targetUrlWithSub);
 			recentOauth2LoginFailId.put(providerId, sub);
+			redirectStrategy.sendRedirect(request, response, targetUrlWithSub);
 		} else {
 			String targetUrlWithError = UriComponentsBuilder.fromUriString(targetUrl)
 				.queryParam("error", exception.getLocalizedMessage())
