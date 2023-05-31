@@ -28,4 +28,12 @@ public final class Endpoint {
 		public static final String ROOT = PREFIX + "/registration";
 		public static final String USER = "/user";
 	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Product {
+		public static final String ROOT = PREFIX + "/product";
+		public static final String PRODUCT_DETAIL = "/{id}";
+		public static final String PRODUCT_PAGE = "/page";
+		public static final String PRODUCT_LIST = "/list";
+	}
 }

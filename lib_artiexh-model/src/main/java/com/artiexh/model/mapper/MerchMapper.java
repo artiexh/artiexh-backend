@@ -3,7 +3,10 @@ package com.artiexh.model.mapper;
 import com.artiexh.data.jpa.entity.MerchEntity;
 import com.artiexh.model.domain.Merch;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
+
+import java.util.List;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
@@ -11,8 +14,11 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 )
 public interface MerchMapper {
 
-	Merch entityToDomain(MerchEntity merchEntity);
+	Merch entityToDomainModel(MerchEntity merchEntity);
 
-	MerchEntity domainToEntity(Merch merch);
+	List<Merch> entitiesToDomainModels(List<MerchEntity> merchEntity);
+	MerchEntity domainModelToEntity(Merch merch);
+
+	MerchEntity domainModelToEntity(Merch merch, @MappingTarget MerchEntity entity);
 
 }

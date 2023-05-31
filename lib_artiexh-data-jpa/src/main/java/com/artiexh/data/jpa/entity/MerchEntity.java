@@ -63,6 +63,6 @@ public class MerchEntity {
 	private Long maxItemsPerOrder;
 	@Column(name = "delivery_type", nullable = false)
 	private Byte deliveryType;
-
-
+	@Column(name = "is_deleted", nullable = false)
+	private boolean isDeleted =	false;
 }
