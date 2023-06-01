@@ -19,7 +19,7 @@ public class User extends Account {
 	private String googleId;
 	@JsonIgnore
 	private String twitterId;
-	@JsonIgnore
+	//@JsonIgnore
 	private String facebookId;
 	private Set<Subscription> subscriptionsTo;
 }

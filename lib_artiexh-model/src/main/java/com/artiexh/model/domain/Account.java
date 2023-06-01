@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Account {
+public abstract class Account {
 	private Long id;
 	private String username;
 	@JsonIgnore

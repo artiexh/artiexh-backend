@@ -29,4 +29,10 @@ public final class Endpoint {
 		public static final String USER = "/user";
 		public static final String PRINTER_PROVIDER = "/printer-provider";
 	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Account {
+		public static final String ROOT = PREFIX + "/account";
+		public static final String ME = "/me";
+	}
 }

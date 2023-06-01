@@ -61,7 +61,7 @@ public class SecurityConfig {
 					.authorizationRequestRepository(authorizationRequestRepository)
 				)
 				.redirectionEndpoint(redirectionEndpoint -> redirectionEndpoint
-					.baseUri("/api/v1/oauth2/callback/*")
+					.baseUri(Endpoint.OAuth2.ROOT + Endpoint.OAuth2.CALLBACK)
 				)
 				.userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
 					.userService(artiexhOAuth2UserService)

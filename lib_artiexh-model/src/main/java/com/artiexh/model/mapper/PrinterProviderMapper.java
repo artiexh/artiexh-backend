@@ -6,20 +6,25 @@ import com.artiexh.model.request.RegisterPrinterProviderRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {AccountMapper.class, RoleMapper.class, UserStatusMapper.class}
+	uses = {RoleMapper.class, UserStatusMapper.class}
 )
-public interface PrinterProviderMapper {
+public abstract class PrinterProviderMapper {
 
-	PrinterProvider entityToDomain(PrinterProviderEntity printerProviderEntity);
+	@Autowired
+	protected PasswordEncoder passwordEncoder;
 
-	PrinterProviderEntity domainToEntity(PrinterProvider printerProvider);
+	public abstract PrinterProvider entityToDomain(PrinterProviderEntity printerProviderEntity);
+
+	public abstract PrinterProviderEntity domainToEntity(PrinterProvider printerProvider);
 
 	@Mapping(target = "role", constant = "PRINTER_PROVIDER")
 	@Mapping(target = "status", constant = "ACTIVE")
-	@Mapping(target = "password", expression = "java(passwordEncoder.encode(request.password()))", ignore = true)
-	PrinterProvider registerPrinterProviderRequestToDomain(RegisterPrinterProviderRequest request);
+	@Mapping(target = "password", expression = "java(passwordEncoder.encode(request.getPassword()))")
+	public abstract PrinterProvider registerPrinterProviderRequestToDomain(RegisterPrinterProviderRequest request);
 
 }
