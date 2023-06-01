@@ -2,9 +2,13 @@ package com.artiexh.authorization.client.service.impl;
 
 import com.artiexh.auth.service.RecentOauth2LoginFailId;
 import com.artiexh.authorization.client.service.RegistrationService;
+import com.artiexh.data.jpa.entity.PrinterProviderEntity;
 import com.artiexh.data.jpa.entity.UserEntity;
+import com.artiexh.data.jpa.repository.PrinterProviderRepository;
 import com.artiexh.data.jpa.repository.UserRepository;
+import com.artiexh.model.domain.PrinterProvider;
 import com.artiexh.model.domain.User;
+import com.artiexh.model.mapper.PrinterProviderMapper;
 import com.artiexh.model.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +19,9 @@ import org.springframework.util.StringUtils;
 public class RegistrationServiceImpl implements RegistrationService {
 
 	private final UserMapper userMapper;
+	private final PrinterProviderMapper printerProviderMapper;
 	private final UserRepository userRepository;
+	private final PrinterProviderRepository printerProviderRepository;
 	private final RecentOauth2LoginFailId recentOauth2LoginFailId;
 
 	@Override
@@ -46,6 +52,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}
 
 		return userMapper.entityToDomain(userRepository.save(userEntity));
+	}
+
+	@Override
+	public PrinterProvider createPrinterProvider(PrinterProvider printerProvider) {
+		PrinterProviderEntity entity = printerProviderRepository.save(printerProviderMapper.domainToEntity(printerProvider));
+		return printerProviderMapper.entityToDomain(entity);
 	}
 
 }

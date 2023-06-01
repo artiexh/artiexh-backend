@@ -32,6 +32,7 @@ server:
     include-stacktrace: never
     whitelabel:
       enabled: false
+  port: 8082
 springdoc:
   show-actuator: true
   swagger-ui:
@@ -47,3 +48,5 @@ artiexh:
       audiences:
         - http://artiexh.com/
         - http://localhost:8080/
+    recent_oauth2_fail_id:
+      expiration: ${CACHE_RECENT_OAUTH2_FAIL_ID_EXPIRE}

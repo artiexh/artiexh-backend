@@ -1,9 +1,19 @@
 package com.artiexh.model.request;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public record LoginRequest(
-	@NotBlank(message = "Username is required") String username,
-	@NotBlank(message = "Password is required") String password
-) {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class LoginRequest {
+
+	@NotBlank(message = "Username is required")
+	private String username;
+
+	@NotBlank(message = "Password is required")
+	private String password;
+
 }

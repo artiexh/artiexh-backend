@@ -16,7 +16,7 @@ import java.util.Set;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {AccountMapper.class, RoleMapper.class, UserStatusMapper.class, MerchMapper.class}
+	uses = {RoleMapper.class, UserStatusMapper.class, MerchMapper.class}
 )
 public abstract class UserMapper {
 
@@ -29,7 +29,7 @@ public abstract class UserMapper {
 
 	@Mapping(target = "role", constant = "USER")
 	@Mapping(target = "status", constant = "ACTIVE")
-	@Mapping(target = "password", expression = "java(passwordEncoder.encode(request.password()))", ignore = true)
+	@Mapping(target = "password", expression = "java(passwordEncoder.encode(request.getPassword()))")
 	public abstract User registerUserRequestToDomain(RegisterUserRequest request);
 
 	@Condition

@@ -6,8 +6,8 @@ import com.artiexh.auth.jwt.JwtConfiguration;
 import com.artiexh.auth.jwt.JwtProcessor;
 import com.artiexh.auth.service.ActiveTokenService;
 import com.artiexh.authorization.client.service.AuthenticationService;
+import com.artiexh.model.domain.Account;
 import com.artiexh.model.domain.Role;
-import com.artiexh.model.domain.User;
 import com.artiexh.model.request.LoginRequest;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,19 +38,19 @@ public class AuthenticationController {
 	private final ActiveTokenService activeTokenService;
 
 	@PostMapping(Endpoint.Auth.LOGIN)
-	public User login(HttpServletResponse response, @RequestBody @Valid LoginRequest loginRequest) {
-		User user = authenticationService.login(loginRequest.username(), loginRequest.password())
+	public Account login(HttpServletResponse response, @RequestBody @Valid LoginRequest loginRequest) {
+		Account account = authenticationService.login(loginRequest.getUsername(), loginRequest.getPassword())
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password"));
 
-		String accessToken = jwtProcessor.encode(user.getId().toString(), user.getRole(), JwtProcessor.TokenType.ACCESS_TOKEN);
+		String accessToken = jwtProcessor.encode(account.getId().toString(), account.getRole(), JwtProcessor.TokenType.ACCESS_TOKEN);
 		CookieUtil.addCookies(response, ACCESS_TOKEN_COOKIE_NAME, accessToken, (int) jwtConfiguration.getAccessTokenExpiration().getSeconds());
 
-		String refreshToken = jwtProcessor.encode(user.getId().toString(), user.getRole(), JwtProcessor.TokenType.REFRESH_TOKEN);
+		String refreshToken = jwtProcessor.encode(account.getId().toString(), account.getRole(), JwtProcessor.TokenType.REFRESH_TOKEN);
 		CookieUtil.addCookies(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, (int) jwtConfiguration.getRefreshTokenExpiration().getSeconds());
 
-		activeTokenService.put(user.getId().toString(), accessToken, refreshToken);
+		activeTokenService.put(account.getId().toString(), accessToken, refreshToken);
 
-		return user;
+		return account;
 	}
 
 	@PostMapping(Endpoint.Auth.REFRESH)
