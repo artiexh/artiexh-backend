@@ -27,5 +27,6 @@ public final class Endpoint {
 	public static class Registration {
 		public static final String ROOT = PREFIX + "/registration";
 		public static final String USER = "/user";
+		public static final String PRINTER_PROVIDER = "/printer-provider";
 	}
 }

@@ -39,7 +39,7 @@ public class AuthenticationController {
 
 	@PostMapping(Endpoint.Auth.LOGIN)
 	public User login(HttpServletResponse response, @RequestBody @Valid LoginRequest loginRequest) {
-		User user = authenticationService.login(loginRequest.username(), loginRequest.password())
+		User user = authenticationService.login(loginRequest.getUsername(), loginRequest.getPassword())
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password"));
 
 		String accessToken = jwtProcessor.encode(user.getId().toString(), user.getRole(), JwtProcessor.TokenType.ACCESS_TOKEN);
