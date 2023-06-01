@@ -16,7 +16,7 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "account")
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class AccountEntity {
+public class AccountEntity {
 
 	@Id
 	@Tsid
