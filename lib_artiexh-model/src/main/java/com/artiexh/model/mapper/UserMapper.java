@@ -5,10 +5,7 @@ import com.artiexh.data.jpa.entity.UserEntity;
 import com.artiexh.model.domain.User;
 import com.artiexh.model.request.RegisterUserRequest;
 import org.hibernate.Hibernate;
-import org.mapstruct.Condition;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
