@@ -5,10 +5,7 @@ import com.artiexh.data.jpa.entity.UserEntity;
 import com.artiexh.model.domain.User;
 import com.artiexh.model.request.RegisterUserRequest;
 import org.hibernate.Hibernate;
-import org.mapstruct.Condition;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -29,11 +26,19 @@ public abstract class UserMapper {
 
 	@Mapping(target = "role", constant = "USER")
 	@Mapping(target = "status", constant = "ACTIVE")
-	@Mapping(target = "password", expression = "java(passwordEncoder.encode(request.getPassword()))")
+	@Mapping(source = "password", target = "password", qualifiedByName = "encodedPassword")
 	public abstract User registerUserRequestToDomain(RegisterUserRequest request);
 
 	@Condition
 	public boolean isNotLazyLoadedSubscriptionsTo(Set<SubscriptionEntity> subscriptionsTo) {
 		return Hibernate.isInitialized(subscriptionsTo);
+	}
+
+	@Named("encodedPassword")
+	public String encodedPassword(String password) {
+		if (password == null) {
+			return null;
+		}
+		return passwordEncoder.encode(password);
 	}
 }
