@@ -3,6 +3,7 @@ package com.artiexh.authorization.client.controller;
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.authorization.client.authentication.ResponseTokenProcessor;
 import com.artiexh.authorization.client.service.RegistrationService;
+import com.artiexh.model.domain.Artist;
 import com.artiexh.model.domain.PrinterProvider;
 import com.artiexh.model.domain.User;
 import com.artiexh.model.mapper.PrinterProviderMapper;
@@ -13,7 +14,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,11 +44,22 @@ public class RegistrationController {
 	}
 
 	@PostMapping(Endpoint.Registration.PRINTER_PROVIDER)
-	@PostAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public PrinterProvider registerPrinterProvider(@RequestBody @Valid RegisterPrinterProviderRequest request) {
 		return registrationService.createPrinterProvider(
 			printerProviderMapper.registerPrinterProviderRequestToDomain(request)
 		);
+	}
+
+	@PostMapping(Endpoint.Registration.ARTIST)
+	@PreAuthorize("hasAuthority('USER')")
+	public Artist registerArtist(Authentication authentication) {
+		Long id = (Long) authentication.getPrincipal();
+		try {
+			return registrationService.registerArtist(id);
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+		}
 	}
 
 }
