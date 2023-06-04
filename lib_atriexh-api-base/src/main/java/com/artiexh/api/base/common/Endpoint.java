@@ -28,6 +28,7 @@ public final class Endpoint {
 		public static final String ROOT = PREFIX + "/registration";
 		public static final String USER = "/user";
 		public static final String PRINTER_PROVIDER = "/printer-provider";
+		public static final String ARTIST = "/artist";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
