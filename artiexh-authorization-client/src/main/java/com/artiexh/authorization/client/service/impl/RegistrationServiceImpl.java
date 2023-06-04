@@ -5,6 +5,7 @@ import com.artiexh.authorization.client.service.RegistrationService;
 import com.artiexh.data.jpa.entity.ArtistEntity;
 import com.artiexh.data.jpa.entity.PrinterProviderEntity;
 import com.artiexh.data.jpa.entity.UserEntity;
+import com.artiexh.data.jpa.repository.AccountRepository;
 import com.artiexh.data.jpa.repository.ArtistRepository;
 import com.artiexh.data.jpa.repository.PrinterProviderRepository;
 import com.artiexh.data.jpa.repository.UserRepository;
@@ -33,6 +34,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private final UserMapper userMapper;
 	private final ArtistMapper artistMapper;
 	private final PrinterProviderMapper printerProviderMapper;
+	private final AccountRepository accountRepository;
 	private final UserRepository userRepository;
 	private final ArtistRepository artistRepository;
 	private final PrinterProviderRepository printerProviderRepository;
@@ -66,6 +68,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 			throw new IllegalArgumentException("Request has no password or invalid provider sub");
 		}
 
+		accountRepository.findByUsername(userEntity.getUsername())
+			.ifPresent(existedUserEntity -> {
+				throw new IllegalArgumentException("Existed username");
+			});
 		UserEntity savedUserEntity = userRepository.save(userEntity);
 
 		for (Pair<String, String> cacheProviderSubKey : cacheProviderSubKeys) {
