@@ -1,4 +1,4 @@
-package com.artiexh.model.request.product;
+package com.artiexh.model.product.request;
 
 import com.artiexh.model.domain.*;
 import com.fasterxml.jackson.annotation.JsonProperty;

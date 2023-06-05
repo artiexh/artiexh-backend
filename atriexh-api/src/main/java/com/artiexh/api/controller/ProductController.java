@@ -7,13 +7,14 @@ import com.artiexh.model.common.model.PageResponse;
 import com.artiexh.model.common.model.PaginationAndSortingRequest;
 import com.artiexh.model.domain.Merch;
 import com.artiexh.model.mapper.MerchMapper;
-import com.artiexh.model.mapper.UserMapper;
-import com.artiexh.model.request.product.GetAllProductFilter;
-import com.artiexh.model.request.product.UpdateProductRequest;
+import com.artiexh.model.product.request.GetAllProductFilter;
+import com.artiexh.model.product.request.UpdateProductRequest;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -75,6 +76,7 @@ public class ProductController {
 		) {
 		try {
 			PageResponse<Merch> productPage = productService.getInPage(filter.getSpecification(), paginationAndSortingRequest.getPageable());
+
 			return ResponseEntity.ok(productPage);
 		} catch (Exception e) {
 			throw new RestException();

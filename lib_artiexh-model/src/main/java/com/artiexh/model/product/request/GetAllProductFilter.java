@@ -1,4 +1,4 @@
-package com.artiexh.model.request.product;
+package com.artiexh.model.product.request;
 
 import com.artiexh.data.jpa.entity.MerchEntity;
 import com.artiexh.model.common.model.PaginationAndSortingRequest;

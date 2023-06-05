@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -51,6 +52,7 @@ public class ProductServiceImpl implements ProductService {
 		Page<MerchEntity> products = productRepository.findAll(specification, pageable);
 		Page<Merch> productPage = products.map(entity -> mapper.entityToDomainModel(entity));
 		PageResponse<Merch> productPageResponse = new PageResponse<>(productPage);
+
 		return productPageResponse;
 	}
 
