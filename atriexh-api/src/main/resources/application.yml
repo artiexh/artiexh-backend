@@ -51,3 +51,5 @@ artiexh:
       audiences:
         - http://artiexh.com/
         - http://localhost:8080/
+    recent_oauth2_fail_id:
+      expiration: ${CACHE_RECENT_OAUTH2_FAIL_ID_EXPIRE:5}

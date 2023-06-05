@@ -3,7 +3,8 @@ package com.artiexh.model.domain;
 public enum Role {
 	ADMIN(0),
 	USER(1),
-	ARTIST(2);
+	ARTIST(2),
+	PRINTER_PROVIDER(3);
 
 	private final int value;
 

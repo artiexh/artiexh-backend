@@ -8,6 +8,6 @@ import lombok.*;
 @Getter
 @Setter
 public class ArtistInfo {
-	public String name;
+	private String displayName;
 	private String avatarUrl;
 }

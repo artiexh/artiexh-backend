@@ -8,8 +8,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.javamoney.moneta.Money;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.Map;
 import java.util.Set;
 
 @Data
@@ -26,15 +29,23 @@ public class Merch {
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private long ownerId;
 	private MerchStatus status;
+	private String currency;
 	private String name;
-	private Double price;
+	private BigDecimal price;
 	private String description;
 	private MerchType type;
 	private Long remainingQuantity;
-	private LocalDateTime publishDatetime;
+	private Instant publishDatetime;
 	private Long maxItemsPerOrder;
 	private DeliveryType deliveryType;
+
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Set<String> categories;
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@Schema(readOnly = true)
+	private Map<Long, String> categoryInfo;
 	private Set<String> tags;
 	private Set<MerchAttach> attaches;
+
 }

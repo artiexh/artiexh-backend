@@ -1,11 +1,11 @@
 package com.artiexh.authorization.client.service;
 
-import com.artiexh.model.domain.User;
+import com.artiexh.model.domain.Account;
 
 import java.util.Optional;
 
 public interface AuthenticationService {
 
-	Optional<User> login(String username, String password);
+	Optional<Account> login(String username, String password);
 
 }

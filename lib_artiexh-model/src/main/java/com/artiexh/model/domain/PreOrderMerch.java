@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -14,6 +14,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @SuperBuilder
 public class PreOrderMerch extends Merch {
-	private LocalDateTime startDatetime;
-	private LocalDateTime endDatetime;
+	private Instant startDatetime;
+	private Instant endDatetime;
 }

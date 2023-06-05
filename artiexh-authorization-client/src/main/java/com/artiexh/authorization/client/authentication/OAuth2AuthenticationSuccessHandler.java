@@ -1,9 +1,6 @@
 package com.artiexh.authorization.client.authentication;
 
 import com.artiexh.auth.common.CookieUtil;
-import com.artiexh.auth.jwt.JwtConfiguration;
-import com.artiexh.auth.jwt.JwtProcessor;
-import com.artiexh.auth.service.ActiveTokenService;
 import com.artiexh.model.domain.Role;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,22 +19,18 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 
-import static com.artiexh.auth.common.AuthConstant.*;
+import static com.artiexh.auth.common.AuthConstant.REDIRECT_URI_PARAM_COOKIE_NAME;
 
 @Component
 @Log4j2
 public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 	private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
-	private final JwtProcessor jwtProcessor;
-	private final JwtConfiguration jwtConfiguration;
-	private final ActiveTokenService activeTokenService;
+	private final ResponseTokenProcessor responseTokenProcessor;
 	private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
-	public OAuth2AuthenticationSuccessHandler(HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository, JwtProcessor jwtProcessor, JwtConfiguration jwtConfiguration, ActiveTokenService activeTokenService) {
+	public OAuth2AuthenticationSuccessHandler(HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository, ResponseTokenProcessor responseTokenProcessor) {
 		this.httpCookieOAuth2AuthorizationRequestRepository = httpCookieOAuth2AuthorizationRequestRepository;
-		this.jwtProcessor = jwtProcessor;
-		this.jwtConfiguration = jwtConfiguration;
-		this.activeTokenService = activeTokenService;
+		this.responseTokenProcessor = responseTokenProcessor;
 	}
 
 	@Override
@@ -56,13 +49,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 			.map(Role::valueOf)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has no role"));
 
-		String accessToken = jwtProcessor.encode(authentication.getName(), role, JwtProcessor.TokenType.ACCESS_TOKEN);
-		CookieUtil.addCookies(response, ACCESS_TOKEN_COOKIE_NAME, accessToken, (int) jwtConfiguration.getAccessTokenExpiration().getSeconds());
-
-		String refreshToken = jwtProcessor.encode(authentication.getName(), role, JwtProcessor.TokenType.REFRESH_TOKEN);
-		CookieUtil.addCookies(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, (int) jwtConfiguration.getRefreshTokenExpiration().getSeconds());
-
-		activeTokenService.put(authentication.getName(), accessToken, refreshToken);
+		responseTokenProcessor.process(response, authentication.getName(), role);
 
 		clearAuthenticationAttributes(request, response);
 		redirectStrategy.sendRedirect(request, response, targetUrl);

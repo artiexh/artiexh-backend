@@ -1,16 +1,21 @@
 package com.artiexh.data.jpa.entity;
 
 import io.hypersistence.utils.hibernate.id.Tsid;
+import io.hypersistence.utils.hibernate.type.money.MonetaryAmountType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.CompositeType;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.validator.constraints.Currency;
 
-import java.time.LocalDateTime;
+import javax.money.MonetaryAmount;
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -40,9 +45,6 @@ public class MerchEntity {
 	@Column(name = "name", nullable = false)
 	private String name;
 
-	@Column(name = "price", nullable = false)
-	private Double price;
-
 	@Column(name = "description")
 	private String description;
 
@@ -53,7 +55,13 @@ public class MerchEntity {
 	private Long remainingQuantity;
 
 	@Column(name = "publish_datetime")
-	private LocalDateTime publishDatetime;
+	private Instant publishDatetime;
+
+	@Column(name = "currency", nullable = false, length = 3)
+	private String currency;
+
+	@Column(name = "price", nullable = false)
+	private BigDecimal price;
 
 	@Column(name = "max_items_per_order", columnDefinition = "INT UNSIGNED")
 	private Long maxItemsPerOrder;

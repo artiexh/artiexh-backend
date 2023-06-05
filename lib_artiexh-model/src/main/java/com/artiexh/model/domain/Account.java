@@ -19,4 +19,5 @@ public class Account {
 	private UserStatus status;
 	private String avatarUrl;
 	private String email;
+	private String displayName;
 }

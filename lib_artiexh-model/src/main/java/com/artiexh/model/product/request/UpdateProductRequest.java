@@ -6,7 +6,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Set;
 
 @Getter
@@ -23,10 +25,15 @@ public class UpdateProductRequest {
 	private String description;
 	private MerchType type;
 	private Long remainingQuantity;
-	private LocalDateTime publishDatetime;
+	private Instant publishDatetime;
 	private Long maxItemsPerOrder;
 	private DeliveryType deliveryType;
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Set<String> categories;
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@Schema(readOnly = true)
+	private Map<Long, String> categoryInfo;
 	private Set<String> tags;
 	private Set<MerchAttach> attaches;
 }
