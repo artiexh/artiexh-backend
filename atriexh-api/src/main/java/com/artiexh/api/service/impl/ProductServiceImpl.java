@@ -1,6 +1,5 @@
 package com.artiexh.api.service.impl;
 
-import com.artiexh.api.exception.RestException;
 import com.artiexh.api.service.ProductService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.*;
@@ -8,7 +7,9 @@ import com.artiexh.model.common.model.PageResponse;
 import com.artiexh.model.domain.Merch;
 import com.artiexh.model.domain.MerchStatus;
 import com.artiexh.model.mapper.MerchAttachMapper;
-import com.artiexh.model.mapper.MerchMapper;
+import com.artiexh.model.product.ProductDetail;
+import com.artiexh.model.product.ProductInfo;
+import com.artiexh.model.product.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.money.Monetary;
 import javax.money.UnknownCurrencyException;
@@ -25,12 +27,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.artiexh.api.exception.ErrorCode.*;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
 public class ProductServiceImpl implements ProductService {
-	private  final MerchMapper merchMapper;
+	private final ProductMapper productMapper;
 	private final MerchAttachMapper merchAttachMapper;
 	private final MerchAttachRepository attachRepository;
 	private final ProductRepository productRepository;
@@ -38,38 +42,38 @@ public class ProductServiceImpl implements ProductService {
 	private final MerchTagRepository tagRepository;
 	private final ArtistRepository artistRepository;
 	@Override
-	public Merch getDetail(long id) {
+	public ProductDetail getDetail(long id) {
 		MerchEntity merch = productRepository.findById(id).orElseThrow(
-			RestException::new
+			() -> new ResponseStatusException(PRODUCT_NOT_FOUND.getCode(), PRODUCT_NOT_FOUND.getMessage())
 		);
-		return merchMapper.entityToDomainModel(merch);
+		return productMapper.entityToModelDetail(merch);
 	}
 
 	@Override
-	public PageResponse<Merch> getInPage(Specification<MerchEntity> specification, Pageable pageable) {
+	public PageResponse<ProductInfo> getInPage(Specification<MerchEntity> specification, Pageable pageable) {
 		Page<MerchEntity> products = productRepository.findAll(specification, pageable);
-		Page<Merch> productPage = products.map(entity -> merchMapper.entityToDomainModel(entity));
-		PageResponse<Merch> productPageResponse = new PageResponse<>(productPage);
+		Page<ProductInfo> productPage = products.map(entity -> productMapper.entityToModelInfo(entity));
+		PageResponse<ProductInfo> productPageResponse = new PageResponse<>(productPage);
 
 		return productPageResponse;
 	}
 
 	@Override
-	public List<Merch> getInList(Specification<MerchEntity> specification) {
+	public List<ProductInfo> getInList(Specification<MerchEntity> specification) {
 		List<MerchEntity> products = productRepository.findAll(specification);
-		List<Merch> productListResponse = merchMapper.entitiesToDomainModels(products);
+		List<ProductInfo> productListResponse = productMapper.entitiesToDomainModels(products);
 		return productListResponse;
 	}
 
 	@Override
-	public Merch create(Merch productModel) {
+	public ProductDetail create(ProductDetail productModel) {
 		try {
 			Monetary.getCurrency(productModel.getCurrency());
 		} catch (UnknownCurrencyException e) {
-			throw new RestException();
+			throw new ResponseStatusException(PRODUCT_CURRENCY_INVALID.getCode(), PRODUCT_CURRENCY_INVALID.getMessage());
 		}
 
-		MerchEntity product = merchMapper.domainModelToEntity(productModel);
+		MerchEntity product = productMapper.domainModelToEntity(productModel);
 
 		Set<MerchTagEntity> tagEntities = productModel.getTags().stream()
 			.map(tagName -> MerchTagEntity.builder()
@@ -86,7 +90,7 @@ public class ProductServiceImpl implements ProductService {
 		List<MerchAttachEntity> attachEntitiesList = attachRepository.saveAll(attachEntities);
 
 		ArtistEntity artist = artistRepository.findById(productModel.getOwnerId()).orElseThrow(
-			RestException::new
+			() -> new ResponseStatusException(ARTIST_NOT_FOUND.getCode(), ARTIST_NOT_FOUND.getMessage())
 		);
 
 		product.setOwner(artist);
@@ -95,24 +99,23 @@ public class ProductServiceImpl implements ProductService {
 		product.setAttaches(new HashSet<>(attachEntitiesList));
 		product = productRepository.save(product);
 
-		Merch productResponse = merchMapper.entityToDomainModel(product);
+		ProductDetail productResponse = productMapper.entityToModelDetail(product);
 		return productResponse;
 	}
 
 	@Override
-
-	public Merch update(Merch productModel) {
+	public ProductDetail update(ProductDetail productModel) {
 		try {
 			Monetary.getCurrency(productModel.getCurrency());
 		} catch (UnknownCurrencyException e) {
-			throw new RestException();
+			throw new ResponseStatusException(PRODUCT_CURRENCY_INVALID.getCode(), PRODUCT_CURRENCY_INVALID.getMessage());
 		}
 
 		MerchEntity product = productRepository.findById(productModel.getId()).orElseThrow(
-			RestException::new
+			() -> new ResponseStatusException(PRODUCT_NOT_FOUND.getCode(), PRODUCT_NOT_FOUND.getMessage())
 		);
 
-		product = merchMapper.domainModelToEntity(productModel, product);
+		product = productMapper.domainModelToEntity(productModel, product);
 
 		Set<MerchTagEntity> tagEntities = productModel.getTags().stream()
 			.map(tagName -> MerchTagEntity.builder()
@@ -133,7 +136,7 @@ public class ProductServiceImpl implements ProductService {
 		product.setAttaches(new HashSet<>(attachEntitiesList));
 		product = productRepository.save(product);
 
-		Merch productResponse = merchMapper.entityToDomainModel(product);
+		ProductDetail productResponse = productMapper.entityToModelDetail(product);
 		return productResponse;
 	}
 

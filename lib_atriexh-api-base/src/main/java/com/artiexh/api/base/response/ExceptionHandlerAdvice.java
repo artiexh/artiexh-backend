@@ -1,5 +1,6 @@
 package com.artiexh.api.base.response;
 
+import com.artiexh.api.base.exception.RestException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.*;
@@ -64,5 +65,11 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 	public ResponseEntity<Object> handleSQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException ex, WebRequest request) {
 		var responseException = new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		return handleExceptionInternal(responseException, null, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+	}
+
+	@ExceptionHandler(RestException.class)
+	public ResponseEntity<Object> handleEntityNotFoundException(RestException ex, WebRequest request) {
+		var responseException = new ResponseStatusException(HttpStatus.NO_CONTENT, ex.getMessage(), ex);
+		return handleExceptionInternal(responseException, null, new HttpHeaders(), HttpStatus.NO_CONTENT, request);
 	}
 }
