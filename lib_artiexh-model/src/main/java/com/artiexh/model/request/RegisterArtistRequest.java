@@ -8,17 +8,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterAdminRequest {
-
-	@NotBlank(message = "Username is required")
-	private String username;
-
-	@NotBlank(message = "Password is required")
-	private String password;
+public class RegisterArtistRequest {
 
 	@NotBlank(message = "Display name is required")
 	private String displayName;
-
-	private String email;
 
 }

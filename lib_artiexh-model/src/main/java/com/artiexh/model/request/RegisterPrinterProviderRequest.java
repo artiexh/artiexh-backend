@@ -16,6 +16,9 @@ public class RegisterPrinterProviderRequest {
 	@NotBlank(message = "Password is required")
 	private String password;
 
+	@NotBlank(message = "Display name is required")
+	private String displayName;
+
 	private String avatarUrl;
 
 	private String email;

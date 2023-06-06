@@ -15,6 +15,9 @@ public class RegisterUserRequest {
 
 	private String password;
 
+	@NotBlank(message = "Display name is required")
+	private String displayName;
+
 	private String avatarUrl;
 
 	private String email;
