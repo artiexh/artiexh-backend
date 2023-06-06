@@ -1,3 +1,4 @@
+
 spring:
   application:
     name: artiexh-authorization-client
@@ -12,12 +13,12 @@ spring:
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
-  data:
-    redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
-      password: ${REDIS_PASSWORD}
-      database: ${REDIS_DATABASE}
+#  data:
+#    redis:
+#      host: ${REDIS_HOST:}
+#      port: ${REDIS_PORT:}
+#      password: ${REDIS_PASSWORD:}
+#      database: ${REDIS_DATABASE:}
   jackson:
     serialization:
       write-dates-as-timestamps: true
@@ -44,6 +45,7 @@ server:
     include-stacktrace: never
     whitelabel:
       enabled: false
+  port: 8081
 springdoc:
   show-actuator: true
   swagger-ui:
@@ -60,7 +62,7 @@ artiexh:
         - http://artiexh.com/
         - http://localhost:8080/
         - http://localhost:3000/
-      access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
-      refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}
+      access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:}
+      refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:}
     recent_oauth2_fail_id:
-      expiration: ${CACHE_RECENT_OAUTH2_FAIL_ID_EXPIRE}
+      expiration: ${CACHE_RECENT_OAUTH2_FAIL_ID_EXPIRE:}

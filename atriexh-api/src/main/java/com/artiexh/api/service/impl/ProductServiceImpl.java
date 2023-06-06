@@ -5,6 +5,7 @@ import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.common.model.PageResponse;
 import com.artiexh.model.domain.Merch;
+import com.artiexh.model.domain.MerchAttachType;
 import com.artiexh.model.domain.MerchStatus;
 import com.artiexh.model.mapper.MerchAttachMapper;
 import com.artiexh.model.product.ProductDetail;
@@ -15,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -67,6 +70,14 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public ProductDetail create(ProductDetail productModel) {
+		Long userId = null;
+		try {
+			userId = Long.parseLong((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+		} catch (Exception e) {
+			userId = productModel.getOwnerId();
+			log.info("Can not get current user");
+		}
+
 		try {
 			Monetary.getCurrency(productModel.getCurrency());
 		} catch (UnknownCurrencyException e) {
@@ -89,7 +100,7 @@ public class ProductServiceImpl implements ProductService {
 		Set<MerchAttachEntity> attachEntities = merchAttachMapper.domainModelsToEntities(productModel.getAttaches());
 		List<MerchAttachEntity> attachEntitiesList = attachRepository.saveAll(attachEntities);
 
-		ArtistEntity artist = artistRepository.findById(productModel.getOwnerId()).orElseThrow(
+		ArtistEntity artist = artistRepository.findById(userId).orElseThrow(
 			() -> new ResponseStatusException(ARTIST_NOT_FOUND.getCode(), ARTIST_NOT_FOUND.getMessage())
 		);
 
@@ -100,6 +111,7 @@ public class ProductServiceImpl implements ProductService {
 		product = productRepository.save(product);
 
 		ProductDetail productResponse = productMapper.entityToModelDetail(product);
+		productResponse.setId(product.getId());
 		return productResponse;
 	}
 
@@ -137,6 +149,7 @@ public class ProductServiceImpl implements ProductService {
 		product = productRepository.save(product);
 
 		ProductDetail productResponse = productMapper.entityToModelDetail(product);
+		productResponse.setId(product.getId());
 		return productResponse;
 	}
 

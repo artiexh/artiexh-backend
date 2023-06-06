@@ -1,6 +1,7 @@
 package com.artiexh.model.product;
 
 import com.artiexh.model.domain.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,6 +24,7 @@ public class ProductDetail extends ProductInfo {
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private long ownerId;
 	private String description;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "UTC")
 	private Instant publishDatetime;
 	private Long maxItemsPerOrder;
 	private DeliveryType deliveryType;

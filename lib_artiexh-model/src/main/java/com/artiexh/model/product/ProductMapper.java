@@ -1,8 +1,10 @@
 package com.artiexh.model.product;
 
+import com.artiexh.data.jpa.entity.MerchAttachEntity;
 import com.artiexh.data.jpa.entity.MerchCategoryEntity;
 import com.artiexh.data.jpa.entity.MerchEntity;
 import com.artiexh.model.domain.Merch;
+import com.artiexh.model.domain.MerchAttachType;
 import com.artiexh.model.mapper.*;
 import com.artiexh.model.product.request.UpdateProductRequest;
 import org.mapstruct.*;
@@ -34,6 +36,8 @@ public interface ProductMapper {
 
 	@Named("entityToModelInfo")
 	@Mapping(target = "ownerInfo", source = "owner")
+	@Mapping(target = "id", source = "id")
+	@Mapping(target = "thumbnailUrl", source = "attaches", qualifiedByName = "attachmentMapping")
 	ProductInfo entityToModelInfo(MerchEntity merchEntity);
 
 	ProductDetail requestToDomainModel(UpdateProductRequest requestToDomainModel);
@@ -52,5 +56,18 @@ public interface ProductMapper {
 		categories = categoryEntities.stream()
 			.collect(Collectors.toMap(MerchCategoryEntity::getId, MerchCategoryEntity::getName));
 		return categories;
+	}
+
+	@Named("attachmentMapping")
+	default String attachmentMapping (Set<MerchAttachEntity> attachments) {
+		MerchAttachEntity attachEntity = attachments.stream()
+			.filter(attachment ->
+				MerchAttachType.THUMBNAIL.getValue() == attachment.getType().intValue())
+			.collect(Collectors.toList()).get(0);
+		if (attachEntity == null) {
+			return null;
+		} else {
+			return attachEntity.getUrl();
+		}
 	}
 }
