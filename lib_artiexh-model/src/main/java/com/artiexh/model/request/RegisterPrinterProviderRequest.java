@@ -22,7 +22,4 @@ public class RegisterPrinterProviderRequest {
 	private String avatarUrl;
 
 	private String email;
-
-	@NotBlank(message = "Name is required")
-	private String name;
 }
