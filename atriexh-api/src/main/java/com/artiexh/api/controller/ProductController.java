@@ -22,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path ="/test" + Endpoint.Product.ROOT)
+@RequestMapping(path =Endpoint.Product.ROOT)
 public class ProductController {
 	private final ProductService productService;
 
