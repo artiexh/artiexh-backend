@@ -20,7 +20,7 @@ import java.util.Set;
 @Setter
 @EqualsAndHashCode(callSuper = true)
 public class ProductDetail extends ProductInfo {
-	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private long ownerId;
 	private String description;
 	private Instant publishDatetime;

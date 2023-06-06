@@ -31,11 +31,14 @@ public interface ProductMapper {
 	@Mapping(target = "categoryInfo", source = "categories", qualifiedByName = "categoryMapping")
 	@Mapping(target = "ownerInfo", source = "owner")
 	ProductDetail entityToModelDetail(MerchEntity merchEntity);
+
+	@Named("entityToModelInfo")
 	@Mapping(target = "ownerInfo", source = "owner")
 	ProductInfo entityToModelInfo(MerchEntity merchEntity);
 
 	ProductDetail requestToDomainModel(UpdateProductRequest requestToDomainModel);
 
+	@IterableMapping(qualifiedByName = "entityToModelInfo")
 	List<ProductInfo> entitiesToDomainModels(List<MerchEntity> merchEntity);
 
 	MerchEntity domainModelToEntity(ProductDetail merch);
