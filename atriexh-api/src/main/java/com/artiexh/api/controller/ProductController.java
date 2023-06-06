@@ -25,7 +25,6 @@ import java.util.List;
 @RequestMapping(path =Endpoint.Product.ROOT)
 public class ProductController {
 	private final ProductService productService;
-
 	@GetMapping(path = Endpoint.Product.PRODUCT_DETAIL)
 	public ProductDetail getDetail(@PathVariable("id") long id) {
 		try {

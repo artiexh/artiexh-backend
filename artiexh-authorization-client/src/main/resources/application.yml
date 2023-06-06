@@ -3,9 +3,9 @@ spring:
   application:
     name: artiexh-authorization-client
   datasource:
-    url: jdbc:mariadb://${DB_URL:localhost:3306}/artiexh_backend
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:013845}
+    url: jdbc:mariadb://${DB_URL:}/artiexh_backend
+    username: ${DB_USERNAME:}
+    password: ${DB_PASSWORD:}
     hikari:
       auto-commit: false
   jpa:
@@ -13,12 +13,12 @@ spring:
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
-#  data:
-#    redis:
-#      host: ${REDIS_HOST:}
-#      port: ${REDIS_PORT:}
-#      password: ${REDIS_PASSWORD:}
-#      database: ${REDIS_DATABASE:}
+  data:
+    redis:
+      host: ${REDIS_HOST:}
+      port: ${REDIS_PORT:}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:}
   jackson:
     serialization:
       write-dates-as-timestamps: true
