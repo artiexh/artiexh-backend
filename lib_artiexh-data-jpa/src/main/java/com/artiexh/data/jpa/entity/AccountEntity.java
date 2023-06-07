@@ -44,6 +44,4 @@ public class AccountEntity {
 	@Column(name = "avatar_url", length = 2048)
 	private String avatarUrl;
 
-	@Column(name = "display_name")
-	private String displayName;
 }
