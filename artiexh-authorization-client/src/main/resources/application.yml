@@ -54,6 +54,8 @@ springdoc:
       enabled: true
 artiexh:
   security:
+    admin:
+      id: ${ADMIN_ID}
     jwt:
       secret-key: ${JWT_SECRET_KEY}
       issuer: http://artiexh.com/api/

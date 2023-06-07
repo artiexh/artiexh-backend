@@ -15,6 +15,7 @@ public class Account {
 	private String username;
 	@JsonIgnore
 	private String password;
+	private String displayName;
 	private Role role;
 	private UserStatus status;
 	private String avatarUrl;

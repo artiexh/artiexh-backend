@@ -1,9 +1,10 @@
 package com.artiexh.api.base.response;
 
-import com.artiexh.api.base.exception.RestException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.*;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -13,6 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.Instant;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
@@ -67,9 +69,12 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 		return handleExceptionInternal(responseException, null, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}
 
-	@ExceptionHandler(RestException.class)
-	public ResponseEntity<Object> handleEntityNotFoundException(RestException ex, WebRequest request) {
-		var responseException = new ResponseStatusException(HttpStatus.NO_CONTENT, ex.getMessage(), ex);
-		return handleExceptionInternal(responseException, null, new HttpHeaders(), HttpStatus.NO_CONTENT, request);
+	@Override
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+		var errors = ex.getBindingResult().getFieldErrors().stream()
+			.map(FieldError::getDefaultMessage)
+			.collect(Collectors.joining(";"));
+		var responseException = new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		return handleExceptionInternal(responseException, errors, headers, HttpStatus.BAD_REQUEST, request);
 	}
 }
