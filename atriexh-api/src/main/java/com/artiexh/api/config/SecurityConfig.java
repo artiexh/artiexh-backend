@@ -33,7 +33,6 @@ public class SecurityConfig {
 			.formLogin(FormLoginConfigurer::disable)
 			.httpBasic(HttpBasicConfigurer::disable)
 			.authorizeHttpRequests(authz -> authz
-				.requestMatchers("/test/**").permitAll()
 				.requestMatchers("/actuator/**").permitAll()
 				.requestMatchers("/swagger*/**", "/v3/api-docs/**").permitAll()
 				.requestMatchers("/error").permitAll()
