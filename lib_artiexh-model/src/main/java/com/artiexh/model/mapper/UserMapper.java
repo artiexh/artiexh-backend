@@ -5,9 +5,10 @@ import com.artiexh.data.jpa.entity.UserEntity;
 import com.artiexh.model.domain.User;
 import com.artiexh.model.request.RegisterUserRequest;
 import org.hibernate.Hibernate;
-import org.mapstruct.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.mapstruct.Condition;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.Set;
 
@@ -15,10 +16,7 @@ import java.util.Set;
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
 	uses = {RoleMapper.class, UserStatusMapper.class, MerchMapper.class}
 )
-public abstract class UserMapper {
-
-	@Autowired
-	protected PasswordEncoder passwordEncoder;
+public abstract class UserMapper extends PasswordMapper {
 
 	public abstract User entityToDomain(UserEntity userEntity);
 
@@ -34,11 +32,4 @@ public abstract class UserMapper {
 		return Hibernate.isInitialized(subscriptionsTo);
 	}
 
-	@Named("encodedPassword")
-	public String encodedPassword(String password) {
-		if (password == null) {
-			return null;
-		}
-		return passwordEncoder.encode(password);
-	}
 }

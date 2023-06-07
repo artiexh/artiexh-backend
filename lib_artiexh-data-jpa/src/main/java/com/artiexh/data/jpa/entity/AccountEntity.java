@@ -29,6 +29,9 @@ public class AccountEntity {
 	@Column(name = "password", length = 60)
 	private String password;
 
+	@Column(name = "display_name", nullable = false)
+	private String displayName;
+
 	@Column(name = "role", nullable = false)
 	private Byte role;
 
