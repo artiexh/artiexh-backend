@@ -5,6 +5,8 @@ import com.artiexh.model.domain.MerchAttach;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
+import java.util.Set;
+
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
 	uses = {MerchAttachTypeMapper.class}
@@ -14,4 +16,6 @@ public interface MerchAttachMapper {
 	MerchAttach entityToDomain(MerchAttachEntity merchAttachEntity);
 
 	MerchAttachEntity domainToEntity(MerchAttach merchAttach);
+
+	Set<MerchAttachEntity> domainModelsToEntities(Set<MerchAttach> models);
 }

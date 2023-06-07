@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class AccountServiceImpl implements AccountService {
-
 	private final AccountRepository accountRepository;
 	private final UserMapper userMapper;
 	private final ArtistMapper artistMapper;

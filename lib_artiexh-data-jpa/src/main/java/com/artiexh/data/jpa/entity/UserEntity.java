@@ -19,16 +19,13 @@ import java.util.Set;
 @Table(name = "user")
 public class UserEntity extends AccountEntity {
 
-	@Column(name = "twitter_id", length = 20)
-	private String twitterId;
-
-	@Column(name = "facebook_id", length = 20)
-	private String facebookId;
-
-	@Column(name = "google_id", length = 21)
-	private String googleId;
-
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private final Set<SubscriptionEntity> subscriptionsTo = new LinkedHashSet<>();
+	@Column(name = "twitter_id", length = 20)
+	private String twitterId;
+	@Column(name = "facebook_id", length = 20)
+	private String facebookId;
+	@Column(name = "google_id", length = 21)
+	private String googleId;
 
 }

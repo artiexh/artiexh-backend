@@ -1,48 +1,36 @@
-package com.artiexh.model.domain;
+package com.artiexh.model.product;
 
+import com.artiexh.model.domain.DeliveryType;
+import com.artiexh.model.domain.MerchAttach;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-public class Merch {
-
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	private Long id;
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@Schema(readOnly = true)
-	private ArtistInfo ownerInfo;
+@SuperBuilder(toBuilder = true)
+@Getter
+@Setter
+@EqualsAndHashCode(callSuper = true)
+public class ProductDetail extends ProductInfo {
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private long ownerId;
-	private MerchStatus status;
-	private String currency;
-	private String name;
-	private BigDecimal price;
 	private String description;
-	private MerchType type;
-	private Long remainingQuantity;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "UTC")
 	private Instant publishDatetime;
 	private Long maxItemsPerOrder;
 	private DeliveryType deliveryType;
-
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Set<String> categories;
-
+	private Set<String> tags;
+	private Set<MerchAttach> attaches;
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@Schema(readOnly = true)
 	private Map<Long, String> categoryInfo;
-	private Set<String> tags;
-	private Set<MerchAttach> attaches;
-
 }

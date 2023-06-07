@@ -1,48 +1,36 @@
-package com.artiexh.model.domain;
+package com.artiexh.model.product;
 
+import com.artiexh.model.domain.ArtistInfo;
+import com.artiexh.model.domain.MerchStatus;
+import com.artiexh.model.domain.MerchType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.Map;
-import java.util.Set;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-public class Merch {
-
+@SuperBuilder(toBuilder = true)
+@Getter
+@Setter
+public class ProductInfo {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long id;
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@Schema(readOnly = true)
-	private ArtistInfo ownerInfo;
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	private long ownerId;
+	private String thumbnailUrl;
 	private MerchStatus status;
 	private String currency;
 	private String name;
 	private BigDecimal price;
-	private String description;
 	private MerchType type;
 	private Long remainingQuantity;
-	private Instant publishDatetime;
-	private Long maxItemsPerOrder;
-	private DeliveryType deliveryType;
-
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	private Set<String> categories;
-
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@Schema(readOnly = true)
-	private Map<Long, String> categoryInfo;
-	private Set<String> tags;
-	private Set<MerchAttach> attaches;
+	private ArtistInfo ownerInfo;
 
 }

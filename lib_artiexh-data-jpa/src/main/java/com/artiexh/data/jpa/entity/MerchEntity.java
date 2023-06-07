@@ -10,8 +10,8 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 @SuperBuilder
@@ -29,7 +29,7 @@ public class MerchEntity {
 	@Column(name = "id", nullable = false)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "owner_id", nullable = false)
 	private ArtistEntity owner;
@@ -39,9 +39,6 @@ public class MerchEntity {
 
 	@Column(name = "name", nullable = false)
 	private String name;
-
-	@Column(name = "price", nullable = false)
-	private Double price;
 
 	@Column(name = "description")
 	private String description;
@@ -55,6 +52,12 @@ public class MerchEntity {
 	@Column(name = "publish_datetime")
 	private Instant publishDatetime;
 
+	@Column(name = "currency", nullable = false, length = 3)
+	private String currency;
+
+	@Column(name = "price", nullable = false)
+	private BigDecimal price;
+
 	@Column(name = "max_items_per_order", columnDefinition = "INT UNSIGNED")
 	private Long maxItemsPerOrder;
 
@@ -65,16 +68,16 @@ public class MerchEntity {
 	@JoinTable(name = "merch_category_mapping",
 		joinColumns = @JoinColumn(name = "merch_id"),
 		inverseJoinColumns = @JoinColumn(name = "category_id"))
-	private final Set<MerchCategoryEntity> categories = new LinkedHashSet<>();
+	private Set<MerchCategoryEntity> categories;
 
 	@ManyToMany
 	@JoinTable(name = "merch_tag_mapping",
 		joinColumns = @JoinColumn(name = "merch_id"),
 		inverseJoinColumns = @JoinColumn(name = "tag_id"))
-	private final Set<MerchTagEntity> tags = new LinkedHashSet<>();
+	private Set<MerchTagEntity> tags;
 
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "merch_id")
-	private final Set<MerchAttachEntity> attaches = new LinkedHashSet<>();
+	private Set<MerchAttachEntity> attaches;
 
 }

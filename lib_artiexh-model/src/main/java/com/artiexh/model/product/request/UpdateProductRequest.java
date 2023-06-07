@@ -1,41 +1,34 @@
-package com.artiexh.model.domain;
+package com.artiexh.model.product.request;
 
+import com.artiexh.model.domain.DeliveryType;
+import com.artiexh.model.domain.MerchAttach;
+import com.artiexh.model.domain.MerchStatus;
+import com.artiexh.model.domain.MerchType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
+import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-public class Merch {
-
+@Builder(toBuilder = true)
+public class UpdateProductRequest {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long id;
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@Schema(readOnly = true)
-	private ArtistInfo ownerInfo;
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	private long ownerId;
 	private MerchStatus status;
-	private String currency;
 	private String name;
-	private BigDecimal price;
+	private Double price;
 	private String description;
 	private MerchType type;
 	private Long remainingQuantity;
 	private Instant publishDatetime;
 	private Long maxItemsPerOrder;
 	private DeliveryType deliveryType;
-
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Set<String> categories;
 
@@ -44,5 +37,4 @@ public class Merch {
 	private Map<Long, String> categoryInfo;
 	private Set<String> tags;
 	private Set<MerchAttach> attaches;
-
 }
