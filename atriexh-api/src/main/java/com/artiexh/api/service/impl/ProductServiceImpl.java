@@ -73,7 +73,7 @@ public class ProductServiceImpl implements ProductService {
 			userId = Long.parseLong((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 		} catch (Exception e) {
 			userId = productModel.getOwnerId();
-			log.info("Can not get current user");
+			log.warn("Can not get current user");
 		}
 
 		try {

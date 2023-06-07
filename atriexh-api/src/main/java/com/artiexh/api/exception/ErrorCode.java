@@ -4,11 +4,11 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
 	//Product
-	PRODUCT_NOT_FOUND(HttpStatus.BAD_REQUEST, "Product not found"),
+	PRODUCT_NOT_FOUND(HttpStatus.NO_CONTENT, "Product not found"),
 	PRODUCT_CURRENCY_INVALID(HttpStatus.BAD_REQUEST, "Product currency is invalid"),
 
 	//Artist
-	ARTIST_NOT_FOUND(HttpStatus.BAD_REQUEST, "Artist not found");
+	ARTIST_NOT_FOUND(HttpStatus.NO_CONTENT, "Artist not found");
 	private final HttpStatus statusCode;
 	private final String message;
 
