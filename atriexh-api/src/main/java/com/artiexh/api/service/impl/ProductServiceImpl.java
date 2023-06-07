@@ -4,8 +4,6 @@ import com.artiexh.api.service.ProductService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.common.model.PageResponse;
-import com.artiexh.model.domain.Merch;
-import com.artiexh.model.domain.MerchAttachType;
 import com.artiexh.model.domain.MerchStatus;
 import com.artiexh.model.mapper.MerchAttachMapper;
 import com.artiexh.model.product.ProductDetail;
@@ -16,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +41,7 @@ public class ProductServiceImpl implements ProductService {
 	private final MerchCategoryRepository categoryRepository;
 	private final MerchTagRepository tagRepository;
 	private final ArtistRepository artistRepository;
+
 	@Override
 	public ProductDetail getDetail(long id) {
 		MerchEntity merch = productRepository.findById(id).orElseThrow(
@@ -70,7 +68,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public ProductDetail create(ProductDetail productModel) {
-		Long userId = null;
+		Long userId;
 		try {
 			userId = Long.parseLong((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 		} catch (Exception e) {

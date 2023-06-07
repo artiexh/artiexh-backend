@@ -3,7 +3,6 @@ package com.artiexh.model.product;
 import com.artiexh.data.jpa.entity.MerchAttachEntity;
 import com.artiexh.data.jpa.entity.MerchCategoryEntity;
 import com.artiexh.data.jpa.entity.MerchEntity;
-import com.artiexh.model.domain.Merch;
 import com.artiexh.model.domain.MerchAttachType;
 import com.artiexh.model.mapper.*;
 import com.artiexh.model.product.request.UpdateProductRequest;
@@ -51,7 +50,7 @@ public interface ProductMapper {
 	MerchEntity domainModelToEntity(ProductDetail merch, @MappingTarget MerchEntity entity);
 
 	@Named("categoryMapping")
-	default Map<Long, String> categoryMapping (Set<MerchCategoryEntity> categoryEntities) {
+	default Map<Long, String> categoryMapping(Set<MerchCategoryEntity> categoryEntities) {
 		Map<Long, String> categories;
 		categories = categoryEntities.stream()
 			.collect(Collectors.toMap(MerchCategoryEntity::getId, MerchCategoryEntity::getName));
@@ -59,7 +58,7 @@ public interface ProductMapper {
 	}
 
 	@Named("attachmentMapping")
-	default String attachmentMapping (Set<MerchAttachEntity> attachments) {
+	default String attachmentMapping(Set<MerchAttachEntity> attachments) {
 		MerchAttachEntity attachEntity = attachments.stream()
 			.filter(attachment ->
 				MerchAttachType.THUMBNAIL.getValue() == attachment.getType().intValue())

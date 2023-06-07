@@ -1,8 +1,6 @@
 package com.artiexh.model.product.request;
 
 import com.artiexh.data.jpa.entity.MerchEntity;
-import com.artiexh.model.common.model.PaginationAndSortingRequest;
-import com.artiexh.model.domain.Merch;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

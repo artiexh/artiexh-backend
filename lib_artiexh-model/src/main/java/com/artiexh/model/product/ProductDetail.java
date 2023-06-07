@@ -1,16 +1,14 @@
 package com.artiexh.model.product;
 
-import com.artiexh.model.domain.*;
+import com.artiexh.model.domain.DeliveryType;
+import com.artiexh.model.domain.MerchAttach;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Set;
 

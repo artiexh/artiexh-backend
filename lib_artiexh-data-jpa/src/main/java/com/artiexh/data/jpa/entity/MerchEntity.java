@@ -1,22 +1,17 @@
 package com.artiexh.data.jpa.entity;
 
 import io.hypersistence.utils.hibernate.id.Tsid;
-import io.hypersistence.utils.hibernate.type.money.MonetaryAmountType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.CompositeType;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.hibernate.validator.constraints.Currency;
 
-import javax.money.MonetaryAmount;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 @SuperBuilder
@@ -83,6 +78,6 @@ public class MerchEntity {
 
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "merch_id")
-	private Set<MerchAttachEntity> attaches ;
+	private Set<MerchAttachEntity> attaches;
 
 }

@@ -4,12 +4,8 @@ import com.artiexh.data.jpa.entity.MerchCategoryEntity;
 import com.artiexh.data.jpa.entity.MerchEntity;
 import com.artiexh.model.domain.Merch;
 import com.artiexh.model.product.request.UpdateProductRequest;
-import org.javamoney.moneta.Money;
 import org.mapstruct.*;
 
-import javax.money.MonetaryAmount;
-import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,7 +41,7 @@ public interface MerchMapper {
 	MerchEntity domainModelToEntity(Merch merch, @MappingTarget MerchEntity entity);
 
 	@Named("categoryMapping")
-	default Map<Long, String> categoryMapping (Set<MerchCategoryEntity> categoryEntities) {
+	default Map<Long, String> categoryMapping(Set<MerchCategoryEntity> categoryEntities) {
 		Map<Long, String> categories;
 		categories = categoryEntities.stream()
 			.collect(Collectors.toMap(MerchCategoryEntity::getId, MerchCategoryEntity::getName));

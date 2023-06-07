@@ -5,11 +5,13 @@ import com.artiexh.model.domain.MerchStatus;
 import com.artiexh.model.domain.MerchType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
-import java.util.Map;
 
 @NoArgsConstructor
 @AllArgsConstructor
