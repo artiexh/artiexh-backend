@@ -19,7 +19,7 @@
 	<modules>
 		<module>lib_artiexh-data-jpa</module>
 		<module>lib_artiexh-model</module>
-		<module>atriexh-api</module>
+		<module>artiexh-api</module>
 		<module>lib_artiexh-auth</module>
 		<module>artiexh-authorization-client</module>
 		<module>lib_atriexh-api-base</module>
