@@ -29,11 +29,20 @@ public final class Endpoint {
 		public static final String USER = "/user";
 		public static final String PRINTER_PROVIDER = "/printer-provider";
 		public static final String ARTIST = "/artist";
+		public static final String ADMIN = "/admin";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Account {
 		public static final String ROOT = PREFIX + "/account";
 		public static final String ME = "/me";
+	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Product {
+		public static final String ROOT = PREFIX + "/product";
+		public static final String PRODUCT_DETAIL = "/{id}";
+		public static final String PRODUCT_PAGE = "/page";
+		public static final String PRODUCT_LIST = "/list";
 	}
 }

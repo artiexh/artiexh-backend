@@ -1,0 +1,36 @@
+package com.artiexh.model.product;
+
+import com.artiexh.model.domain.ArtistInfo;
+import com.artiexh.model.domain.MerchStatus;
+import com.artiexh.model.domain.MerchType;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+
+import java.math.BigDecimal;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder(toBuilder = true)
+@Getter
+@Setter
+public class ProductInfo {
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private Long id;
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private String thumbnailUrl;
+	private MerchStatus status;
+	private String currency;
+	private String name;
+	private BigDecimal price;
+	private MerchType type;
+	private Long remainingQuantity;
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@Schema(readOnly = true)
+	private ArtistInfo ownerInfo;
+
+}

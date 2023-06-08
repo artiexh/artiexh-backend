@@ -10,7 +10,7 @@
 		<version>1.0.0</version>
 	</parent>
 
-	<artifactId>atriexh-api</artifactId>
+	<artifactId>artiexh-api</artifactId>
 	<version>1.0.0</version>
 	<name>artiexh-api</name>
 
@@ -20,7 +20,14 @@
 			<artifactId>lib_atriexh-api-base</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.javamoney</groupId>
+			<artifactId>moneta</artifactId>
+			<version>1.1</version>
+		</dependency>
 	</dependencies>
+
 
 	<build>
 		<plugins>

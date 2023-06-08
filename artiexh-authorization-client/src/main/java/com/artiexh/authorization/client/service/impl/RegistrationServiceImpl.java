@@ -2,6 +2,7 @@ package com.artiexh.authorization.client.service.impl;
 
 import com.artiexh.auth.service.RecentOauth2LoginFailId;
 import com.artiexh.authorization.client.service.RegistrationService;
+import com.artiexh.data.jpa.entity.AccountEntity;
 import com.artiexh.data.jpa.entity.ArtistEntity;
 import com.artiexh.data.jpa.entity.PrinterProviderEntity;
 import com.artiexh.data.jpa.entity.UserEntity;
@@ -9,10 +10,8 @@ import com.artiexh.data.jpa.repository.AccountRepository;
 import com.artiexh.data.jpa.repository.ArtistRepository;
 import com.artiexh.data.jpa.repository.PrinterProviderRepository;
 import com.artiexh.data.jpa.repository.UserRepository;
-import com.artiexh.model.domain.Artist;
-import com.artiexh.model.domain.PrinterProvider;
-import com.artiexh.model.domain.Role;
-import com.artiexh.model.domain.User;
+import com.artiexh.model.domain.*;
+import com.artiexh.model.mapper.AccountMapper;
 import com.artiexh.model.mapper.ArtistMapper;
 import com.artiexh.model.mapper.PrinterProviderMapper;
 import com.artiexh.model.mapper.UserMapper;
@@ -31,6 +30,7 @@ import java.util.List;
 @Transactional
 public class RegistrationServiceImpl implements RegistrationService {
 
+	private final AccountMapper accountMapper;
 	private final UserMapper userMapper;
 	private final ArtistMapper artistMapper;
 	private final PrinterProviderMapper printerProviderMapper;
@@ -106,6 +106,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 		artistEntity.setRole((byte) Role.ARTIST.getValue());
 		return artistMapper.entityToDomain(artistRepository.save(artistEntity));
+	}
+
+	@Override
+	public Account createAdmin(Account account) {
+		AccountEntity savedAccountEntity = accountRepository.save(accountMapper.domainToEntity(account));
+		return accountMapper.entityToDomain(savedAccountEntity);
 	}
 
 }
