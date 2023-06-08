@@ -2,54 +2,23 @@ package com.artiexh.api.base.response;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.time.Instant;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
-
-	@Override
-	protected ResponseEntity<Object> createResponseEntity(Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
-		ResponseModel responseModel;
-
-		String path = null;
-		if (request instanceof ServletWebRequest servletWebRequest) {
-			path = servletWebRequest.getRequest().getRequestURI();
-		}
-
-		if (body instanceof ProblemDetail problemDetail) {
-			responseModel = new ResponseModel(
-				Instant.now(),
-				statusCode.value(),
-				((HttpStatus) statusCode).name(),
-				problemDetail.getDetail(),
-				path,
-				null
-			);
-		} else {
-			responseModel = new ResponseModel(
-				Instant.now(),
-				statusCode.value(),
-				((HttpStatus) statusCode).name(),
-				body.toString(),
-				path,
-				null
-			);
-		}
-
-		return new ResponseEntity<>(responseModel, headers, statusCode);
-	}
 
 	@ExceptionHandler(EntityNotFoundException.class)
 	public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request) {
@@ -74,7 +43,7 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 		var errors = ex.getBindingResult().getFieldErrors().stream()
 			.map(FieldError::getDefaultMessage)
 			.collect(Collectors.joining(";"));
-		var responseException = new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
-		return handleExceptionInternal(responseException, errors, headers, HttpStatus.BAD_REQUEST, request);
+		var responseException = new ResponseStatusException(HttpStatus.BAD_REQUEST, errors, ex);
+		return handleExceptionInternal(responseException, null, headers, HttpStatus.BAD_REQUEST, request);
 	}
 }

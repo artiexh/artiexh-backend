@@ -68,6 +68,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 			throw new IllegalArgumentException("Request has no password or invalid provider sub");
 		}
 
+		accountRepository.findByUsername(userEntity.getUsername())
+			.ifPresent(existedUserEntity -> {
+				throw new IllegalArgumentException("Existed username");
+			});
 		UserEntity savedUserEntity = userRepository.save(userEntity);
 
 		for (Pair<String, String> cacheProviderSubKey : cacheProviderSubKeys) {
