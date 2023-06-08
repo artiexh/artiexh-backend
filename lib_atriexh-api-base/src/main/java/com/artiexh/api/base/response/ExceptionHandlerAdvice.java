@@ -43,7 +43,7 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 		var errors = ex.getBindingResult().getFieldErrors().stream()
 			.map(FieldError::getDefaultMessage)
 			.collect(Collectors.joining(";"));
-		var responseException = new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
-		return handleExceptionInternal(responseException, errors, headers, HttpStatus.BAD_REQUEST, request);
+		var responseException = new ResponseStatusException(HttpStatus.BAD_REQUEST, errors, ex);
+		return handleExceptionInternal(responseException, null, headers, HttpStatus.BAD_REQUEST, request);
 	}
 }
