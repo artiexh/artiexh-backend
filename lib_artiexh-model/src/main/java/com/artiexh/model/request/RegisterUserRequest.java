@@ -18,7 +18,7 @@ public class RegisterUserRequest {
 	@Pattern(regexp = "^[^\\s+]*$", message = "Username must be exclude whitespaces")
 	private String username;
 
-	@Size(min = 8, max = 72, message = "Username must be between 8 and 72 characters")
+	@Size(min = 8, max = 72, message = "Password must be between 8 and 72 characters")
 	@Pattern(regexp = "^[^\\s+]*$", message = "Password must be exclude whitespaces")
 	private String password;
 
