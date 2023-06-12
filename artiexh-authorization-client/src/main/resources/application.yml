@@ -19,11 +19,6 @@ spring:
       password: ${REDIS_PASSWORD:}
       database: ${REDIS_DATABASE:}
   jackson:
-    serialization:
-      write-dates-as-timestamps: true
-      write-date-timestamps-as-nanoseconds: false
-    deserialization:
-      read-date-timestamps-as-nanoseconds: false
     default-property-inclusion: non_null
   main:
     allow-circular-references: true
