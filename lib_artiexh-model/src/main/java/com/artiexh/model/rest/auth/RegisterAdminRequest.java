@@ -1,4 +1,4 @@
-package com.artiexh.model.request;
+package com.artiexh.model.rest.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterPrinterProviderRequest {
+public class RegisterAdminRequest {
 
 	@NotBlank(message = "Username is required")
 	@Size(min = 4, max = 20, message = "Username must be between 4 and 20 characters")
@@ -19,7 +19,7 @@ public class RegisterPrinterProviderRequest {
 	private String username;
 
 	@NotBlank(message = "Password is required")
-	@Size(min = 8, max = 72, message = "Password must be between 8 and 72 characters")
+	@Size(min = 8, max = 72, message = "Username must be between 8 and 72 characters")
 	@Pattern(regexp = "^[^\\s+]*$", message = "Password must be exclude whitespaces")
 	private String password;
 
@@ -27,9 +27,7 @@ public class RegisterPrinterProviderRequest {
 	@Size(min = 4, max = 50, message = "Display name must be between 4 and 50 characters")
 	private String displayName;
 
-	@Size(max = 2048, message = "Avatar URL must be less than 2048 characters")
-	private String avatarUrl;
-
 	@Email
 	private String email;
+
 }

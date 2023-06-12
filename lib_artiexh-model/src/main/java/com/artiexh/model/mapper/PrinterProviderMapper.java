@@ -2,7 +2,7 @@ package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.PrinterProviderEntity;
 import com.artiexh.model.domain.PrinterProvider;
-import com.artiexh.model.request.RegisterPrinterProviderRequest;
+import com.artiexh.model.rest.auth.RegisterPrinterProviderRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;

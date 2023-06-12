@@ -1,11 +1,12 @@
-package com.artiexh.model.product;
+package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.MerchAttachEntity;
 import com.artiexh.data.jpa.entity.MerchCategoryEntity;
 import com.artiexh.data.jpa.entity.MerchEntity;
 import com.artiexh.model.domain.MerchAttachType;
-import com.artiexh.model.mapper.*;
-import com.artiexh.model.product.request.UpdateProductRequest;
+import com.artiexh.model.rest.product.ProductDetail;
+import com.artiexh.model.rest.product.ProductInfo;
+import com.artiexh.model.rest.product.request.UpdateProductRequest;
 import org.mapstruct.*;
 
 import java.util.List;
@@ -62,7 +63,7 @@ public interface ProductMapper {
 		MerchAttachEntity attachEntity = attachments.stream()
 			.filter(attachment ->
 				MerchAttachType.THUMBNAIL.getValue() == attachment.getType().intValue())
-			.collect(Collectors.toList()).get(0);
+			.toList().get(0);
 		if (attachEntity == null) {
 			return null;
 		} else {

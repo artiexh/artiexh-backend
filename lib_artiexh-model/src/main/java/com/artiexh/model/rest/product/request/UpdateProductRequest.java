@@ -1,4 +1,4 @@
-package com.artiexh.model.product.request;
+package com.artiexh.model.rest.product.request;
 
 import com.artiexh.model.domain.DeliveryType;
 import com.artiexh.model.domain.MerchAttach;
@@ -33,7 +33,7 @@ public class UpdateProductRequest {
 	private Set<String> categories;
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@Schema(readOnly = true)
+	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
 	private Map<Long, String> categoryInfo;
 	private Set<String> tags;
 	private Set<MerchAttach> attaches;

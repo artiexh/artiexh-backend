@@ -2,7 +2,7 @@ package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.AccountEntity;
 import com.artiexh.model.domain.Account;
-import com.artiexh.model.request.RegisterAdminRequest;
+import com.artiexh.model.rest.auth.RegisterAdminRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;

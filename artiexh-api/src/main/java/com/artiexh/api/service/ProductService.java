@@ -2,8 +2,8 @@ package com.artiexh.api.service;
 
 import com.artiexh.data.jpa.entity.MerchEntity;
 import com.artiexh.model.common.model.PageResponse;
-import com.artiexh.model.product.ProductDetail;
-import com.artiexh.model.product.ProductInfo;
+import com.artiexh.model.rest.product.ProductDetail;
+import com.artiexh.model.rest.product.ProductInfo;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
