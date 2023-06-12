@@ -14,8 +14,6 @@ public interface ProductService {
 
 	PageResponse<ProductInfo> getInPage(Specification<MerchEntity> specification, Pageable pageable);
 
-	List<ProductInfo> getInList(Specification<MerchEntity> specification);
-
 	ProductDetail create(ProductDetail merch);
 
 	ProductDetail update(ProductDetail merch);

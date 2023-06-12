@@ -6,12 +6,10 @@ import com.artiexh.model.common.model.PageResponse;
 import com.artiexh.model.common.model.PaginationAndSortingRequest;
 import com.artiexh.model.product.ProductDetail;
 import com.artiexh.model.product.ProductInfo;
-import com.artiexh.model.product.request.GetAllProductFilter;
+import com.artiexh.model.product.GetAllProductFilter;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,7 +23,7 @@ public class ProductController {
 		return product;
 	}
 
-	@PostMapping(path = Endpoint.Product.PRODUCT_DETAIL)
+	@PutMapping(path = Endpoint.Product.PRODUCT_DETAIL)
 	public ProductDetail update(
 		@PathVariable("id") long id,
 		@RequestBody ProductDetail request) {
@@ -53,11 +51,5 @@ public class ProductController {
 		PageResponse<ProductInfo> productPage = productService.getInPage(filter.getSpecification(), paginationAndSortingRequest.getPageable());
 
 		return productPage;
-	}
-
-	@GetMapping(path = Endpoint.Product.PRODUCT_LIST)
-	public List<ProductInfo> getList(@ParameterObject GetAllProductFilter filter) {
-		List<ProductInfo> productList = productService.getInList(filter.getSpecification());
-		return productList;
 	}
 }

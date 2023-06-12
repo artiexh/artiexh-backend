@@ -60,13 +60,6 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<ProductInfo> getInList(Specification<MerchEntity> specification) {
-		List<MerchEntity> products = productRepository.findAll(specification);
-		List<ProductInfo> productListResponse = productMapper.entitiesToDomainModels(products);
-		return productListResponse;
-	}
-
-	@Override
 	public ProductDetail create(ProductDetail productModel) {
 		Long userId;
 		try {
@@ -76,11 +69,7 @@ public class ProductServiceImpl implements ProductService {
 			log.warn("Can not get current user");
 		}
 
-		try {
-			Monetary.getCurrency(productModel.getCurrency());
-		} catch (UnknownCurrencyException e) {
-			throw new ResponseStatusException(PRODUCT_CURRENCY_INVALID.getCode(), PRODUCT_CURRENCY_INVALID.getMessage());
-		}
+
 
 		MerchEntity product = productMapper.domainModelToEntity(productModel);
 
@@ -94,6 +83,9 @@ public class ProductServiceImpl implements ProductService {
 		savedTagEntities.addAll(tagRepository.saveAll(tagEntities));
 
 		Set<MerchCategoryEntity> categoryEntities = categoryRepository.findAllByNameIn(new ArrayList<>(productModel.getCategories()));
+		if (categoryEntities.size() != productModel.getCategories().size()) {
+			throw new ResponseStatusException(CATEGORY_NOT_FOUND.getCode(), CATEGORY_NOT_FOUND.getMessage());
+		}
 
 		Set<MerchAttachEntity> attachEntities = merchAttachMapper.domainModelsToEntities(productModel.getAttaches());
 		List<MerchAttachEntity> attachEntitiesList = attachRepository.saveAll(attachEntities);
@@ -137,6 +129,9 @@ public class ProductServiceImpl implements ProductService {
 		savedTagEntities.addAll(tagRepository.saveAll(tagEntities));
 
 		Set<MerchCategoryEntity> categoryEntities = categoryRepository.findAllByNameIn(new ArrayList<>(productModel.getCategories()));
+		if (categoryEntities.size() != productModel.getCategories().size()) {
+			throw new ResponseStatusException(CATEGORY_NOT_FOUND.getCode(), CATEGORY_NOT_FOUND.getMessage());
+		}
 
 		Set<MerchAttachEntity> attachEntities = merchAttachMapper.domainModelsToEntities(productModel.getAttaches());
 		List<MerchAttachEntity> attachEntitiesList = attachRepository.saveAll(attachEntities);
