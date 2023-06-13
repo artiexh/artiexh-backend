@@ -13,9 +13,11 @@ import com.artiexh.model.mapper.PrinterProviderMapper;
 import com.artiexh.model.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class AccountServiceImpl implements AccountService {
 	private final AccountRepository accountRepository;
 	private final UserMapper userMapper;
@@ -24,6 +26,7 @@ public class AccountServiceImpl implements AccountService {
 	private final PrinterProviderMapper printerProviderMapper;
 
 	@Override
+	@Transactional
 	public Account getUserById(Long id) {
 		return accountRepository.findById(id)
 			.map(accountEntity -> switch (Role.fromValue(accountEntity.getRole())) {

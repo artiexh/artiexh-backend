@@ -8,7 +8,7 @@ import com.artiexh.auth.service.ActiveTokenService;
 import com.artiexh.authorization.client.service.AuthenticationService;
 import com.artiexh.model.domain.Account;
 import com.artiexh.model.domain.Role;
-import com.artiexh.model.request.LoginRequest;
+import com.artiexh.model.rest.auth.LoginRequest;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

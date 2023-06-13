@@ -1,8 +1,6 @@
 package com.artiexh.data.jpa.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,5 +21,9 @@ public class ArtistEntity extends UserEntity {
 
 	@OneToMany(mappedBy = "artist")
 	private Set<SubscriptionEntity> subscriptionsFrom;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "province_id")
+	private ProvinceEntity province;
 
 }

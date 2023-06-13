@@ -6,9 +6,9 @@ import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.common.model.PageResponse;
 import com.artiexh.model.domain.MerchStatus;
 import com.artiexh.model.mapper.MerchAttachMapper;
-import com.artiexh.model.product.ProductDetail;
-import com.artiexh.model.product.ProductInfo;
-import com.artiexh.model.product.ProductMapper;
+import com.artiexh.model.mapper.ProductMapper;
+import com.artiexh.model.rest.product.ProductDetail;
+import com.artiexh.model.rest.product.ProductInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -70,7 +70,7 @@ public class ProductServiceImpl implements ProductService {
 	public ProductDetail create(ProductDetail productModel) {
 		Long userId;
 		try {
-			userId = Long.parseLong((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+			userId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		} catch (Exception e) {
 			userId = productModel.getOwnerId();
 			log.warn("Can not get current user");

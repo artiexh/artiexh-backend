@@ -1,4 +1,4 @@
-package com.artiexh.model.request;
+package com.artiexh.model.rest.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

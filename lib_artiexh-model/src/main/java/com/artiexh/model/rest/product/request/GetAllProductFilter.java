@@ -1,4 +1,4 @@
-package com.artiexh.model.product.request;
+package com.artiexh.model.rest.product.request;
 
 import com.artiexh.data.jpa.entity.MerchEntity;
 import jakarta.persistence.criteria.Predicate;

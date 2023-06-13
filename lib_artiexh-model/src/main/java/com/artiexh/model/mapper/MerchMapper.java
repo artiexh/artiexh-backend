@@ -3,7 +3,7 @@ package com.artiexh.model.mapper;
 import com.artiexh.data.jpa.entity.MerchCategoryEntity;
 import com.artiexh.data.jpa.entity.MerchEntity;
 import com.artiexh.model.domain.Merch;
-import com.artiexh.model.product.request.UpdateProductRequest;
+import com.artiexh.model.rest.product.request.UpdateProductRequest;
 import org.mapstruct.*;
 
 import java.util.List;

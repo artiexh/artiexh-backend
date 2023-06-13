@@ -1,4 +1,4 @@
-package com.artiexh.model.product;
+package com.artiexh.model.rest.product;
 
 import com.artiexh.model.domain.ArtistInfo;
 import com.artiexh.model.domain.MerchStatus;
@@ -30,7 +30,7 @@ public class ProductInfo {
 	private MerchType type;
 	private Long remainingQuantity;
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@Schema(readOnly = true)
+	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
 	private ArtistInfo ownerInfo;
 
 }
