@@ -31,7 +31,8 @@ public class UserEntity extends AccountEntity {
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private final Set<SubscriptionEntity> subscriptionsTo = new LinkedHashSet<>();
 
-	@OneToOne(mappedBy = "user")
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id")
 	private ShoppingCartEntity shoppingCart;
 
 }
