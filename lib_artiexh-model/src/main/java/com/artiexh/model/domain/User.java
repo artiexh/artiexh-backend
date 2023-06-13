@@ -22,5 +22,5 @@ public class User extends Account {
     //@JsonIgnore
     private String facebookId;
     private Set<Subscription> subscriptionsTo;
-    private ShoppingCart shoppingCart;
+    private Cart shoppingCart;
 }

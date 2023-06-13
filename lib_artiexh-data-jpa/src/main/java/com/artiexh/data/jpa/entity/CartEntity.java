@@ -10,8 +10,8 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "shopping_cart")
-public class ShoppingCartEntity {
+@Table(name = "cart")
+public class CartEntity {
 
     @Id
     @Column(name = "user_id", nullable = false)
@@ -19,6 +19,6 @@ public class ShoppingCartEntity {
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "cart_id")
-    private Set<ShoppingCartItemEntity> shoppingCartItemEntities = new LinkedHashSet<>();
+    private Set<CartItemEntity> shoppingCartItemEntities = new LinkedHashSet<>();
 
 }

@@ -10,8 +10,8 @@ import org.hibernate.annotations.OnDeleteAction;
 @Getter
 @Setter
 @Entity
-@Table(name = "shopping_cart_item")
-public class ShoppingCartItemEntity {
+@Table(name = "cart_item")
+public class CartItemEntity {
 
     @EmbeddedId
     private ShoppingCartItemId id;

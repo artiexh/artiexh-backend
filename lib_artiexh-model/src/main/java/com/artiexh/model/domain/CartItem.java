@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ShoppingCartItem {
+public class CartItem {
 
     private Merch merch;
 

@@ -33,6 +33,6 @@ public class UserEntity extends AccountEntity {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "id")
-	private ShoppingCartEntity shoppingCart;
+	private CartEntity shoppingCart;
 
 }
