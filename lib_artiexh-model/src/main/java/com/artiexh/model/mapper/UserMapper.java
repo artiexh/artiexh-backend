@@ -3,7 +3,7 @@ package com.artiexh.model.mapper;
 import com.artiexh.data.jpa.entity.SubscriptionEntity;
 import com.artiexh.data.jpa.entity.UserEntity;
 import com.artiexh.model.domain.User;
-import com.artiexh.model.request.RegisterUserRequest;
+import com.artiexh.model.rest.auth.RegisterUserRequest;
 import org.hibernate.Hibernate;
 import org.mapstruct.Condition;
 import org.mapstruct.Mapper;

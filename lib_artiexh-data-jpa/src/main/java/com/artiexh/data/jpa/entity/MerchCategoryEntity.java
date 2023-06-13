@@ -16,11 +16,8 @@ import java.util.Set;
 @Table(name = "merch_category")
 public class MerchCategoryEntity {
 
-	@ManyToMany
-	@JoinTable(name = "merch_category_mapping",
-		joinColumns = @JoinColumn(name = "category_id"),
-		inverseJoinColumns = @JoinColumn(name = "merch_id"))
-	private final Set<MerchEntity> merch = new LinkedHashSet<>();
+	@OneToMany(mappedBy = "category")
+	private Set<MerchEntity> merch;
 	@Id
 	@Tsid
 	@Column(name = "id", nullable = false)

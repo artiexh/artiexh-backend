@@ -6,9 +6,9 @@ import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.common.model.PageResponse;
 import com.artiexh.model.domain.MerchStatus;
 import com.artiexh.model.mapper.MerchAttachMapper;
-import com.artiexh.model.product.ProductDetail;
-import com.artiexh.model.product.ProductInfo;
-import com.artiexh.model.product.ProductMapper;
+import com.artiexh.model.mapper.ProductMapper;
+import com.artiexh.model.rest.product.ProductDetail;
+import com.artiexh.model.rest.product.ProductInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -63,12 +63,10 @@ public class ProductServiceImpl implements ProductService {
 	public ProductDetail create(ProductDetail productModel) {
 		Long userId;
 		try {
-			userId = Long.parseLong((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+			userId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		} catch (Exception e) {
-			userId = productModel.getOwnerId();
-			log.warn("Can not get current user");
+			throw new ResponseStatusException(ACCOUNT_INFO_NOT_FOUND.getCode(), ACCOUNT_INFO_NOT_FOUND.getMessage());
 		}
-
 
 
 		MerchEntity product = productMapper.domainModelToEntity(productModel);
@@ -82,10 +80,8 @@ public class ProductServiceImpl implements ProductService {
 		tagEntities.removeAll(savedTagEntities);
 		savedTagEntities.addAll(tagRepository.saveAll(tagEntities));
 
-		Set<MerchCategoryEntity> categoryEntities = categoryRepository.findAllByNameIn(new ArrayList<>(productModel.getCategories()));
-		if (categoryEntities.size() != productModel.getCategories().size()) {
-			throw new ResponseStatusException(CATEGORY_NOT_FOUND.getCode(), CATEGORY_NOT_FOUND.getMessage());
-		}
+		MerchCategoryEntity categoryEntity = categoryRepository.findById(productModel.getCategoryId())
+			.orElseThrow(() -> new ResponseStatusException(CATEGORY_NOT_FOUND.getCode(), CATEGORY_NOT_FOUND.getMessage()));
 
 		Set<MerchAttachEntity> attachEntities = merchAttachMapper.domainModelsToEntities(productModel.getAttaches());
 		List<MerchAttachEntity> attachEntitiesList = attachRepository.saveAll(attachEntities);
@@ -96,7 +92,7 @@ public class ProductServiceImpl implements ProductService {
 
 		product.setOwner(artist);
 		product.setTags(savedTagEntities);
-		product.setCategories(categoryEntities);
+		product.setCategory(categoryEntity);
 		product.setAttaches(new HashSet<>(attachEntitiesList));
 		product = productRepository.save(product);
 
@@ -128,16 +124,15 @@ public class ProductServiceImpl implements ProductService {
 		tagEntities.removeAll(savedTagEntities);
 		savedTagEntities.addAll(tagRepository.saveAll(tagEntities));
 
-		Set<MerchCategoryEntity> categoryEntities = categoryRepository.findAllByNameIn(new ArrayList<>(productModel.getCategories()));
-		if (categoryEntities.size() != productModel.getCategories().size()) {
-			throw new ResponseStatusException(CATEGORY_NOT_FOUND.getCode(), CATEGORY_NOT_FOUND.getMessage());
-		}
+		MerchCategoryEntity categoryEntity = categoryRepository.findById(productModel.getCategoryId())
+			.orElseThrow(() -> new ResponseStatusException(CATEGORY_NOT_FOUND.getCode(), CATEGORY_NOT_FOUND.getMessage()));
+
 
 		Set<MerchAttachEntity> attachEntities = merchAttachMapper.domainModelsToEntities(productModel.getAttaches());
 		List<MerchAttachEntity> attachEntitiesList = attachRepository.saveAll(attachEntities);
 
 		product.setTags(savedTagEntities);
-		product.setCategories(categoryEntities);
+		product.setCategory(categoryEntity);
 		product.setAttaches(new HashSet<>(attachEntitiesList));
 		product = productRepository.save(product);
 

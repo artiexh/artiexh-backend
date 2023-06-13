@@ -67,11 +67,10 @@ public class MerchEntity {
 	@Column(name = "average_rate", nullable = false)
 	private float averageRate;
 
-	@ManyToMany
-	@JoinTable(name = "merch_category_mapping",
-		joinColumns = @JoinColumn(name = "merch_id"),
-		inverseJoinColumns = @JoinColumn(name = "category_id"))
-	private Set<MerchCategoryEntity> categories;
+	@ManyToOne(optional = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@JoinColumn(name = "category_id", nullable = false)
+	private MerchCategoryEntity category;
 
 	@ManyToMany
 	@JoinTable(name = "merch_tag_mapping",

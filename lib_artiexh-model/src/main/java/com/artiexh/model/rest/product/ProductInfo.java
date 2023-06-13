@@ -1,6 +1,7 @@
-package com.artiexh.model.product;
+package com.artiexh.model.rest.product;
 
 import com.artiexh.model.domain.ArtistInfo;
+import com.artiexh.model.domain.MerchCategory;
 import com.artiexh.model.domain.MerchStatus;
 import com.artiexh.model.domain.MerchType;
 import com.artiexh.model.validation.CurrencyType;
@@ -15,7 +16,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.validator.constraints.Currency;
 
 import java.math.BigDecimal;
 
@@ -43,6 +43,7 @@ public class ProductInfo {
 
 	@Min(value = 0)
 	@Max(value = 5)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private float averageRate;
 
 	@NotNull
@@ -59,5 +60,6 @@ public class ProductInfo {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
 	private ArtistInfo ownerInfo;
+
 
 }

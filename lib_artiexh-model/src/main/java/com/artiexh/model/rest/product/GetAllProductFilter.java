@@ -1,4 +1,4 @@
-package com.artiexh.model.product;
+package com.artiexh.model.rest.product;
 
 import com.artiexh.data.jpa.entity.MerchEntity;
 import jakarta.persistence.criteria.Predicate;
@@ -23,7 +23,7 @@ public class GetAllProductFilter {
 	private BigDecimal minPrice;
 	private BigDecimal maxPrice;
 	private Float averageRate;
-	private Integer countryCode;
+	private Integer provinceId;
 	private Integer categoryId;
 
 	public Specification<MerchEntity> getSpecification() {
@@ -43,10 +43,10 @@ public class GetAllProductFilter {
 				predicates.add(builder.equal(root.get("averageRate"), averageRate));
 			}
 			if (categoryId != null) {
-				predicates.add(builder.equal(root.get("categoryId"), averageRate));
+				predicates.add(builder.equal(root.get("category").get("id"), categoryId));
 			}
-			if (countryCode != null) {
-//				predicates.add(builder.equal(root.join("owner").get("countryCode"), countryCode));
+			if (provinceId != null) {
+				predicates.add(builder.equal(root.join("owner").get("province").get("id"), provinceId));
 			}
 			return builder.and(predicates.toArray(new Predicate[predicates.size()]));
 		};

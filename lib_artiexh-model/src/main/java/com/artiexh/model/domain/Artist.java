@@ -16,4 +16,5 @@ import java.util.Set;
 public class Artist extends User {
 	private Set<Merch> merch;
 	private Set<Subscription> subscriptionsFrom;
+	private Province province;
 }

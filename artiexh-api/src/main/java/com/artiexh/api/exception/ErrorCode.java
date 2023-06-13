@@ -11,7 +11,10 @@ public enum ErrorCode {
 	CATEGORY_NOT_FOUND(HttpStatus.OK, "Category is not found"),
 
 	//Artist
-	ARTIST_NOT_FOUND(HttpStatus.OK, "Artist is not found");
+	ARTIST_NOT_FOUND(HttpStatus.OK, "Artist is not found"),
+
+	//AUTH
+	ACCOUNT_INFO_NOT_FOUND(HttpStatus.OK, "Can not get account information from request");
 	private final HttpStatus statusCode;
 	private final String message;
 

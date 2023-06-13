@@ -4,16 +4,17 @@ import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.ProductService;
 import com.artiexh.model.common.model.PageResponse;
 import com.artiexh.model.common.model.PaginationAndSortingRequest;
-import com.artiexh.model.product.ProductDetail;
-import com.artiexh.model.product.ProductInfo;
-import com.artiexh.model.product.GetAllProductFilter;
+import com.artiexh.model.rest.product.GetAllProductFilter;
+import com.artiexh.model.rest.product.ProductDetail;
+import com.artiexh.model.rest.product.ProductInfo;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = Endpoint.Product.ROOT)
+@RequestMapping(path =  Endpoint.Product.ROOT)
 public class ProductController {
 	private final ProductService productService;
 
@@ -26,14 +27,14 @@ public class ProductController {
 	@PutMapping(path = Endpoint.Product.PRODUCT_DETAIL)
 	public ProductDetail update(
 		@PathVariable("id") long id,
-		@RequestBody ProductDetail request) {
+		@RequestBody @Valid  ProductDetail request) {
 		request.setId(id);
 		ProductDetail product = productService.update(request);
 		return product;
 	}
 
 	@PostMapping
-	public ProductDetail create(@RequestBody ProductDetail productModel) {
+	public ProductDetail create(@RequestBody @Valid ProductDetail productModel) {
 		ProductDetail product = productService.create(productModel);
 		return product;
 	}

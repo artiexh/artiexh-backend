@@ -3,7 +3,7 @@ package com.artiexh.model.mapper;
 import com.artiexh.data.jpa.entity.MerchCategoryEntity;
 import com.artiexh.data.jpa.entity.MerchEntity;
 import com.artiexh.model.domain.Merch;
-import com.artiexh.model.product.request.UpdateProductRequest;
+import com.artiexh.model.rest.product.request.UpdateProductRequest;
 import org.mapstruct.*;
 
 import java.util.List;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 )
 public interface MerchMapper {
 
-	@Mapping(target = "categoryInfo", source = "categories", qualifiedByName = "categoryMapping")
+//	@Mapping(target = "categoryInfo", source = "categories", qualifiedByName = "categoryMapping")
 	@Mapping(target = "ownerInfo", source = "owner")
 	Merch entityToDomainModel(MerchEntity merchEntity);
 
