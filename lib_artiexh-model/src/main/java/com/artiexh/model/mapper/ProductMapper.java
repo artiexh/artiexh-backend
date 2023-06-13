@@ -1,7 +1,6 @@
 package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.MerchAttachEntity;
-import com.artiexh.data.jpa.entity.MerchCategoryEntity;
 import com.artiexh.data.jpa.entity.MerchEntity;
 import com.artiexh.model.domain.MerchAttachType;
 import com.artiexh.model.rest.product.ProductDetail;
@@ -10,9 +9,7 @@ import com.artiexh.model.rest.product.request.UpdateProductRequest;
 import org.mapstruct.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
@@ -30,7 +27,7 @@ import java.util.stream.Collectors;
 )
 public interface ProductMapper {
 
-//	@Mapping(target = "categoryInfo", source = "categories", qualifiedByName = "categoryMapping")
+	//	@Mapping(target = "categoryInfo", source = "categories", qualifiedByName = "categoryMapping")
 	@Mapping(target = "ownerInfo", source = "owner")
 	@Mapping(target = "categoryInfo", source = "category")
 	ProductDetail entityToModelDetail(MerchEntity merchEntity);

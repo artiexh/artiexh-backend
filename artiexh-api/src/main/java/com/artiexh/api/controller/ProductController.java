@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path =  Endpoint.Product.ROOT)
+@RequestMapping(path = Endpoint.Product.ROOT)
 public class ProductController {
 	private final ProductService productService;
 
@@ -27,7 +27,7 @@ public class ProductController {
 	@PutMapping(path = Endpoint.Product.PRODUCT_DETAIL)
 	public ProductDetail update(
 		@PathVariable("id") long id,
-		@RequestBody @Valid  ProductDetail request) {
+		@RequestBody @Valid ProductDetail request) {
 		request.setId(id);
 		ProductDetail product = productService.update(request);
 		return product;

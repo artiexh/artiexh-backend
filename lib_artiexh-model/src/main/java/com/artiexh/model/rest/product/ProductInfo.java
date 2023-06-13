@@ -1,7 +1,6 @@
 package com.artiexh.model.rest.product;
 
 import com.artiexh.model.domain.ArtistInfo;
-import com.artiexh.model.domain.MerchCategory;
 import com.artiexh.model.domain.MerchStatus;
 import com.artiexh.model.domain.MerchType;
 import com.artiexh.model.validation.CurrencyType;
