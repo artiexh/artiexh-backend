@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.cart;
+package com.artiexh.model.rest.cart.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,5 +10,5 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartResponse {
-    Set<CartByArtistResponse> cartByArtists;
+	Set<ArtistItemsResponse> artistItems;
 }

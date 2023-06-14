@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.cart;
+package com.artiexh.model.rest.cart.response;
 
 import com.artiexh.model.domain.DeliveryType;
 import com.artiexh.model.domain.MerchAttach;

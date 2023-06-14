@@ -12,7 +12,5 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class Cart {
-
-    private Set<CartItem> shoppingCartItems;
-
+    private Set<CartItem> cartItems;
 }

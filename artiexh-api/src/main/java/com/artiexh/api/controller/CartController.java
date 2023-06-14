@@ -4,7 +4,7 @@ import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.CartService;
 import com.artiexh.model.domain.Cart;
 import com.artiexh.model.mapper.CartMapper;
-import com.artiexh.model.rest.cart.CartResponse;
+import com.artiexh.model.rest.cart.response.CartResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,4 +25,5 @@ public class CartController {
 		Cart cart = cartService.getCart(userId);
 		return cartMapper.domainToCartResponse(cart);
 	}
+
 }

@@ -4,10 +4,10 @@ import com.artiexh.data.jpa.entity.CartEntity;
 import com.artiexh.model.domain.Artist;
 import com.artiexh.model.domain.Cart;
 import com.artiexh.model.domain.CartItem;
-import com.artiexh.model.rest.cart.ArtistCartInfoResponse;
-import com.artiexh.model.rest.cart.CartByArtistResponse;
-import com.artiexh.model.rest.cart.CartItemResponse;
-import com.artiexh.model.rest.cart.CartResponse;
+import com.artiexh.model.rest.cart.response.ArtistCartInfoResponse;
+import com.artiexh.model.rest.cart.response.ArtistItemsResponse;
+import com.artiexh.model.rest.cart.response.CartItemResponse;
+import com.artiexh.model.rest.cart.response.CartResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -26,18 +26,18 @@ public interface CartMapper {
 
 	CartEntity domainToEntity(Cart cart);
 
-	@Mapping(target = "cartByArtists", source = "shoppingCartItems", qualifiedByName = "cartByArtistsMapping")
+	@Mapping(target = "artistItems", source = "cartItems", qualifiedByName = "artistItemsResponseMapping")
 	CartResponse domainToCartResponse(Cart cart);
 
-	@Named("cartByArtistsMapping")
-	default Set<CartByArtistResponse> cartByArtistsMapping(Set<CartItem> shoppingCartItems) {
+	@Named("artistItemsResponseMapping")
+	default Set<ArtistItemsResponse> artistItemsResponseMapping(Set<CartItem> shoppingCartItems) {
 		return shoppingCartItems.stream()
 			.collect(Collectors.groupingBy(
 				cartItem -> cartItem.getMerch().getOwner(),
 				Collectors.mapping(this::domainToCartItemResponse, Collectors.toSet())
 			))
 			.entrySet().stream()
-			.map(entry -> new CartByArtistResponse(
+			.map(entry -> new ArtistItemsResponse(
 				artistToArtistCartInfo(entry.getKey()),
 				entry.getValue()
 			))
