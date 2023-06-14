@@ -3,6 +3,7 @@ package com.artiexh.model.rest.product;
 import com.artiexh.model.domain.DeliveryType;
 import com.artiexh.model.domain.MerchAttach;
 import com.artiexh.model.domain.MerchCategory;
+import com.artiexh.model.domain.PaymentMethod;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -65,4 +66,7 @@ public class ProductDetail extends ProductInfo {
 		timezone = "UTC")
 	@Future()
 	private Instant endDateTime;
+
+	@NotNull
+	private PaymentMethod paymentMethod;
 }

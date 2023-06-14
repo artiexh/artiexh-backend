@@ -18,6 +18,7 @@ import java.util.Set;
 		UserStatusMapper.class,
 		RoleMapper.class,
 		MerchStatusMapper.class,
+		PaymentMethodMapper.class,
 		MerchTypeMapper.class,
 		DeliveryTypeMapper.class,
 		MerchCategoryMapper.class,
