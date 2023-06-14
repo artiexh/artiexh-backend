@@ -1,7 +1,6 @@
 package com.artiexh.model.rest.product;
 
 import com.artiexh.data.jpa.entity.MerchEntity;
-import com.artiexh.model.domain.Merch;
 import com.artiexh.model.domain.MerchStatus;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
@@ -31,6 +30,7 @@ public class GetAllProductFilter {
 	public Specification<MerchEntity> getSpecification() {
 		return Specification.where(getFilterQuery()).and(getAvailableMerch());
 	}
+
 	private Specification<MerchEntity> getFilterQuery() {
 		return (root, cQuery, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();

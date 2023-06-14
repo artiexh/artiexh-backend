@@ -109,7 +109,7 @@ public class ProductServiceImpl implements ProductService {
 			preOrderProduct = preOrderMerchRepository.save(preOrderProduct);
 
 			productModel = productMapper.entityToModelDetail(preOrderProduct, productModel);
-			productModel.setId(product.getId());
+			productModel.setId(preOrderProduct.getId());
 		}
 
 		return productModel;
@@ -161,9 +161,8 @@ public class ProductServiceImpl implements ProductService {
 
 			preOrderProduct.setStartDatetime(productModel.getStartDatetime());
 			preOrderProduct.setEndDatetime(productModel.getEndDateTime());
-			Set<MerchTagEntity> merchTagEntities = preOrderProduct.getTags();
-			merchTagEntities.clear();
-			merchTagEntities.addAll(savedTagEntities);
+			preOrderProduct.getTags().clear();
+			preOrderProduct.getTags().addAll(savedTagEntities);
 			preOrderProduct.setCategory(categoryEntity);
 			preOrderProduct.getAttaches().clear();
 			preOrderProduct.getAttaches().addAll(attachEntities);
@@ -171,7 +170,7 @@ public class ProductServiceImpl implements ProductService {
 			preOrderProduct = preOrderMerchRepository.save(preOrderProduct);
 
 			productModel = productMapper.entityToModelDetail(preOrderProduct, productModel);
-			productModel.setId(product.getId());
+			productModel.setId(preOrderProduct.getId());
 		}
 
 		return productModel;
@@ -199,7 +198,7 @@ public class ProductServiceImpl implements ProductService {
 			.map(MerchAttach::getId)
 			.toList();
 		Set<MerchAttachEntity> updatedAttaches = new HashSet<>(attachRepository.findAllById(attachmentIds));
-		Set<MerchAttachEntity> attachEntities =  merchAttachMapper.domainModelsToEntities(attaches, updatedAttaches);
+		Set<MerchAttachEntity> attachEntities = merchAttachMapper.domainModelsToEntities(attaches, updatedAttaches);
 		return attachRepository.saveAll(attachEntities);
 	}
 }
