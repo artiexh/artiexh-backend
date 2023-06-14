@@ -1,6 +1,8 @@
 package com.artiexh.model.rest.product;
 
 import com.artiexh.data.jpa.entity.MerchEntity;
+import com.artiexh.model.domain.Merch;
+import com.artiexh.model.domain.MerchStatus;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +29,9 @@ public class GetAllProductFilter {
 	private Integer categoryId;
 
 	public Specification<MerchEntity> getSpecification() {
+		return Specification.where(getFilterQuery()).and(getAvailableMerch());
+	}
+	private Specification<MerchEntity> getFilterQuery() {
 		return (root, cQuery, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
 
@@ -48,7 +53,16 @@ public class GetAllProductFilter {
 			if (provinceId != null) {
 				predicates.add(builder.equal(root.join("owner").get("province").get("id"), provinceId));
 			}
-			return builder.and(predicates.toArray(new Predicate[predicates.size()]));
+			return builder.and(predicates.toArray(new Predicate[0]));
+		};
+	}
+
+	private Specification<MerchEntity> getAvailableMerch() {
+		return (root, cQuery, builder) -> {
+			List<Predicate> predicates = new ArrayList<>();
+			predicates.add(builder.equal(root.get("status"), MerchStatus.PRE_ORDER.getByteValue()));
+			predicates.add(builder.equal(root.get("status"), MerchStatus.AVAILABLE.getByteValue()));
+			return builder.or(predicates.toArray(new Predicate[0]));
 		};
 	}
 }

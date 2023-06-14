@@ -164,7 +164,6 @@ public class ProductServiceImpl implements ProductService {
 			Set<MerchTagEntity> merchTagEntities = preOrderProduct.getTags();
 			merchTagEntities.clear();
 			merchTagEntities.addAll(savedTagEntities);
-//			preOrderProduct.setTags(savedTagEntities);
 			preOrderProduct.setCategory(categoryEntity);
 			preOrderProduct.getAttaches().clear();
 			preOrderProduct.getAttaches().addAll(attachEntities);
