@@ -21,10 +21,11 @@ public class Merch {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long id;
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@Schema(readOnly = true)
+	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
 	private ArtistInfo ownerInfo;
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private long ownerId;
+	private Artist owner;
 	private MerchStatus status;
 	private String currency;
 	private String name;
@@ -40,7 +41,7 @@ public class Merch {
 	private Set<String> categories;
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@Schema(readOnly = true)
+	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
 	private Map<Long, String> categoryInfo;
 	private Set<String> tags;
 	private Set<MerchAttach> attaches;

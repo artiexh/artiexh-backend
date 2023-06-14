@@ -45,4 +45,9 @@ public final class Endpoint {
 		public static final String PRODUCT_PAGE = "/page";
 		public static final String PRODUCT_LIST = "/list";
 	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Cart {
+		public static final String ROOT = PREFIX + "/cart";
+	}
 }
