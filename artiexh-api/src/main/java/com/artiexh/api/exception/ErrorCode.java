@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 	//Product
 	PRODUCT_NOT_FOUND(HttpStatus.OK, "Product is not found"),
+	PREORDER_NOT_FOUND_TIME(HttpStatus.BAD_REQUEST, "Pre-order product must require start time and end time"),
+	PREORDER_INVALID_TIME(HttpStatus.BAD_REQUEST, "End time must be after start time"),
 	PRODUCT_CURRENCY_INVALID(HttpStatus.BAD_REQUEST, "Product currency is invalid"),
 
 	//Category

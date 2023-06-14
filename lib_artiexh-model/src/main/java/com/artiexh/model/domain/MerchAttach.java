@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class MerchAttach {
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long id;
 	private String url;
 	private MerchAttachType type;

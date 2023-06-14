@@ -2,6 +2,7 @@ package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.MerchAttachEntity;
 import com.artiexh.data.jpa.entity.MerchEntity;
+import com.artiexh.data.jpa.entity.PreOrderMerchEntity;
 import com.artiexh.model.domain.MerchAttachType;
 import com.artiexh.model.rest.product.ProductDetail;
 import com.artiexh.model.rest.product.ProductInfo;
@@ -32,6 +33,18 @@ public interface ProductMapper {
 	@Mapping(target = "categoryInfo", source = "category")
 	ProductDetail entityToModelDetail(MerchEntity merchEntity);
 
+	@Mapping(target = "ownerInfo", source = "owner")
+	@Mapping(target = "categoryInfo", source = "category")
+	ProductDetail entityToModelDetail(PreOrderMerchEntity merchEntity);
+
+	@Mapping(target = "ownerInfo", source = "owner")
+	@Mapping(target = "categoryInfo", source = "category")
+	ProductDetail entityToModelDetail(PreOrderMerchEntity preOrderMerchEntity, @MappingTarget ProductDetail productDetail);
+
+	@Mapping(target = "ownerInfo", source = "owner")
+	@Mapping(target = "categoryInfo", source = "category")
+	ProductDetail entityToModelDetail(MerchEntity merchEntity, @MappingTarget ProductDetail productDetail);
+
 	@Named("entityToModelInfo")
 	@Mapping(target = "ownerInfo", source = "owner")
 	@Mapping(target = "id", source = "id")
@@ -43,10 +56,16 @@ public interface ProductMapper {
 	@IterableMapping(qualifiedByName = "entityToModelInfo")
 	List<ProductInfo> entitiesToDomainModels(List<MerchEntity> merchEntity);
 
+	@Mapping(target = "averageRate", source = "averageRate", ignore = true)
 	MerchEntity domainModelToEntity(ProductDetail merch);
 
 	@Mapping(target = "owner", ignore = true)
+	@Mapping(target = "averageRate", source = "averageRate", ignore = true)
 	MerchEntity domainModelToEntity(ProductDetail merch, @MappingTarget MerchEntity entity);
+
+	@Mapping(target = "owner", ignore = true)
+	@Mapping(target = "averageRate", source = "averageRate", ignore = true)
+	PreOrderMerchEntity domainModelToEntity(ProductDetail merch, @MappingTarget PreOrderMerchEntity entity);
 
 	@Named("attachmentMapping")
 	default String attachmentMapping(Set<MerchAttachEntity> attachments) {

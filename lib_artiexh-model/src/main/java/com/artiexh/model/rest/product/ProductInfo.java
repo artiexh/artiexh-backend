@@ -10,10 +10,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
@@ -60,5 +57,6 @@ public class ProductInfo {
 	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
 	private ArtistInfo ownerInfo;
 
-
+	@Builder.Default
+	private boolean isPreorder = false;
 }

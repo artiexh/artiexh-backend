@@ -51,4 +51,18 @@ public class ProductDetail extends ProductInfo {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
 	private MerchCategory categoryInfo;
+
+	@JsonFormat(
+		shape = JsonFormat.Shape.STRING,
+		pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+		timezone = "UTC")
+	@Future()
+	private Instant startDatetime;
+
+	@JsonFormat(
+		shape = JsonFormat.Shape.STRING,
+		pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+		timezone = "UTC")
+	@Future()
+	private Instant endDateTime;
 }

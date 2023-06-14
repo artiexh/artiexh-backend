@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Set;
 
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
