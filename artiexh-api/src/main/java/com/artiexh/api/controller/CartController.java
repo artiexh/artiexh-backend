@@ -8,6 +8,7 @@ import com.artiexh.model.rest.cart.request.DeleteCartItemRequest;
 import com.artiexh.model.rest.cart.request.UpdateCartItemRequest;
 import com.artiexh.model.rest.cart.response.CartResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ public class CartController {
 	private final CartMapper cartMapper;
 
 	@GetMapping
+	@PreAuthorize("hasAnyAuthority('USER','ARTIST')")
 	public CartResponse getCart(Authentication authentication) {
 		long userId = (Long) authentication.getPrincipal();
 		Cart cart = cartService.getCart(userId);
@@ -28,6 +30,7 @@ public class CartController {
 	}
 
 	@PutMapping(Endpoint.Cart.ITEM)
+	@PreAuthorize("hasAnyAuthority('USER','ARTIST')")
 	public CartResponse addItemToCart(Authentication authentication,
 									  @RequestBody @Validated UpdateCartItemRequest request) {
 		long userId = (Long) authentication.getPrincipal();
@@ -37,6 +40,7 @@ public class CartController {
 	}
 
 	@DeleteMapping(Endpoint.Cart.ITEM)
+	@PreAuthorize("hasAnyAuthority('USER','ARTIST')")
 	public CartResponse deleteCartItem(Authentication authentication,
 									   @RequestBody @Validated DeleteCartItemRequest request) {
 		long userId = (Long) authentication.getPrincipal();
