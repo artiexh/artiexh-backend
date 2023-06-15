@@ -4,6 +4,7 @@ import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.CartService;
 import com.artiexh.model.domain.Cart;
 import com.artiexh.model.mapper.CartMapper;
+import com.artiexh.model.rest.cart.request.DeleteCartItemRequest;
 import com.artiexh.model.rest.cart.request.UpdateCartItemRequest;
 import com.artiexh.model.rest.cart.response.CartResponse;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +28,19 @@ public class CartController {
 	}
 
 	@PutMapping(Endpoint.Cart.ITEM)
-	public CartResponse addItemToCart(Authentication authentication, @RequestBody @Validated UpdateCartItemRequest request) {
+	public CartResponse addItemToCart(Authentication authentication,
+									  @RequestBody @Validated UpdateCartItemRequest request) {
 		long userId = (Long) authentication.getPrincipal();
 		cartService.addItemToCart(userId, request.getItems());
+		Cart cart = cartService.getCart(userId);
+		return cartMapper.domainToCartResponse(cart);
+	}
+
+	@DeleteMapping(Endpoint.Cart.ITEM)
+	public CartResponse deleteCartItem(Authentication authentication,
+									   @RequestBody @Validated DeleteCartItemRequest request) {
+		long userId = (Long) authentication.getPrincipal();
+		cartService.deleteItemToCart(userId, request.getProductIds());
 		Cart cart = cartService.getCart(userId);
 		return cartMapper.domainToCartResponse(cart);
 	}

@@ -36,6 +36,10 @@ public class CartServiceImpl implements CartService {
 	@Override
 	@Transactional
 	public void addItemToCart(long userId, Set<CartItemRequest> items) {
+		if (items.isEmpty()) {
+			return;
+		}
+
 		CartEntity cartEntity = getOrCreateCartEntity(userId);
 		Set<CartItemEntity> cartItemEntities = items.stream().map(cartItemRequest -> {
 			CartItemId cartItemId = new CartItemId(cartEntity.getId(), cartItemRequest.getProductId());
@@ -44,6 +48,23 @@ public class CartServiceImpl implements CartService {
 		}).collect(Collectors.toSet());
 
 		cartItemRepository.saveAll(cartItemEntities);
+	}
+
+	@Override
+	@Transactional
+	public void deleteItemToCart(long userId, Set<Long> items) {
+		if (items.isEmpty()) {
+			return;
+		}
+
+		CartEntity cartEntity = getOrCreateCartEntity(userId);
+		Set<CartItemEntity> cartItemEntities = items.stream().map(merchId -> {
+			CartItemId cartItemId = new CartItemId(cartEntity.getId(), merchId);
+			MerchEntity merchEntity = MerchEntity.builder().id(merchId).build();
+			return CartItemEntity.builder().id(cartItemId).merch(merchEntity).build();
+		}).collect(Collectors.toSet());
+
+		cartItemRepository.deleteAll(cartItemEntities);
 	}
 
 	private CartEntity getOrCreateCartEntity(long userId) {
