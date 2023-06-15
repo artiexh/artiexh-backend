@@ -30,8 +30,8 @@ public interface CartMapper {
 	CartResponse domainToCartResponse(Cart cart);
 
 	@Named("artistItemsResponseMapping")
-	default Set<ArtistItemsResponse> artistItemsResponseMapping(Set<CartItem> shoppingCartItems) {
-		return shoppingCartItems.stream()
+	default Set<ArtistItemsResponse> artistItemsResponseMapping(Set<CartItem> cartItems) {
+		return cartItems.stream()
 			.collect(Collectors.groupingBy(
 				cartItem -> cartItem.getMerch().getOwner(),
 				Collectors.mapping(this::domainToCartItemResponse, Collectors.toSet())

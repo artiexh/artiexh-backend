@@ -12,7 +12,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {UserStatusMapper.class, RoleMapper.class, MerchMapper.class}
+	uses = {UserStatusMapper.class, RoleMapper.class, MerchMapper.class, ProvinceMapper.class}
 )
 public interface ArtistMapper {
 
