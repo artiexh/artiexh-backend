@@ -4,7 +4,6 @@ import com.artiexh.model.domain.DeliveryType;
 import com.artiexh.model.domain.MerchAttach;
 import com.artiexh.model.domain.MerchCategory;
 import com.artiexh.model.domain.PaymentMethod;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Future;
@@ -44,15 +43,9 @@ public class ProductDetail extends ProductInfo {
 	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
 	private MerchCategory categoryInfo;
 
-	@JsonFormat(
-		shape = JsonFormat.Shape.STRING,
-		timezone = "UTC")
 	@Future()
 	private Instant startDatetime;
 
-	@JsonFormat(
-		shape = JsonFormat.Shape.STRING,
-		timezone = "UTC")
 	@Future()
 	private Instant endDateTime;
 

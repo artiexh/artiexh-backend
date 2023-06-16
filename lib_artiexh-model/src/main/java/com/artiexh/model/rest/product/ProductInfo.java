@@ -4,7 +4,6 @@ import com.artiexh.model.domain.ArtistInfo;
 import com.artiexh.model.domain.MerchStatus;
 import com.artiexh.model.domain.MerchType;
 import com.artiexh.model.validation.CurrencyType;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
@@ -59,9 +58,6 @@ public class ProductInfo {
 	@Builder.Default
 	private boolean isPreorder = false;
 
-	@JsonFormat(
-		shape = JsonFormat.Shape.STRING,
-		timezone = "UTC")
 	@Future()
 	@NotNull
 	private Instant publishDatetime;
