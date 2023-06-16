@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Set;
 
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -36,6 +36,10 @@ public class MerchEntity {
 
 	@Column(name = "status", nullable = false)
 	private Byte status;
+
+	@Column(name = "payment_method")
+	@Lob
+	private Byte[] paymentMethod;
 
 	@Column(name = "name", nullable = false)
 	private String name;
@@ -64,11 +68,13 @@ public class MerchEntity {
 	@Column(name = "delivery_type", nullable = false)
 	private Byte deliveryType;
 
-	@ManyToMany
-	@JoinTable(name = "merch_category_mapping",
-		joinColumns = @JoinColumn(name = "merch_id"),
-		inverseJoinColumns = @JoinColumn(name = "category_id"))
-	private Set<MerchCategoryEntity> categories;
+	@Column(name = "average_rate", nullable = false)
+	private float averageRate;
+
+	@ManyToOne(optional = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@JoinColumn(name = "category_id", nullable = false)
+	private MerchCategoryEntity category;
 
 	@ManyToMany
 	@JoinTable(name = "merch_tag_mapping",

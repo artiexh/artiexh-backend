@@ -21,7 +21,6 @@ public class Merch {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long id;
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
 	private ArtistInfo ownerInfo;
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private long ownerId;

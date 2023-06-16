@@ -7,14 +7,10 @@ import com.artiexh.model.rest.product.ProductInfo;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.util.List;
-
 public interface ProductService {
 	ProductDetail getDetail(long id);
 
 	PageResponse<ProductInfo> getInPage(Specification<MerchEntity> specification, Pageable pageable);
-
-	List<ProductInfo> getInList(Specification<MerchEntity> specification);
 
 	ProductDetail create(ProductDetail merch);
 

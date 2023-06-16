@@ -3,7 +3,7 @@ package com.artiexh.data.jpa.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,8 +11,8 @@ import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 
-@SuperBuilder
-@AllArgsConstructor
+@SuperBuilder(toBuilder = true)
+@Data
 @NoArgsConstructor
 @Getter
 @Setter
@@ -25,5 +25,13 @@ public class PreOrderMerchEntity extends MerchEntity {
 
 	@Column(name = "end_datetime", nullable = false)
 	private Instant endDatetime;
+
+	public PreOrderMerchEntity(MerchEntity instance) {
+		super(instance.toBuilder());
+	}
+
+	public static PreOrderMerchEntityBuilder<?, ?> parentBuilder(MerchEntity instance) {
+		return new PreOrderMerchEntity(instance).toBuilder();
+	}
 
 }

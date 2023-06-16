@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
