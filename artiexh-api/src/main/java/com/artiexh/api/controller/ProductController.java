@@ -4,14 +4,13 @@ import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.ProductService;
 import com.artiexh.model.common.model.PageResponse;
 import com.artiexh.model.common.model.PaginationAndSortingRequest;
+import com.artiexh.model.rest.product.GetAllProductFilter;
 import com.artiexh.model.rest.product.ProductDetail;
 import com.artiexh.model.rest.product.ProductInfo;
-import com.artiexh.model.rest.product.request.GetAllProductFilter;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,17 +24,17 @@ public class ProductController {
 		return product;
 	}
 
-	@PostMapping(path = Endpoint.Product.PRODUCT_DETAIL)
+	@PutMapping(path = Endpoint.Product.PRODUCT_DETAIL)
 	public ProductDetail update(
 		@PathVariable("id") long id,
-		@RequestBody ProductDetail request) {
+		@RequestBody @Valid ProductDetail request) {
 		request.setId(id);
 		ProductDetail product = productService.update(request);
 		return product;
 	}
 
 	@PostMapping
-	public ProductDetail create(@RequestBody ProductDetail productModel) {
+	public ProductDetail create(@RequestBody @Valid ProductDetail productModel) {
 		ProductDetail product = productService.create(productModel);
 		return product;
 	}
@@ -45,7 +44,7 @@ public class ProductController {
 		productService.delete(id);
 	}
 
-	@GetMapping(path = Endpoint.Product.PRODUCT_PAGE)
+	@GetMapping()
 	public PageResponse<ProductInfo> getPage(
 		@ParameterObject PaginationAndSortingRequest paginationAndSortingRequest,
 		@ParameterObject GetAllProductFilter filter
@@ -53,11 +52,5 @@ public class ProductController {
 		PageResponse<ProductInfo> productPage = productService.getInPage(filter.getSpecification(), paginationAndSortingRequest.getPageable());
 
 		return productPage;
-	}
-
-	@GetMapping(path = Endpoint.Product.PRODUCT_LIST)
-	public List<ProductInfo> getList(@ParameterObject GetAllProductFilter filter) {
-		List<ProductInfo> productList = productService.getInList(filter.getSpecification());
-		return productList;
 	}
 }

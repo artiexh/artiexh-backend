@@ -42,7 +42,5 @@ public final class Endpoint {
 	public static class Product {
 		public static final String ROOT = PREFIX + "/product";
 		public static final String PRODUCT_DETAIL = "/{id}";
-		public static final String PRODUCT_PAGE = "/page";
-		public static final String PRODUCT_LIST = "/list";
 	}
 }

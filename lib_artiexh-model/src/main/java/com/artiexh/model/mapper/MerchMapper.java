@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 )
 public interface MerchMapper {
 
-	@Mapping(target = "categoryInfo", source = "categories", qualifiedByName = "categoryMapping")
+	//	@Mapping(target = "categoryInfo", source = "categories", qualifiedByName = "categoryMapping")
 	@Mapping(target = "ownerInfo", source = "owner")
 	Merch entityToDomainModel(MerchEntity merchEntity);
 
