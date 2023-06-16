@@ -73,8 +73,9 @@ public interface ProductMapper {
 	default String attachmentMapping(Set<MerchAttachEntity> attachments) {
 		MerchAttachEntity attachEntity = attachments.stream()
 			.filter(attachment ->
-				MerchAttachType.THUMBNAIL.getValue() == attachment.getType().intValue())
-			.toList().get(0);
+				MerchAttachType.THUMBNAIL.getValue() == attachment.getType().intValue()
+			)
+			.findAny().orElse(null);
 		if (attachEntity == null) {
 			return null;
 		} else {
