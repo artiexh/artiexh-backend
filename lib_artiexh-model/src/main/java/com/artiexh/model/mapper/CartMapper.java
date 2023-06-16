@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 )
 public interface CartMapper {
 
+	@Mapping(target = "cartItems", source = "cartItems", defaultExpression = "java(new HashSet<>())")
 	Cart entityToDomain(CartEntity cartEntity);
 
 	CartEntity domainToEntity(Cart cart);
