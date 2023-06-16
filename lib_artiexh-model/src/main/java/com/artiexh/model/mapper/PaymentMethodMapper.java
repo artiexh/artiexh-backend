@@ -1,6 +1,5 @@
 package com.artiexh.model.mapper;
 
-import com.artiexh.model.domain.MerchStatus;
 import com.artiexh.model.domain.PaymentMethod;
 import org.mapstruct.Mapper;
 

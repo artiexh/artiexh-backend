@@ -44,7 +44,7 @@ public class ProductController {
 		productService.delete(id);
 	}
 
-	@GetMapping(path = Endpoint.Product.PRODUCT_PAGE)
+	@GetMapping()
 	public PageResponse<ProductInfo> getPage(
 		@ParameterObject PaginationAndSortingRequest paginationAndSortingRequest,
 		@ParameterObject GetAllProductFilter filter

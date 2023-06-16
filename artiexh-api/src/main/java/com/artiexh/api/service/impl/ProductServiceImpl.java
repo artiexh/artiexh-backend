@@ -20,9 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -77,7 +77,7 @@ public class ProductServiceImpl implements ProductService {
 				.name(tagName)
 				.build())
 			.collect(Collectors.toSet());
-		Set<MerchTagEntity> savedTagEntities = tagRepository.findAllByNameIn(new ArrayList<>(productModel.getTags()));
+		Set<MerchTagEntity> savedTagEntities = tagRepository.findAllByNameIn(productModel.getTags());
 		tagEntities.removeAll(savedTagEntities);
 		savedTagEntities.addAll(tagRepository.saveAll(tagEntities));
 
@@ -129,7 +129,7 @@ public class ProductServiceImpl implements ProductService {
 				.name(tagName)
 				.build())
 			.collect(Collectors.toSet());
-		Set<MerchTagEntity> savedTagEntities = tagRepository.findAllByNameIn(new ArrayList<>(productModel.getTags()));
+		Set<MerchTagEntity> savedTagEntities = tagRepository.findAllByNameIn(productModel.getTags());
 		tagEntities.removeAll(savedTagEntities);
 		savedTagEntities.addAll(tagRepository.saveAll(tagEntities));
 
@@ -137,7 +137,6 @@ public class ProductServiceImpl implements ProductService {
 			.orElseThrow(() -> new ResponseStatusException(CATEGORY_NOT_FOUND.getCode(), CATEGORY_NOT_FOUND.getMessage()));
 
 		List<MerchAttachEntity> attachEntities = updateAttachment(productModel.getAttaches());
-
 
 		PreOrderMerchEntity preOrderProduct = preOrderMerchRepository.findById(productModel.getId()).orElse(null);
 
@@ -193,11 +192,14 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	private List<MerchAttachEntity> updateAttachment(Set<MerchAttach> attaches) {
-		List<Long> attachmentIds = attaches.stream()
-			.filter(attachment -> attachment.getId() != null)
+		Set<Long> attachmentIds = attaches.stream()
 			.map(MerchAttach::getId)
-			.toList();
-		Set<MerchAttachEntity> updatedAttaches = new HashSet<>(attachRepository.findAllById(attachmentIds));
+			.filter(Objects::nonNull)
+			.collect(Collectors.toSet());
+		Set<MerchAttachEntity> updatedAttaches = attachRepository.findAllByIdIn(attachmentIds);
+		if (attachmentIds.size() != updatedAttaches.size()) {
+			throw new ResponseStatusException(ATTACHMENT_NOT_FOUND.getCode(), ATTACHMENT_NOT_FOUND.getMessage());
+		}
 		Set<MerchAttachEntity> attachEntities = merchAttachMapper.domainModelsToEntities(attaches, updatedAttaches);
 		return attachRepository.saveAll(attachEntities);
 	}

@@ -37,8 +37,9 @@ public class MerchEntity {
 	@Column(name = "status", nullable = false)
 	private Byte status;
 
-	@Column(name = "payment_method", nullable = false)
-	private Byte paymentMethod;
+	@Column(name = "payment_method")
+	@Lob
+	private Byte[] paymentMethod;
 
 	@Column(name = "name", nullable = false)
 	private String name;

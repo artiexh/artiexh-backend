@@ -25,25 +25,16 @@ import java.util.Set;
 public class ProductDetail extends ProductInfo {
 	private String description;
 
-	@JsonFormat(
-		shape = JsonFormat.Shape.STRING,
-		pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
-		timezone = "UTC")
-	@Future()
-	@NotNull
-	private Instant publishDatetime;
-
-	@NotNull
 	private Long maxItemsPerOrder;
 
-	@NotNull
+	@NotNull()
 	private DeliveryType deliveryType;
 
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@NotNull
 	private Long categoryId;
 
-	@NotEmpty
+	@NotNull
 	private Set<String> tags;
 
 	@NotEmpty
@@ -55,18 +46,16 @@ public class ProductDetail extends ProductInfo {
 
 	@JsonFormat(
 		shape = JsonFormat.Shape.STRING,
-		pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
 		timezone = "UTC")
 	@Future()
 	private Instant startDatetime;
 
 	@JsonFormat(
 		shape = JsonFormat.Shape.STRING,
-		pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
 		timezone = "UTC")
 	@Future()
 	private Instant endDateTime;
 
-	@NotNull
-	private PaymentMethod paymentMethod;
+	@NotEmpty
+	private PaymentMethod[] paymentMethod;
 }

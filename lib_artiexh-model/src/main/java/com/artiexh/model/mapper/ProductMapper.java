@@ -44,6 +44,7 @@ public interface ProductMapper {
 
 	@Mapping(target = "ownerInfo", source = "owner")
 	@Mapping(target = "categoryInfo", source = "category")
+	@Mapping(target = "paymentMethod", source = "paymentMethod")
 	ProductDetail entityToModelDetail(MerchEntity merchEntity, @MappingTarget ProductDetail productDetail);
 
 	@Named("entityToModelInfo")

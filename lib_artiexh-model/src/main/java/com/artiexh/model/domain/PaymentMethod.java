@@ -10,10 +10,6 @@ public enum PaymentMethod {
 	CARD(2);
 	private final int value;
 
-	public byte getByteValue() {
-		return (byte) value;
-	}
-
 	public static PaymentMethod fromValue(int value) {
 		for (PaymentMethod paymentMethod : PaymentMethod.values()) {
 			if (paymentMethod.getValue() == value) {
@@ -21,5 +17,9 @@ public enum PaymentMethod {
 			}
 		}
 		throw new IllegalArgumentException("No such value for payment method: " + value);
+	}
+
+	public byte getByteValue() {
+		return (byte) value;
 	}
 }

@@ -9,6 +9,9 @@ public enum ErrorCode {
 	PREORDER_INVALID_TIME(HttpStatus.BAD_REQUEST, "End time must be after start time"),
 	PRODUCT_CURRENCY_INVALID(HttpStatus.BAD_REQUEST, "Product currency is invalid"),
 
+	//Attachment
+	ATTACHMENT_NOT_FOUND(HttpStatus.OK, "Attachment is not found"),
+
 	//Category
 	CATEGORY_NOT_FOUND(HttpStatus.OK, "Category is not found"),
 
