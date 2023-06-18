@@ -6,7 +6,10 @@ import com.artiexh.model.domain.MerchType;
 import com.artiexh.model.validation.CurrencyType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -58,7 +61,6 @@ public class ProductInfo {
 	@Builder.Default
 	private boolean isPreorder = false;
 
-	@Future()
 	@NotNull
 	private Instant publishDatetime;
 }
