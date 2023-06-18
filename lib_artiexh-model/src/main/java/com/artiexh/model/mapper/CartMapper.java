@@ -13,6 +13,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 )
 public interface CartMapper {
 
-	@Mapping(target = "cartItems", source = "cartItems", defaultExpression = "java(new HashSet<>())")
+	@Mapping(target = "cartItems", source = "cartItems")
 	Cart entityToDomain(CartEntity cartEntity);
 
 	CartEntity domainToEntity(Cart cart);
@@ -32,6 +33,9 @@ public interface CartMapper {
 
 	@Named("artistItemsResponseMapping")
 	default Set<ArtistItemsResponse> artistItemsResponseMapping(Set<CartItem> cartItems) {
+		if (cartItems == null) {
+			return Collections.emptySet();
+		}
 		return cartItems.stream()
 			.collect(Collectors.groupingBy(
 				cartItem -> cartItem.getMerch().getOwner(),
