@@ -2,14 +2,8 @@ package com.artiexh.authorization.client.service.impl;
 
 import com.artiexh.auth.service.RecentOauth2LoginFailId;
 import com.artiexh.authorization.client.service.RegistrationService;
-import com.artiexh.data.jpa.entity.AccountEntity;
-import com.artiexh.data.jpa.entity.ArtistEntity;
-import com.artiexh.data.jpa.entity.PrinterProviderEntity;
-import com.artiexh.data.jpa.entity.UserEntity;
-import com.artiexh.data.jpa.repository.AccountRepository;
-import com.artiexh.data.jpa.repository.ArtistRepository;
-import com.artiexh.data.jpa.repository.PrinterProviderRepository;
-import com.artiexh.data.jpa.repository.UserRepository;
+import com.artiexh.data.jpa.entity.*;
+import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.*;
 import com.artiexh.model.mapper.AccountMapper;
 import com.artiexh.model.mapper.ArtistMapper;
@@ -38,6 +32,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private final UserRepository userRepository;
 	private final ArtistRepository artistRepository;
 	private final PrinterProviderRepository printerProviderRepository;
+	private final CartRepository cartRepository;
 	private final RecentOauth2LoginFailId recentOauth2LoginFailId;
 
 	@Override
@@ -73,6 +68,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 				throw new IllegalArgumentException("Existed username");
 			});
 		UserEntity savedUserEntity = userRepository.save(userEntity);
+		CartEntity cartEntity = CartEntity.builder().id(savedUserEntity.getId()).build();
+		cartRepository.save(cartEntity);
 
 		for (Pair<String, String> cacheProviderSubKey : cacheProviderSubKeys) {
 			recentOauth2LoginFailId.remove(cacheProviderSubKey.getFirst(), cacheProviderSubKey.getSecond());

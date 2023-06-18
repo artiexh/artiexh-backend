@@ -15,11 +15,12 @@ import java.util.Set;
 @AllArgsConstructor
 @SuperBuilder
 public class User extends Account {
-	@JsonIgnore
-	private String googleId;
-	@JsonIgnore
-	private String twitterId;
-	//@JsonIgnore
-	private String facebookId;
-	private Set<Subscription> subscriptionsTo;
+    @JsonIgnore
+    private String googleId;
+    @JsonIgnore
+    private String twitterId;
+    //@JsonIgnore
+    private String facebookId;
+    private Set<Subscription> subscriptionsTo;
+    private Cart shoppingCart;
 }

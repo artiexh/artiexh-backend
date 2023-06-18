@@ -29,6 +29,8 @@ public interface MerchMapper {
 
 	//	@Mapping(target = "categoryInfo", source = "categories", qualifiedByName = "categoryMapping")
 	@Mapping(target = "ownerInfo", source = "owner")
+	@Mapping(target = "owner.merch", ignore = true)
+	@Mapping(target = "owner.province.country.provinces", ignore = true)
 	Merch entityToDomainModel(MerchEntity merchEntity);
 
 	Merch requestToDomainModel(UpdateProductRequest requestToDomainModel);
