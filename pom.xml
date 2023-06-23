@@ -23,6 +23,7 @@
 		<module>lib_artiexh-auth</module>
 		<module>artiexh-authorization-client</module>
 		<module>lib_atriexh-api-base</module>
+		<module>lib_artiexh-elasticsearch-repository</module>
 	</modules>
 
 	<properties>

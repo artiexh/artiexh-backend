@@ -2,11 +2,11 @@ package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.ProductService;
-import com.artiexh.model.common.model.PageResponse;
-import com.artiexh.model.common.model.PaginationAndSortingRequest;
+import com.artiexh.model.rest.PageResponse;
+import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.product.GetAllProductFilter;
 import com.artiexh.model.rest.product.ProductDetail;
-import com.artiexh.model.rest.product.ProductInfo;
+import com.artiexh.model.rest.product.response.ProductInfoResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -45,11 +45,11 @@ public class ProductController {
 	}
 
 	@GetMapping()
-	public PageResponse<ProductInfo> getPage(
+	public PageResponse<ProductInfoResponse> getPage(
 		@ParameterObject PaginationAndSortingRequest paginationAndSortingRequest,
 		@ParameterObject GetAllProductFilter filter
 	) {
-		PageResponse<ProductInfo> productPage = productService.getInPage(filter.getSpecification(), paginationAndSortingRequest.getPageable());
+		PageResponse<ProductInfoResponse> productPage = productService.getInPage(filter.getEsCriteria(), paginationAndSortingRequest.getPageable());
 
 		return productPage;
 	}

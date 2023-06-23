@@ -1,6 +1,5 @@
-package com.artiexh.model.common.model;
+package com.artiexh.model.rest;
 
-import com.artiexh.model.common.constant.PaginationAndSorting;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,10 +13,10 @@ import org.springframework.data.domain.Sort;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaginationAndSortingRequest {
-	private Integer pageSize = PaginationAndSorting.DEFAULT_PAGE_SIZE;
-	private Integer pageNumber = PaginationAndSorting.DEFAULT_PAGE_NUMBER;
-	private String sortBy = PaginationAndSorting.DEFAULT_SORT_BY;
-	private Sort.Direction sortDirection = PaginationAndSorting.DEFAULT_SORT_DIRECTION;
+	private Integer pageSize = PaginationAndSortingConst.DEFAULT_PAGE_SIZE;
+	private Integer pageNumber = PaginationAndSortingConst.DEFAULT_PAGE_NUMBER;
+	private String sortBy = PaginationAndSortingConst.DEFAULT_SORT_BY;
+	private Sort.Direction sortDirection = PaginationAndSortingConst.DEFAULT_SORT_DIRECTION;
 
 	public Pageable getPageable() {
 		return PageRequest.of(pageNumber - 1, pageSize, sortDirection, sortBy);

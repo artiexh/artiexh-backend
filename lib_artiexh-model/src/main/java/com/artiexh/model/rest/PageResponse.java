@@ -1,4 +1,4 @@
-package com.artiexh.model.common.model;
+package com.artiexh.model.rest;
 
 import lombok.*;
 import org.springframework.data.domain.Page;

@@ -1,9 +1,11 @@
 package com.artiexh.model.mapper;
 
+import com.artiexh.data.elasticsearch.model.ProductDocument;
 import com.artiexh.data.jpa.entity.MerchCategoryEntity;
 import com.artiexh.data.jpa.entity.MerchEntity;
 import com.artiexh.model.domain.Merch;
 import com.artiexh.model.rest.product.request.UpdateProductRequest;
+import com.artiexh.model.rest.product.response.ProductInfoResponse;
 import org.mapstruct.*;
 
 import java.util.List;
@@ -49,4 +51,6 @@ public interface MerchMapper {
 			.collect(Collectors.toMap(MerchCategoryEntity::getId, MerchCategoryEntity::getName));
 		return categories;
 	}
+
+	ProductInfoResponse documentToProductInfoResponse(ProductDocument document);
 }

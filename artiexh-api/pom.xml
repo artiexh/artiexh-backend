@@ -20,7 +20,11 @@
 			<artifactId>lib_atriexh-api-base</artifactId>
 			<version>1.0.0</version>
 		</dependency>
-
+		<dependency>
+			<groupId>com.artiexh</groupId>
+			<artifactId>lib_artiexh-elasticsearch-repository</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 		<dependency>
 			<groupId>org.javamoney</groupId>
 			<artifactId>moneta</artifactId>

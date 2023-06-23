@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
@@ -64,5 +65,37 @@ public class GetAllProductFilter {
 			predicates.add(builder.equal(root.get("status"), MerchStatus.AVAILABLE.getByteValue()));
 			return builder.or(predicates.toArray(new Predicate[0]));
 		};
+	}
+
+	public Criteria getEsCriteria() {
+		return getAvailableESCriteria().and(getFilterESCriteria());
+	}
+
+	private Criteria getFilterESCriteria() {
+		Criteria criteria = new Criteria();
+		if (StringUtils.isNotBlank(keyword)) {
+			criteria.and("name").matches(keyword);
+		}
+		if (minPrice != null) {
+			criteria.and("price").greaterThanEqual(minPrice);
+		}
+		if (maxPrice != null) {
+			criteria.and("price").lessThanEqual(maxPrice);
+		}
+		if (averageRate != null) {
+			criteria.and("averageRate").is(averageRate);
+		}
+		if (categoryId != null) {
+			criteria.and("category.id").is(categoryId);
+		}
+		if (provinceId != null) {
+			criteria.and("owner.province.id").is(provinceId);
+		}
+		return criteria;
+	}
+
+	private Criteria getAvailableESCriteria() {
+		return new Criteria("status")
+			.in(MerchStatus.PRE_ORDER.getByteValue(), MerchStatus.AVAILABLE.getByteValue());
 	}
 }

@@ -1,4 +1,4 @@
-package com.artiexh.model.domain;
+package com.artiexh.model.rest.product;
 
 import lombok.*;
 
