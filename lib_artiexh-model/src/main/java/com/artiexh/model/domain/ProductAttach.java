@@ -1,5 +1,6 @@
 package com.artiexh.model.domain;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,10 +10,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MerchAttach {
+public class ProductAttach {
 	private Long id;
+
+	@NotBlank
 	private String url;
-	private MerchAttachType type;
+
+	@NotBlank
+	private ProductAttachType type;
+
+
 	private String title;
+
 	private String description;
 }

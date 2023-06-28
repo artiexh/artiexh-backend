@@ -1,9 +1,9 @@
 package com.artiexh.model.rest.product.request;
 
 import com.artiexh.model.domain.DeliveryType;
-import com.artiexh.model.domain.MerchAttach;
-import com.artiexh.model.domain.MerchStatus;
-import com.artiexh.model.domain.MerchType;
+import com.artiexh.model.domain.ProductAttach;
+import com.artiexh.model.domain.ProductStatus;
+import com.artiexh.model.domain.ProductType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -20,11 +20,11 @@ import java.util.Set;
 public class UpdateProductRequest {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long id;
-	private MerchStatus status;
+	private ProductStatus status;
 	private String name;
 	private Double price;
 	private String description;
-	private MerchType type;
+	private ProductType type;
 	private Long remainingQuantity;
 	private Instant publishDatetime;
 	private Long maxItemsPerOrder;
@@ -36,5 +36,5 @@ public class UpdateProductRequest {
 	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
 	private Map<Long, String> categoryInfo;
 	private Set<String> tags;
-	private Set<MerchAttach> attaches;
+	private Set<ProductAttach> attaches;
 }

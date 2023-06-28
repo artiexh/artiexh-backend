@@ -8,11 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class CartItem {
-
-    private Product product;
-
-    private Integer quantity;
-
+@Builder(toBuilder = true)
+public class ProductCategory {
+	private long id;
+	private String name;
 }

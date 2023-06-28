@@ -17,7 +17,7 @@ import java.util.Set;
 public class ArtistEntity extends UserEntity {
 
 	@OneToMany(mappedBy = "owner")
-	private Set<MerchEntity> merch;
+	private Set<ProductEntity> product;
 
 	@OneToMany(mappedBy = "artist")
 	private Set<SubscriptionEntity> subscriptionsFrom;

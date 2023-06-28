@@ -13,8 +13,8 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
-@Table(name = "merch_attach")
-public class MerchAttachEntity {
+@Table(name = "product_attach")
+public class ProductAttachEntity {
 
 	@Id
 	@Tsid

@@ -20,9 +20,9 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "merch")
+@Table(name = "product")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class MerchEntity {
+public class ProductEntity {
 
 	@Id
 	@Tsid
@@ -37,12 +37,19 @@ public class MerchEntity {
 	@Column(name = "status", nullable = false)
 	private Byte status;
 
-	@Column(name = "payment_method")
-	@Lob
-	private Byte[] paymentMethod;
-
 	@Column(name = "name", nullable = false)
 	private String name;
+
+	@Column(name = "price_amount", nullable = false)
+	private BigDecimal priceAmount;
+
+	@Column(name = "price_unit", nullable = false, length = 3)
+	private String priceUnit;
+
+	@ManyToOne(optional = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@JoinColumn(name = "category_id", nullable = false)
+	private ProductCategoryEntity category;
 
 	@Column(name = "description")
 	private String description;
@@ -56,12 +63,6 @@ public class MerchEntity {
 	@Column(name = "publish_datetime")
 	private Instant publishDatetime;
 
-	@Column(name = "currency", nullable = false, length = 3)
-	private String currency;
-
-	@Column(name = "price", nullable = false)
-	private BigDecimal price;
-
 	@Column(name = "max_items_per_order", columnDefinition = "INT UNSIGNED")
 	private Long maxItemsPerOrder;
 
@@ -69,21 +70,20 @@ public class MerchEntity {
 	private Byte deliveryType;
 
 	@Column(name = "average_rate", nullable = false)
-	private float averageRate;
+	private Float averageRate;
 
-	@ManyToOne(optional = false)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JoinColumn(name = "category_id", nullable = false)
-	private MerchCategoryEntity category;
+	@Column(name = "payment_method")
+	@Lob
+	private Byte[] paymentMethods;
 
 	@ManyToMany
-	@JoinTable(name = "merch_tag_mapping",
-		joinColumns = @JoinColumn(name = "merch_id"),
+	@JoinTable(name = "product_tag_mapping",
+		joinColumns = @JoinColumn(name = "product_id"),
 		inverseJoinColumns = @JoinColumn(name = "tag_id"))
-	private Set<MerchTagEntity> tags;
+	private Set<ProductTagEntity> tags;
 
 	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "merch_id")
-	private Set<MerchAttachEntity> attaches;
+	@JoinColumn(name = "product_id")
+	private Set<ProductAttachEntity> attaches;
 
 }

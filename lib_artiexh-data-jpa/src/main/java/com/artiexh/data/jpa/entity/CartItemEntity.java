@@ -18,14 +18,14 @@ public class CartItemEntity {
 	@EmbeddedId
 	private CartItemId id;
 
-    @MapsId("merchId")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "merch_id", nullable = false)
-    private MerchEntity merch;
+	@MapsId("productId")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@JoinColumn(name = "product_id", nullable = false)
+	private ProductEntity product;
 
-    @NotNull
-    @Column(name = "quantity", nullable = false)
-    private Integer quantity;
+	@NotNull
+	@Column(name = "quantity", nullable = false)
+	private Integer quantity;
 
 }

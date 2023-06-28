@@ -1,6 +1,7 @@
 package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.CartEntity;
+import com.artiexh.data.jpa.entity.CartItemEntity;
 import com.artiexh.model.domain.Artist;
 import com.artiexh.model.domain.Cart;
 import com.artiexh.model.domain.CartItem;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {CartItemMapper.class}
+	uses = {ProductMapper.class, AccountMapper.class, ProductAttachMapper.class}
 )
 public interface CartMapper {
 
@@ -38,7 +39,7 @@ public interface CartMapper {
 		}
 		return cartItems.stream()
 			.collect(Collectors.groupingBy(
-				cartItem -> cartItem.getMerch().getOwner(),
+				cartItem -> cartItem.getProduct().getOwner(),
 				Collectors.mapping(this::domainToCartItemResponse, Collectors.toSet())
 			))
 			.entrySet().stream()
@@ -51,18 +52,22 @@ public interface CartMapper {
 
 	ArtistCartInfoResponse artistToArtistCartInfo(Artist artist);
 
-	@Mapping(target = "id", source = "merch.id")
-	@Mapping(target = "status", source = "merch.status")
-	@Mapping(target = "currency", source = "merch.currency")
-	@Mapping(target = "name", source = "merch.name")
-	@Mapping(target = "price", source = "merch.price")
-	@Mapping(target = "description", source = "merch.description")
-	@Mapping(target = "type", source = "merch.type")
-	@Mapping(target = "remainingQuantity", source = "merch.remainingQuantity")
-	@Mapping(target = "publishDatetime", source = "merch.publishDatetime")
-	@Mapping(target = "maxItemsPerOrder", source = "merch.maxItemsPerOrder")
-	@Mapping(target = "deliveryType", source = "merch.deliveryType")
-	@Mapping(target = "attaches", source = "merch.attaches")
+	@Mapping(target = "id", source = "product.id")
+	@Mapping(target = "status", source = "product.status")
+	@Mapping(target = "currency", source = "product.price.unit")
+	@Mapping(target = "name", source = "product.name")
+	@Mapping(target = "price", source = "product.price.amount")
+	@Mapping(target = "description", source = "product.description")
+	@Mapping(target = "type", source = "product.type")
+	@Mapping(target = "remainingQuantity", source = "product.remainingQuantity")
+	@Mapping(target = "publishDatetime", source = "product.publishDatetime")
+	@Mapping(target = "maxItemsPerOrder", source = "product.maxItemsPerOrder")
+	@Mapping(target = "deliveryType", source = "product.deliveryType")
+	@Mapping(target = "attaches", source = "product.attaches")
 	CartItemResponse domainToCartItemResponse(CartItem cartItem);
+
+	CartItem entityToDomain(CartItemEntity cartItemEntity);
+
+	CartItemEntity domainToEntity(CartItem cartItem);
 
 }

@@ -14,21 +14,21 @@ import java.util.Set;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {RoleMapper.class, UserStatusMapper.class, MerchMapper.class}
+	uses = {AccountMapper.class, ProductMapper.class, ProductAttachMapper.class, PasswordMapper.class}
 )
-public abstract class UserMapper extends PasswordMapper {
+public interface UserMapper {
 
-	public abstract User entityToDomain(UserEntity userEntity);
+	User entityToDomain(UserEntity userEntity);
 
-	public abstract UserEntity domainToEntity(User user);
+	UserEntity domainToEntity(User user);
 
 	@Mapping(target = "role", constant = "USER")
 	@Mapping(target = "status", constant = "ACTIVE")
 	@Mapping(source = "password", target = "password", qualifiedByName = "encodedPassword")
-	public abstract User registerUserRequestToDomain(RegisterUserRequest request);
+	User registerUserRequestToDomain(RegisterUserRequest request);
 
 	@Condition
-	public boolean isNotLazyLoadedSubscriptionsTo(Set<SubscriptionEntity> subscriptionsTo) {
+	default boolean isNotLazyLoadedSubscriptionsTo(Set<SubscriptionEntity> subscriptionsTo) {
 		return Hibernate.isInitialized(subscriptionsTo);
 	}
 

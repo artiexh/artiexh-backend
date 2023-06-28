@@ -1,32 +1,32 @@
-package com.artiexh.model.rest.cart.response;
+package com.artiexh.model.domain;
 
-import com.artiexh.model.domain.DeliveryType;
-import com.artiexh.model.domain.ProductAttach;
-import com.artiexh.model.domain.ProductStatus;
-import com.artiexh.model.domain.ProductType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartItemResponse {
+@SuperBuilder
+public class Product {
 	private Long id;
+	private Artist owner;
 	private ProductStatus status;
-	private String currency;
 	private String name;
-	private BigDecimal price;
+	private Money price;
+	private ProductCategory category;
 	private String description;
 	private ProductType type;
 	private Long remainingQuantity;
 	private Instant publishDatetime;
 	private Long maxItemsPerOrder;
 	private DeliveryType deliveryType;
-	private Integer quantity;
+	private Float averageRate;
+	private Set<Byte> paymentMethods;
+	private Set<ProductTag> tags;
 	private Set<ProductAttach> attaches;
 }

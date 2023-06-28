@@ -13,7 +13,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class PreOrderMerch extends Merch {
+public class PreOrderProduct extends Product {
 	private Instant startDatetime;
 	private Instant endDatetime;
 }

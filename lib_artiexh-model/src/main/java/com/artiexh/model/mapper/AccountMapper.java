@@ -2,6 +2,8 @@ package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.AccountEntity;
 import com.artiexh.model.domain.Account;
+import com.artiexh.model.domain.Role;
+import com.artiexh.model.domain.UserStatus;
 import com.artiexh.model.rest.auth.RegisterAdminRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -9,17 +11,33 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {UserStatusMapper.class, RoleMapper.class}
+	uses = {PasswordMapper.class}
 )
-public abstract class AccountMapper extends PasswordMapper {
+public interface AccountMapper {
 
-	public abstract Account entityToDomain(AccountEntity accountEntity);
+	Account entityToDomain(AccountEntity accountEntity);
 
-	public abstract AccountEntity domainToEntity(Account account);
+	AccountEntity domainToEntity(Account account);
 
 	@Mapping(target = "role", constant = "ADMIN")
 	@Mapping(target = "status", constant = "ACTIVE")
 	@Mapping(source = "password", target = "password", qualifiedByName = "encodedPassword")
-	public abstract Account registerAdminRequestToDomain(RegisterAdminRequest registerAdminRequest);
+	Account registerAdminRequestToDomain(RegisterAdminRequest registerAdminRequest);
+
+	default int toValue(Role role) {
+		return role.getValue();
+	}
+
+	default Role toRole(int value) {
+		return Role.fromValue(value);
+	}
+
+	default Integer toValue(UserStatus status) {
+		return status.getValue();
+	}
+
+	default UserStatus toUserStatus(Integer value) {
+		return UserStatus.fromValue(value);
+	}
 
 }

@@ -17,8 +17,8 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
-@Table(name = "pre_order_merch")
-public class PreOrderMerchEntity extends MerchEntity {
+@Table(name = "pre_order_product")
+public class PreOrderProductEntity extends ProductEntity {
 
 	@Column(name = "start_datetime", nullable = false)
 	private Instant startDatetime;
@@ -26,12 +26,8 @@ public class PreOrderMerchEntity extends MerchEntity {
 	@Column(name = "end_datetime", nullable = false)
 	private Instant endDatetime;
 
-	public PreOrderMerchEntity(MerchEntity instance) {
+	public PreOrderProductEntity(ProductEntity instance) {
 		super(instance.toBuilder());
-	}
-
-	public static PreOrderMerchEntityBuilder<?, ?> parentBuilder(MerchEntity instance) {
-		return new PreOrderMerchEntity(instance).toBuilder();
 	}
 
 }

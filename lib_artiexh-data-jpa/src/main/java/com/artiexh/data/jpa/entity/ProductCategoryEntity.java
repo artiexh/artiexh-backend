@@ -12,11 +12,11 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "merch_category")
-public class MerchCategoryEntity {
+@Table(name = "product_category")
+public class ProductCategoryEntity {
 
 	@OneToMany(mappedBy = "category")
-	private Set<MerchEntity> merch;
+	private Set<ProductEntity> product;
 	@Id
 	@Tsid
 	@Column(name = "id", nullable = false)

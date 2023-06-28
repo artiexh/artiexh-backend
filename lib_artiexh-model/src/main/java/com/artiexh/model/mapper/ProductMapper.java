@@ -1,85 +1,66 @@
 package com.artiexh.model.mapper;
 
-import com.artiexh.data.jpa.entity.MerchAttachEntity;
-import com.artiexh.data.jpa.entity.MerchEntity;
-import com.artiexh.data.jpa.entity.PreOrderMerchEntity;
-import com.artiexh.model.domain.MerchAttachType;
-import com.artiexh.model.rest.product.ProductDetail;
-import com.artiexh.model.rest.product.ProductInfo;
-import com.artiexh.model.rest.product.request.UpdateProductRequest;
-import org.mapstruct.*;
-
-import java.util.List;
-import java.util.Set;
+import com.artiexh.data.elasticsearch.model.ProductDocument;
+import com.artiexh.data.jpa.entity.ProductEntity;
+import com.artiexh.model.domain.*;
+import com.artiexh.model.rest.product.request.CreateProductRequest;
+import com.artiexh.model.rest.product.response.ProductResponse;
+import org.mapstruct.Mapper;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.springframework.data.domain.Page;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
 	uses = {
-		UserStatusMapper.class,
-		RoleMapper.class,
-		MerchStatusMapper.class,
-		PaymentMethodMapper.class,
-		MerchTypeMapper.class,
-		DeliveryTypeMapper.class,
-		MerchCategoryMapper.class,
-		MerchTagMapper.class,
-		MerchAttachTypeMapper.class,
-		ArtistMapper.class
+		ProductCategoryMapper.class,
+		ProductTagMapper.class,
+		ArtistMapper.class,
+		ProductAttachMapper.class
 	}
 )
 public interface ProductMapper {
 
-	//	@Mapping(target = "categoryInfo", source = "categories", qualifiedByName = "categoryMapping")
-	@Mapping(target = "ownerInfo", source = "owner")
-	@Mapping(target = "categoryInfo", source = "category")
-	ProductDetail entityToModelDetail(MerchEntity merchEntity);
+	Product entityToDomain(ProductEntity productEntity);
 
-	@Mapping(target = "ownerInfo", source = "owner")
-	@Mapping(target = "categoryInfo", source = "category")
-	ProductDetail entityToModelDetail(PreOrderMerchEntity merchEntity);
+	Product documentToDomain(ProductDocument productDocument);
 
-	@Mapping(target = "ownerInfo", source = "owner")
-	@Mapping(target = "categoryInfo", source = "category")
-	ProductDetail entityToModelDetail(PreOrderMerchEntity preOrderMerchEntity, @MappingTarget ProductDetail productDetail);
+	ProductResponse domainToProductResponse(Product product);
 
-	@Mapping(target = "ownerInfo", source = "owner")
-	@Mapping(target = "categoryInfo", source = "category")
-	@Mapping(target = "paymentMethod", source = "paymentMethod")
-	ProductDetail entityToModelDetail(MerchEntity merchEntity, @MappingTarget ProductDetail productDetail);
+	default Page<ProductResponse> domainPageToProductResponsePage(Page<Product> product) {
+		return product.map(this::domainToProductResponse);
+	}
 
-	@Named("entityToModelInfo")
-	@Mapping(target = "ownerInfo", source = "owner")
-	@Mapping(target = "id", source = "id")
-	@Mapping(target = "thumbnailUrl", source = "attaches", qualifiedByName = "attachmentMapping")
-	ProductInfo entityToModelInfo(MerchEntity merchEntity);
+	Product createProductRequestToProduct(CreateProductRequest createProductRequest);
 
-	ProductDetail requestToDomainModel(UpdateProductRequest requestToDomainModel);
+	default Integer toValue(ProductStatus status) {
+		return status.getValue();
+	}
 
-	@IterableMapping(qualifiedByName = "entityToModelInfo")
-	List<ProductInfo> entitiesToDomainModels(List<MerchEntity> merchEntity);
+	default ProductStatus toProductStatus(Integer value) {
+		return ProductStatus.fromValue(value);
+	}
 
-	@Mapping(target = "averageRate", source = "averageRate", ignore = true)
-	MerchEntity domainModelToEntity(ProductDetail merch);
+	default Integer toValue(ProductType type) {
+		return type.getValue();
+	}
 
-	@Mapping(target = "owner", ignore = true)
-	@Mapping(target = "averageRate", source = "averageRate", ignore = true)
-	MerchEntity domainModelToEntity(ProductDetail merch, @MappingTarget MerchEntity entity);
+	default ProductType toProductType(Integer value) {
+		return ProductType.fromValue(value);
+	}
 
-	@Mapping(target = "owner", ignore = true)
-	@Mapping(target = "averageRate", source = "averageRate", ignore = true)
-	PreOrderMerchEntity domainModelToEntity(ProductDetail merch, @MappingTarget PreOrderMerchEntity entity);
+	default Integer toValue(PaymentMethod paymentMethod) {
+		return paymentMethod.getValue();
+	}
 
-	@Named("attachmentMapping")
-	default String attachmentMapping(Set<MerchAttachEntity> attachments) {
-		MerchAttachEntity attachEntity = attachments.stream()
-			.filter(attachment ->
-				MerchAttachType.THUMBNAIL.getValue() == attachment.getType().intValue()
-			)
-			.findAny().orElse(null);
-		if (attachEntity == null) {
-			return null;
-		} else {
-			return attachEntity.getUrl();
-		}
+	default PaymentMethod toPaymentMethod(Integer value) {
+		return PaymentMethod.fromValue(value);
+	}
+
+	default Integer toValue(DeliveryType type) {
+		return type.getValue();
+	}
+
+	default DeliveryType toDeliveryType(Integer value) {
+		return DeliveryType.fromValue(value);
 	}
 }
