@@ -69,6 +69,7 @@ public class ProductDocument {
 		private String name;
 	}
 
+	@Data
 	public static class Category {
 		@Field(name = "id", type = FieldType.Long)
 		private Long id;

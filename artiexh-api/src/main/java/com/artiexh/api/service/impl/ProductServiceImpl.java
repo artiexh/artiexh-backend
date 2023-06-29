@@ -2,13 +2,15 @@ package com.artiexh.api.service.impl;
 
 import com.artiexh.api.service.ProductService;
 import com.artiexh.data.elasticsearch.model.ProductDocument;
-import com.artiexh.data.jpa.entity.*;
+import com.artiexh.data.jpa.entity.ArtistEntity;
+import com.artiexh.data.jpa.entity.ProductCategoryEntity;
+import com.artiexh.data.jpa.entity.ProductEntity;
+import com.artiexh.data.jpa.entity.ProductTagEntity;
 import com.artiexh.data.jpa.repository.ArtistRepository;
 import com.artiexh.data.jpa.repository.ProductCategoryRepository;
 import com.artiexh.data.jpa.repository.ProductRepository;
 import com.artiexh.data.jpa.repository.ProductTagRepository;
 import com.artiexh.model.domain.Product;
-import com.artiexh.model.domain.ProductAttach;
 import com.artiexh.model.domain.ProductTag;
 import com.artiexh.model.mapper.ProductAttachMapper;
 import com.artiexh.model.mapper.ProductMapper;
@@ -26,7 +28,6 @@ import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -78,6 +79,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
+	@Transactional
 	public Product create(long userId, Product product) {
 
 		ArtistEntity artistEntity = artistRepository.findById(userId)
@@ -101,8 +103,18 @@ public class ProductServiceImpl implements ProductService {
 		productEntity.setCategory(categoryEntity);
 		productEntity.setTags(tagEntities);
 
-		productRepository.save(productEntity);
-		return productMapper.entityToDomain(productEntity);
+		ProductEntity savedProductEntity;
+		try {
+			savedProductEntity = productRepository.save(productEntity);
+		} catch (Exception e) {
+			log.error("Save product fail", e);
+			throw e;
+		}
+
+		ProductDocument productDocument = productMapper.entityToDocument(savedProductEntity);
+		elasticsearchTemplate.save(productDocument);
+
+		return productMapper.entityToDomain(savedProductEntity);
 	}
 
 	@Override
@@ -166,17 +178,6 @@ public class ProductServiceImpl implements ProductService {
 		return productModel;*/
 	}
 
-	private void preCreateOrUpdate(Product productModel) {
-		/*if (productModel.isPreorder() && (productModel.getStartDatetime() == null || productModel.getEndDateTime() == null)) {
-			throw new ResponseStatusException(PREORDER_NOT_FOUND_TIME.getCode(), PREORDER_NOT_FOUND_TIME.getMessage());
-
-		} else {
-			if (productModel.isPreorder() && productModel.getEndDateTime().isBefore(productModel.getStartDatetime())) {
-				throw new ResponseStatusException(PREORDER_INVALID_TIME.getCode(), PREORDER_INVALID_TIME.getMessage());
-			}
-		}*/
-	}
-
 	@Override
 	public void delete(long userId, long productId) {
 		productRepository.findById(productId)
@@ -191,19 +192,5 @@ public class ProductServiceImpl implements ProductService {
 					throw new IllegalArgumentException("Product not found");
 				}
 			);
-	}
-
-	private List<ProductAttachEntity> updateAttachment(Set<ProductAttach> attaches) {
-		/*Set<Long> attachmentIds = attaches.stream()
-			.map(ProductAttach::getId)
-			.filter(Objects::nonNull)
-			.collect(Collectors.toSet());
-		Set<ProductAttachEntity> updatedAttaches = attachRepository.findAllByIdIn(attachmentIds);
-		if (attachmentIds.size() != updatedAttaches.size()) {
-			throw new ResponseStatusException(ATTACHMENT_NOT_FOUND.getCode(), ATTACHMENT_NOT_FOUND.getMessage());
-		}
-		Set<ProductAttachEntity> attachEntities = productAttachMapper.domainModelsToEntities(attaches, updatedAttaches);
-		return attachRepository.saveAll(attachEntities);*/
-		return null;
 	}
 }

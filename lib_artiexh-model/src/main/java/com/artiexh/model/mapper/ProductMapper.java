@@ -25,11 +25,16 @@ public interface ProductMapper {
 
 	@Mapping(target = "priceUnit", source = "price.unit")
 	@Mapping(target = "priceAmount", source = "price.amount")
+	@Mapping(target = "averageRate", constant = "0f")
 	ProductEntity domainToEntity(Product product);
 
 	Product documentToDomain(ProductDocument productDocument);
 
 	ProductResponse domainToProductResponse(Product product);
+
+	@Mapping(target = "price.unit", source = "priceUnit")
+	@Mapping(target = "price.amount", source = "priceAmount")
+	ProductDocument entityToDocument(ProductEntity productEntity);
 
 	default Page<ProductResponse> domainPageToProductResponsePage(Page<Product> product) {
 		return product.map(this::domainToProductResponse);

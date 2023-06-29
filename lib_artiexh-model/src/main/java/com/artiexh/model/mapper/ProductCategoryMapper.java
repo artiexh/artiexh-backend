@@ -12,4 +12,5 @@ public interface ProductCategoryMapper {
 	default ProductCategoryEntity domainToEntity(Long categoryId) {
 		return ProductCategoryEntity.builder().id(categoryId).build();
 	}
+
 }

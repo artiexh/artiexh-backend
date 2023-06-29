@@ -70,19 +70,20 @@ public class ProductEntity {
 	private Byte deliveryType;
 
 	@Column(name = "average_rate", nullable = false)
-	private Float averageRate;
+	private Float averageRate = 0f;
 
 	@Column(name = "payment_method")
 	@Lob
 	private Byte[] paymentMethods;
 
-	@ManyToMany
+	@ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinTable(name = "product_tag_mapping",
 		joinColumns = @JoinColumn(name = "product_id"),
 		inverseJoinColumns = @JoinColumn(name = "tag_id"))
 	private Set<ProductTagEntity> tags;
 
-	@OneToMany(fetch = FetchType.LAZY)
+	@OneToMany(fetch = FetchType.LAZY,
+		cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = "product_id")
 	private Set<ProductAttachEntity> attaches;
 

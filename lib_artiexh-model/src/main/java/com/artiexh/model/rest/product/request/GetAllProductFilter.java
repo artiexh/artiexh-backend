@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 
@@ -25,7 +26,7 @@ public class GetAllProductFilter {
 	private Integer categoryId;
 
 	public Query getQuery() {
-		return NativeQuery.builder()
+		var queryBuilder = NativeQuery.builder()
 			.withFilter(filter -> {
 				filter.term(term -> term.field("status")
 					.value(ProductStatus.PRE_ORDER.getByteValue())
@@ -47,13 +48,17 @@ public class GetAllProductFilter {
 					filter.term(term -> term.field("owner.province.id").value(provinceId));
 				}
 				return filter;
-			})
-			.withQuery(query -> query
+			});
+
+		if (StringUtils.hasText(keyword)) {
+			queryBuilder.withQuery(query -> query
 				.multiMatch(multiMatch -> multiMatch
 					.query(keyword)
 					.fields("name", "owner.username", "owner.displayName")
 					.fuzziness("AUTO"))
-			)
-			.build();
+			);
+		}
+
+		return queryBuilder.build();
 	}
 }
