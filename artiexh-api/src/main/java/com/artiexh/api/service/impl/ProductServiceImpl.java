@@ -2,11 +2,14 @@ package com.artiexh.api.service.impl;
 
 import com.artiexh.api.service.ProductService;
 import com.artiexh.data.elasticsearch.model.ProductDocument;
-import com.artiexh.data.jpa.entity.ProductAttachEntity;
-import com.artiexh.data.jpa.entity.ProductEntity;
+import com.artiexh.data.jpa.entity.*;
+import com.artiexh.data.jpa.repository.ArtistRepository;
+import com.artiexh.data.jpa.repository.ProductCategoryRepository;
 import com.artiexh.data.jpa.repository.ProductRepository;
+import com.artiexh.data.jpa.repository.ProductTagRepository;
 import com.artiexh.model.domain.Product;
 import com.artiexh.model.domain.ProductAttach;
+import com.artiexh.model.domain.ProductTag;
 import com.artiexh.model.mapper.ProductAttachMapper;
 import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.rest.product.response.ProductResponse;
@@ -33,6 +36,9 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @Slf4j
 public class ProductServiceImpl implements ProductService {
+	private final ArtistRepository artistRepository;
+	private final ProductCategoryRepository productCategoryRepository;
+	private final ProductTagRepository productTagRepository;
 	private final ProductMapper productMapper;
 	private final ProductAttachMapper productAttachMapper;
 	private final ProductRepository productRepository;
@@ -73,52 +79,30 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public Product create(long userId, Product product) {
-		return null;
-		/*preCreateOrUpdate(productModel);
 
-		ProductEntity product = productMapper.domainModelToEntity(productModel);
+		ArtistEntity artistEntity = artistRepository.findById(userId)
+			.orElseThrow(() -> new IllegalArgumentException("Artist not valid"));
 
-		Set<ProductTagEntity> tagEntities = productModel.getTags().stream()
-			.map(tagName -> ProductTagEntity.builder()
-				.name(tagName)
-				.build())
-			.collect(Collectors.toSet());
-		Set<ProductTagEntity> savedTagEntities = tagRepository.findAllByNameIn(productModel.getTags());
-		tagEntities.removeAll(savedTagEntities);
-		savedTagEntities.addAll(tagRepository.saveAll(tagEntities));
+		ProductCategoryEntity categoryEntity = productCategoryRepository.findById(product.getCategory().getId())
+			.orElseThrow(() -> new IllegalArgumentException("Category not valid"));
 
-		ProductCategoryEntity categoryEntity = categoryRepository.findById(productModel.getCategoryId())
-			.orElseThrow(() -> new ResponseStatusException(CATEGORY_NOT_FOUND.getCode(), CATEGORY_NOT_FOUND.getMessage()));
-
-		Set<ProductAttachEntity> attachEntities = productAttachMapper.domainModelsToEntities(productModel.getAttaches());
-		List<ProductAttachEntity> attachEntitiesList = attachRepository.saveAll(attachEntities);
-
-		ArtistEntity artist = artistRepository.findById(userId).orElseThrow(
-			() -> new ResponseStatusException(ARTIST_NOT_FOUND.getCode(), ARTIST_NOT_FOUND.getMessage())
+		Set<String> tagNames = product.getTags().stream().map(ProductTag::getName).collect(Collectors.toSet());
+		Set<ProductTagEntity> tagEntities = productTagRepository.findAllByNameIn(tagNames);
+		Set<String> existedTagNames = tagEntities.stream().map(ProductTagEntity::getName).collect(Collectors.toSet());
+		tagEntities.addAll(
+			tagNames.stream()
+				.filter(tagName -> !existedTagNames.contains(tagName))
+				.map(tagName -> ProductTagEntity.builder().name(tagName).build())
+				.collect(Collectors.toSet())
 		);
 
-		product.setOwner(artist);
-		product.setTags(savedTagEntities);
-		product.setCategory(categoryEntity);
-		product.setAttaches(new HashSet<>(attachEntitiesList));
+		ProductEntity productEntity = productMapper.domainToEntity(product);
+		productEntity.setOwner(artistEntity);
+		productEntity.setCategory(categoryEntity);
+		productEntity.setTags(tagEntities);
 
-		if (!productModel.isPreorder()) {
-			product = productRepository.save(product);
-
-			productModel = productMapper.entityToModelDetail(product, productModel);
-			productModel.setId(product.getId());
-		} else {
-			PreOrderProductEntity preOrderProduct = PreOrderProductEntity.parentBuilder(product).build();
-			preOrderProduct.setStartDatetime(productModel.getStartDatetime());
-			preOrderProduct.setEndDatetime(productModel.getEndDateTime());
-
-			preOrderProduct = preOrderProductRepository.save(preOrderProduct);
-
-			productModel = productMapper.entityToModelDetail(preOrderProduct, productModel);
-			productModel.setId(preOrderProduct.getId());
-		}
-
-		return productModel;*/
+		productRepository.save(productEntity);
+		return productMapper.entityToDomain(productEntity);
 	}
 
 	@Override

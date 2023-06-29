@@ -14,7 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateProductRequest {
-	@NotBlank
+	@NotNull
 	private ProductStatus status;
 
 	@NotBlank
@@ -23,13 +23,13 @@ public class CreateProductRequest {
 	@Valid
 	private Money price;
 
-	@NotBlank
-	private String categoryId;
+	@NotNull
+	private Long categoryId;
 
 	@NotBlank
 	private String description;
 
-	@NotBlank
+	@NotNull
 	private ProductType type;
 
 	@NotNull
@@ -41,7 +41,7 @@ public class CreateProductRequest {
 
 	private Integer maxItemsPerOrder;
 
-	@NotBlank
+	@NotNull
 	private DeliveryType deliveryType;
 
 	@NotEmpty

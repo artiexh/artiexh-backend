@@ -17,8 +17,6 @@ public interface ProductAttachMapper {
 
 	ProductAttachEntity domainToEntity(ProductAttach productAttach);
 
-	Set<ProductAttachEntity> domainModelsToEntities(Set<ProductAttach> models);
-
 	Set<ProductAttach> entitiesToDomains(Set<ProductAttachEntity> entities);
 
 	default Integer toValue(ProductAttachType type) {

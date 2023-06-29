@@ -6,6 +6,7 @@ import com.artiexh.model.domain.*;
 import com.artiexh.model.rest.product.request.CreateProductRequest;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.springframework.data.domain.Page;
 
@@ -22,6 +23,10 @@ public interface ProductMapper {
 
 	Product entityToDomain(ProductEntity productEntity);
 
+	@Mapping(target = "priceUnit", source = "price.unit")
+	@Mapping(target = "priceAmount", source = "price.amount")
+	ProductEntity domainToEntity(Product product);
+
 	Product documentToDomain(ProductDocument productDocument);
 
 	ProductResponse domainToProductResponse(Product product);
@@ -30,6 +35,7 @@ public interface ProductMapper {
 		return product.map(this::domainToProductResponse);
 	}
 
+	@Mapping(target = "category.id", source = "categoryId")
 	Product createProductRequestToProduct(CreateProductRequest createProductRequest);
 
 	default Integer toValue(ProductStatus status) {

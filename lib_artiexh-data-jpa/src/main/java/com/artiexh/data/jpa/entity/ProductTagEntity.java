@@ -3,6 +3,7 @@ package com.artiexh.data.jpa.entity;
 import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
 import java.util.Set;
@@ -31,15 +32,18 @@ public class ProductTagEntity {
 	private Set<ProductEntity> products;
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) return false;
-		if (obj == this) return true;
-		if (!(obj instanceof ProductTagEntity o)) return false;
-		return o.getName().equals(this.name);
+	public final boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null) return false;
+		Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+		Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+		if (thisEffectiveClass != oEffectiveClass) return false;
+		ProductTagEntity that = (ProductTagEntity) o;
+		return getId() != null && Objects.equals(getId(), that.getId());
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(name.hashCode());
+	public final int hashCode() {
+		return getClass().hashCode();
 	}
 }
