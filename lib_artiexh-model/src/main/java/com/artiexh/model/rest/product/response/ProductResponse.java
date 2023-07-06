@@ -1,6 +1,8 @@
 package com.artiexh.model.rest.product.response;
 
 import com.artiexh.model.domain.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductResponse {
+	@JsonSerialize(using = ToStringSerializer.class)
 	private String id;
 	private String name;
 	private String thumbnailUrl;
@@ -34,6 +37,7 @@ public class ProductResponse {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class Owner {
+		@JsonSerialize(using = ToStringSerializer.class)
 		private String id;
 		private String username;
 		private String displayName;
@@ -45,6 +49,7 @@ public class ProductResponse {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class Province {
+		@JsonSerialize(using = ToStringSerializer.class)
 		private Short id;
 		private String name;
 		private Country country;
@@ -54,6 +59,7 @@ public class ProductResponse {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class Country {
+		@JsonSerialize(using = ToStringSerializer.class)
 		private Short id;
 		private String name;
 	}
@@ -62,6 +68,7 @@ public class ProductResponse {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class Category {
+		@JsonSerialize(using = ToStringSerializer.class)
 		private String id;
 		private String name;
 	}

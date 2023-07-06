@@ -4,6 +4,8 @@ import com.artiexh.model.domain.DeliveryType;
 import com.artiexh.model.domain.ProductAttach;
 import com.artiexh.model.domain.ProductStatus;
 import com.artiexh.model.domain.ProductType;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +18,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartItemResponse {
+	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	private ProductStatus status;
 	private String currency;
