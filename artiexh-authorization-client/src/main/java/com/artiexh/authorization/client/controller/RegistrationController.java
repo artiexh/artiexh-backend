@@ -5,13 +5,11 @@ import com.artiexh.authorization.client.authentication.ResponseTokenProcessor;
 import com.artiexh.authorization.client.service.RegistrationService;
 import com.artiexh.model.domain.Account;
 import com.artiexh.model.domain.Artist;
-import com.artiexh.model.domain.PrinterProvider;
 import com.artiexh.model.domain.User;
 import com.artiexh.model.mapper.AccountMapper;
 import com.artiexh.model.mapper.PrinterProviderMapper;
 import com.artiexh.model.mapper.UserMapper;
 import com.artiexh.model.rest.auth.RegisterAdminRequest;
-import com.artiexh.model.rest.auth.RegisterPrinterProviderRequest;
 import com.artiexh.model.rest.auth.RegisterUserRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -52,14 +50,6 @@ public class RegistrationController {
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
 		}
-	}
-
-	@PostMapping(Endpoint.Registration.PRINTER_PROVIDER)
-	@PreAuthorize("hasAuthority('ADMIN')")
-	public PrinterProvider registerPrinterProvider(@RequestBody @Valid RegisterPrinterProviderRequest request) {
-		return registrationService.createPrinterProvider(
-			printerProviderMapper.registerPrinterProviderRequestToDomain(request)
-		);
 	}
 
 	@PostMapping(Endpoint.Registration.ARTIST)

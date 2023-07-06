@@ -1,6 +1,8 @@
 package com.artiexh.model.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +15,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @SuperBuilder
 public class Account {
+	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	private String username;
 	@JsonIgnore
