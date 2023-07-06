@@ -28,21 +28,21 @@ public class CartItemId implements Serializable {
 	private Long cartId;
 
 	@NotNull
-	@Column(name = "merch_id", nullable = false)
-    private Long merchId;
+	@Column(name = "product_id", nullable = false)
+	private Long productId;
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+		if (this == o) return true;
+		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
 		CartItemId entity = (CartItemId) o;
-        return Objects.equals(this.cartId, entity.cartId) &&
-                Objects.equals(this.merchId, entity.merchId);
-    }
+		return Objects.equals(this.cartId, entity.cartId) &&
+			Objects.equals(this.productId, entity.productId);
+	}
 
     @Override
     public int hashCode() {
-        return Objects.hash(cartId, merchId);
+		return Objects.hash(cartId, productId);
     }
 
 }

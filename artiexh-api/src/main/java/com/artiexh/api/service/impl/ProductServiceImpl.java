@@ -1,206 +1,171 @@
 package com.artiexh.api.service.impl;
 
 import com.artiexh.api.service.ProductService;
-import com.artiexh.data.jpa.entity.*;
-import com.artiexh.data.jpa.repository.*;
-import com.artiexh.model.common.model.PageResponse;
-import com.artiexh.model.domain.MerchAttach;
-import com.artiexh.model.domain.MerchStatus;
-import com.artiexh.model.mapper.MerchAttachMapper;
+import com.artiexh.data.elasticsearch.model.ProductDocument;
+import com.artiexh.data.jpa.entity.ArtistEntity;
+import com.artiexh.data.jpa.entity.ProductCategoryEntity;
+import com.artiexh.data.jpa.entity.ProductEntity;
+import com.artiexh.data.jpa.entity.ProductTagEntity;
+import com.artiexh.data.jpa.repository.ArtistRepository;
+import com.artiexh.data.jpa.repository.ProductCategoryRepository;
+import com.artiexh.data.jpa.repository.ProductRepository;
+import com.artiexh.data.jpa.repository.ProductTagRepository;
+import com.artiexh.model.domain.Product;
+import com.artiexh.model.domain.ProductTag;
+import com.artiexh.model.mapper.ProductAttachMapper;
 import com.artiexh.model.mapper.ProductMapper;
-import com.artiexh.model.rest.product.ProductDetail;
-import com.artiexh.model.rest.product.ProductInfo;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.SearchHitSupport;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.SearchPage;
+import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.artiexh.api.exception.ErrorCode.*;
-
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 @Slf4j
 public class ProductServiceImpl implements ProductService {
-	private final ProductMapper productMapper;
-	private final MerchAttachMapper merchAttachMapper;
-	private final MerchAttachRepository attachRepository;
-	private final ProductRepository productRepository;
-	private final PreOrderMerchRepository preOrderMerchRepository;
-	private final MerchCategoryRepository categoryRepository;
-	private final MerchTagRepository tagRepository;
 	private final ArtistRepository artistRepository;
+	private final ProductCategoryRepository productCategoryRepository;
+	private final ProductTagRepository productTagRepository;
+	private final ProductMapper productMapper;
+	private final ProductAttachMapper productAttachMapper;
+	private final ProductRepository productRepository;
+	private final ElasticsearchTemplate elasticsearchTemplate;
 
 	@Override
-	public ProductDetail getDetail(long id) {
-		MerchEntity merch = productRepository.findById(id).orElseThrow(
-			() -> new ResponseStatusException(PRODUCT_NOT_FOUND.getCode(), PRODUCT_NOT_FOUND.getMessage())
-		);
-		return productMapper.entityToModelDetail(merch);
+	@Transactional
+	public Page<Product> getInPage(Query query, Pageable pageable) {
+		query.setPageable(pageable);
+		SearchHits<ProductDocument> hits = elasticsearchTemplate.search(query, ProductDocument.class);
+		SearchPage<ProductDocument> hitPage = SearchHitSupport.searchPageFor(hits, pageable);
+		var productPage = hitPage.map(searchHit -> productMapper.documentToDomain(searchHit.getContent()));
+
+		// get missing fields from db: thumbnailUrl, remainingQuantity, owner.avatarUrl, description
+		Set<Long> hitIds = hitPage.getSearchHits().stream()
+			.map(searchHit -> searchHit.getContent().getId())
+			.collect(Collectors.toSet());
+		Map<Long, ProductEntity> entities = productRepository.findAllById(hitIds).stream()
+			.collect(Collectors.toMap(ProductEntity::getId, product -> product));
+
+		for (var product : productPage) {
+			var entity = entities.get(product.getId());
+			product.setAttaches(productAttachMapper.entitiesToDomains(entity.getAttaches()));
+			product.setRemainingQuantity(entity.getRemainingQuantity());
+			product.getOwner().setAvatarUrl(entity.getOwner().getAvatarUrl());
+			product.setDescription(entity.getDescription());
+		}
+
+		return productPage;
 	}
 
 	@Override
-	public PageResponse<ProductInfo> getInPage(Specification<MerchEntity> specification, Pageable pageable) {
-		Page<MerchEntity> products = productRepository.findAll(specification, pageable);
-		Page<ProductInfo> productPage = products.map(productMapper::entityToModelInfo);
-		PageResponse<ProductInfo> productPageResponse = new PageResponse<>(productPage);
-
-		return productPageResponse;
+	public Product getDetail(long id) {
+		ProductEntity product = productRepository.findById(id)
+			.orElseThrow(EntityNotFoundException::new);
+		return productMapper.entityToDomain(product);
 	}
 
 	@Override
-	public ProductDetail create(ProductDetail productModel) {
-		Long userId;
+	@Transactional
+	public Product create(long artistId, Product product) {
+
+		ArtistEntity artistEntity = artistRepository.findById(artistId)
+			.orElseThrow(() -> new IllegalArgumentException("Artist not valid"));
+
+		ProductCategoryEntity categoryEntity = productCategoryRepository.findById(product.getCategory().getId())
+			.orElseThrow(() -> new IllegalArgumentException("Category not valid"));
+
+		Set<ProductTagEntity> tagEntities = getTagEntities(product.getTags());
+
+		ProductEntity productEntity = productMapper.domainToEntity(product);
+		productEntity.setOwner(artistEntity);
+		productEntity.setCategory(categoryEntity);
+		productEntity.setTags(tagEntities);
+
+		ProductEntity savedProductEntity;
 		try {
-			userId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			savedProductEntity = productRepository.save(productEntity);
 		} catch (Exception e) {
-			throw new ResponseStatusException(ACCOUNT_INFO_NOT_FOUND.getCode(), ACCOUNT_INFO_NOT_FOUND.getMessage());
+			log.error("Save product fail", e);
+			throw e;
 		}
 
-		preCreateOrUpdate(productModel);
+		ProductDocument productDocument = productMapper.entityToDocument(savedProductEntity);
+		elasticsearchTemplate.save(productDocument);
 
-		MerchEntity product = productMapper.domainModelToEntity(productModel);
-
-		Set<MerchTagEntity> tagEntities = productModel.getTags().stream()
-			.map(tagName -> MerchTagEntity.builder()
-				.name(tagName)
-				.build())
-			.collect(Collectors.toSet());
-		Set<MerchTagEntity> savedTagEntities = tagRepository.findAllByNameIn(productModel.getTags());
-		tagEntities.removeAll(savedTagEntities);
-		savedTagEntities.addAll(tagRepository.saveAll(tagEntities));
-
-		MerchCategoryEntity categoryEntity = categoryRepository.findById(productModel.getCategoryId())
-			.orElseThrow(() -> new ResponseStatusException(CATEGORY_NOT_FOUND.getCode(), CATEGORY_NOT_FOUND.getMessage()));
-
-		Set<MerchAttachEntity> attachEntities = merchAttachMapper.domainModelsToEntities(productModel.getAttaches());
-		List<MerchAttachEntity> attachEntitiesList = attachRepository.saveAll(attachEntities);
-
-		ArtistEntity artist = artistRepository.findById(userId).orElseThrow(
-			() -> new ResponseStatusException(ARTIST_NOT_FOUND.getCode(), ARTIST_NOT_FOUND.getMessage())
-		);
-
-		product.setOwner(artist);
-		product.setTags(savedTagEntities);
-		product.setCategory(categoryEntity);
-		product.setAttaches(new HashSet<>(attachEntitiesList));
-
-		if (!productModel.isPreorder()) {
-			product = productRepository.save(product);
-
-			productModel = productMapper.entityToModelDetail(product, productModel);
-			productModel.setId(product.getId());
-		} else {
-			PreOrderMerchEntity preOrderProduct = PreOrderMerchEntity.parentBuilder(product).build();
-			preOrderProduct.setStartDatetime(productModel.getStartDatetime());
-			preOrderProduct.setEndDatetime(productModel.getEndDateTime());
-
-			preOrderProduct = preOrderMerchRepository.save(preOrderProduct);
-
-			productModel = productMapper.entityToModelDetail(preOrderProduct, productModel);
-			productModel.setId(preOrderProduct.getId());
-		}
-
-		return productModel;
+		return productMapper.entityToDomain(savedProductEntity);
 	}
 
 	@Override
-	public ProductDetail update(ProductDetail productModel) {
+	@Transactional
+	public Product update(long artistId, Product product) {
+		ProductEntity savedProduct = productRepository.findById(product.getId())
+			.orElseThrow(() -> new EntityNotFoundException("Product id not found"));
+		if (savedProduct.getOwner().getId() != artistId) {
+			throw new AccessDeniedException("Product owner not valid");
+		}
 
-		MerchEntity product = productRepository.findById(productModel.getId()).orElseThrow(
-			() -> new ResponseStatusException(PRODUCT_NOT_FOUND.getCode(), PRODUCT_NOT_FOUND.getMessage())
+		ProductEntity productEntity = productMapper.domainToEntity(product);
+		productEntity.setOwner(ArtistEntity.builder().id(artistId).build());
+
+		productEntity.setTags(getTagEntities(product.getTags()));
+		productEntity.setCategory(productCategoryRepository.findById(product.getCategory().getId())
+			.orElseThrow(() -> new IllegalArgumentException("Category not valid"))
 		);
 
-		preCreateOrUpdate(productModel);
-
-		Set<MerchTagEntity> tagEntities = productModel.getTags().stream()
-			.map(tagName -> MerchTagEntity.builder()
-				.name(tagName)
-				.build())
-			.collect(Collectors.toSet());
-		Set<MerchTagEntity> savedTagEntities = tagRepository.findAllByNameIn(productModel.getTags());
-		tagEntities.removeAll(savedTagEntities);
-		savedTagEntities.addAll(tagRepository.saveAll(tagEntities));
-
-		MerchCategoryEntity categoryEntity = categoryRepository.findById(productModel.getCategoryId())
-			.orElseThrow(() -> new ResponseStatusException(CATEGORY_NOT_FOUND.getCode(), CATEGORY_NOT_FOUND.getMessage()));
-
-		List<MerchAttachEntity> attachEntities = updateAttachment(productModel.getAttaches());
-
-		PreOrderMerchEntity preOrderProduct = preOrderMerchRepository.findById(productModel.getId()).orElse(null);
-
-		if (preOrderProduct == null) {
-			product = productMapper.domainModelToEntity(productModel, product);
-			product.setTags(savedTagEntities);
-			product.setCategory(categoryEntity);
-			product.getAttaches().clear();
-			product.getAttaches().addAll(attachEntities);
-
-			product = productRepository.save(product);
-
-			productModel = productMapper.entityToModelDetail(product, productModel);
-			productModel.setId(product.getId());
-			if (productModel.isPreorder()) {
-				preOrderMerchRepository.update(productModel.getStartDatetime(), productModel.getEndDateTime(), product.getId());
-			}
-		} else {
-
-			preOrderProduct = productMapper.domainModelToEntity(productModel, preOrderProduct);
-
-			preOrderProduct.setStartDatetime(productModel.getStartDatetime());
-			preOrderProduct.setEndDatetime(productModel.getEndDateTime());
-			preOrderProduct.getTags().clear();
-			preOrderProduct.getTags().addAll(savedTagEntities);
-			preOrderProduct.setCategory(categoryEntity);
-			preOrderProduct.getAttaches().clear();
-			preOrderProduct.getAttaches().addAll(attachEntities);
-
-			preOrderProduct = preOrderMerchRepository.save(preOrderProduct);
-
-			productModel = productMapper.entityToModelDetail(preOrderProduct, productModel);
-			productModel.setId(preOrderProduct.getId());
+		ProductEntity savedProductEntity;
+		try {
+			savedProductEntity = productRepository.save(productEntity);
+		} catch (Exception e) {
+			log.error("Save product fail", e);
+			throw e;
 		}
 
-		return productModel;
+		ProductDocument productDocument = productMapper.entityToDocument(savedProductEntity);
+		elasticsearchTemplate.update(productDocument);
+
+		return productMapper.entityToDomain(savedProductEntity);
 	}
 
-	private void preCreateOrUpdate(ProductDetail productModel) {
-		if (productModel.isPreorder() && (productModel.getStartDatetime() == null || productModel.getEndDateTime() == null)) {
-			throw new ResponseStatusException(PREORDER_NOT_FOUND_TIME.getCode(), PREORDER_NOT_FOUND_TIME.getMessage());
-
-		} else {
-			if (productModel.isPreorder() && productModel.getEndDateTime().isBefore(productModel.getStartDatetime())) {
-				throw new ResponseStatusException(PREORDER_INVALID_TIME.getCode(), PREORDER_INVALID_TIME.getMessage());
-			}
-		}
+	private Set<ProductTagEntity> getTagEntities(Set<ProductTag> tags) {
+		Set<String> tagNames = tags.stream().map(ProductTag::getName).collect(Collectors.toSet());
+		Set<ProductTagEntity> tagEntities = productTagRepository.findAllByNameIn(tagNames);
+		Set<String> existedTagNames = tagEntities.stream().map(ProductTagEntity::getName).collect(Collectors.toSet());
+		tagEntities.addAll(
+			tagNames.stream()
+				.filter(tagName -> !existedTagNames.contains(tagName))
+				.map(tagName -> ProductTagEntity.builder().name(tagName).build())
+				.collect(Collectors.toSet())
+		);
+		return tagEntities;
 	}
 
 	@Override
-	public void delete(long id) {
-		productRepository.delete(id, (byte) MerchStatus.NOT_AVAILABLE.getValue());
-	}
-
-	private List<MerchAttachEntity> updateAttachment(Set<MerchAttach> attaches) {
-		Set<Long> attachmentIds = attaches.stream()
-			.map(MerchAttach::getId)
-			.filter(Objects::nonNull)
-			.collect(Collectors.toSet());
-		Set<MerchAttachEntity> updatedAttaches = attachRepository.findAllByIdIn(attachmentIds);
-		if (attachmentIds.size() != updatedAttaches.size()) {
-			throw new ResponseStatusException(ATTACHMENT_NOT_FOUND.getCode(), ATTACHMENT_NOT_FOUND.getMessage());
-		}
-		Set<MerchAttachEntity> attachEntities = merchAttachMapper.domainModelsToEntities(attaches, updatedAttaches);
-		return attachRepository.saveAll(attachEntities);
+	public void delete(long userId, long productId) {
+		productRepository.findById(productId)
+			.ifPresentOrElse(
+				product -> {
+					if (!product.getOwner().getId().equals(userId)) {
+						throw new IllegalArgumentException("This product is not own by user");
+					}
+					productRepository.softDelete(productId);
+				},
+				() -> {
+					throw new IllegalArgumentException("Product not found");
+				}
+			);
 	}
 }

@@ -1,20 +1,18 @@
 package com.artiexh.api.service;
 
-import com.artiexh.data.jpa.entity.MerchEntity;
-import com.artiexh.model.common.model.PageResponse;
-import com.artiexh.model.rest.product.ProductDetail;
-import com.artiexh.model.rest.product.ProductInfo;
+import com.artiexh.model.domain.Product;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.elasticsearch.core.query.Query;
 
 public interface ProductService {
-	ProductDetail getDetail(long id);
+	Page<Product> getInPage(Query query, Pageable pageable);
 
-	PageResponse<ProductInfo> getInPage(Specification<MerchEntity> specification, Pageable pageable);
+	Product getDetail(long id);
 
-	ProductDetail create(ProductDetail merch);
+	Product create(long artistId, Product product);
 
-	ProductDetail update(ProductDetail merch);
+	Product update(long artistId, Product product);
 
-	void delete(long id);
+	void delete(long userId, long productId);
 }

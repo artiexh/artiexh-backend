@@ -4,7 +4,7 @@ import com.artiexh.api.service.CartService;
 import com.artiexh.data.jpa.entity.CartEntity;
 import com.artiexh.data.jpa.entity.CartItemEntity;
 import com.artiexh.data.jpa.entity.CartItemId;
-import com.artiexh.data.jpa.entity.MerchEntity;
+import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.jpa.repository.CartItemRepository;
 import com.artiexh.data.jpa.repository.CartRepository;
 import com.artiexh.model.domain.Cart;
@@ -43,8 +43,8 @@ public class CartServiceImpl implements CartService {
 		CartEntity cartEntity = getOrCreateCartEntity(userId);
 		Set<CartItemEntity> cartItemEntities = items.stream().map(cartItemRequest -> {
 			CartItemId cartItemId = new CartItemId(cartEntity.getId(), cartItemRequest.getProductId());
-			MerchEntity merchEntity = MerchEntity.builder().id(cartItemRequest.getProductId()).build();
-			return CartItemEntity.builder().id(cartItemId).merch(merchEntity).quantity(cartItemRequest.getQuantity()).build();
+			ProductEntity productEntity = ProductEntity.builder().id(cartItemRequest.getProductId()).build();
+			return CartItemEntity.builder().id(cartItemId).product(productEntity).quantity(cartItemRequest.getQuantity()).build();
 		}).collect(Collectors.toSet());
 
 		cartItemRepository.saveAll(cartItemEntities);
@@ -58,10 +58,10 @@ public class CartServiceImpl implements CartService {
 		}
 
 		CartEntity cartEntity = getOrCreateCartEntity(userId);
-		Set<CartItemEntity> cartItemEntities = items.stream().map(merchId -> {
-			CartItemId cartItemId = new CartItemId(cartEntity.getId(), merchId);
-			MerchEntity merchEntity = MerchEntity.builder().id(merchId).build();
-			return CartItemEntity.builder().id(cartItemId).merch(merchEntity).build();
+		Set<CartItemEntity> cartItemEntities = items.stream().map(productId -> {
+			CartItemId cartItemId = new CartItemId(cartEntity.getId(), productId);
+			ProductEntity productEntity = ProductEntity.builder().id(productId).build();
+			return CartItemEntity.builder().id(cartItemId).product(productEntity).build();
 		}).collect(Collectors.toSet());
 
 		cartItemRepository.deleteAll(cartItemEntities);

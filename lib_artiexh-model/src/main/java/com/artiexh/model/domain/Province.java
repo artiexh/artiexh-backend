@@ -10,9 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class Province {
-
 	private Short id;
 	private String name;
 	private Country country;
-
 }

@@ -7,7 +7,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {UserStatusMapper.class, RoleMapper.class, MerchMapper.class}
+	uses = {ProductMapper.class, AccountMapper.class, ProductAttachMapper.class}
 )
 public interface SubscriptionMapper {
 
