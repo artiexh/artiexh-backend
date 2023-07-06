@@ -82,7 +82,8 @@ public class ProductServiceImpl implements ProductService {
 	@Transactional
 	public Product create(long artistId, Product product) {
 
-		ArtistEntity artistEntity = ArtistEntity.builder().id(artistId).build();
+		ArtistEntity artistEntity = artistRepository.findById(artistId)
+			.orElseThrow(() -> new IllegalArgumentException("Artist not valid"));
 
 		ProductCategoryEntity categoryEntity = productCategoryRepository.findById(product.getCategory().getId())
 			.orElseThrow(() -> new IllegalArgumentException("Category not valid"));
@@ -125,7 +126,14 @@ public class ProductServiceImpl implements ProductService {
 			.orElseThrow(() -> new IllegalArgumentException("Category not valid"))
 		);
 
-		ProductEntity savedProductEntity = productRepository.save(productEntity);
+		ProductEntity savedProductEntity;
+		try {
+			savedProductEntity = productRepository.save(productEntity);
+		} catch (Exception e) {
+			log.error("Save product fail", e);
+			throw e;
+		}
+
 		ProductDocument productDocument = productMapper.entityToDocument(savedProductEntity);
 		elasticsearchTemplate.update(productDocument);
 
