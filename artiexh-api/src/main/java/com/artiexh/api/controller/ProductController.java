@@ -66,14 +66,18 @@ public class ProductController {
 
 	@PutMapping(path = Endpoint.Product.PRODUCT_DETAIL)
 	@PreAuthorize("hasAuthority('ARTIST')")
-	public ProductResponse update(@PathVariable("id") long id, @RequestBody @Valid UpdateProductRequest request) {
+	public ProductResponse update(Authentication authentication, @PathVariable("id") long id, @RequestBody @Valid UpdateProductRequest request) {
+		long userId = (long) authentication.getPrincipal();
+
 		Product product = productMapper.updateProductRequestToProduct(request);
 		product.setId(id);
 		try {
-			Product updatedProduct = productService.update(product);
+			Product updatedProduct = productService.update(userId, product);
 			return productMapper.domainToProductResponse(updatedProduct);
 		} catch (EntityNotFoundException ex) {
 			throw new ResponseStatusException(ErrorCode.PRODUCT_NOT_FOUND.getCode(), ErrorCode.PRODUCT_NOT_FOUND.getMessage(), ex);
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		}
 	}
 

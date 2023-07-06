@@ -22,6 +22,8 @@ import org.springframework.data.domain.Page;
 )
 public interface ProductMapper {
 
+	@Mapping(target = "price.unit", source = "priceUnit")
+	@Mapping(target = "price.amount", source = "priceAmount")
 	Product entityToDomain(ProductEntity productEntity);
 
 	@Mapping(target = "priceUnit", source = "price.unit")
@@ -42,7 +44,6 @@ public interface ProductMapper {
 	}
 
 	@Mapping(target = "category.id", source = "categoryId")
-	@Mapping(target = "tags", source = "tags", defaultExpression = "java(new java.util.HashSet<>())")
 	Product createProductRequestToProduct(CreateProductRequest createProductRequest);
 
 	@Mapping(target = "category.id", source = "categoryId")

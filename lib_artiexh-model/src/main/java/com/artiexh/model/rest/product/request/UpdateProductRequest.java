@@ -39,6 +39,7 @@ public class UpdateProductRequest {
 	@Min(0)
 	private Long remainingQuantity;
 
+	@NotNull
 	private Instant publishDatetime;
 
 	private Integer maxItemsPerOrder;

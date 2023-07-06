@@ -24,6 +24,7 @@ import org.springframework.data.elasticsearch.core.SearchHitSupport;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.SearchPage;
 import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,10 +80,9 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	@Transactional
-	public Product create(long userId, Product product) {
+	public Product create(long artistId, Product product) {
 
-		ArtistEntity artistEntity = artistRepository.findById(userId)
-			.orElseThrow(() -> new IllegalArgumentException("Artist not valid"));
+		ArtistEntity artistEntity = ArtistEntity.builder().id(artistId).build();
 
 		ProductCategoryEntity categoryEntity = productCategoryRepository.findById(product.getCategory().getId())
 			.orElseThrow(() -> new IllegalArgumentException("Category not valid"));
@@ -109,12 +109,16 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Product update(Product product) {
-		if (productRepository.existsById(product.getId())) {
-			throw new EntityNotFoundException("Product id not found");
+	@Transactional
+	public Product update(long artistId, Product product) {
+		ProductEntity savedProduct = productRepository.findById(product.getId())
+			.orElseThrow(() -> new EntityNotFoundException("Product id not found"));
+		if (savedProduct.getOwner().getId() != artistId) {
+			throw new AccessDeniedException("Product owner not valid");
 		}
 
 		ProductEntity productEntity = productMapper.domainToEntity(product);
+		productEntity.setOwner(ArtistEntity.builder().id(artistId).build());
 
 		productEntity.setTags(getTagEntities(product.getTags()));
 		productEntity.setCategory(productCategoryRepository.findById(product.getCategory().getId())
