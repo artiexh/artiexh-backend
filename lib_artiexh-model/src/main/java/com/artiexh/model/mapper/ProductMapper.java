@@ -4,6 +4,7 @@ import com.artiexh.data.elasticsearch.model.ProductDocument;
 import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.model.domain.*;
 import com.artiexh.model.rest.product.request.CreateProductRequest;
+import com.artiexh.model.rest.product.request.UpdateProductRequest;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -41,7 +42,12 @@ public interface ProductMapper {
 	}
 
 	@Mapping(target = "category.id", source = "categoryId")
+	@Mapping(target = "tags", source = "tags", defaultExpression = "java(new java.util.HashSet<>())")
 	Product createProductRequestToProduct(CreateProductRequest createProductRequest);
+
+	@Mapping(target = "category.id", source = "categoryId")
+	Product updateProductRequestToProduct(UpdateProductRequest updateProductRequest);
+
 
 	default Integer toValue(ProductStatus status) {
 		return status.getValue();

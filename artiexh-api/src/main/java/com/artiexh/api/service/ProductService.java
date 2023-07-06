@@ -1,7 +1,6 @@
 package com.artiexh.api.service;
 
 import com.artiexh.model.domain.Product;
-import com.artiexh.model.rest.product.response.ProductResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.query.Query;
@@ -13,7 +12,7 @@ public interface ProductService {
 
 	Product create(long artistId, Product product);
 
-	ProductResponse update(Product product);
+	Product update(Product product);
 
 	void delete(long userId, long productId);
 }

@@ -9,6 +9,7 @@ import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.product.request.CreateProductRequest;
 import com.artiexh.model.rest.product.request.GetAllProductFilter;
+import com.artiexh.model.rest.product.request.UpdateProductRequest;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -63,12 +64,18 @@ public class ProductController {
 		}
 	}
 
-	/*@PutMapping(path = Endpoint.Product.PRODUCT_DETAIL)
-	public ProductDetail update(@PathVariable("id") long id, @RequestBody @Valid ProductDetail request) {
-		request.setId(id);
-		ProductDetail product = productService.update(request);
-		return product;
-	}*/
+	@PutMapping(path = Endpoint.Product.PRODUCT_DETAIL)
+	@PreAuthorize("hasAuthority('ARTIST')")
+	public ProductResponse update(@PathVariable("id") long id, @RequestBody @Valid UpdateProductRequest request) {
+		Product product = productMapper.updateProductRequestToProduct(request);
+		product.setId(id);
+		try {
+			Product updatedProduct = productService.update(product);
+			return productMapper.domainToProductResponse(updatedProduct);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(ErrorCode.PRODUCT_NOT_FOUND.getCode(), ErrorCode.PRODUCT_NOT_FOUND.getMessage(), ex);
+		}
+	}
 
 	@DeleteMapping(path = Endpoint.Product.PRODUCT_DETAIL)
 	public void delete(Authentication authentication, @PathVariable("id") long id) {

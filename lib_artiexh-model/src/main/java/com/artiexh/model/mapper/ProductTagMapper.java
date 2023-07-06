@@ -5,6 +5,9 @@ import com.artiexh.model.domain.ProductTag;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ProductTagMapper {
 
@@ -26,6 +29,18 @@ public interface ProductTagMapper {
 		ProductTag productTag = new ProductTag();
 		productTag.setName(tag);
 		return productTag;
+	}
+
+	default Set<ProductTag> tagNamesToTagDomainS(Set<String> tag) {
+		Set<ProductTag> result = new HashSet<>();
+
+		if (tag != null) {
+			for (String name : tag) {
+				result.add(tagResponseToTagDomain(name));
+			}
+		}
+
+		return result;
 	}
 
 }

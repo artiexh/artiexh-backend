@@ -14,7 +14,6 @@ import com.artiexh.model.domain.Product;
 import com.artiexh.model.domain.ProductTag;
 import com.artiexh.model.mapper.ProductAttachMapper;
 import com.artiexh.model.mapper.ProductMapper;
-import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -88,15 +87,7 @@ public class ProductServiceImpl implements ProductService {
 		ProductCategoryEntity categoryEntity = productCategoryRepository.findById(product.getCategory().getId())
 			.orElseThrow(() -> new IllegalArgumentException("Category not valid"));
 
-		Set<String> tagNames = product.getTags().stream().map(ProductTag::getName).collect(Collectors.toSet());
-		Set<ProductTagEntity> tagEntities = productTagRepository.findAllByNameIn(tagNames);
-		Set<String> existedTagNames = tagEntities.stream().map(ProductTagEntity::getName).collect(Collectors.toSet());
-		tagEntities.addAll(
-			tagNames.stream()
-				.filter(tagName -> !existedTagNames.contains(tagName))
-				.map(tagName -> ProductTagEntity.builder().name(tagName).build())
-				.collect(Collectors.toSet())
-		);
+		Set<ProductTagEntity> tagEntities = getTagEntities(product.getTags());
 
 		ProductEntity productEntity = productMapper.domainToEntity(product);
 		productEntity.setOwner(artistEntity);
@@ -118,64 +109,36 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public ProductResponse update(Product product) {
-		return null;
-
-		/*ProductEntity product = productRepository.findById(productModel.getId()).orElseThrow(
-			() -> new ResponseStatusException(PRODUCT_NOT_FOUND.getCode(), PRODUCT_NOT_FOUND.getMessage())
-		);
-
-		preCreateOrUpdate(productModel);
-
-		Set<ProductTagEntity> tagEntities = productModel.getTags().stream()
-			.map(tagName -> ProductTagEntity.builder()
-				.name(tagName)
-				.build())
-			.collect(Collectors.toSet());
-		Set<ProductTagEntity> savedTagEntities = tagRepository.findAllByNameIn(productModel.getTags());
-		tagEntities.removeAll(savedTagEntities);
-		savedTagEntities.addAll(tagRepository.saveAll(tagEntities));
-
-		ProductCategoryEntity categoryEntity = categoryRepository.findById(productModel.getCategoryId())
-			.orElseThrow(() -> new ResponseStatusException(CATEGORY_NOT_FOUND.getCode(), CATEGORY_NOT_FOUND.getMessage()));
-
-		List<ProductAttachEntity> attachEntities = updateAttachment(productModel.getAttaches());
-
-		PreOrderProductEntity preOrderProduct = preOrderProductRepository.findById(productModel.getId()).orElse(null);
-
-		if (preOrderProduct == null) {
-			product = productMapper.domainModelToEntity(productModel, product);
-			product.setTags(savedTagEntities);
-			product.setCategory(categoryEntity);
-			product.getAttaches().clear();
-			product.getAttaches().addAll(attachEntities);
-
-			product = productRepository.save(product);
-
-			productModel = productMapper.entityToModelDetail(product, productModel);
-			productModel.setId(product.getId());
-			if (productModel.isPreorder()) {
-				preOrderProductRepository.update(productModel.getStartDatetime(), productModel.getEndDateTime(), product.getId());
-			}
-		} else {
-
-			preOrderProduct = productMapper.domainModelToEntity(productModel, preOrderProduct);
-
-			preOrderProduct.setStartDatetime(productModel.getStartDatetime());
-			preOrderProduct.setEndDatetime(productModel.getEndDateTime());
-			preOrderProduct.getTags().clear();
-			preOrderProduct.getTags().addAll(savedTagEntities);
-			preOrderProduct.setCategory(categoryEntity);
-			preOrderProduct.getAttaches().clear();
-			preOrderProduct.getAttaches().addAll(attachEntities);
-
-			preOrderProduct = preOrderProductRepository.save(preOrderProduct);
-
-			productModel = productMapper.entityToModelDetail(preOrderProduct, productModel);
-			productModel.setId(preOrderProduct.getId());
+	public Product update(Product product) {
+		if (productRepository.existsById(product.getId())) {
+			throw new EntityNotFoundException("Product id not found");
 		}
 
-		return productModel;*/
+		ProductEntity productEntity = productMapper.domainToEntity(product);
+
+		productEntity.setTags(getTagEntities(product.getTags()));
+		productEntity.setCategory(productCategoryRepository.findById(product.getCategory().getId())
+			.orElseThrow(() -> new IllegalArgumentException("Category not valid"))
+		);
+
+		ProductEntity savedProductEntity = productRepository.save(productEntity);
+		ProductDocument productDocument = productMapper.entityToDocument(savedProductEntity);
+		elasticsearchTemplate.update(productDocument);
+
+		return productMapper.entityToDomain(savedProductEntity);
+	}
+
+	private Set<ProductTagEntity> getTagEntities(Set<ProductTag> tags) {
+		Set<String> tagNames = tags.stream().map(ProductTag::getName).collect(Collectors.toSet());
+		Set<ProductTagEntity> tagEntities = productTagRepository.findAllByNameIn(tagNames);
+		Set<String> existedTagNames = tagEntities.stream().map(ProductTagEntity::getName).collect(Collectors.toSet());
+		tagEntities.addAll(
+			tagNames.stream()
+				.filter(tagName -> !existedTagNames.contains(tagName))
+				.map(tagName -> ProductTagEntity.builder().name(tagName).build())
+				.collect(Collectors.toSet())
+		);
+		return tagEntities;
 	}
 
 	@Override
