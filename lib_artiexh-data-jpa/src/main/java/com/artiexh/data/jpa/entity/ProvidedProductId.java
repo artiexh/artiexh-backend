@@ -1,0 +1,46 @@
+package com.artiexh.data.jpa.entity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.Hibernate;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Objects;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Embeddable
+public class ProvidedProductId implements Serializable {
+	@Serial
+	private static final long serialVersionUID = 650123199811833928L;
+
+	@NotNull
+	@Column(name = "business_code", nullable = false)
+	private Long businessCode;
+
+	@NotNull
+	@Column(name = "base_product_id", nullable = false)
+	private Long baseProductId;
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+		ProvidedProductId entity = (ProvidedProductId) o;
+		return Objects.equals(this.businessCode, entity.businessCode) &&
+			Objects.equals(this.baseProductId, entity.baseProductId);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(businessCode, baseProductId);
+	}
+}
