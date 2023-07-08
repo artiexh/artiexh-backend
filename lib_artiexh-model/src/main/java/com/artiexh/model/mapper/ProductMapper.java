@@ -9,7 +9,6 @@ import com.artiexh.model.rest.product.request.UpdateProductRequest;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.springframework.data.domain.Page;
 
@@ -28,10 +27,9 @@ public interface ProductMapper {
 
 	@Mapping(target = "price.unit", source = "priceUnit")
 	@Mapping(target = "price.amount", source = "priceAmount")
-	@Mapping(target = "thumbnailUrl", source = "attaches", qualifiedByName = "thumbnailUrl")
+	@Mapping(target = "thumbnailUrl", source = "attaches")
 	Product entityToDomain(ProductEntity productEntity);
 
-	@Named("thumbnailUrl")
 	default String getThumbnailUrl(Set<ProductAttachEntity> productAttachEntities) {
 		return productAttachEntities.stream()
 			.filter(attachEntity -> attachEntity.getType() == ProductAttachType.THUMBNAIL.getValue())

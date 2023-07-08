@@ -54,16 +54,16 @@ public interface CartMapper {
 
 	@Mapping(target = "id", source = "product.id")
 	@Mapping(target = "status", source = "product.status")
-	@Mapping(target = "currency", source = "product.price.unit")
+	@Mapping(target = "price.unit", source = "product.price.unit")
 	@Mapping(target = "name", source = "product.name")
-	@Mapping(target = "price", source = "product.price.amount")
+	@Mapping(target = "thumbnailUrl", source = "product.thumbnailUrl")
+	@Mapping(target = "price.amount", source = "product.price.amount")
 	@Mapping(target = "description", source = "product.description")
 	@Mapping(target = "type", source = "product.type")
 	@Mapping(target = "remainingQuantity", source = "product.remainingQuantity")
 	@Mapping(target = "publishDatetime", source = "product.publishDatetime")
 	@Mapping(target = "maxItemsPerOrder", source = "product.maxItemsPerOrder")
 	@Mapping(target = "deliveryType", source = "product.deliveryType")
-	@Mapping(target = "attaches", source = "product.attaches")
 	CartItemResponse domainToCartItemResponse(CartItem cartItem);
 
 	CartItem entityToDomain(CartItemEntity cartItemEntity);
