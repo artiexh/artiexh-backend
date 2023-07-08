@@ -18,6 +18,9 @@ public enum ErrorCode {
 	//Artist
 	ARTIST_NOT_FOUND(HttpStatus.OK, "Artist is not found"),
 
+	//Base Model
+	BASE_MODEL_NOT_FOUND(HttpStatus.NOT_FOUND, "Base model is not found"),
+
 	//AUTH
 	ACCOUNT_INFO_NOT_FOUND(HttpStatus.OK, "Can not get account information from request");
 	private final HttpStatus statusCode;

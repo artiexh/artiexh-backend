@@ -12,15 +12,15 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "base_product")
-public class BaseProductEntity {
+public class BaseModelEntity {
 	@Id
 	@Tsid
 	@Column(name = "id", nullable = false)
-	public Long id;
+	private Long id;
 
 	@Column(name = "name", nullable = false)
-	public String name;
+	private String name;
 
 	@Column(name = "description", nullable = false)
-	public String description;
+	private String description;
 }
