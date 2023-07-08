@@ -1,6 +1,5 @@
 package com.artiexh.model.rest.cart.response;
 
-import com.artiexh.model.domain.Province;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
@@ -17,5 +16,4 @@ public class ArtistCartInfoResponse {
 	private String displayName;
 	private String avatarUrl;
 	private String email;
-	private Province province;
 }
