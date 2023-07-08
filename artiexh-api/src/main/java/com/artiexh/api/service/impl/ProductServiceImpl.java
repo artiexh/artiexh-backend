@@ -8,6 +8,8 @@ import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.jpa.entity.ProductTagEntity;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.Product;
+import com.artiexh.model.domain.ProductAttach;
+import com.artiexh.model.domain.ProductAttachType;
 import com.artiexh.model.domain.ProductTag;
 import com.artiexh.model.mapper.ProductMapper;
 import jakarta.persistence.EntityNotFoundException;
@@ -56,8 +58,7 @@ public class ProductServiceImpl implements ProductService {
 			.collect(Collectors.toMap(ProductEntity::getId, product -> product));
 
 		for (var product : productPage) {
-			String thumbnailUrl = productAttachRepository.findThumbnailByProductId(product.getId())
-				.orElse(null);
+			String thumbnailUrl = productAttachRepository.findThumbnailByProductId(product.getId()).orElse(null);
 			product.setThumbnailUrl(thumbnailUrl);
 
 			var entity = entities.get(product.getId());
@@ -86,6 +87,10 @@ public class ProductServiceImpl implements ProductService {
 		ProductCategoryEntity categoryEntity = productCategoryRepository.findById(product.getCategory().getId())
 			.orElseThrow(() -> new IllegalArgumentException("Category not valid"));
 
+		if (isManyThumbnail(product.getAttaches())) {
+			throw new IllegalArgumentException("Only one thumbnail allowed");
+		}
+
 		Set<ProductTagEntity> tagEntities = getTagEntities(product.getTags());
 
 		ProductEntity productEntity = productMapper.domainToEntity(product);
@@ -112,8 +117,13 @@ public class ProductServiceImpl implements ProductService {
 	public Product update(long artistId, Product product) {
 		ProductEntity savedProduct = productRepository.findById(product.getId())
 			.orElseThrow(() -> new EntityNotFoundException("Product id not found"));
+
 		if (savedProduct.getOwner().getId() != artistId) {
 			throw new AccessDeniedException("Product owner not valid");
+		}
+
+		if (isManyThumbnail(product.getAttaches())) {
+			throw new IllegalArgumentException("Only one thumbnail allowed");
 		}
 
 		ProductEntity productEntity = productMapper.domainToEntity(product);
@@ -149,6 +159,10 @@ public class ProductServiceImpl implements ProductService {
 				.collect(Collectors.toSet())
 		);
 		return tagEntities;
+	}
+
+	private boolean isManyThumbnail(Set<ProductAttach> attaches) {
+		return attaches.stream().filter(attach -> ProductAttachType.THUMBNAIL.equals(attach.getType())).count() > 1;
 	}
 
 	@Override
