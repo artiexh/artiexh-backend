@@ -50,6 +50,10 @@ public final class CookieUtil {
 
 	public static void deleteCookies(HttpServletRequest request, HttpServletResponse response, String... names) {
 		Set<String> nameList = Set.of(names);
+		if (request.getCookies() == null) {
+			return;
+		}
+
 		Arrays.stream(request.getCookies())
 			.filter(cookie -> nameList.contains(cookie.getName()))
 			.forEach(cookie -> {
