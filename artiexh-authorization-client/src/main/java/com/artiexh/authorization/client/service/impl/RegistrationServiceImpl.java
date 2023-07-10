@@ -2,12 +2,20 @@ package com.artiexh.authorization.client.service.impl;
 
 import com.artiexh.auth.service.RecentOauth2LoginFailId;
 import com.artiexh.authorization.client.service.RegistrationService;
-import com.artiexh.data.jpa.entity.*;
-import com.artiexh.data.jpa.repository.*;
-import com.artiexh.model.domain.*;
+import com.artiexh.data.jpa.entity.AccountEntity;
+import com.artiexh.data.jpa.entity.ArtistEntity;
+import com.artiexh.data.jpa.entity.CartEntity;
+import com.artiexh.data.jpa.entity.UserEntity;
+import com.artiexh.data.jpa.repository.AccountRepository;
+import com.artiexh.data.jpa.repository.ArtistRepository;
+import com.artiexh.data.jpa.repository.CartRepository;
+import com.artiexh.data.jpa.repository.UserRepository;
+import com.artiexh.model.domain.Account;
+import com.artiexh.model.domain.Artist;
+import com.artiexh.model.domain.Role;
+import com.artiexh.model.domain.User;
 import com.artiexh.model.mapper.AccountMapper;
 import com.artiexh.model.mapper.ArtistMapper;
-import com.artiexh.model.mapper.PrinterProviderMapper;
 import com.artiexh.model.mapper.UserMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -27,11 +35,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private final AccountMapper accountMapper;
 	private final UserMapper userMapper;
 	private final ArtistMapper artistMapper;
-	private final PrinterProviderMapper printerProviderMapper;
 	private final AccountRepository accountRepository;
 	private final UserRepository userRepository;
 	private final ArtistRepository artistRepository;
-	private final PrinterProviderRepository printerProviderRepository;
 	private final CartRepository cartRepository;
 	private final RecentOauth2LoginFailId recentOauth2LoginFailId;
 
@@ -76,12 +82,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}
 
 		return userMapper.entityToDomain(savedUserEntity);
-	}
-
-	@Override
-	public PrinterProvider createPrinterProvider(PrinterProvider printerProvider) {
-		PrinterProviderEntity entity = printerProviderRepository.save(printerProviderMapper.domainToEntity(printerProvider));
-		return printerProviderMapper.entityToDomain(entity);
 	}
 
 	@Override

@@ -39,7 +39,7 @@ server:
     include-stacktrace: never
     whitelabel:
       enabled: false
-  port: ${AUTH_SERVER_PORT}
+  port: ${AUTH_SERVER_PORT:}
 springdoc:
   show-actuator: true
   swagger-ui:
