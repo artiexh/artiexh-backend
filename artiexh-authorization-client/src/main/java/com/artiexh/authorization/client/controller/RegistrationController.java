@@ -7,7 +7,6 @@ import com.artiexh.model.domain.Account;
 import com.artiexh.model.domain.Artist;
 import com.artiexh.model.domain.User;
 import com.artiexh.model.mapper.AccountMapper;
-import com.artiexh.model.mapper.PrinterProviderMapper;
 import com.artiexh.model.mapper.UserMapper;
 import com.artiexh.model.rest.auth.RegisterAdminRequest;
 import com.artiexh.model.rest.auth.RegisterUserRequest;
@@ -32,8 +31,6 @@ public class RegistrationController {
 	private AccountMapper accountMapper;
 	@Autowired
 	private UserMapper userMapper;
-	@Autowired
-	private PrinterProviderMapper printerProviderMapper;
 	@Autowired
 	private RegistrationService registrationService;
 	@Autowired
