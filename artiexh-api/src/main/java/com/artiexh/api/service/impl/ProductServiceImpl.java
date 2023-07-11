@@ -6,13 +6,11 @@ import com.artiexh.data.jpa.entity.ArtistEntity;
 import com.artiexh.data.jpa.entity.ProductCategoryEntity;
 import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.jpa.entity.ProductTagEntity;
-import com.artiexh.data.jpa.repository.ArtistRepository;
-import com.artiexh.data.jpa.repository.ProductCategoryRepository;
-import com.artiexh.data.jpa.repository.ProductRepository;
-import com.artiexh.data.jpa.repository.ProductTagRepository;
+import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.Product;
+import com.artiexh.model.domain.ProductAttach;
+import com.artiexh.model.domain.ProductAttachType;
 import com.artiexh.model.domain.ProductTag;
-import com.artiexh.model.mapper.ProductAttachMapper;
 import com.artiexh.model.mapper.ProductMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -39,14 +37,13 @@ import java.util.stream.Collectors;
 public class ProductServiceImpl implements ProductService {
 	private final ArtistRepository artistRepository;
 	private final ProductCategoryRepository productCategoryRepository;
+	private final ProductAttachRepository productAttachRepository;
 	private final ProductTagRepository productTagRepository;
 	private final ProductMapper productMapper;
-	private final ProductAttachMapper productAttachMapper;
 	private final ProductRepository productRepository;
 	private final ElasticsearchTemplate elasticsearchTemplate;
 
 	@Override
-	@Transactional
 	public Page<Product> getInPage(Query query, Pageable pageable) {
 		query.setPageable(pageable);
 		SearchHits<ProductDocument> hits = elasticsearchTemplate.search(query, ProductDocument.class);
@@ -61,8 +58,10 @@ public class ProductServiceImpl implements ProductService {
 			.collect(Collectors.toMap(ProductEntity::getId, product -> product));
 
 		for (var product : productPage) {
+			String thumbnailUrl = productAttachRepository.findThumbnailByProductId(product.getId()).orElse(null);
+			product.setThumbnailUrl(thumbnailUrl);
+
 			var entity = entities.get(product.getId());
-			product.setAttaches(productAttachMapper.entitiesToDomains(entity.getAttaches()));
 			product.setRemainingQuantity(entity.getRemainingQuantity());
 			product.getOwner().setAvatarUrl(entity.getOwner().getAvatarUrl());
 			product.setDescription(entity.getDescription());
@@ -87,6 +86,10 @@ public class ProductServiceImpl implements ProductService {
 
 		ProductCategoryEntity categoryEntity = productCategoryRepository.findById(product.getCategory().getId())
 			.orElseThrow(() -> new IllegalArgumentException("Category not valid"));
+
+		if (isManyThumbnail(product.getAttaches())) {
+			throw new IllegalArgumentException("Only one thumbnail allowed");
+		}
 
 		Set<ProductTagEntity> tagEntities = getTagEntities(product.getTags());
 
@@ -114,8 +117,13 @@ public class ProductServiceImpl implements ProductService {
 	public Product update(long artistId, Product product) {
 		ProductEntity savedProduct = productRepository.findById(product.getId())
 			.orElseThrow(() -> new EntityNotFoundException("Product id not found"));
+
 		if (savedProduct.getOwner().getId() != artistId) {
 			throw new AccessDeniedException("Product owner not valid");
+		}
+
+		if (isManyThumbnail(product.getAttaches())) {
+			throw new IllegalArgumentException("Only one thumbnail allowed");
 		}
 
 		ProductEntity productEntity = productMapper.domainToEntity(product);
@@ -151,6 +159,10 @@ public class ProductServiceImpl implements ProductService {
 				.collect(Collectors.toSet())
 		);
 		return tagEntities;
+	}
+
+	private boolean isManyThumbnail(Set<ProductAttach> attaches) {
+		return attaches.stream().filter(attach -> ProductAttachType.THUMBNAIL.equals(attach.getType())).count() > 1;
 	}
 
 	@Override

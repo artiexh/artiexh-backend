@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import java.time.Instant;
+import java.util.Map;
 
 @RestControllerAdvice
 public class ReformatResponseAdvice implements ResponseBodyAdvice<Object> {
@@ -34,6 +35,9 @@ public class ReformatResponseAdvice implements ResponseBodyAdvice<Object> {
 
 		if (body instanceof ProblemDetail problemDetail) {
 			return new ResponseModel(now, status, httpStatus.name(), problemDetail.getDetail(), path, null);
+		} else if ("/error".equals(path)) {
+			var bodyMap = (Map<String, Object>) body;
+			return new ResponseModel(now, status, httpStatus.name(), (String) bodyMap.get("message"), (String) bodyMap.get("path"), null);
 		} else {
 			return new ResponseModel(now, status, httpStatus.name(), null, path, body);
 		}

@@ -10,6 +10,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ArtistItemsResponse {
-	private ArtistCartInfoResponse artistInfo;
+	private ArtistCartInfoResponse artist;
 	private Set<CartItemResponse> items;
 }
