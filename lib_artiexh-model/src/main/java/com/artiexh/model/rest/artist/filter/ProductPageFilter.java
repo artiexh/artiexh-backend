@@ -12,6 +12,8 @@ import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -26,38 +28,46 @@ public class ProductPageFilter {
 	private Integer categoryId;
 	@JsonIgnore
 	private Long artistId;
-	private ProductStatus status;
+	private Set<ProductStatus> statuses;
 
 	public Query getQuery() {
 		var queryBuilder = NativeQuery.builder()
-			.withFilter(filter -> {
-				filter.term(term -> term.field("owner.id").value(artistId));
-				if (status != null) {
-					filter.term(term -> term.field("status").value(status.getByteValue()));
+			.withFilter(filter -> filter.bool(bool -> {
+				bool.must(must -> must.term(term -> term.field("owner.id").value(artistId)));
+
+				if (statuses == null) {
+					statuses = new LinkedHashSet<>();
 				}
+				statuses.add(ProductStatus.AVAILABLE);
+				statuses.add(ProductStatus.PRE_ORDER);
+				for (ProductStatus status : statuses) {
+					bool.should(should -> should.term(term -> term.field("status").value(status.getValue())));
+				}
+				bool.minimumShouldMatch("1");
+
 				if (minPrice != null) {
-					filter.range(range -> range.field("price.amount").gte(JsonData.of(minPrice)));
+					bool.must(must -> must.range(range -> range.field("price.amount").gte(JsonData.of(minPrice))));
 				}
 				if (maxPrice != null) {
-					filter.range(range -> range.field("price.amount").lte(JsonData.of(maxPrice)));
+					bool.must(must -> must.range(range -> range.field("price.amount").lte(JsonData.of(maxPrice))));
 				}
 				if (averageRate != null) {
-					filter.term(term -> term.field("averageRate").value(averageRate));
+					bool.must(must -> must.term(term -> term.field("averageRate").value(averageRate)));
 				}
 				if (categoryId != null) {
-					filter.term(term -> term.field("category.id").value(categoryId));
+					bool.must(must -> must.term(term -> term.field("category.id").value(categoryId)));
 				}
 				if (provinceId != null) {
-					filter.term(term -> term.field("owner.province.id").value(provinceId));
+					bool.must(must -> must.term(term -> term.field("owner.province.id").value(provinceId)));
 				}
-				return filter;
-			});
+				return bool;
+			}));
 
 		if (StringUtils.hasText(keyword)) {
 			queryBuilder.withQuery(query -> query
 				.multiMatch(multiMatch -> multiMatch
 					.query(keyword)
-					.fields("name", "owner.username", "owner.displayName")
+					.fields("name")
 					.fuzziness("AUTO"))
 			);
 		}

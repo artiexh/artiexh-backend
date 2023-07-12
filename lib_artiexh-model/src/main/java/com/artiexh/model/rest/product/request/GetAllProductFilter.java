@@ -27,28 +27,28 @@ public class GetAllProductFilter {
 
 	public Query getQuery() {
 		var queryBuilder = NativeQuery.builder()
-			.withFilter(filter -> {
-				filter.term(term -> term.field("status")
-					.value(ProductStatus.PRE_ORDER.getByteValue())
-					.value(ProductStatus.AVAILABLE.getByteValue())
-				);
+			.withFilter(filter -> filter.bool(bool -> {
+				bool.should(should -> should.term(term -> term.field("status").value(ProductStatus.PRE_ORDER.getByteValue())));
+				bool.should(should -> should.term(term -> term.field("status").value(ProductStatus.AVAILABLE.getByteValue())));
+				bool.minimumShouldMatch("1");
+
 				if (minPrice != null) {
-					filter.range(range -> range.field("price.amount").gte(JsonData.of(minPrice)));
+					bool.must(must -> must.range(range -> range.field("price.amount").gte(JsonData.of(minPrice))));
 				}
 				if (maxPrice != null) {
-					filter.range(range -> range.field("price.amount").lte(JsonData.of(maxPrice)));
+					bool.must(must -> must.range(range -> range.field("price.amount").lte(JsonData.of(maxPrice))));
 				}
 				if (averageRate != null) {
-					filter.term(term -> term.field("averageRate").value(averageRate));
+					bool.must(must -> must.term(term -> term.field("averageRate").value(averageRate)));
 				}
 				if (categoryId != null) {
-					filter.term(term -> term.field("category.id").value(categoryId));
+					bool.must(must -> must.term(term -> term.field("category.id").value(categoryId)));
 				}
 				if (provinceId != null) {
-					filter.term(term -> term.field("owner.province.id").value(provinceId));
+					bool.must(must -> must.term(term -> term.field("owner.province.id").value(provinceId)));
 				}
-				return filter;
-			});
+				return bool;
+			}));
 
 		if (StringUtils.hasText(keyword)) {
 			queryBuilder.withQuery(query -> query
