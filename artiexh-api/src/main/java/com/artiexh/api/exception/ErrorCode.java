@@ -17,7 +17,7 @@ public enum ErrorCode {
 
 	//Artist
 	ARTIST_NOT_FOUND(HttpStatus.OK, "Artist is not found"),
-
+	ARTIST_NOT_VALID(HttpStatus.BAD_REQUEST, "Artist is not valid"),
 	//AUTH
 	ACCOUNT_INFO_NOT_FOUND(HttpStatus.OK, "Can not get account information from request");
 	private final HttpStatus statusCode;

@@ -1,7 +1,8 @@
-package com.artiexh.model.rest.product.request;
+package com.artiexh.model.rest.artist.filter;
 
 import co.elastic.clients.json.JsonData;
 import com.artiexh.model.domain.ProductStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,25 +12,37 @@ import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetAllProductFilter {
+public class ProductPageFilter {
 	private String keyword;
 	private BigDecimal minPrice;
 	private BigDecimal maxPrice;
 	private Float averageRate;
 	private Integer provinceId;
 	private Integer categoryId;
+	@JsonIgnore
+	private Long artistId;
+	private Set<ProductStatus> statuses;
 
 	public Query getQuery() {
 		var queryBuilder = NativeQuery.builder()
 			.withFilter(filter -> filter.bool(bool -> {
-				bool.should(should -> should.term(term -> term.field("status").value(ProductStatus.PRE_ORDER.getByteValue())));
-				bool.should(should -> should.term(term -> term.field("status").value(ProductStatus.AVAILABLE.getByteValue())));
+				bool.must(must -> must.term(term -> term.field("owner.id").value(artistId)));
+
+				if (statuses == null) {
+					statuses = new LinkedHashSet<>();
+				}
+				statuses.add(ProductStatus.AVAILABLE);
+				statuses.add(ProductStatus.PRE_ORDER);
+				for (ProductStatus status : statuses) {
+					bool.should(should -> should.term(term -> term.field("status").value(status.getValue())));
+				}
 				bool.minimumShouldMatch("1");
 
 				if (minPrice != null) {
@@ -54,7 +67,7 @@ public class GetAllProductFilter {
 			queryBuilder.withQuery(query -> query
 				.multiMatch(multiMatch -> multiMatch
 					.query(keyword)
-					.fields("name", "owner.username", "owner.displayName")
+					.fields("name")
 					.fuzziness("AUTO"))
 			);
 		}
