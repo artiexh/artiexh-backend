@@ -48,7 +48,7 @@ public class BaseModelController {
 		@ParameterObject @Valid BaseModelFilter filter,
 		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest
 	) {
-		return baseModelService.getInPage(filter, paginationAndSortingRequest.getPageable());
+		return baseModelService.getInPage(filter.getSpecification(), paginationAndSortingRequest.getPageable());
 	}
 
 	@GetMapping(path = Endpoint.BaseModel.BASE_MODEL_DETAIL)

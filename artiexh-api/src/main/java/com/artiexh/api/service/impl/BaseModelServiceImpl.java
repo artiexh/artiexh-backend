@@ -1,22 +1,19 @@
 package com.artiexh.api.service.impl;
 
-import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.BaseModelService;
 import com.artiexh.data.jpa.entity.BaseModelEntity;
 import com.artiexh.data.jpa.repository.BaseModelRepository;
 import com.artiexh.model.mapper.BaseModelMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.basemodel.BaseModelDetail;
-import com.artiexh.model.rest.basemodel.BaseModelFilter;
 import com.artiexh.model.rest.basemodel.BaseModelInfo;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.http.fileupload.impl.IOFileUploadException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -43,9 +40,9 @@ public class BaseModelServiceImpl implements BaseModelService {
 	}
 
 	@Override
-	public PageResponse<BaseModelInfo> getInPage(BaseModelFilter filter, Pageable pageable) {
+	public PageResponse<BaseModelInfo> getInPage(Specification<BaseModelEntity> specification, Pageable pageable) {
 		//Todo: Update Filter
-		Page<BaseModelEntity> baseModelEntities = baseModelRepository.findAll(pageable);
+		Page<BaseModelEntity> baseModelEntities = baseModelRepository.findAll(specification, pageable);
 		PageResponse<BaseModelInfo> baseModelPages
 			= new PageResponse<>(baseModelEntities.map(entity -> baseModelMapper.entityToInfo(entity)));
 		return baseModelPages;
