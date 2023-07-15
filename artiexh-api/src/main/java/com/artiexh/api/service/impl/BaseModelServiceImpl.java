@@ -11,6 +11,7 @@ import com.artiexh.model.rest.basemodel.BaseModelFilter;
 import com.artiexh.model.rest.basemodel.BaseModelInfo;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.http.fileupload.impl.IOFileUploadException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -34,10 +35,7 @@ public class BaseModelServiceImpl implements BaseModelService {
 
 	@Override
 	public BaseModelDetail update(BaseModelDetail detail) {
-		BaseModelEntity entity = baseModelRepository.findById(detail.getId())
-			.orElseThrow(() -> new ResponseStatusException(
-				ErrorCode.BASE_MODEL_NOT_FOUND.getCode(),
-				ErrorCode.BASE_MODEL_NOT_FOUND.getMessage()));
+		BaseModelEntity entity = baseModelRepository.getReferenceById(detail.getId());
 		entity = baseModelMapper.detailToEntity(detail, entity);
 		entity = baseModelRepository.save(entity);
 		detail = baseModelMapper.entityToDetail(entity);
@@ -46,6 +44,7 @@ public class BaseModelServiceImpl implements BaseModelService {
 
 	@Override
 	public PageResponse<BaseModelInfo> getInPage(BaseModelFilter filter, Pageable pageable) {
+		//Todo: Update Filter
 		Page<BaseModelEntity> baseModelEntities = baseModelRepository.findAll(pageable);
 		PageResponse<BaseModelInfo> baseModelPages
 			= new PageResponse<>(baseModelEntities.map(entity -> baseModelMapper.entityToInfo(entity)));
@@ -55,9 +54,7 @@ public class BaseModelServiceImpl implements BaseModelService {
 	@Override
 	public BaseModelDetail getDetail(long id) {
 		BaseModelEntity entity = baseModelRepository.findById(id)
-			.orElseThrow(() -> new ResponseStatusException(
-				ErrorCode.BASE_MODEL_NOT_FOUND.getCode(),
-				ErrorCode.BASE_MODEL_NOT_FOUND.getMessage()));
+			.orElseThrow(EntityNotFoundException::new);
 		BaseModelDetail detail = baseModelMapper.entityToDetail(entity);
 		return detail;
 	}
