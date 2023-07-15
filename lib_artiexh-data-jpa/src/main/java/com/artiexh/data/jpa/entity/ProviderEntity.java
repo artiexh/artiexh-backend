@@ -11,10 +11,10 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "provider")
-public class Provider {
+public class ProviderEntity {
 	@Id
-	@Column(name = "business_code", nullable = false)
-	private Long businessCode;
+	@Column(name = "business_code", nullable = false, length = 13)
+	private String businessCode;
 
 	@Column(name = "business_name", nullable = false)
 	private String businessName;

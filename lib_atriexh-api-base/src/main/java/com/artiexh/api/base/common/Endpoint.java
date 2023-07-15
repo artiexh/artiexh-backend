@@ -55,4 +55,16 @@ public final class Endpoint {
 		public static final String ROOT = PREFIX + "/base-model";
 		public static final String BASE_MODEL_DETAIL = "/{id}";
 	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class ProvidedProduct {
+		public static final String ROOT = PREFIX + "/provided-product";
+		public static final String PROVIDED_PRODUCT_DETAIL = "/{id}";
+	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Provider {
+		public static final String ROOT = PREFIX + "/provider";
+		public static final String PROVIDER_DETAIL = "/{id}";
+	}
 }
