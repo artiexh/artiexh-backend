@@ -51,6 +51,13 @@ public final class Endpoint {
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Artist {
+		public static final String ROOT = PREFIX + "/artist";
+		public static final String ARTIST_DETAIL = "/{id}";
+		public static final String ARTIST_PRODUCT = "/product";
+	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class BaseModel {
 		public static final String ROOT = PREFIX + "/base-model";
 		public static final String BASE_MODEL_DETAIL = "/{id}";
@@ -66,5 +73,7 @@ public final class Endpoint {
 	public static class Provider {
 		public static final String ROOT = PREFIX + "/provider";
 		public static final String PROVIDER_DETAIL = "/{id}";
+		public static final String PROVIDED_PRODUCT_LIST = "/{providerId}/provided-product";
+		public static final String PROVIDED_PRODUCT_DETAIL = "/{providerId}/base-model/{baseModelId}/provided-product";
 	}
 }

@@ -34,5 +34,5 @@ public class ProviderEntity {
 	private String description	;
 
 	@OneToMany(mappedBy = "provider")
-	private Set<ProvidedProductEntity> baseModels;
+	private Set<ProvidedProductEntity> providedProducts;
 }

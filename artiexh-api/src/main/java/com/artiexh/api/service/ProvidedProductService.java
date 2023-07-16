@@ -10,8 +10,11 @@ import com.artiexh.model.rest.providedproduct.ProvidedProductInfo;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.Set;
+
 public interface ProvidedProductService {
 	ProvidedProductDetail create(ProvidedProductDetail detail);
+	void createList(String businessCode, Set<ProvidedProductDetail> detail);
 	ProvidedProductDetail update(ProvidedProductDetail detail);
 	PageResponse<ProvidedProductInfo> getInPage(Specification<ProvidedProductEntity> specification, Pageable pageable);
 	ProvidedProductDetail getDetail(long baseModelId, String providerId);

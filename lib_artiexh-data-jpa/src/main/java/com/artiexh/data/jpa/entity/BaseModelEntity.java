@@ -10,7 +10,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "base_product")
+@Table(name = "base_model")
 public class BaseModelEntity {
 	@Id
 	@Tsid

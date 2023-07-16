@@ -1,6 +1,7 @@
 package com.artiexh.model.mapper;
 
 import com.artiexh.data.elasticsearch.model.ProductDocument;
+import com.artiexh.data.jpa.entity.ProductAttachEntity;
 import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.model.domain.*;
 import com.artiexh.model.rest.product.request.CreateProductRequest;
@@ -10,6 +11,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.springframework.data.domain.Page;
+
+import java.util.Set;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
@@ -24,7 +27,16 @@ public interface ProductMapper {
 
 	@Mapping(target = "price.unit", source = "priceUnit")
 	@Mapping(target = "price.amount", source = "priceAmount")
+	@Mapping(target = "thumbnailUrl", source = "attaches")
 	Product entityToDomain(ProductEntity productEntity);
+
+	default String getThumbnailUrl(Set<ProductAttachEntity> productAttachEntities) {
+		return productAttachEntities.stream()
+			.filter(attachEntity -> attachEntity.getType() == ProductAttachType.THUMBNAIL.getValue())
+			.findFirst()
+			.map(ProductAttachEntity::getUrl)
+			.orElse(null);
+	}
 
 	@Mapping(target = "priceUnit", source = "price.unit")
 	@Mapping(target = "priceAmount", source = "price.amount")
@@ -39,8 +51,8 @@ public interface ProductMapper {
 	@Mapping(target = "price.amount", source = "priceAmount")
 	ProductDocument entityToDocument(ProductEntity productEntity);
 
-	default Page<ProductResponse> domainPageToProductResponsePage(Page<Product> product) {
-		return product.map(this::domainToProductResponse);
+	default Page<ProductResponse> domainPageToProductResponsePage(Page<Product> productPage) {
+		return productPage.map(this::domainToProductResponse);
 	}
 
 	@Mapping(target = "category.id", source = "categoryId")

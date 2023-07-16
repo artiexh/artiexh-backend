@@ -21,7 +21,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @RestController
 @RequestMapping(Endpoint.BaseModel.ROOT)
 public class BaseModelController {
-	private BaseModelService baseModelService;
+	private final BaseModelService baseModelService;
 
 	@PostMapping
 	public BaseModelDetail create(@RequestBody @Valid BaseModelDetail detail) {
@@ -30,9 +30,7 @@ public class BaseModelController {
 
 	@PutMapping(path = Endpoint.BaseModel.BASE_MODEL_DETAIL)
 	public BaseModelDetail update(@PathVariable long id, @RequestBody @Valid BaseModelDetail detail) {
-		detail.toBuilder()
-			.id(id)
-			.build();
+		detail.setId(id);
 		try {
 			return baseModelService.update(detail);
 		} catch (EntityNotFoundException exception) {

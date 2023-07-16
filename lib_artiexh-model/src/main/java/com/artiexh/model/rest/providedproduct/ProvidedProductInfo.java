@@ -17,9 +17,9 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
 public class ProvidedProductInfo {
-	private long baseModelProductId;
+	private long baseModelId;
 
-	private String providerId;
+	private String businessCode;
 
 	private BigDecimal priceAmount;
 

@@ -17,10 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class BaseModelServiceImpl implements BaseModelService {
-	private BaseModelMapper baseModelMapper;
-	private BaseModelRepository baseModelRepository;
+	private final BaseModelMapper baseModelMapper;
+	private final BaseModelRepository baseModelRepository;
 
 	@Override
 	public BaseModelDetail create(BaseModelDetail detail) {

@@ -5,9 +5,6 @@ import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.ProvidedProductService;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
-import com.artiexh.model.rest.basemodel.BaseModelDetail;
-import com.artiexh.model.rest.basemodel.BaseModelFilter;
-import com.artiexh.model.rest.basemodel.BaseModelInfo;
 import com.artiexh.model.rest.providedproduct.ProvidedProductDetail;
 import com.artiexh.model.rest.providedproduct.ProvidedProductFilter;
 import com.artiexh.model.rest.providedproduct.ProvidedProductInfo;
@@ -30,25 +27,28 @@ public class ProvidedProductController {
 		return service.create(detail);
 	}
 
-	@PutMapping()
-	public ProvidedProductDetail update(@RequestBody @Valid ProvidedProductDetail detail) {
-
-		try {
-			return service.update(detail);
-		} catch (EntityNotFoundException exception) {
-			throw new ResponseStatusException(
-				BAD_REQUEST,
-				ErrorCode.BASE_MODEL_NOT_FOUND.getMessage(),
-				exception);
-		}
-	}
+//	@PutMapping(path = Endpoint.ProvidedProduct.PROVIDED_PRODUCT_DETAIL)
+//	public ProvidedProductDetail update(
+//		@PathVariable String id,
+//		@RequestBody @Valid ProvidedProductDetail detail) {
+//
+//		try {
+//			detail.setBaseModelId(id);
+//			return service.update(detail);
+//		} catch (EntityNotFoundException exception) {
+//			throw new ResponseStatusException(
+//				ErrorCode.PROVIDED_PRODUCT_NOT_FOUND.getCode(),
+//				ErrorCode.PROVIDED_PRODUCT_NOT_FOUND.getMessage(),
+//				exception);
+//		}
+//	}
 
 	@GetMapping
 	public PageResponse<ProvidedProductInfo> getInPage(
-//		@ParameterObject @Valid ProvidedProductFilter filter,
+		@ParameterObject @Valid ProvidedProductFilter filter,
 		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest
 	) {
-		return service.getInPage(null, paginationAndSortingRequest.getPageable());
+		return service.getInPage(filter.getSpecification(), paginationAndSortingRequest.getPageable());
 	}
 
 //	@GetMapping()
