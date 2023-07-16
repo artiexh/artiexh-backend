@@ -12,7 +12,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 public class Artist extends User {
 	private Set<Product> products;
 	private Set<Subscription> subscriptionsFrom;

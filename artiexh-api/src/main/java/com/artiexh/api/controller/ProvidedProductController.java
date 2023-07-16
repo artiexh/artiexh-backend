@@ -51,16 +51,15 @@ public class ProvidedProductController {
 		return service.getInPage(null, paginationAndSortingRequest.getPageable());
 	}
 
-	@GetMapping
-	public ProvidedProductDetail getDetail(long baseModelId, String providerId) {
-		try {
-			return service.getDetail(baseModelId, providerId);
-		} catch (EntityNotFoundException exception) {
-			throw new ResponseStatusException(
-				ErrorCode.BASE_MODEL_NOT_FOUND.getCode(),
-				ErrorCode.BASE_MODEL_NOT_FOUND.getMessage(),
-				exception);
-		}
-
-	}
+//	@GetMapping()
+//	public ProvidedProductDetail getDetail(long baseModelId, String providerId) {
+//		try {
+//			return service.getDetail(baseModelId, providerId);
+//		} catch (EntityNotFoundException exception) {
+//			throw new ResponseStatusException(
+//				ErrorCode.BASE_MODEL_NOT_FOUND.getCode(),
+//				ErrorCode.BASE_MODEL_NOT_FOUND.getMessage(),
+//				exception);
+//		}
+//	}
 }

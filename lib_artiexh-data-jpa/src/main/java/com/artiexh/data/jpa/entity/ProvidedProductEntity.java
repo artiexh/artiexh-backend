@@ -1,10 +1,9 @@
 package com.artiexh.data.jpa.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 
@@ -20,6 +19,18 @@ public class ProvidedProductEntity {
 	@EmbeddedId
 	private ProvidedProductId id;
 
+	@MapsId("baseModelId")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@JoinColumn(name = "base_model_id", nullable = false)
+	private BaseModelEntity baseModel;
+
+	@MapsId("businessCode")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@JoinColumn(name = "business_code", nullable = false)
+	private ProviderEntity provider;
+
 	@Column(name = "price_amount", nullable = false)
 	private BigDecimal priceAmount;
 
@@ -27,4 +38,6 @@ public class ProvidedProductEntity {
 	private String priceUnit;
 
 	private String description;
+
+
 }

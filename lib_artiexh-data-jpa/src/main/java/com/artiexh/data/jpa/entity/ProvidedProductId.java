@@ -27,8 +27,8 @@ public class ProvidedProductId implements Serializable {
 	private String businessCode;
 
 	@NotNull
-	@Column(name = "base_product_id", nullable = false)
-	private Long baseProductId;
+	@Column(name = "base_model_id", nullable = false)
+	private Long baseModelId;
 
 	@Override
 	public boolean equals(Object o) {
@@ -36,11 +36,11 @@ public class ProvidedProductId implements Serializable {
 		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
 		ProvidedProductId entity = (ProvidedProductId) o;
 		return Objects.equals(this.businessCode, entity.businessCode) &&
-			Objects.equals(this.baseProductId, entity.baseProductId);
+			Objects.equals(this.baseModelId, entity.baseModelId);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(businessCode, baseProductId);
+		return Objects.hash(businessCode, baseModelId);
 	}
 }

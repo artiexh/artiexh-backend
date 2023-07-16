@@ -18,5 +18,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProvidedProductFilter {
-
+	private String businessCode;
+	private long baseModelId;
 }
