@@ -12,12 +12,12 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "provided_base_product")
+@Table(name = "provided_model")
 @Builder(toBuilder = true)
-public class ProvidedProductEntity {
+public class ProvidedModelEntity {
 
 	@EmbeddedId
-	private ProvidedProductId id;
+	private ProvidedModelId id;
 
 	@MapsId("baseModelId")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)

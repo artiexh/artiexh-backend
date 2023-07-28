@@ -18,11 +18,16 @@ import java.util.List;
 public class ProviderFilter {
 	private String businessCode;
 
+	private String businessName;
+
 	public Specification<ProviderEntity> getSpecification() {
 		return (root, cQuery, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			if (StringUtils.isNotBlank(businessCode)) {
 				predicates.add(builder.like(root.get("businessCode"), "%" + businessCode.trim() + "%"));
+			}
+			if (StringUtils.isNotBlank(businessName)) {
+				predicates.add(builder.like(root.get("id").get("businessName"), "%" + businessCode.trim() + "%"));
 			}
 			return builder.and(predicates.toArray(new Predicate[0]));
 		};

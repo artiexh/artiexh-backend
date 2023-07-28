@@ -8,7 +8,7 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(
 	uses = {
-		ProvidedProductMapper.class
+		ProvidedModelMapper.class
 	}
 )
 public interface ProviderMapper {

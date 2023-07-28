@@ -25,7 +25,8 @@ public enum ErrorCode {
 	//Provider
 	PROVIDER_NOT_FOUND(HttpStatus.NOT_FOUND, "Provider is not found"),
 	//Provided Product
-	PROVIDED_PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "Provider is not found"),
+	PROVIDED_PRODUCT_NOT_FOUND(HttpStatus.BAD_REQUEST, "Provider is not found"),
+	PROVIDED_PRODUCT_KEY_NOT_VALID(HttpStatus.BAD_REQUEST, "Provider key is in invalid"),
 	//AUTH
 	ACCOUNT_INFO_NOT_FOUND(HttpStatus.OK, "Can not get account information from request");
 	private final HttpStatus statusCode;

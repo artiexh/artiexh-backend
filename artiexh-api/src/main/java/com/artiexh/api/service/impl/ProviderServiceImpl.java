@@ -1,19 +1,16 @@
 package com.artiexh.api.service.impl;
 
-import com.artiexh.api.service.ProvidedProductService;
+import com.artiexh.api.service.ProvidedModelService;
 import com.artiexh.api.service.ProviderService;
-import com.artiexh.data.jpa.entity.BaseModelEntity;
-import com.artiexh.data.jpa.entity.ProvidedProductEntity;
+import com.artiexh.data.jpa.entity.ProvidedModelEntity;
+import com.artiexh.data.jpa.entity.ProvidedModelId;
 import com.artiexh.data.jpa.entity.ProviderEntity;
-import com.artiexh.data.jpa.repository.BaseModelRepository;
+import com.artiexh.data.jpa.repository.ProvidedProductRepository;
 import com.artiexh.data.jpa.repository.ProviderRepository;
-import com.artiexh.model.mapper.ProvidedProductMapper;
+import com.artiexh.model.mapper.ProvidedModelMapper;
 import com.artiexh.model.mapper.ProviderMapper;
 import com.artiexh.model.rest.PageResponse;
-import com.artiexh.model.rest.basemodel.BaseModelDetail;
-import com.artiexh.model.rest.basemodel.BaseModelInfo;
-import com.artiexh.model.rest.providedproduct.ProvidedProductDetail;
-import com.artiexh.model.rest.providedproduct.ProvidedProductInfo;
+import com.artiexh.model.rest.providedproduct.ProvidedModelDetail;
 import com.artiexh.model.rest.provider.ProviderDetail;
 import com.artiexh.model.rest.provider.ProviderInfo;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,7 +21,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -32,10 +28,9 @@ import java.util.Set;
 @Transactional
 public class ProviderServiceImpl implements ProviderService {
 	private final ProviderMapper providerMapper;
-	private final ProvidedProductMapper providedProductMapper;
-	private final ProvidedProductService providedProductService;
+	private final ProvidedModelService providedModelService;
 	private final ProviderRepository providerRepository;
-	private final BaseModelRepository baseModelRepository;
+	private final ProvidedProductRepository providedProductRepository;
 	@Override
 	public ProviderDetail create(ProviderDetail detail) {
 		ProviderEntity entity = providerMapper.detailToEntity(detail);
@@ -45,20 +40,20 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	@Override
-	public ProviderDetail createProvidedProductList(String businessCode, Set<ProvidedProductDetail> details) {
-		providedProductService.createList(businessCode, details);
-		return getDetail(businessCode);
+	public ProviderDetail createProvidedModel(ProvidedModelDetail providedProductDetail) {
+		providedModelService.create(providedProductDetail);
+		return getDetail(providedProductDetail.getBusinessCode());
 	}
 
 	@Override
-	public ProviderDetail createProvidedProduct(ProvidedProductDetail detail) {
-		providedProductService.create(detail);
-		return getDetail(detail.getBusinessCode());
+	public void removeProvidedProduct(String businessCode, long baseModelId) {
+		ProvidedModelEntity entity = providedProductRepository.getReferenceById(new ProvidedModelId(businessCode, baseModelId));
+		providedProductRepository.delete(entity);
 	}
 
 	@Override
-	public ProviderDetail updateProvidedProduct(ProvidedProductDetail providedProductDetail) {
-		providedProductService.update(providedProductDetail);
+	public ProviderDetail updateProvidedProduct(ProvidedModelDetail providedProductDetail) {
+		providedModelService.update(providedProductDetail);
 		return getDetail(providedProductDetail.getBusinessCode());
 	}
 

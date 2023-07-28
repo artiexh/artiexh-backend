@@ -2,10 +2,11 @@ package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.exception.ErrorCode;
+import com.artiexh.api.service.ProvidedModelService;
 import com.artiexh.api.service.ProviderService;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
-import com.artiexh.model.rest.providedproduct.ProvidedProductDetail;
+import com.artiexh.model.rest.providedproduct.ProvidedModelDetail;
 import com.artiexh.model.rest.provider.ProviderDetail;
 import com.artiexh.model.rest.provider.ProviderFilter;
 import com.artiexh.model.rest.provider.ProviderInfo;
@@ -18,11 +19,15 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Set;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = Endpoint.Provider.ROOT)
 public class ProviderController {
 	private final ProviderService service;
+	private final ProvidedModelService providedModelService;
 	@PutMapping(path = Endpoint.Provider.PROVIDER_DETAIL)
 	public ProviderDetail update(@PathVariable(name = "id") String businessCode, @RequestBody @Valid ProviderDetail detail) {
 		detail.setBusinessCode(businessCode);
@@ -30,7 +35,7 @@ public class ProviderController {
 			return service.update(detail);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(
-				ErrorCode.PRODUCT_NOT_FOUND.getCode(),
+				BAD_REQUEST,
 				ErrorCode.PROVIDER_NOT_FOUND.getMessage(),
 				exception);
 		}
@@ -50,7 +55,7 @@ public class ProviderController {
 			return service.getDetail(businessCode);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(
-				ErrorCode.PROVIDER_NOT_FOUND.getCode(),
+				NO_CONTENT,
 				ErrorCode.PROVIDER_NOT_FOUND.getMessage(),
 				exception);
 		}
@@ -61,30 +66,44 @@ public class ProviderController {
 		return service.create(detail);
 	}
 
-	@PostMapping(path = Endpoint.Provider.PROVIDED_PRODUCT_LIST)
-	public ProviderDetail createProvidedProductList(
-		@PathVariable(name = "providerId") String businessCode,
-		@RequestBody @Valid Set<ProvidedProductDetail> detail
-	) {
-		return service.createProvidedProductList(businessCode, detail);
-	}
-
 	@PostMapping(path = Endpoint.Provider.PROVIDED_PRODUCT_DETAIL)
 	public ProviderDetail createProvidedProduct(
 		@PathVariable(name = "providerId") String businessCode,
 		@PathVariable long baseModelId,
-		@RequestBody ProvidedProductDetail detail
+		ProvidedModelDetail detail
 	) {
-		detail.setBusinessCode(businessCode);
-		detail.setBaseModelId(baseModelId);
-		return service.createProvidedProduct(detail);
+		try {
+			detail.setBusinessCode(businessCode);
+			detail.setBaseModelId(baseModelId);
+			return service.createProvidedModel(detail);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(
+				ErrorCode.PROVIDED_PRODUCT_KEY_NOT_VALID.getCode(),
+				ErrorCode.PROVIDED_PRODUCT_KEY_NOT_VALID.getMessage(),
+				exception);
+		}
+	}
+
+	@DeleteMapping(path = Endpoint.Provider.PROVIDED_PRODUCT_DETAIL)
+	public void deleteProvidedProduct(
+		@PathVariable(name = "providerId") String businessCode,
+		@PathVariable long baseModelId
+	) {
+		try {
+			service.removeProvidedProduct(businessCode, baseModelId);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(
+				ErrorCode.PROVIDED_PRODUCT_NOT_FOUND.getCode(),
+				ErrorCode.PROVIDED_PRODUCT_NOT_FOUND.getMessage(),
+				exception);
+		}
 	}
 
 	@PutMapping(path = Endpoint.Provider.PROVIDED_PRODUCT_DETAIL)
 	public ProviderDetail updateProvidedProduct(
 		@PathVariable(name = "providerId") String businessCode,
 		@PathVariable long baseModelId,
-		@RequestBody ProvidedProductDetail detail
+		@RequestBody ProvidedModelDetail detail
 	) {
 		detail.setBusinessCode(businessCode);
 		detail.setBaseModelId(baseModelId);

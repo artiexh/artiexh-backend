@@ -1,6 +1,5 @@
 package com.artiexh.data.jpa.repository;
 
-import com.artiexh.data.jpa.entity.ProvidedProductEntity;
 import com.artiexh.data.jpa.entity.ProviderEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

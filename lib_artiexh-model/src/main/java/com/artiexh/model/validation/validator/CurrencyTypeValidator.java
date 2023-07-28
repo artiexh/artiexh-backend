@@ -1,5 +1,6 @@
-package com.artiexh.model.validation;
+package com.artiexh.model.validation.validator;
 
+import com.artiexh.model.validation.CurrencyType;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

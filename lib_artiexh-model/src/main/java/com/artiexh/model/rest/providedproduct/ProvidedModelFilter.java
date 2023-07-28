@@ -1,8 +1,6 @@
 package com.artiexh.model.rest.providedproduct;
 
-import com.artiexh.data.jpa.entity.BaseModelEntity;
-import com.artiexh.data.jpa.entity.ProvidedProductEntity;
-import com.artiexh.data.jpa.entity.ProviderEntity;
+import com.artiexh.data.jpa.entity.ProvidedModelEntity;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,11 +16,11 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProvidedProductFilter {
+public class ProvidedModelFilter {
 	private String businessCode;
 	private long baseModelId;
 
-	public Specification<ProvidedProductEntity> getSpecification() {
+	public Specification<ProvidedModelEntity> getSpecification() {
 		return (root, cQuery, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			if (StringUtils.isNotBlank(businessCode)) {

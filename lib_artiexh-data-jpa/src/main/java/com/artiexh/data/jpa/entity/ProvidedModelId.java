@@ -16,7 +16,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Builder
 @Embeddable
-public class ProvidedProductId implements Serializable {
+public class ProvidedModelId implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 650123199811833928L;
 
@@ -32,7 +32,7 @@ public class ProvidedProductId implements Serializable {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-		ProvidedProductId entity = (ProvidedProductId) o;
+		ProvidedModelId entity = (ProvidedModelId) o;
 		return Objects.equals(this.businessCode, entity.businessCode) &&
 			Objects.equals(this.baseModelId, entity.baseModelId);
 	}
