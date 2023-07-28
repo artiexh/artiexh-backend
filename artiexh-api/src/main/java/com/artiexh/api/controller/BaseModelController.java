@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RequiredArgsConstructor
 @RestController
@@ -55,7 +56,7 @@ public class BaseModelController {
 			return baseModelService.getDetail(id);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(
-				ErrorCode.BASE_MODEL_NOT_FOUND.getCode(),
+				NO_CONTENT,
 				ErrorCode.BASE_MODEL_NOT_FOUND.getMessage(),
 				exception);
 		}
