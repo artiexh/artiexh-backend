@@ -14,6 +14,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -28,6 +29,7 @@ public class ProviderController {
 	private final ProvidedModelService providedModelService;
 
 	@PutMapping(path = Endpoint.Provider.PROVIDER_DETAIL)
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ProviderDetail update(@PathVariable(name = "id") String businessCode, @RequestBody @Valid ProviderDetail detail) {
 		detail.setBusinessCode(businessCode);
 		try {
@@ -62,6 +64,7 @@ public class ProviderController {
 	}
 
 	@PostMapping
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ProviderDetail create(@RequestBody @Valid ProviderDetail detail) {
 		return service.create(detail);
 	}
@@ -85,6 +88,7 @@ public class ProviderController {
 	}
 
 	@DeleteMapping(path = Endpoint.Provider.PROVIDED_MODEL_DETAIL)
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public void deleteProvidedProduct(
 		@PathVariable(name = "providerId") String businessCode,
 		@PathVariable long baseModelId
@@ -100,6 +104,7 @@ public class ProviderController {
 	}
 
 	@PutMapping(path = Endpoint.Provider.PROVIDED_MODEL_DETAIL)
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ProviderDetail updateProvidedProduct(
 		@PathVariable(name = "providerId") String businessCode,
 		@PathVariable long baseModelId,
