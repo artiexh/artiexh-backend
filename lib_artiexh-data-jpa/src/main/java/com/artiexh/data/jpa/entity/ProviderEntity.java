@@ -31,7 +31,7 @@ public class ProviderEntity {
 	private String phone;
 
 	@Column(name = "description", nullable = false)
-	private String description	;
+	private String description;
 
 	@OneToMany(mappedBy = "provider")
 	private Set<ProvidedModelEntity> providedProducts;

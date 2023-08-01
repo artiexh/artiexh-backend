@@ -64,16 +64,15 @@ public final class Endpoint {
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
-	public static class ProvidedProduct {
-		public static final String ROOT = PREFIX + "/provided-product";
-		public static final String PROVIDED_PRODUCT_DETAIL = "/{id}";
+	public static class ProvidedModel {
+		public static final String ROOT = PREFIX + "/provided-model";
+		public static final String PROVIDED_MODEL_DETAIL = "/{id}";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Provider {
 		public static final String ROOT = PREFIX + "/provider";
 		public static final String PROVIDER_DETAIL = "/{id}";
-		public static final String PROVIDED_PRODUCT_LIST = "/{providerId}/provided-product";
-		public static final String PROVIDED_PRODUCT_DETAIL = "/{providerId}/base-model/{baseModelId}/provided-product";
+		public static final String PROVIDED_MODEL_DETAIL = "/{providerId}/base-model/{baseModelId}/provided-model";
 	}
 }

@@ -6,5 +6,5 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.query.Query;
 
 public interface ArtistService {
-	PageResponse<ProductResponse> getAllProducts (Query query, Pageable pageable);
+	PageResponse<ProductResponse> getAllProducts(Query query, Pageable pageable);
 }

@@ -32,6 +32,7 @@ public class ProvidedModelServiceImpl implements ProvidedModelService {
 	private final ProviderRepository providerRepository;
 	private final BaseModelRepository baseModelRepository;
 	private final ProvidedModelMapper mapper;
+
 	@Override
 	public ProvidedModelDetail create(ProvidedModelDetail detail) {
 		ProvidedModelEntity entity = mapper.detailToEntity(detail);
@@ -65,12 +66,11 @@ public class ProvidedModelServiceImpl implements ProvidedModelService {
 			providedModel.setBaseModel(baseModel);
 			providedModel.setProvider(provider);
 			providedProductRepository.save(providedModel);
-			return ;
+			return;
 		}
 		log.info("Update new provided model");
 		providedModel = mapper.detailToEntity(detail, providedModel);
 		providedProductRepository.save(providedModel);
-		return ;
 	}
 
 	@Override

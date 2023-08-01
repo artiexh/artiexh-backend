@@ -15,7 +15,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
-public class ProviderDetail extends ProviderInfo{
+public class ProviderDetail extends ProviderInfo {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Set<ProvidedModelInfo> providedProducts;
 }

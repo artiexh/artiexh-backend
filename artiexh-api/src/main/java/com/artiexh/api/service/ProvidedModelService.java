@@ -11,8 +11,12 @@ import java.util.Set;
 
 public interface ProvidedModelService {
 	ProvidedModelDetail create(ProvidedModelDetail detail);
+
 	void createList(String businessCode, Set<ProvidedModelDetail> detail);
+
 	ProvidedModelDetail update(ProvidedModelDetail detail);
+
 	PageResponse<ProvidedModelInfo> getInPage(Specification<ProvidedModelEntity> specification, Pageable pageable);
+
 	ProvidedModelDetail getDetail(long baseModelId, String providerId);
 }

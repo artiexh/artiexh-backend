@@ -7,7 +7,6 @@ import com.artiexh.data.jpa.entity.ProvidedModelId;
 import com.artiexh.data.jpa.entity.ProviderEntity;
 import com.artiexh.data.jpa.repository.ProvidedProductRepository;
 import com.artiexh.data.jpa.repository.ProviderRepository;
-import com.artiexh.model.mapper.ProvidedModelMapper;
 import com.artiexh.model.mapper.ProviderMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.providedproduct.ProvidedModelDetail;
@@ -21,8 +20,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
-
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -31,6 +28,7 @@ public class ProviderServiceImpl implements ProviderService {
 	private final ProvidedModelService providedModelService;
 	private final ProviderRepository providerRepository;
 	private final ProvidedProductRepository providedProductRepository;
+
 	@Override
 	public ProviderDetail create(ProviderDetail detail) {
 		ProviderEntity entity = providerMapper.detailToEntity(detail);

@@ -17,10 +17,8 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Set;
-
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,6 +26,7 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 public class ProviderController {
 	private final ProviderService service;
 	private final ProvidedModelService providedModelService;
+
 	@PutMapping(path = Endpoint.Provider.PROVIDER_DETAIL)
 	public ProviderDetail update(@PathVariable(name = "id") String businessCode, @RequestBody @Valid ProviderDetail detail) {
 		detail.setBusinessCode(businessCode);
@@ -55,22 +54,23 @@ public class ProviderController {
 			return service.getDetail(businessCode);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(
-				NO_CONTENT,
+				OK,
 				ErrorCode.PROVIDER_NOT_FOUND.getMessage(),
 				exception);
 		}
 
 	}
+
 	@PostMapping
 	public ProviderDetail create(@RequestBody @Valid ProviderDetail detail) {
 		return service.create(detail);
 	}
 
-	@PostMapping(path = Endpoint.Provider.PROVIDED_PRODUCT_DETAIL)
-	public ProviderDetail createProvidedProduct(
+	@PostMapping(path = Endpoint.Provider.PROVIDED_MODEL_DETAIL)
+	public ProviderDetail createProvidedModel(
 		@PathVariable(name = "providerId") String businessCode,
 		@PathVariable long baseModelId,
-		ProvidedModelDetail detail
+		@RequestBody @Valid ProvidedModelDetail detail
 	) {
 		try {
 			detail.setBusinessCode(businessCode);
@@ -84,7 +84,7 @@ public class ProviderController {
 		}
 	}
 
-	@DeleteMapping(path = Endpoint.Provider.PROVIDED_PRODUCT_DETAIL)
+	@DeleteMapping(path = Endpoint.Provider.PROVIDED_MODEL_DETAIL)
 	public void deleteProvidedProduct(
 		@PathVariable(name = "providerId") String businessCode,
 		@PathVariable long baseModelId
@@ -99,7 +99,7 @@ public class ProviderController {
 		}
 	}
 
-	@PutMapping(path = Endpoint.Provider.PROVIDED_PRODUCT_DETAIL)
+	@PutMapping(path = Endpoint.Provider.PROVIDED_MODEL_DETAIL)
 	public ProviderDetail updateProvidedProduct(
 		@PathVariable(name = "providerId") String businessCode,
 		@PathVariable long baseModelId,

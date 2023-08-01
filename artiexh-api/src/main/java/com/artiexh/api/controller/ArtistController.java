@@ -23,7 +23,7 @@ public class ArtistController {
 
 	@GetMapping(Endpoint.Artist.ARTIST_PRODUCT)
 	@PreAuthorize("hasAuthority('ARTIST')")
-	public PageResponse<ProductResponse> getAllProduct (
+	public PageResponse<ProductResponse> getAllProduct(
 		Authentication authentication,
 		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
 		@ParameterObject @Valid ProductPageFilter filter

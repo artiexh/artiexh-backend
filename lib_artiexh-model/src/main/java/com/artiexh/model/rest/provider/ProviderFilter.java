@@ -1,6 +1,5 @@
 package com.artiexh.model.rest.provider;
 
-import com.artiexh.data.jpa.entity.BaseModelEntity;
 import com.artiexh.data.jpa.entity.ProviderEntity;
 import jakarta.persistence.criteria.Predicate;
 import lombok.*;

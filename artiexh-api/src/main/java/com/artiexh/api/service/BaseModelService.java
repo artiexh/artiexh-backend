@@ -9,7 +9,10 @@ import org.springframework.data.jpa.domain.Specification;
 
 public interface BaseModelService {
 	BaseModelDetail create(BaseModelDetail detail);
+
 	BaseModelDetail update(BaseModelDetail detail);
+
 	PageResponse<BaseModelInfo> getInPage(Specification<BaseModelEntity> specification, Pageable pageable);
+
 	BaseModelDetail getDetail(long id);
 }
