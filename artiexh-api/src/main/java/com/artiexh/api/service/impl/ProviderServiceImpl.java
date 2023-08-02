@@ -1,5 +1,6 @@
 package com.artiexh.api.service.impl;
 
+import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.ProvidedModelService;
 import com.artiexh.api.service.ProviderService;
 import com.artiexh.data.jpa.entity.ProvidedModelEntity;
@@ -31,10 +32,13 @@ public class ProviderServiceImpl implements ProviderService {
 
 	@Override
 	public ProviderDetail create(ProviderDetail detail) {
-		ProviderEntity entity = providerMapper.detailToEntity(detail);
-		entity = providerRepository.save(entity);
-		detail = providerMapper.entityToDetail(entity);
-		return detail;
+			providerRepository.findById(detail.getBusinessCode())
+				.ifPresent(entity -> {throw new IllegalArgumentException(ErrorCode.PROVIDER_EXISTED.name());});
+			ProviderEntity entity = providerMapper.detailToEntity(detail);
+			entity = providerRepository.save(entity);
+			detail = providerMapper.entityToDetail(entity);
+			return detail;
+
 	}
 
 	@Override

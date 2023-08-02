@@ -1,5 +1,6 @@
 package com.artiexh.model.validation;
 
+import com.artiexh.model.validation.validator.BusinessCodeValidator;
 import com.artiexh.model.validation.validator.CurrencyTypeValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -7,7 +8,7 @@ import jakarta.validation.Payload;
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = CurrencyTypeValidator.class)
+@Constraint(validatedBy = BusinessCodeValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface BusinessCode {

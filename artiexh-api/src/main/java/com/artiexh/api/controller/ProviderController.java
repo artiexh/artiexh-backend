@@ -14,12 +14,12 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -66,7 +66,15 @@ public class ProviderController {
 	@PostMapping
 	@PreAuthorize("hasAuthority('ADMIN')")
 	public ProviderDetail create(@RequestBody @Valid ProviderDetail detail) {
-		return service.create(detail);
+		try {
+			return service.create(detail);
+		} catch (IllegalArgumentException e) {
+			throw new ResponseStatusException(
+				ErrorCode.PROVIDER_EXISTED.getCode(),
+				ErrorCode.PROVIDER_EXISTED.getMessage()
+			);
+		}
+
 	}
 
 	@PostMapping(path = Endpoint.Provider.PROVIDED_MODEL_DETAIL)
@@ -79,10 +87,15 @@ public class ProviderController {
 			detail.setBusinessCode(businessCode);
 			detail.setBaseModelId(baseModelId);
 			return service.createProvidedModel(detail);
-		} catch (EntityNotFoundException exception) {
+		} catch (DataIntegrityViolationException exception) {
 			throw new ResponseStatusException(
-				ErrorCode.PROVIDED_PRODUCT_KEY_NOT_VALID.getCode(),
-				ErrorCode.PROVIDED_PRODUCT_KEY_NOT_VALID.getMessage(),
+				ErrorCode.PROVIDED_MODEL_KEY_NOT_VALID.getCode(),
+				ErrorCode.PROVIDED_MODEL_KEY_NOT_VALID.getMessage(),
+				exception);
+		} catch (IllegalArgumentException exception) {
+			throw new ResponseStatusException(
+				ErrorCode.PROVIDED_MODEL_EXISTED.getCode(),
+				ErrorCode.PROVIDED_MODEL_EXISTED.getMessage(),
 				exception);
 		}
 	}
@@ -97,8 +110,8 @@ public class ProviderController {
 			service.removeProvidedProduct(businessCode, baseModelId);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(
-				ErrorCode.PROVIDED_PRODUCT_NOT_FOUND.getCode(),
-				ErrorCode.PROVIDED_PRODUCT_NOT_FOUND.getMessage(),
+				ErrorCode.PROVIDED_MODEL_NOT_FOUND.getCode(),
+				ErrorCode.PROVIDED_MODEL_NOT_FOUND.getMessage(),
 				exception);
 		}
 	}
@@ -110,8 +123,16 @@ public class ProviderController {
 		@PathVariable long baseModelId,
 		@RequestBody ProvidedModelDetail detail
 	) {
-		detail.setBusinessCode(businessCode);
-		detail.setBaseModelId(baseModelId);
-		return service.updateProvidedProduct(detail);
+		try {
+			detail.setBusinessCode(businessCode);
+			detail.setBaseModelId(baseModelId);
+			return service.updateProvidedProduct(detail);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(
+				ErrorCode.PROVIDED_MODEL_NOT_FOUND.getCode(),
+				ErrorCode.PROVIDED_MODEL_NOT_FOUND.getMessage(),
+				exception);
+		}
+
 	}
 }

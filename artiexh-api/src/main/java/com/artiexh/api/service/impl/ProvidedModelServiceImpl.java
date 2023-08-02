@@ -1,5 +1,6 @@
 package com.artiexh.api.service.impl;
 
+import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.ProvidedModelService;
 import com.artiexh.data.jpa.entity.BaseModelEntity;
 import com.artiexh.data.jpa.entity.ProvidedModelEntity;
@@ -35,13 +36,22 @@ public class ProvidedModelServiceImpl implements ProvidedModelService {
 
 	@Override
 	public ProvidedModelDetail create(ProvidedModelDetail detail) {
-		ProvidedModelEntity entity = mapper.detailToEntity(detail);
+
 		ProviderEntity provider = providerRepository.getReferenceById(detail.getBusinessCode());
 		BaseModelEntity baseModel = baseModelRepository.getReferenceById(detail.getBaseModelId());
+
+		providedProductRepository.findById(ProvidedModelId.builder()
+				.businessCode(provider.getBusinessCode())
+				.baseModelId(baseModel.getId())
+				.build())
+			.ifPresent(model -> {throw new IllegalArgumentException(ErrorCode.PROVIDED_MODEL_EXISTED.name());});
+
+		ProvidedModelEntity entity = mapper.detailToEntity(detail);
 		entity.setBaseModel(baseModel);
 		entity.setProvider(provider);
-		providedProductRepository.saveAndFlush(entity);
-		return detail;
+
+		entity = providedProductRepository.saveAndFlush(entity);
+		return mapper.entityToDetail(entity);
 	}
 
 	@Override

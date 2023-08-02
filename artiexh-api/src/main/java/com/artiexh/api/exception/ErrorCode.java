@@ -24,9 +24,11 @@ public enum ErrorCode {
 
 	//Provider
 	PROVIDER_NOT_FOUND(HttpStatus.BAD_REQUEST, "Provider is not found"),
+	PROVIDER_EXISTED(HttpStatus.BAD_REQUEST, "Provider is already exists"),
 	//Provided Product
-	PROVIDED_PRODUCT_NOT_FOUND(HttpStatus.BAD_REQUEST, "Provider is not found"),
-	PROVIDED_PRODUCT_KEY_NOT_VALID(HttpStatus.BAD_REQUEST, "Provider key is in invalid"),
+	PROVIDED_MODEL_NOT_FOUND(HttpStatus.BAD_REQUEST, "Provider is not found"),
+	PROVIDED_MODEL_EXISTED(HttpStatus.BAD_REQUEST, "Provided model is already exists"),
+	PROVIDED_MODEL_KEY_NOT_VALID(HttpStatus.BAD_REQUEST, "Provided model key is in invalid"),
 	//AUTH
 	ACCOUNT_INFO_NOT_FOUND(HttpStatus.OK, "Can not get account information from request");
 	private final HttpStatus statusCode;

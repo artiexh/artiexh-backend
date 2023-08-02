@@ -12,6 +12,8 @@ public interface ProvidedModelMapper {
 	@Named(value = "detailToEntity")
 	@Mapping(target = "id.baseModelId", source = "baseModelId")
 	@Mapping(target = "id.businessCode", source = "businessCode")
+	@Mapping(target = "priceAmount", source = "price.amount")
+	@Mapping(target = "priceUnit", source = "price.unit")
 	ProvidedModelEntity detailToEntity(ProvidedModelDetail detail);
 
 
@@ -19,6 +21,8 @@ public interface ProvidedModelMapper {
 	@Mapping(target = "id.businessCode", source = "businessCode")
 	@Mapping(target = "baseModel", ignore = true)
 	@Mapping(target = "provider", ignore = true)
+	@Mapping(target = "priceAmount", source = "price.amount")
+	@Mapping(target = "priceUnit", source = "price.unit")
 	ProvidedModelEntity detailToEntity(ProvidedModelDetail detail, @MappingTarget ProvidedModelEntity entity);
 
 	@Named(value = "entityToInfo")
