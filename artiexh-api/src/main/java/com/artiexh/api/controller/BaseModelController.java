@@ -12,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,11 +26,13 @@ public class BaseModelController {
 	private final BaseModelService baseModelService;
 
 	@PostMapping
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public BaseModelDetail create(@RequestBody @Valid BaseModelDetail detail) {
 		return baseModelService.create(detail);
 	}
 
 	@PutMapping(path = Endpoint.BaseModel.BASE_MODEL_DETAIL)
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public BaseModelDetail update(@PathVariable long id, @RequestBody @Valid BaseModelDetail detail) {
 		detail.setId(id);
 		try {

@@ -9,6 +9,7 @@ import com.artiexh.model.rest.providedproduct.ProvidedModelInfo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +21,7 @@ public class ProvidedModelController {
 	private final ProvidedModelService service;
 
 	@GetMapping
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'ARTIST')")
 	public PageResponse<ProvidedModelInfo> getInPage(
 		@ParameterObject @Valid ProvidedModelFilter filter,
 		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest

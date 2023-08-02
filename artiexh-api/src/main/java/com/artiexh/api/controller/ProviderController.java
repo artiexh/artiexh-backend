@@ -78,6 +78,7 @@ public class ProviderController {
 	}
 
 	@PostMapping(path = Endpoint.Provider.PROVIDED_MODEL_DETAIL)
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ProviderDetail createProvidedModel(
 		@PathVariable(name = "providerId") String businessCode,
 		@PathVariable long baseModelId,

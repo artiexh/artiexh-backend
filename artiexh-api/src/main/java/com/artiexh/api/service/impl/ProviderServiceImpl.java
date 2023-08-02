@@ -49,7 +49,9 @@ public class ProviderServiceImpl implements ProviderService {
 
 	@Override
 	public void removeProvidedProduct(String businessCode, long baseModelId) {
-		ProvidedModelEntity entity = providedProductRepository.getReferenceById(new ProvidedModelId(businessCode, baseModelId));
+		ProvidedModelEntity entity = providedProductRepository.findById(new ProvidedModelId(businessCode, baseModelId))
+			.orElseThrow(() -> new EntityNotFoundException());
+
 		providedProductRepository.delete(entity);
 	}
 
