@@ -44,7 +44,9 @@ public class ProvidedModelServiceImpl implements ProvidedModelService {
 				.businessCode(provider.getBusinessCode())
 				.baseModelId(baseModel.getId())
 				.build())
-			.ifPresent(model -> {throw new IllegalArgumentException(ErrorCode.PROVIDED_MODEL_EXISTED.name());});
+			.ifPresent(model -> {
+				throw new IllegalArgumentException(ErrorCode.PROVIDED_MODEL_EXISTED.name());
+			});
 
 		ProvidedModelEntity entity = mapper.detailToEntity(detail);
 		entity.setBaseModel(baseModel);

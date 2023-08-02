@@ -32,12 +32,14 @@ public class ProviderServiceImpl implements ProviderService {
 
 	@Override
 	public ProviderDetail create(ProviderDetail detail) {
-			providerRepository.findById(detail.getBusinessCode())
-				.ifPresent(entity -> {throw new IllegalArgumentException(ErrorCode.PROVIDER_EXISTED.name());});
-			ProviderEntity entity = providerMapper.detailToEntity(detail);
-			entity = providerRepository.save(entity);
-			detail = providerMapper.entityToDetail(entity);
-			return detail;
+		providerRepository.findById(detail.getBusinessCode())
+			.ifPresent(entity -> {
+				throw new IllegalArgumentException(ErrorCode.PROVIDER_EXISTED.name());
+			});
+		ProviderEntity entity = providerMapper.detailToEntity(detail);
+		entity = providerRepository.save(entity);
+		detail = providerMapper.entityToDetail(entity);
+		return detail;
 
 	}
 
@@ -50,7 +52,7 @@ public class ProviderServiceImpl implements ProviderService {
 	@Override
 	public void removeProvidedProduct(String businessCode, long baseModelId) {
 		ProvidedModelEntity entity = providedProductRepository.findById(new ProvidedModelId(businessCode, baseModelId))
-			.orElseThrow(() -> new EntityNotFoundException());
+			.orElseThrow(EntityNotFoundException::new);
 
 		providedProductRepository.delete(entity);
 	}

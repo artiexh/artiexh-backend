@@ -1,7 +1,6 @@
 package com.artiexh.model.validation;
 
 import com.artiexh.model.validation.validator.BusinessCodeValidator;
-import com.artiexh.model.validation.validator.CurrencyTypeValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
