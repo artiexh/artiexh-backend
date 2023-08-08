@@ -22,7 +22,7 @@ import java.util.Set;
 @Entity
 @Table(name = "product")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class ProductEntity {
+public class ProductEntity extends BaseEntity{
 
 	@Id
 	@Tsid

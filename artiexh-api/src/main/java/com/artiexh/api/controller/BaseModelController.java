@@ -26,13 +26,13 @@ public class BaseModelController {
 	private final BaseModelService baseModelService;
 
 	@PostMapping
-	@PreAuthorize("hasAuthority('ADMIN')")
+	//@PreAuthorize("hasAuthority('ADMIN')")
 	public BaseModelDetail create(@RequestBody @Valid BaseModelDetail detail) {
 		return baseModelService.create(detail);
 	}
 
 	@PutMapping(path = Endpoint.BaseModel.BASE_MODEL_DETAIL)
-	@PreAuthorize("hasAuthority('ADMIN')")
+	//@PreAuthorize("hasAuthority('ADMIN')")
 	public BaseModelDetail update(@PathVariable long id, @RequestBody @Valid BaseModelDetail detail) {
 		detail.setId(id);
 		try {

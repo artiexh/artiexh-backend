@@ -1,11 +1,15 @@
 package com.artiexh.data.jpa.entity;
 
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.Type;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,6 +18,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "provided_model")
 @Builder(toBuilder = true)
+@EntityListeners(AuditingEntityListener.class)
 public class ProvidedModelEntity {
 
 	@EmbeddedId
@@ -39,5 +44,18 @@ public class ProvidedModelEntity {
 
 	private String description;
 
+	@Type(JsonType.class)
+	@Column(name = "color", columnDefinition = "json")
+	private Color color;
 
+	@Type(JsonType.class)
+	@Column(name = "sizes", columnDefinition = "json")
+	private List<Size> sizes;
+
+	@Column(name = "max_limit")
+	private Long maxLimit;
+
+	@Type(JsonType.class)
+	@Column(name = "allow_config", columnDefinition = "json")
+	private String[] allowConfig;
 }
