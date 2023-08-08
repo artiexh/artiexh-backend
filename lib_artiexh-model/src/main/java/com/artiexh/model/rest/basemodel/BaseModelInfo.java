@@ -1,8 +1,7 @@
 package com.artiexh.model.rest.basemodel;
 
-import com.artiexh.data.jpa.entity.Size;
+import com.artiexh.model.domain.Size;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,7 +31,4 @@ public class BaseModelInfo {
 
 	@NotEmpty
 	private List<Size> sizes;
-
-	@NotEmpty
-	private String description;
 }

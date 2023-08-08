@@ -11,11 +11,11 @@ import org.springframework.data.jpa.domain.Specification;
 public interface ProviderService {
 	ProviderDetail create(ProviderDetail detail);
 
-	ProviderDetail createProvidedModel(ProvidedModelDetail providedProductDetail);
+	ProvidedModelDetail createProvidedModel(ProvidedModelDetail providedProductDetail);
 
 	void removeProvidedProduct(String businessCode, long baseModelId);
 
-	ProviderDetail updateProvidedProduct(ProvidedModelDetail providedProductDetail);
+	ProvidedModelDetail updateProvidedProduct(ProvidedModelDetail providedProductDetail);
 
 	ProviderDetail update(ProviderDetail detail);
 

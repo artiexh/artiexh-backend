@@ -1,17 +1,16 @@
 package com.artiexh.data.jpa.entity;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import io.hypersistence.utils.hibernate.id.Tsid;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Type;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @Getter
@@ -19,7 +18,9 @@ import java.util.Set;
 @Entity
 @Table(name = "base_model")
 @EntityListeners(AuditingEntityListener.class)
-public class BaseModelEntity extends BaseEntity{
+@NoArgsConstructor
+@SuperBuilder(toBuilder = true)
+public class BaseModelEntity extends BaseAuditEntity {
 	@Id
 	@Tsid
 	@Column(name = "id", nullable = false)

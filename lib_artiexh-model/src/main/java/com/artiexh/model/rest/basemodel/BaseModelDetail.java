@@ -1,5 +1,6 @@
 package com.artiexh.model.rest.basemodel;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,4 +11,6 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 public class BaseModelDetail extends BaseModelInfo {
+	@NotEmpty
+	private String description;
 }

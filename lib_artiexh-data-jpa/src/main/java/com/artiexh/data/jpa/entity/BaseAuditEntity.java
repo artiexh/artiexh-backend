@@ -18,7 +18,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @MappedSuperclass
 @SuperBuilder(toBuilder = true)
-public class BaseEntity {
+public class BaseAuditEntity {
 	@Column(name = "created_date", updatable = false)
 	@CreatedDate
 	private Timestamp createdDate;

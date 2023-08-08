@@ -1,4 +1,4 @@
-package com.artiexh.data.jpa.entity;
+package com.artiexh.model.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

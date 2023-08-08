@@ -58,4 +58,7 @@ public class ProvidedModelEntity {
 	@Type(JsonType.class)
 	@Column(name = "allow_config", columnDefinition = "json")
 	private String[] allowConfig;
+
+	@Column(name = "provided_model_file_url")
+	private String providedModelFileUrl;
 }

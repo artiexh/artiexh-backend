@@ -38,5 +38,7 @@ public interface ProvidedModelMapper {
 	@IterableMapping(qualifiedByName = "detailToEntity")
 	Set<ProvidedModelEntity> detailsToEntities(Set<ProvidedModelDetail> entities);
 
+	@Mapping(source = "id.baseModelId", target = "baseModelId")
+	@Mapping(source = "id.businessCode", target = "businessCode")
 	ProvidedModelDetail entityToDetail(ProvidedModelEntity entity);
 }

@@ -44,9 +44,8 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	@Override
-	public ProviderDetail createProvidedModel(ProvidedModelDetail providedProductDetail) {
-		providedModelService.create(providedProductDetail);
-		return getDetail(providedProductDetail.getBusinessCode());
+	public ProvidedModelDetail createProvidedModel(ProvidedModelDetail providedProductDetail) {
+		return providedModelService.create(providedProductDetail);
 	}
 
 	@Override
@@ -58,9 +57,8 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	@Override
-	public ProviderDetail updateProvidedProduct(ProvidedModelDetail providedProductDetail) {
-		providedModelService.update(providedProductDetail);
-		return getDetail(providedProductDetail.getBusinessCode());
+	public ProvidedModelDetail updateProvidedProduct(ProvidedModelDetail providedProductDetail) {
+		return providedModelService.update(providedProductDetail);
 	}
 
 	@Override

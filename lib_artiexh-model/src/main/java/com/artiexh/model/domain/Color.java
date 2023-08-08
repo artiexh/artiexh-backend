@@ -1,4 +1,4 @@
-package com.artiexh.data.jpa.entity;
+package com.artiexh.model.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Size {
-	private String name;
-	private String size;
+public class Color {
+	private String[] defaults;
+	private String[] configOptions;
 }
