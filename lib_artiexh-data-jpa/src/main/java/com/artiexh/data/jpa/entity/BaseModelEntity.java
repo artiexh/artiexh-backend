@@ -29,14 +29,14 @@ public class BaseModelEntity extends BaseAuditEntity {
 	@Column(name = "name", nullable = false)
 	private String name;
 
-	@Column(name = "type")
+	@Column(name = "type", nullable = false)
 	private String type;
 
-	@Column(name = "model_file_url")
+	@Column(name = "model_file_url", nullable = false)
 	private String modelFileUrl;
 
 	@Type(JsonType.class)
-	@Column(name = "sizes", columnDefinition = "json")
+	@Column(name = "sizes", columnDefinition = "json", nullable = false)
 	private List<Size> sizes;
 
 	@Column(name = "description", nullable = false)

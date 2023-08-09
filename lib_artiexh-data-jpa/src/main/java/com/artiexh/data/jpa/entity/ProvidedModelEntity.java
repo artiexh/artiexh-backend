@@ -45,20 +45,20 @@ public class ProvidedModelEntity {
 	private String description;
 
 	@Type(JsonType.class)
-	@Column(name = "color", columnDefinition = "json")
+	@Column(name = "color", columnDefinition = "json", nullable = false)
 	private Color color;
 
 	@Type(JsonType.class)
-	@Column(name = "sizes", columnDefinition = "json")
+	@Column(name = "sizes", columnDefinition = "json", nullable = false)
 	private List<Size> sizes;
 
-	@Column(name = "max_limit")
+	@Column(name = "max_limit", nullable = false)
 	private Long maxLimit;
 
 	@Type(JsonType.class)
-	@Column(name = "allow_config", columnDefinition = "json")
+	@Column(name = "allow_config", columnDefinition = "json", nullable = false)
 	private String[] allowConfig;
 
-	@Column(name = "provided_model_file_url")
+	@Column(name = "provided_model_file_url", nullable = false)
 	private String providedModelFileUrl;
 }

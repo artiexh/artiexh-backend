@@ -19,7 +19,7 @@ import java.sql.Timestamp;
 @MappedSuperclass
 @SuperBuilder(toBuilder = true)
 public class BaseAuditEntity {
-	@Column(name = "created_date", updatable = false)
+	@Column(name = "created_date", nullable = false, updatable = false)
 	@CreatedDate
 	private Timestamp createdDate;
 
