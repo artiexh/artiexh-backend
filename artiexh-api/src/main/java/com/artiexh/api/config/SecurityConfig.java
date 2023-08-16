@@ -38,6 +38,7 @@ public class SecurityConfig {
 				.requestMatchers("/actuator/**").permitAll()
 				.requestMatchers("/swagger*/**", "/v3/api-docs/**").permitAll()
 				.requestMatchers("/error").permitAll()
+				.requestMatchers("/api/v1/account/public/**").permitAll()
 				.requestMatchers(HttpMethod.GET, Endpoint.Product.ROOT, Endpoint.Product.ROOT + Endpoint.Product.PRODUCT_DETAIL).permitAll()
 				.anyRequest().authenticated()
 			)

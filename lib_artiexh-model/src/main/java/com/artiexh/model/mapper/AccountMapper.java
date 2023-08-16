@@ -1,9 +1,12 @@
 package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.AccountEntity;
+import com.artiexh.data.jpa.entity.UserEntity;
 import com.artiexh.model.domain.Account;
 import com.artiexh.model.domain.Role;
+import com.artiexh.model.domain.User;
 import com.artiexh.model.domain.UserStatus;
+import com.artiexh.model.rest.account.AccountProfile;
 import com.artiexh.model.rest.auth.RegisterAdminRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,6 +17,8 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 	uses = {PasswordMapper.class}
 )
 public interface AccountMapper {
+
+	AccountProfile entityToResponse(AccountEntity userEntity);
 
 	Account entityToDomain(AccountEntity accountEntity);
 

@@ -36,6 +36,7 @@ public final class Endpoint {
 	public static class Account {
 		public static final String ROOT = PREFIX + "/account";
 		public static final String ME = "/me";
+		public static final String PROFILE = "public/{id}/profile";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
