@@ -1,6 +1,7 @@
 package com.artiexh.api.service;
 
 import com.artiexh.data.jpa.entity.ProvidedModelEntity;
+import com.artiexh.data.jpa.entity.ProvidedModelId;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.providedproduct.ProvidedModelDetail;
 import com.artiexh.model.rest.providedproduct.ProvidedModelInfo;
@@ -18,5 +19,5 @@ public interface ProvidedModelService {
 
 	PageResponse<ProvidedModelInfo> getInPage(Specification<ProvidedModelEntity> specification, Pageable pageable);
 
-	ProvidedModelDetail getDetail(long baseModelId, String providerId);
+	ProvidedModelDetail getDetail(ProvidedModelId providedModelId);
 }

@@ -14,6 +14,7 @@ public interface ProviderService {
 	ProvidedModelDetail createProvidedModel(ProvidedModelDetail providedProductDetail);
 
 	void removeProvidedProduct(String businessCode, long baseModelId);
+	ProvidedModelDetail getProvidedProduct(String businessCode, long baseModelId);
 
 	ProvidedModelDetail updateProvidedProduct(ProvidedModelDetail providedProductDetail);
 

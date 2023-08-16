@@ -27,7 +27,6 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping(path = Endpoint.Provider.ROOT)
 public class ProviderController {
 	private final ProviderService service;
-	private final ProvidedModelService providedModelService;
 
 	@PutMapping(path = Endpoint.Provider.PROVIDER_DETAIL)
 	@PreAuthorize("hasAuthority('ADMIN')")
@@ -110,6 +109,21 @@ public class ProviderController {
 	) {
 		try {
 			service.removeProvidedProduct(businessCode, baseModelId);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(
+				ErrorCode.PROVIDED_MODEL_NOT_FOUND.getCode(),
+				ErrorCode.PROVIDED_MODEL_NOT_FOUND.getMessage(),
+				exception);
+		}
+	}
+
+	@GetMapping(path = Endpoint.Provider.PROVIDED_MODEL_DETAIL)
+	public ProvidedModelDetail getProvidedProduct(
+		@PathVariable(name = "providerId") String businessCode,
+		@PathVariable long baseModelId
+	) {
+		try {
+			return service.getProvidedProduct(businessCode, baseModelId);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(
 				ErrorCode.PROVIDED_MODEL_NOT_FOUND.getCode(),

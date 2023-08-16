@@ -57,6 +57,14 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	@Override
+	public ProvidedModelDetail getProvidedProduct(String businessCode, long baseModelId) {
+		return providedModelService.getDetail(ProvidedModelId.builder()
+			.baseModelId(baseModelId)
+			.businessCode(businessCode)
+			.build());
+	}
+
+	@Override
 	public ProvidedModelDetail updateProvidedProduct(ProvidedModelDetail providedProductDetail) {
 		return providedModelService.update(providedProductDetail);
 	}

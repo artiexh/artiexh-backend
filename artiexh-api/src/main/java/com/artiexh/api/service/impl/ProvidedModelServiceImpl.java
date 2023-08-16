@@ -107,7 +107,9 @@ public class ProvidedModelServiceImpl implements ProvidedModelService {
 	}
 
 	@Override
-	public ProvidedModelDetail getDetail(long baseModelId, String providerId) {
-		return null;
+	public ProvidedModelDetail getDetail(ProvidedModelId providedModelId) {
+		ProvidedModelEntity entity = providedProductRepository.findById(providedModelId)
+			.orElseThrow(EntityNotFoundException::new);
+		return mapper.entityToDetail(entity);
 	}
 }
