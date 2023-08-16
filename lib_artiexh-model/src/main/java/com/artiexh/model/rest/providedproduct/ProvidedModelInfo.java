@@ -3,6 +3,8 @@ package com.artiexh.model.rest.providedproduct;
 import com.artiexh.model.domain.Color;
 import com.artiexh.model.domain.Money;
 import com.artiexh.model.domain.Size;
+import com.artiexh.model.rest.provider.ProviderInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.validation.Valid;
@@ -46,4 +48,7 @@ public class ProvidedModelInfo {
 	@NotNull
 	@Min(1)
 	private Long maxLimit;
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private ProviderInfo provider;
 }

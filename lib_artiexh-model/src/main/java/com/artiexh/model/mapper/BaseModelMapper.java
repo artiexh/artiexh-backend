@@ -6,7 +6,11 @@ import com.artiexh.model.rest.basemodel.BaseModelInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
-@Mapper
+@Mapper(
+	uses = {
+		ProvidedModelMapper.class
+	}
+)
 public interface BaseModelMapper {
 	BaseModelEntity detailToEntity(BaseModelDetail detail);
 

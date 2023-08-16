@@ -16,7 +16,7 @@ public class ProvidedModelDetail extends ProvidedModelInfo {
 	@NotEmpty
 	private String description;
 
-	private ProviderInfo provider;
+	//private ProviderInfo provider;
 
 	private BaseModelInfo baseModel;
 }
