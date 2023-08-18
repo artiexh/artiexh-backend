@@ -2,6 +2,7 @@ package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.ProductTagEntity;
 import com.artiexh.model.domain.ProductTag;
+import com.artiexh.model.rest.tag.ProductTagResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
@@ -14,6 +15,8 @@ public interface ProductTagMapper {
 	ProductTag entityToDomain(ProductTagEntity productTagEntity);
 
 	ProductTagEntity domainToEntity(ProductTag productTag);
+
+	ProductTagResponse entityToResponse(ProductTagEntity productTag);
 
 	default String tagDomainToTagResponse(ProductTag tag) {
 		if (tag == null) {
