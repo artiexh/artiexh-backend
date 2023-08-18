@@ -1,4 +1,4 @@
-package com.artiexh.authorization.client.authentication;
+package com.artiexh.api.authentication;
 
 import com.artiexh.data.jpa.repository.UserRepository;
 import com.artiexh.model.domain.User;

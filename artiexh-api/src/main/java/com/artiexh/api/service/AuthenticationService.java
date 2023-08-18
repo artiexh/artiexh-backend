@@ -1,4 +1,4 @@
-package com.artiexh.authorization.client.service;
+package com.artiexh.api.service;
 
 import com.artiexh.model.domain.Account;
 

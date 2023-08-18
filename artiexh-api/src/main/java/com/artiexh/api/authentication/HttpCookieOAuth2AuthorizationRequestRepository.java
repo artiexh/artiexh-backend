@@ -1,4 +1,4 @@
-package com.artiexh.authorization.client.authentication;
+package com.artiexh.api.authentication;
 
 import com.artiexh.auth.common.CookieUtil;
 import io.micrometer.common.util.StringUtils;
