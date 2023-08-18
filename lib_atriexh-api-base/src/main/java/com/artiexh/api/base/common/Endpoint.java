@@ -66,4 +66,9 @@ public final class Endpoint {
 	public static class Tag {
 		public static final String ROOT = PREFIX + "/tag";
 	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Province {
+		public static final String ROOT = PREFIX + "/province";
+	}
 }
