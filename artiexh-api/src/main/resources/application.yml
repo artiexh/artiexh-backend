@@ -21,7 +21,6 @@ spring:
       port: ${REDIS_PORT:}
       password: ${REDIS_PASSWORD:}
       database: ${REDIS_DATABASE:}
-      client-type: lettuce
   elasticsearch:
     uris: ${ELASTICSEARCH_URIS:}
     username: ${ELASTICSEARCH_USERNAME:}
