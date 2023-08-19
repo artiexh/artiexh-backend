@@ -1,6 +1,6 @@
-package com.artiexh.authorization.client.service.impl;
+package com.artiexh.api.service.impl;
 
-import com.artiexh.authorization.client.service.AuthenticationService;
+import com.artiexh.api.service.AuthenticationService;
 import com.artiexh.data.jpa.repository.AccountRepository;
 import com.artiexh.model.domain.Account;
 import com.artiexh.model.mapper.AccountMapper;

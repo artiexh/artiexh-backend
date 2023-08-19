@@ -1,9 +1,11 @@
-package com.artiexh.authorization.client.authentication;
+package com.artiexh.api.authentication;
 
+import lombok.Getter;
 import org.springframework.security.core.AuthenticationException;
 
 import java.util.Map;
 
+@Getter
 public class Oauth2UserNotExistedException extends AuthenticationException {
 
 	private final String providerId;
@@ -15,11 +17,4 @@ public class Oauth2UserNotExistedException extends AuthenticationException {
 		this.providerId = providerId;
 	}
 
-	public String getProviderId() {
-		return providerId;
-	}
-
-	public Map<String, Object> getAttributes() {
-		return attributes;
-	}
 }

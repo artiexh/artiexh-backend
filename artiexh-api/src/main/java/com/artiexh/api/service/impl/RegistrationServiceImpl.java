@@ -1,7 +1,7 @@
-package com.artiexh.authorization.client.service.impl;
+package com.artiexh.api.service.impl;
 
+import com.artiexh.api.service.RegistrationService;
 import com.artiexh.auth.service.RecentOauth2LoginFailId;
-import com.artiexh.authorization.client.service.RegistrationService;
 import com.artiexh.data.jpa.entity.AccountEntity;
 import com.artiexh.data.jpa.entity.ArtistEntity;
 import com.artiexh.data.jpa.entity.CartEntity;

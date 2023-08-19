@@ -29,6 +29,17 @@ spring:
     default-property-inclusion: non_null
   main:
     allow-circular-references: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: ${OAUTH2_GOOGLE_CLIENT_ID}
+            clientSecret: ${OAUTH2_GOOGLE_CLIENT_SECRET}
+            redirectUri: "{baseUrl}/api/v1/oauth2/callback/{registrationId}"
+            scope:
+              - email
+              - profile
 server:
   error:
     include-message: always
@@ -45,11 +56,16 @@ springdoc:
       enabled: true
 artiexh:
   security:
+    admin:
+      id: ${ADMIN_ID}
     jwt:
       secret-key: ${JWT_SECRET_KEY}
       issuer: http://artiexh.com/api/
       audiences:
         - http://artiexh.com/
         - http://localhost:8080/
+        - http://localhost:3000/
+      access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:}
+      refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:}
     recent_oauth2_fail_id:
       expiration: ${CACHE_RECENT_OAUTH2_FAIL_ID_EXPIRE:}

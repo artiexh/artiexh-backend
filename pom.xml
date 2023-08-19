@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.1.0</version>
+		<version>3.1.2</version>
 		<relativePath/>
 	</parent>
 
@@ -21,7 +21,6 @@
 		<module>lib_artiexh-model</module>
 		<module>artiexh-api</module>
 		<module>lib_artiexh-auth</module>
-		<module>artiexh-authorization-client</module>
 		<module>lib_atriexh-api-base</module>
 		<module>lib_artiexh-elasticsearch-repository</module>
 	</modules>
