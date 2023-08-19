@@ -56,4 +56,14 @@ public final class Endpoint {
 		public static final String ARTIST_DETAIL = "/{id}";
 		public static final String ARTIST_PRODUCT = "/product";
 	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Category {
+		public static final String ROOT = PREFIX + "/category";
+	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Tag {
+		public static final String ROOT = PREFIX + "/tag";
+	}
 }
