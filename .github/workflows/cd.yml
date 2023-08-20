@@ -20,7 +20,7 @@ jobs:
         with:
           task-definition: .aws/artiexh-api-task-definition.json
           container-name: artiexh-api
-          image: public.ecr.aws/n8l9j6q1/artiexh-api:82223bc144bf5d9050d3d15acf337e2c7a67a948
+          image: public.ecr.aws/n8l9j6q1/artiexh-api:${{github.sha}}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1.4.11
