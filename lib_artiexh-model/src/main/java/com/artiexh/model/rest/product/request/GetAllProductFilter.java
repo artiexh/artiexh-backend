@@ -1,5 +1,6 @@
 package com.artiexh.model.rest.product.request;
 
+import co.elastic.clients.elasticsearch._types.query_dsl.NestedQuery;
 import co.elastic.clients.json.JsonData;
 import com.artiexh.model.domain.ProductStatus;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.query.Query;
+
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
@@ -24,6 +26,7 @@ public class GetAllProductFilter {
 	private Float averageRate;
 	private Integer provinceId;
 	private Integer categoryId;
+	private Integer tagName;
 
 	public Query getQuery() {
 		var queryBuilder = NativeQuery.builder()
@@ -46,6 +49,9 @@ public class GetAllProductFilter {
 				}
 				if (provinceId != null) {
 					bool.must(must -> must.term(term -> term.field("owner.province.id").value(provinceId)));
+				}
+				if (tagName != null) {
+					bool.must(must -> must.term(term -> term.field("tags").value(tagName)));
 				}
 				return bool;
 			}));
