@@ -1,13 +1,17 @@
 package com.artiexh.model.rest.artist.filter;
 
-import co.elastic.clients.json.JsonData;
 import com.artiexh.model.domain.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.elasticsearch.client.elc.NativeQuery;
+import org.opensearch.common.unit.Fuzziness;
+import org.opensearch.data.client.orhlc.NativeSearchQueryBuilder;
+import org.opensearch.index.query.BoolQueryBuilder;
+import org.opensearch.index.query.MultiMatchQueryBuilder;
+import org.opensearch.index.query.RangeQueryBuilder;
+import org.opensearch.index.query.TermQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.util.StringUtils;
 
@@ -31,45 +35,39 @@ public class ProductPageFilter {
 	private Set<ProductStatus> statuses;
 
 	public Query getQuery() {
-		var queryBuilder = NativeQuery.builder()
-			.withFilter(filter -> filter.bool(bool -> {
-				bool.must(must -> must.term(term -> term.field("owner.id").value(artistId)));
+		var boolQuery = new BoolQueryBuilder().must(new TermQueryBuilder("owner.id", artistId));
 
-				if (statuses == null) {
-					statuses = new LinkedHashSet<>();
-				}
-				statuses.add(ProductStatus.AVAILABLE);
-				statuses.add(ProductStatus.PRE_ORDER);
-				for (ProductStatus status : statuses) {
-					bool.should(should -> should.term(term -> term.field("status").value(status.getValue())));
-				}
-				bool.minimumShouldMatch("1");
+		if (statuses == null) {
+			statuses = new LinkedHashSet<>();
+		}
+		statuses.add(ProductStatus.AVAILABLE);
+		statuses.add(ProductStatus.PRE_ORDER);
+		for (ProductStatus status : statuses) {
+			boolQuery.should(new TermQueryBuilder("status", status.getValue()));
+		}
+		boolQuery.minimumShouldMatch(1);
 
-				if (minPrice != null) {
-					bool.must(must -> must.range(range -> range.field("price.amount").gte(JsonData.of(minPrice))));
-				}
-				if (maxPrice != null) {
-					bool.must(must -> must.range(range -> range.field("price.amount").lte(JsonData.of(maxPrice))));
-				}
-				if (averageRate != null) {
-					bool.must(must -> must.term(term -> term.field("averageRate").value(averageRate)));
-				}
-				if (categoryId != null) {
-					bool.must(must -> must.term(term -> term.field("category.id").value(categoryId)));
-				}
-				if (provinceId != null) {
-					bool.must(must -> must.term(term -> term.field("owner.province.id").value(provinceId)));
-				}
-				return bool;
-			}));
+		if (minPrice != null) {
+			boolQuery.must(new RangeQueryBuilder("price.amount").gte(minPrice));
+		}
+		if (maxPrice != null) {
+			boolQuery.must(new RangeQueryBuilder("price.amount").lte(maxPrice));
+		}
+		if (averageRate != null) {
+			boolQuery.must(new TermQueryBuilder("averageRate", averageRate));
+		}
+		if (categoryId != null) {
+			boolQuery.must(new TermQueryBuilder("category.id", categoryId));
+		}
+		if (provinceId != null) {
+			boolQuery.must(new TermQueryBuilder("owner.province.id", provinceId));
+		}
+
+		var queryBuilder = new NativeSearchQueryBuilder().withFilter(boolQuery);
 
 		if (StringUtils.hasText(keyword)) {
-			queryBuilder.withQuery(query -> query
-				.multiMatch(multiMatch -> multiMatch
-					.query(keyword)
-					.fields("name")
-					.fuzziness("AUTO"))
-			);
+
+			queryBuilder.withQuery(new MultiMatchQueryBuilder(keyword, "name").fuzziness(Fuzziness.AUTO));
 		}
 
 		return queryBuilder.build();

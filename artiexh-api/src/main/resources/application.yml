@@ -2,7 +2,7 @@ spring:
   application:
     name: artiexh-api
   datasource:
-    url: jdbc:mariadb://${DB_URL:}/artiexh_backend
+    url: jdbc:mariadb://${DB_URL:}/${DB_NAME:}
     username: ${DB_USERNAME:}
     password: ${DB_PASSWORD:}
     hikari:
@@ -21,10 +21,6 @@ spring:
       port: ${REDIS_PORT:}
       password: ${REDIS_PASSWORD:}
       database: ${REDIS_DATABASE:}
-  elasticsearch:
-    uris: ${ELASTICSEARCH_URIS:}
-    username: ${ELASTICSEARCH_USERNAME:}
-    password: ${ELASTICSEARCH_PASSWORD:}
   jackson:
     default-property-inclusion: non_null
   main:
@@ -40,6 +36,10 @@ spring:
             scope:
               - email
               - profile
+opensearch:
+  uris: ${OPENSEARCH_URIS:}
+  username: ${OPENSEARCH_USERNAME:}
+  password: ${OPENSEARCH_PASSWORD:}
 server:
   error:
     include-message: always

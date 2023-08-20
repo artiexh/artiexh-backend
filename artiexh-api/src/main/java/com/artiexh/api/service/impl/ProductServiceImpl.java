@@ -1,12 +1,12 @@
 package com.artiexh.api.service.impl;
 
 import com.artiexh.api.service.ProductService;
-import com.artiexh.data.elasticsearch.model.ProductDocument;
 import com.artiexh.data.jpa.entity.ArtistEntity;
 import com.artiexh.data.jpa.entity.ProductCategoryEntity;
 import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.jpa.entity.ProductTagEntity;
 import com.artiexh.data.jpa.repository.*;
+import com.artiexh.data.opensearch.model.ProductDocument;
 import com.artiexh.model.domain.Product;
 import com.artiexh.model.domain.ProductAttach;
 import com.artiexh.model.domain.ProductAttachType;
@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHitSupport;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.SearchPage;
@@ -41,12 +41,12 @@ public class ProductServiceImpl implements ProductService {
 	private final ProductTagRepository productTagRepository;
 	private final ProductMapper productMapper;
 	private final ProductRepository productRepository;
-	private final ElasticsearchTemplate elasticsearchTemplate;
+	private final ElasticsearchOperations openSearchTemplate;
 
 	@Override
 	public Page<Product> getInPage(Query query, Pageable pageable) {
 		query.setPageable(pageable);
-		SearchHits<ProductDocument> hits = elasticsearchTemplate.search(query, ProductDocument.class);
+		SearchHits<ProductDocument> hits = openSearchTemplate.search(query, ProductDocument.class);
 		SearchPage<ProductDocument> hitPage = SearchHitSupport.searchPageFor(hits, pageable);
 		var productPage = hitPage.map(searchHit -> productMapper.documentToDomain(searchHit.getContent()));
 
@@ -107,7 +107,7 @@ public class ProductServiceImpl implements ProductService {
 		}
 
 		ProductDocument productDocument = productMapper.entityToDocument(savedProductEntity);
-		elasticsearchTemplate.save(productDocument);
+		openSearchTemplate.save(productDocument);
 
 		return productMapper.entityToDomain(savedProductEntity);
 	}
@@ -143,7 +143,7 @@ public class ProductServiceImpl implements ProductService {
 		}
 
 		ProductDocument productDocument = productMapper.entityToDocument(savedProductEntity);
-		elasticsearchTemplate.update(productDocument);
+		openSearchTemplate.update(productDocument);
 
 		return productMapper.entityToDomain(savedProductEntity);
 	}

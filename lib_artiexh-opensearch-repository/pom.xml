@@ -10,13 +10,14 @@
 		<version>1.0.0</version>
 	</parent>
 
-	<artifactId>lib_artiexh-elasticsearch-repository</artifactId>
+	<artifactId>lib_artiexh-opensearch-repository</artifactId>
 	<version>1.0.0</version>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+			<groupId>org.opensearch.client</groupId>
+			<artifactId>spring-data-opensearch-starter</artifactId>
+			<version>${spring-data-opensearch}</version>
 		</dependency>
 	</dependencies>
 

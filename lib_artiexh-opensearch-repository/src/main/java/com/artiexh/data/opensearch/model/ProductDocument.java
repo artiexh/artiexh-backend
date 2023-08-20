@@ -1,4 +1,4 @@
-package com.artiexh.data.elasticsearch.model;
+package com.artiexh.data.opensearch.model;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
