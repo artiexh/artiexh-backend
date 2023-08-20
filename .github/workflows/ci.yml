@@ -19,6 +19,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'zulu'
+          cache: 'maven'
       - name: Build maven
         run: mvn -B install
       - name: Build docker image
