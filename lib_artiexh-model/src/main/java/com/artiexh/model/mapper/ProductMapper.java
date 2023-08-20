@@ -1,8 +1,8 @@
 package com.artiexh.model.mapper;
 
-import com.artiexh.data.elasticsearch.model.ProductDocument;
 import com.artiexh.data.jpa.entity.ProductAttachEntity;
 import com.artiexh.data.jpa.entity.ProductEntity;
+import com.artiexh.data.opensearch.model.ProductDocument;
 import com.artiexh.model.domain.*;
 import com.artiexh.model.rest.product.request.CreateProductRequest;
 import com.artiexh.model.rest.product.request.UpdateProductRequest;

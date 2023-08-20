@@ -22,7 +22,7 @@
 		<module>artiexh-api</module>
 		<module>lib_artiexh-auth</module>
 		<module>lib_atriexh-api-base</module>
-		<module>lib_artiexh-elasticsearch-repository</module>
+		<module>lib_artiexh-opensearch-repository</module>
 	</modules>
 
 	<properties>
@@ -33,6 +33,7 @@
 		<io.hypersistence.version>3.3.2</io.hypersistence.version>
 		<java-jwt.version>4.4.0</java-jwt.version>
 		<commons-lang3.version>3.12.0</commons-lang3.version>
+		<spring-data-opensearch>1.2.0</spring-data-opensearch>
 	</properties>
 
 	<dependencyManagement>
