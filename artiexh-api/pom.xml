@@ -22,7 +22,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.artiexh</groupId>
-			<artifactId>lib_artiexh-elasticsearch-repository</artifactId>
+			<artifactId>lib_artiexh-opensearch-repository</artifactId>
 			<version>1.0.0</version>
 		</dependency>
 		<dependency>
