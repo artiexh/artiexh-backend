@@ -19,13 +19,13 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1.1.3
         with:
           task-definition: .aws/artiexh-api-task-definition.json
-          container-name: dev-artiexh-api
+          container-name: artiexh-api
           image: public.ecr.aws/n8l9j6q1/artiexh-api:82223bc144bf5d9050d3d15acf337e2c7a67a948
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1.4.11
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: dev-artiexh-api
+          service: artiexh-api-svc
           cluster: artiexh-dev
           wait-for-service-stability: true
