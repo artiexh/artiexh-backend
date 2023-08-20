@@ -20,7 +20,7 @@ jobs:
           java-version: '17'
           distribution: 'zulu'
       - name: Build 
-        run: mvn -B compile
+        run: mvn -B install
       - name: Build 
         run: mvn -pl artiexh-api spring-boot:build-image
       - name: Login aws ecr
