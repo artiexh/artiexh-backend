@@ -26,7 +26,7 @@ public class GetAllProductFilter {
 	private Float averageRate;
 	private Integer provinceId;
 	private Integer categoryId;
-	private String tagName;
+	private String[] tagNames;
 
 	public Query getQuery() {
 		var boolQuery = new BoolQueryBuilder().should(new TermsQueryBuilder("status", List.of(ProductStatus.PRE_ORDER.getValue(), ProductStatus.AVAILABLE.getValue()))).minimumShouldMatch(1);
@@ -46,8 +46,12 @@ public class GetAllProductFilter {
 		if (provinceId != null) {
 			boolQuery.must(new TermQueryBuilder("owner.province.id", provinceId));
 		}
-		if (StringUtils.hasText(tagName)) {
-			boolQuery.filter(new TermQueryBuilder("tags", tagName));
+		if (tagNames != null && tagNames.length > 0) {
+			var tagQuery = new BoolQueryBuilder();
+			for (String tagName : tagNames) {
+				tagQuery.should(new TermQueryBuilder("tags", tagName));
+			}
+			boolQuery.filter(tagQuery.minimumShouldMatch(1));
 		}
 
 		var queryBuilder = new NativeSearchQueryBuilder().withFilter(boolQuery);
