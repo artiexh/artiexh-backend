@@ -13,4 +13,5 @@ public class ProductCategoryResponse {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private String id;
 	private String name;
+	private String imageUrl;
 }
