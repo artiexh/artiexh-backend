@@ -1,5 +1,7 @@
 package com.artiexh.model.rest.cart.request;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -12,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class CartItemRequest {
 
 	@NotNull(message = "productId is required")
+	@JsonSerialize(using = ToStringSerializer.class)
 	private Long productId;
 
 	@NotNull(message = "quantity is required")

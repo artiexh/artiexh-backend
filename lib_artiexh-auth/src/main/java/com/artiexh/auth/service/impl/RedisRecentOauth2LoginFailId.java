@@ -1,10 +1,8 @@
 package com.artiexh.auth.service.impl;
 
 import com.artiexh.auth.service.RecentOauth2LoginFailId;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.convert.DurationUnit;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -16,16 +14,14 @@ import java.time.temporal.ChronoUnit;
 public class RedisRecentOauth2LoginFailId implements RecentOauth2LoginFailId {
 	private static final String PREFIX = "recent_oauth2_";
 
-	private final RedisTemplate<String, Long> redisTemplate;
+	private final RedisTemplate<Object, Object> redisTemplate;
 
 	@Value("${artiexh.security.recent_oauth2_fail_id.expiration}")
 	@DurationUnit(ChronoUnit.MINUTES)
 	private Duration expiration;
 
-	public RedisRecentOauth2LoginFailId(@Qualifier("authRedis") RedisConnectionFactory redisConnectionFactory) {
-		this.redisTemplate = new RedisTemplate<>();
-		this.redisTemplate.setConnectionFactory(redisConnectionFactory);
-		redisTemplate.afterPropertiesSet();
+	public RedisRecentOauth2LoginFailId(RedisTemplate<Object, Object> redisTemplate) {
+		this.redisTemplate = redisTemplate;
 	}
 
 	@Override
@@ -40,7 +36,7 @@ public class RedisRecentOauth2LoginFailId implements RecentOauth2LoginFailId {
 
 	@Override
 	public boolean contain(String providerId, String sub) {
-		Long expiredAt = redisTemplate.boundValueOps(PREFIX + providerId + '_' + sub).get();
+		var expiredAt = (Long) redisTemplate.boundValueOps(PREFIX + providerId + '_' + sub).get();
 		return expiredAt != null && expiredAt > Instant.now().toEpochMilli();
 	}
 
