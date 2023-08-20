@@ -55,6 +55,11 @@ springdoc:
     csrf:
       enabled: true
 artiexh:
+  aws:
+    access-key: AKIAWENKWA7DH7EBQPBN
+    secret-key: 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
+    region: ap-southeast-1
+    bucket: prn221
   security:
     admin:
       id: ${ADMIN_ID}

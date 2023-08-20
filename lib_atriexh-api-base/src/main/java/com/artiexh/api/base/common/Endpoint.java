@@ -72,4 +72,11 @@ public final class Endpoint {
 	public static class Province {
 		public static final String ROOT = PREFIX + "/province";
 	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class File {
+		public static final String ROOT = PREFIX + "/file";
+		public static final String UPLOAD = "/upload";
+		public static final String DOWNLOAD = "/download";
+	}
 }
