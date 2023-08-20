@@ -19,10 +19,10 @@ jobs:
         with:
           java-version: '17'
           distribution: 'zulu'
-      - name: Build 
+      - name: Build maven
         run: mvn -B install
-      - name: Build 
-        run: mvn -pl artiexh-api spring-boot:build-image
+      - name: Build docker image
+        run: mvn -B -pl artiexh-api spring-boot:build-image
       - name: Login aws ecr
         run: aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/n8l9j6q1
       - name: Publish docker image
