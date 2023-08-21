@@ -12,38 +12,38 @@ import java.util.Set;
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ProductTagMapper {
 
-	ProductTag entityToDomain(ProductTagEntity productTagEntity);
+    ProductTag entityToDomain(ProductTagEntity productTagEntity);
 
-	ProductTagEntity domainToEntity(ProductTag productTag);
+    ProductTagEntity domainToEntity(ProductTag productTag);
 
-	ProductTagResponse entityToResponse(ProductTagEntity productTag);
+    ProductTagResponse entityToResponse(ProductTagEntity productTag);
 
-	default String tagDomainToTagResponse(ProductTag tag) {
-		if (tag == null) {
-			return null;
-		}
-		return tag.getName();
-	}
+    default String tagDomainToTagResponse(ProductTag tag) {
+        if (tag == null) {
+            return null;
+        }
+        return tag.getName();
+    }
 
-	default ProductTag tagResponseToTagDomain(String tag) {
-		if (tag == null) {
-			return null;
-		}
-		ProductTag productTag = new ProductTag();
-		productTag.setName(tag);
-		return productTag;
-	}
+    default ProductTag tagResponseToTagDomain(String tag) {
+        if (tag == null) {
+            return null;
+        }
+        ProductTag productTag = new ProductTag();
+        productTag.setName(tag);
+        return productTag;
+    }
 
-	default Set<ProductTag> tagNamesToTagDomainS(Set<String> tag) {
-		Set<ProductTag> result = new HashSet<>();
+    default Set<ProductTag> tagNamesToTagDomainS(Set<String> tag) {
+        Set<ProductTag> result = new HashSet<>();
 
-		if (tag != null) {
-			for (String name : tag) {
-				result.add(tagResponseToTagDomain(name));
-			}
-		}
+        if (tag != null) {
+            for (String name : tag) {
+                result.add(tagResponseToTagDomain(name));
+            }
+        }
 
-		return result;
-	}
+        return result;
+    }
 
 }

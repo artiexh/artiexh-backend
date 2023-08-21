@@ -13,23 +13,23 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import java.util.Set;
 
 @Mapper(
-	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {AccountMapper.class, ProductMapper.class, ProductAttachMapper.class, PasswordMapper.class}
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        uses = {AccountMapper.class, ProductMapper.class, ProductAttachMapper.class, PasswordMapper.class}
 )
 public interface UserMapper {
 
-	User entityToDomain(UserEntity userEntity);
+    User entityToDomain(UserEntity userEntity);
 
-	UserEntity domainToEntity(User user);
+    UserEntity domainToEntity(User user);
 
-	@Mapping(target = "role", constant = "USER")
-	@Mapping(target = "status", constant = "ACTIVE")
-	@Mapping(source = "password", target = "password", qualifiedByName = "encodedPassword")
-	User registerUserRequestToDomain(RegisterUserRequest request);
+    @Mapping(target = "role", constant = "USER")
+    @Mapping(target = "status", constant = "ACTIVE")
+    @Mapping(source = "password", target = "password", qualifiedByName = "encodedPassword")
+    User registerUserRequestToDomain(RegisterUserRequest request);
 
-	@Condition
-	default boolean isNotLazyLoadedSubscriptionsTo(Set<SubscriptionEntity> subscriptionsTo) {
-		return Hibernate.isInitialized(subscriptionsTo);
-	}
+    @Condition
+    default boolean isNotLazyLoadedSubscriptionsTo(Set<SubscriptionEntity> subscriptionsTo) {
+        return Hibernate.isInitialized(subscriptionsTo);
+    }
 
 }
