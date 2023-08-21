@@ -2,7 +2,7 @@ spring:
   application:
     name: artiexh-api
   datasource:
-    url: jdbc:mariadb://${DB_URL:}/artiexh_backend
+    url: jdbc:mariadb://${DB_URL:}/${DB_NAME:}
     username: ${DB_USERNAME:}
     password: ${DB_PASSWORD:}
     hikari:
