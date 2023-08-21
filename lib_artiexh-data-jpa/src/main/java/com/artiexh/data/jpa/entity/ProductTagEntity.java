@@ -1,14 +1,16 @@
 package com.artiexh.data.jpa.entity;
 
 import io.hypersistence.utils.hibernate.id.Tsid;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
-import java.util.Set;
 
 @Builder
 @AllArgsConstructor
@@ -28,12 +30,6 @@ public class ProductTagEntity {
     @NotNull
     @Column(name = "name", nullable = false)
     private String name;
-
-    @ManyToMany
-    @JoinTable(name = "product_tag_mapping",
-            joinColumns = @JoinColumn(name = "tag_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id"))
-    private Set<ProductEntity> products;
 
     @Override
     public final boolean equals(Object o) {

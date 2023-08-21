@@ -19,11 +19,6 @@ public class CartEntity {
     @Column(name = "user_id", nullable = false)
     private Long id;
 
-    @MapsId
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
-
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "cart_id")
     private Set<CartItemEntity> cartItems = new LinkedHashSet<>();

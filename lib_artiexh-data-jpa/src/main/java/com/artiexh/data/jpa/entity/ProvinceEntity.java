@@ -8,9 +8,6 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 @Getter
 @Setter
 @Entity
@@ -31,8 +28,5 @@ public class ProvinceEntity {
     @NotNull
     @Column(name = "name", nullable = false)
     private String name;
-
-    @OneToMany(mappedBy = "province")
-    private Set<ArtistEntity> artists = new LinkedHashSet<>();
 
 }

@@ -18,9 +18,7 @@ public class User extends Account {
     @JsonIgnore
     private String googleId;
     @JsonIgnore
-    private String twitterId;
-    //@JsonIgnore
     private String facebookId;
     private Set<Subscription> subscriptionsTo;
-    private Cart shoppingCart;
+    private Cart cart;
 }

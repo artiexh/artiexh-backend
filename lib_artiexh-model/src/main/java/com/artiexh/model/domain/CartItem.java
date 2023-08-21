@@ -10,9 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class CartItem {
-
     private Product product;
-
     private Integer quantity;
-
 }
