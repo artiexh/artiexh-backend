@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,13 +42,32 @@ public class CartServiceImpl implements CartService {
 		}
 
 		CartEntity cartEntity = getOrCreateCartEntity(userId);
-		Set<CartItemEntity> cartItemEntities = items.stream().map(cartItemRequest -> {
-			CartItemId cartItemId = new CartItemId(cartEntity.getId(), cartItemRequest.getProductId());
-			ProductEntity productEntity = ProductEntity.builder().id(cartItemRequest.getProductId()).build();
-			return CartItemEntity.builder().id(cartItemId).product(productEntity).quantity(cartItemRequest.getQuantity()).build();
-		}).collect(Collectors.toSet());
+		Set<CartItemEntity> existedItems = cartEntity.getCartItems();
 
-		cartItemRepository.saveAll(cartItemEntities);
+		for (CartItemRequest item : items) {
+			boolean found = false;
+			for (CartItemEntity entity : existedItems) {
+				if (entity.getId().getProductId().equals(item.getProductId())) {
+					entity.setQuantity(entity.getQuantity() + item.getQuantity());
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				CartItemId cartItemId = new CartItemId(cartEntity.getId(), item.getProductId());
+				ProductEntity productEntity = ProductEntity.builder().id(item.getProductId()).build();
+				existedItems.add(CartItemEntity.builder().id(cartItemId).product(productEntity).quantity(item.getQuantity()).build());
+			}
+		}
+
+
+//		Set<CartItemEntity> cartItemEntities = items.stream().map(cartItemRequest -> {
+//			CartItemId cartItemId = new CartItemId(cartEntity.getId(), cartItemRequest.getProductId());
+//			ProductEntity productEntity = ProductEntity.builder().id(cartItemRequest.getProductId()).build();
+//			return CartItemEntity.builder().id(cartItemId).product(productEntity).quantity(cartItemRequest.getQuantity()).build();
+//		}).collect(Collectors.toSet());
+
+		cartItemRepository.saveAll(existedItems);
 	}
 
 	@Override
