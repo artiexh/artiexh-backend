@@ -1,9 +1,8 @@
-
 spring:
   application:
     name: artiexh-api
   datasource:
-    url: jdbc:mariadb://${DB_URL:}/${DB_NAME}
+    url: jdbc:mariadb://${DB_URL:}/${DB_NAME:}
     username: ${DB_USERNAME:}
     password: ${DB_PASSWORD:}
     hikari:
@@ -13,7 +12,6 @@ spring:
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
-      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
