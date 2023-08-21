@@ -19,6 +19,9 @@ public class ArtistEntity extends UserEntity {
 	@OneToMany(mappedBy = "owner")
 	private Set<ProductEntity> product;
 
+	@OneToMany(mappedBy = "ownerShop")
+	private Set<ShopEntity> shop;
+
 	@OneToMany(mappedBy = "artist")
 	private Set<SubscriptionEntity> subscriptionsFrom;
 
