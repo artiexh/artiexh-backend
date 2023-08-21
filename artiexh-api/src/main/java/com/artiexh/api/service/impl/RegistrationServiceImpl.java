@@ -6,10 +6,7 @@ import com.artiexh.data.jpa.entity.AccountEntity;
 import com.artiexh.data.jpa.entity.ArtistEntity;
 import com.artiexh.data.jpa.entity.CartEntity;
 import com.artiexh.data.jpa.entity.UserEntity;
-import com.artiexh.data.jpa.repository.AccountRepository;
-import com.artiexh.data.jpa.repository.ArtistRepository;
-import com.artiexh.data.jpa.repository.CartRepository;
-import com.artiexh.data.jpa.repository.UserRepository;
+import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.Account;
 import com.artiexh.model.domain.Artist;
 import com.artiexh.model.domain.Role;
@@ -40,6 +37,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private final ArtistRepository artistRepository;
 	private final CartRepository cartRepository;
 	private final RecentOauth2LoginFailId recentOauth2LoginFailId;
+	private final ShopRepository shopRepository;
 
 	@Override
 	public User createUser(User user) {
@@ -102,6 +100,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			.orElseThrow(EntityNotFoundException::new);
 
 		artistEntity.setRole((byte) Role.ARTIST.getValue());
+		shopRepository.save()
 		return artistMapper.entityToDomain(artistRepository.save(artistEntity));
 	}
 

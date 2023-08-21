@@ -8,6 +8,7 @@ import com.artiexh.model.domain.Artist;
 import com.artiexh.model.domain.User;
 import com.artiexh.model.mapper.AccountMapper;
 import com.artiexh.model.mapper.UserMapper;
+import com.artiexh.model.rest.artist.request.RegistrationShopRequest;
 import com.artiexh.model.rest.auth.RegisterAdminRequest;
 import com.artiexh.model.rest.auth.RegisterUserRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -51,10 +52,10 @@ public class RegistrationController {
 
     @PostMapping(Endpoint.Registration.ARTIST)
     @PreAuthorize("hasAuthority('USER')")
-    public Artist registerArtist(Authentication authentication) {
+    public Artist registerArtist(Authentication authentication, @RequestBody RegistrationShopRequest request) {
         Long id = (Long) authentication.getPrincipal();
         try {
-            return registrationService.registerArtist(id);
+            return registrationService.registerArtist(id, request);
         } catch (IllegalArgumentException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
         }
