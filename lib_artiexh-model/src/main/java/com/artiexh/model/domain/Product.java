@@ -17,6 +17,7 @@ public class Product {
     private Artist owner;
     private ProductStatus status;
     private String name;
+    private Money price;
     private String thumbnailUrl;
     private ProductCategory category;
     private String description;
