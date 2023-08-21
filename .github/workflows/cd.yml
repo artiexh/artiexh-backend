@@ -1,0 +1,31 @@
+name: CD
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup AWS credential
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{secrets.KEY_ID}}
+          aws-secret-access-key: ${{secrets.ACCESS_KEY}}
+          aws-region: ap-southeast-1
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1.1.3
+        with:
+          task-definition: .aws/artiexh-api-task-definition.json
+          container-name: artiexh-api
+          image: public.ecr.aws/n8l9j6q1/artiexh-api:${{github.sha}}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1.4.11
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: artiexh-api-svc
+          cluster: artiexh-dev
+          wait-for-service-stability: true

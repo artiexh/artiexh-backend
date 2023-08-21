@@ -30,6 +30,8 @@ public class ProductDocument {
 	private Instant publishDatetime;
 	@Field(name = "averageRate", type = FieldType.Float)
 	private Float averageRate;
+	@Field(name = "tags", type = FieldType.Keyword)
+	private String[] tags;
 
 	@Data
 	public static class Money {
