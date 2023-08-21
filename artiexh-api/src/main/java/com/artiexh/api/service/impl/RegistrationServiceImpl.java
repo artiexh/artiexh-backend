@@ -2,17 +2,12 @@ package com.artiexh.api.service.impl;
 
 import com.artiexh.api.service.RegistrationService;
 import com.artiexh.auth.service.RecentOauth2LoginFailId;
-import com.artiexh.data.jpa.entity.AccountEntity;
-import com.artiexh.data.jpa.entity.ArtistEntity;
-import com.artiexh.data.jpa.entity.CartEntity;
-import com.artiexh.data.jpa.entity.UserEntity;
+import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.*;
-import com.artiexh.model.domain.Account;
-import com.artiexh.model.domain.Artist;
-import com.artiexh.model.domain.Role;
-import com.artiexh.model.domain.User;
+import com.artiexh.model.domain.*;
 import com.artiexh.model.mapper.AccountMapper;
 import com.artiexh.model.mapper.ArtistMapper;
+import com.artiexh.model.mapper.ShopMapper;
 import com.artiexh.model.mapper.UserMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +29,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private final AccountMapper accountMapper;
 	private final UserMapper userMapper;
 	private final ArtistMapper artistMapper;
+	private final ShopMapper shopMapper;
 	private final AccountRepository accountRepository;
 	private final UserRepository userRepository;
 	private final ArtistRepository artistRepository;
@@ -83,7 +81,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	@Override
-	public Artist registerArtist(Long id) {
+	public Artist registerArtist(Long id, Shop shop) {
 		UserEntity userEntity = userRepository.findById(id)
 			.orElseThrow(EntityNotFoundException::new);
 
@@ -99,8 +97,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 		ArtistEntity artistEntity = artistRepository.findById(id)
 			.orElseThrow(EntityNotFoundException::new);
 
+		ShopEntity shopEntity = shopMapper.domainToEntity(shop);
+		shopEntity.setOwnerShop(artistEntity);
+		shopEntity.setDefault(true);
+		shopRepository.saveAndFlush(shopEntity);
+
 		artistEntity.setRole((byte) Role.ARTIST.getValue());
-		shopRepository.save()
 		return artistMapper.entityToDomain(artistRepository.save(artistEntity));
 	}
 

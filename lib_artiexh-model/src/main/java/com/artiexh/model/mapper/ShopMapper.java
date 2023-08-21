@@ -15,4 +15,7 @@ public interface ShopMapper {
 
 	@Mapping(target = "name", source = "shopName")
 	Shop requestToDomain(RegistrationShopRequest request);
+
+	@Mapping(target = "isDefault", source = "default")
+	Shop entityToDomain(ShopEntity entity);
 }
