@@ -11,7 +11,14 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {AccountMapper.class, ProductMapper.class, ProvinceMapper.class, ProductCategoryMapper.class, ProductTagMapper.class, ProductAttachMapper.class, PasswordMapper.class}
+	uses = {AccountMapper.class,
+		ProductMapper.class,
+		ProvinceMapper.class,
+		ProductCategoryMapper.class,
+		ProductTagMapper.class,
+		ProductAttachMapper.class,
+		ShopMapper.class,
+		PasswordMapper.class}
 )
 public abstract class ArtistMapper {
 

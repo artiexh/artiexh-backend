@@ -5,13 +5,17 @@ import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.RegistrationService;
 import com.artiexh.model.domain.Account;
 import com.artiexh.model.domain.Artist;
+import com.artiexh.model.domain.Shop;
 import com.artiexh.model.domain.User;
 import com.artiexh.model.mapper.AccountMapper;
+import com.artiexh.model.mapper.ShopMapper;
 import com.artiexh.model.mapper.UserMapper;
+import com.artiexh.model.rest.artist.request.RegistrationShopRequest;
 import com.artiexh.model.rest.auth.RegisterAdminRequest;
 import com.artiexh.model.rest.auth.RegisterUserRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -25,16 +29,14 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping(Endpoint.Registration.ROOT)
+@RequiredArgsConstructor
 public class RegistrationController {
 
-    @Autowired
-    private AccountMapper accountMapper;
-    @Autowired
-    private UserMapper userMapper;
-    @Autowired
-    private RegistrationService registrationService;
-    @Autowired
-    private ResponseTokenProcessor responseTokenProcessor;
+    private final AccountMapper accountMapper;
+    private final UserMapper userMapper;
+	private final ShopMapper shopMapper;
+    private final RegistrationService registrationService;
+    private final ResponseTokenProcessor responseTokenProcessor;
     @Value("${artiexh.security.admin.id}")
     private Long rootAdminId;
 
@@ -51,10 +53,11 @@ public class RegistrationController {
 
     @PostMapping(Endpoint.Registration.ARTIST)
     @PreAuthorize("hasAuthority('USER')")
-    public Artist registerArtist(Authentication authentication) {
+    public Artist registerArtist(Authentication authentication, @Valid @RequestBody RegistrationShopRequest request) {
         Long id = (Long) authentication.getPrincipal();
         try {
-            return registrationService.registerArtist(id);
+			Shop shop = shopMapper.requestToDomain(request);
+            return registrationService.registerArtist(id, shop);
         } catch (IllegalArgumentException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
         }
