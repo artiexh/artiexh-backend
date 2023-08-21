@@ -40,12 +40,6 @@ public class ProductEntity {
 	@Column(name = "name", nullable = false)
 	private String name;
 
-	@Column(name = "price_amount", nullable = false)
-	private BigDecimal priceAmount;
-
-	@Column(name = "price_unit", nullable = false, length = 3)
-	private String priceUnit;
-
 	@ManyToOne(optional = false)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "category_id", nullable = false)
@@ -87,4 +81,6 @@ public class ProductEntity {
 	@JoinColumn(name = "product_id")
 	private Set<ProductAttachEntity> attaches;
 
+//	@OneToMany(mappedBy = "product")
+//	private Set<ShopProductEntity> shopProducts;
 }
