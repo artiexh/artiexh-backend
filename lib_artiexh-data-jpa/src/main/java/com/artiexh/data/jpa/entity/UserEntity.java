@@ -1,6 +1,7 @@
 package com.artiexh.data.jpa.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,20 +20,18 @@ import java.util.Set;
 @Table(name = "user")
 public class UserEntity extends AccountEntity {
 
-	@Column(name = "twitter_id", length = 20)
-	private String twitterId;
+    @Size(max = 21)
+    @Column(name = "google_id", length = 21)
+    private String googleId;
 
-	@Column(name = "facebook_id", length = 20)
-	private String facebookId;
+    @Size(max = 20)
+    @Column(name = "facebook_id", length = 20)
+    private String facebookId;
 
-	@Column(name = "google_id", length = 21)
-	private String googleId;
+    @OneToOne(mappedBy = "user")
+    private CartEntity cart;
 
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-	private final Set<SubscriptionEntity> subscriptionsTo = new LinkedHashSet<>();
-
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "id")
-	private CartEntity shoppingCart;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<SubscriptionEntity> subscriptionsTo = new LinkedHashSet<>();
 
 }

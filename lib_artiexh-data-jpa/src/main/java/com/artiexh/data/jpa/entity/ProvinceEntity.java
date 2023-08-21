@@ -8,25 +8,31 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 @Entity
 @Table(name = "province")
 public class ProvinceEntity {
 
-	@Id
-	@Column(name = "id", nullable = false)
-	private Integer id;
+    @Id
+    @Column(name = "id", nullable = false)
+    private Integer id;
 
-	@NotNull
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JoinColumn(name = "country_id", nullable = false)
-	private CountryEntity country;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "country_id", nullable = false)
+    private CountryEntity country;
 
-	@Size(max = 255)
-	@NotNull
-	@Column(name = "name", nullable = false)
-	private String name;
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @OneToMany(mappedBy = "province")
+    private Set<ArtistEntity> artists = new LinkedHashSet<>();
 
 }

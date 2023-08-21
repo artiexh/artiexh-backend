@@ -3,6 +3,7 @@ package com.artiexh.data.jpa.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Getter
@@ -14,12 +15,17 @@ import java.util.Set;
 @AllArgsConstructor
 public class CartEntity {
 
-	@Id
-	@Column(name = "user_id", nullable = false)
-	private Long id;
+    @Id
+    @Column(name = "user_id", nullable = false)
+    private Long id;
 
-	@OneToMany(fetch = FetchType.EAGER)
-	@JoinColumn(name = "cart_id")
-	private Set<CartItemEntity> cartItems;
+    @MapsId
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "cart_id")
+    private Set<CartItemEntity> cartItems = new LinkedHashSet<>();
 
 }

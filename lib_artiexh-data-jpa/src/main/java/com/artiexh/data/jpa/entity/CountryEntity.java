@@ -15,16 +15,16 @@ import java.util.Set;
 @Table(name = "country")
 public class CountryEntity {
 
-	@Id
-	@Column(name = "id", nullable = false)
-	private Short id;
+    @Id
+    @Column(name = "id", nullable = false)
+    private Short id;
 
-	@Size(max = 255)
-	@NotNull
-	@Column(name = "name", nullable = false)
-	private String name;
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "name", nullable = false)
+    private String name;
 
-	@OneToMany(mappedBy = "country")
-	private Set<ProvinceEntity> provinces = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "country")
+    private Set<ProvinceEntity> provinces = new LinkedHashSet<>();
 
 }

@@ -1,29 +1,31 @@
 package com.artiexh.data.jpa.entity;
 
-import io.hypersistence.utils.hibernate.id.Tsid;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.Set;
-
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 @Entity
 @Table(name = "product_category")
 public class ProductCategoryEntity {
 
-	@OneToMany(mappedBy = "category")
-	private Set<ProductEntity> product;
-	@Id
-	@Tsid
-	@Column(name = "id", nullable = false)
-	private Long id;
-	@Column(name = "name", nullable = false)
-	private String name;
+    @Id
+    @Column(name = "id", nullable = false)
+    private Long id;
 
-	@Column(name = "image_url", nullable = false)
-	private String imageUrl;
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Size(max = 255)
+    @Column(name = "image_url")
+    private String imageUrl;
+
 }

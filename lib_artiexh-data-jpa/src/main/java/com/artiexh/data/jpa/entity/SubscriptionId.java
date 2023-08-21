@@ -13,28 +13,28 @@ import java.util.Objects;
 @Getter
 @Setter
 @Embeddable
-public class CartItemId implements Serializable {
-    private static final long serialVersionUID = -3036088290664599025L;
+public class SubscriptionId implements Serializable {
+    private static final long serialVersionUID = -8310290962213509747L;
     @NotNull
-    @Column(name = "cart_id", nullable = false)
-    private Long cartId;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
     @NotNull
-    @Column(name = "product_id", nullable = false)
-    private Long productId;
+    @Column(name = "artist_id", nullable = false)
+    private Long artistId;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        CartItemId entity = (CartItemId) o;
-        return Objects.equals(this.productId, entity.productId) &&
-                Objects.equals(this.cartId, entity.cartId);
+        SubscriptionId entity = (SubscriptionId) o;
+        return Objects.equals(this.artistId, entity.artistId) &&
+                Objects.equals(this.userId, entity.userId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(productId, cartId);
+        return Objects.hash(artistId, userId);
     }
 
 }

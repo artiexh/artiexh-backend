@@ -2,6 +2,8 @@ package com.artiexh.data.jpa.entity;
 
 import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +14,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @SuperBuilder(toBuilder = true)
@@ -24,63 +27,78 @@ import java.util.Set;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class ProductEntity {
 
-	@Id
-	@Tsid
-	@Column(name = "id", nullable = false)
-	private Long id;
+    @Id
+    @Tsid
+    @Column(name = "id", nullable = false)
+    private Long id;
 
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JoinColumn(name = "owner_id", nullable = false)
-	private ArtistEntity owner;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private ArtistEntity owner;
 
-	@Column(name = "status", nullable = false)
-	private Byte status;
+    @NotNull
+    @Column(name = "status", nullable = false)
+    private Byte status;
 
-	@Column(name = "name", nullable = false)
-	private String name;
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "name", nullable = false)
+    private String name;
 
-	@ManyToOne(optional = false)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JoinColumn(name = "category_id", nullable = false)
-	private ProductCategoryEntity category;
+    @NotNull
+    @Column(name = "price_amount", nullable = false, precision = 15, scale = 2)
+    private BigDecimal priceAmount;
 
-	@Column(name = "description")
-	private String description;
+    @Size(max = 3)
+    @NotNull
+    @Column(name = "price_unit", nullable = false, length = 3)
+    private String priceUnit;
 
-	@Column(name = "type", nullable = false)
-	private Byte type;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id")
+    private ProductCategoryEntity category;
 
-	@Column(name = "remaining_quantity", columnDefinition = "INT UNSIGNED not null")
-	private Long remainingQuantity;
+    @Size(max = 255)
+    @Column(name = "description")
+    private String description;
 
-	@Column(name = "publish_datetime")
-	private Instant publishDatetime;
+    @NotNull
+    @Column(name = "type", nullable = false)
+    private Byte type;
 
-	@Column(name = "max_items_per_order", columnDefinition = "INT UNSIGNED")
-	private Long maxItemsPerOrder;
+    @NotNull
+    @Column(name = "remaining_quantity", nullable = false)
+    private Integer remainingQuantity;
 
-	@Column(name = "delivery_type", nullable = false)
-	private Byte deliveryType;
+    @Column(name = "publish_datetime")
+    private Instant publishDatetime;
 
-	@Column(name = "average_rate", nullable = false)
-	private Float averageRate = 0f;
+    @Column(name = "max_items_per_order")
+    private Integer maxItemsPerOrder;
 
-	@Column(name = "payment_method")
-	@Lob
-	private Byte[] paymentMethods;
+    @NotNull
+    @Column(name = "delivery_type", nullable = false)
+    private Byte deliveryType;
 
-	@ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-	@JoinTable(name = "product_tag_mapping",
-		joinColumns = @JoinColumn(name = "product_id"),
-		inverseJoinColumns = @JoinColumn(name = "tag_id"))
-	private Set<ProductTagEntity> tags;
+    @NotNull
+    @Column(name = "average_rate", nullable = false)
+    private Float averageRate;
 
-	@OneToMany(fetch = FetchType.LAZY,
-		cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-	@JoinColumn(name = "product_id")
-	private Set<ProductAttachEntity> attaches;
+    @NotNull
+    @Column(name = "payment_method", nullable = false)
+    private byte[] paymentMethod;
 
-//	@OneToMany(mappedBy = "product")
-//	private Set<ShopProductEntity> shopProducts;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "shop_id", nullable = false)
+    private ArtistEntity shop;
+
+    @OneToMany(mappedBy = "product")
+    private Set<ProductAttachEntity> productAttaches = new LinkedHashSet<>();
+
+    @ManyToMany(mappedBy = "products")
+    private Set<ProductTagEntity> productTags = new LinkedHashSet<>();
+
 }
