@@ -1,17 +1,12 @@
 package com.artiexh.api.service.impl;
 
 import com.artiexh.api.service.ProductService;
-import com.artiexh.data.jpa.entity.ArtistEntity;
-import com.artiexh.data.jpa.entity.ProductCategoryEntity;
-import com.artiexh.data.jpa.entity.ProductEntity;
-import com.artiexh.data.jpa.entity.ProductTagEntity;
+import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.data.opensearch.model.ProductDocument;
-import com.artiexh.model.domain.Product;
-import com.artiexh.model.domain.ProductAttach;
-import com.artiexh.model.domain.ProductAttachType;
-import com.artiexh.model.domain.ProductTag;
+import com.artiexh.model.domain.*;
 import com.artiexh.model.mapper.ProductMapper;
+import com.artiexh.model.mapper.ShopMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,11 +31,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ProductServiceImpl implements ProductService {
 	private final ArtistRepository artistRepository;
+	private final ShopProductRepository shopProductRepository;
 	private final ProductCategoryRepository productCategoryRepository;
 	private final ProductAttachRepository productAttachRepository;
 	private final ProductTagRepository productTagRepository;
 	private final ProductMapper productMapper;
+	private final ShopMapper shopMapper;
 	private final ProductRepository productRepository;
+	private final ShopRepository shopRepository;
 	private final ElasticsearchOperations openSearchTemplate;
 
 	@Override
@@ -65,6 +63,9 @@ public class ProductServiceImpl implements ProductService {
 			product.setRemainingQuantity(entity.getRemainingQuantity());
 			product.getOwner().setAvatarUrl(entity.getOwner().getAvatarUrl());
 			product.setDescription(entity.getDescription());
+
+			Shop shop = shopMapper.entityToDomain(shopRepository.findDefaultByArtistId(product.getOwner().getId()));
+			product.setShop(shop);
 		}
 
 		return productPage;
@@ -79,7 +80,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	@Transactional
-	public Product create(long artistId, Product product) {
+	public Product create(long artistId, Long shopId, Product product) {
 
 		ArtistEntity artistEntity = artistRepository.findById(artistId)
 			.orElseThrow(() -> new IllegalArgumentException("Artist not valid"));
@@ -106,7 +107,20 @@ public class ProductServiceImpl implements ProductService {
 			throw e;
 		}
 
+		ShopEntity shopEntity = shopRepository.getReferenceById(shopId);
+
+		ShopProductEntity shopProductEntity = new ShopProductEntity();
+		shopProductEntity.setId(ShopProductId.builder()
+			.productId(productEntity.getId())
+			.shopId(shopId).build());
+		shopProductEntity.setProduct(savedProductEntity);
+		shopProductEntity.setShop(shopEntity);
+		shopProductEntity.setPriceAmount(product.getPrice().getAmount());
+		shopProductEntity.setPriceUnit(product.getPrice().getUnit());
+		shopProductRepository.save(shopProductEntity);
+
 		ProductDocument productDocument = productMapper.entityToDocument(savedProductEntity);
+		productDocument.setShopId(shopId);
 		openSearchTemplate.save(productDocument);
 
 		return productMapper.entityToDomain(savedProductEntity);

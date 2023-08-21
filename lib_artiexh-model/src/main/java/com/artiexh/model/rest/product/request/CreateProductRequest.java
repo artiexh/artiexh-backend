@@ -1,6 +1,8 @@
 package com.artiexh.model.rest.product.request;
 
 import com.artiexh.model.domain.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -14,6 +16,11 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateProductRequest {
+
+	@NotNull
+	@JsonSerialize(using = ToStringSerializer.class)
+	private Long shopId;
+
 	@NotNull
 	private ProductStatus status;
 

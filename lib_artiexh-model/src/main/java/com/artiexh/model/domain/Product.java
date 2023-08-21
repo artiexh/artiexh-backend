@@ -30,4 +30,5 @@ public class Product {
 	private Set<Byte> paymentMethods;
 	private Set<ProductTag> tags;
 	private Set<ProductAttach> attaches;
+	private Shop shop;
 }

@@ -10,7 +10,7 @@ public interface ProductService {
 
 	Product getDetail(long id);
 
-	Product create(long artistId, Product product);
+	Product create(long artistId, Long shopId, Product product);
 
 	Product update(long artistId, Product product);
 

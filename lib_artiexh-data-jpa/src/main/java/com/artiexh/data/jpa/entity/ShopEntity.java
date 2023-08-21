@@ -36,4 +36,7 @@ public class ShopEntity {
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "shop")
 	private Set<ShopProductEntity> shopProducts;
+
+	@Column(name = "image_url")
+	private String imageUrl;
 }

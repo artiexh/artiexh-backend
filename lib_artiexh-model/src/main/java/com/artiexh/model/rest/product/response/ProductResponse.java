@@ -32,6 +32,7 @@ public class ProductResponse {
 	private Set<ProductAttach> attaches;
 	private Category category;
 	private Set<PaymentMethod> paymentMethods;
+	private Shop shop;
 
 	@Data
 	@NoArgsConstructor

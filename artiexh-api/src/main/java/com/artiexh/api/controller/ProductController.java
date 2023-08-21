@@ -57,7 +57,7 @@ public class ProductController {
 	public ProductResponse create(Authentication authentication, @RequestBody @Valid CreateProductRequest productRequest) {
 		long userId = (long) authentication.getPrincipal();
 		try {
-			Product createdProduct = productService.create(userId, productMapper.createProductRequestToProduct(productRequest));
+			Product createdProduct = productService.create(userId, productRequest.getShopId(), productMapper.createProductRequestToProduct(productRequest));
 			return productMapper.domainToProductResponse(createdProduct);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
