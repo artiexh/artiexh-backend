@@ -80,7 +80,4 @@ public class ProductEntity {
 		cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = "product_id")
 	private Set<ProductAttachEntity> attaches;
-
-//	@OneToMany(mappedBy = "product")
-//	private Set<ShopProductEntity> shopProducts;
 }
