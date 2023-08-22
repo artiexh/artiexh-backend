@@ -22,57 +22,57 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class CartServiceImpl implements CartService {
 
-	private final CartRepository cartRepository;
-	private final CartItemRepository cartItemRepository;
-	private final CartMapper cartMapper;
+    private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
+    private final CartMapper cartMapper;
 
-	@Override
-	@Transactional
-	public Cart getCart(long userId) {
-		CartEntity cartEntity = getOrCreateCartEntity(userId);
-		return cartMapper.entityToDomain(cartEntity);
-	}
+    @Override
+    @Transactional
+    public Cart getCart(long userId) {
+        CartEntity cartEntity = getOrCreateCartEntity(userId);
+        return cartMapper.entityToDomain(cartEntity);
+    }
 
-	@Override
-	@Transactional
-	public void addItemToCart(long userId, Set<CartItemRequest> items) {
-		if (items.isEmpty()) {
-			return;
-		}
+    @Override
+    @Transactional
+    public void addItemToCart(long userId, Set<CartItemRequest> items) {
+        if (items.isEmpty()) {
+            return;
+        }
 
-		CartEntity cartEntity = getOrCreateCartEntity(userId);
-		Set<CartItemEntity> cartItemEntities = items.stream().map(cartItemRequest -> {
-			CartItemId cartItemId = new CartItemId(cartEntity.getId(), cartItemRequest.getProductId());
-			ProductEntity productEntity = ProductEntity.builder().id(cartItemRequest.getProductId()).build();
-			return CartItemEntity.builder().id(cartItemId).product(productEntity).quantity(cartItemRequest.getQuantity()).build();
-		}).collect(Collectors.toSet());
+        CartEntity cartEntity = getOrCreateCartEntity(userId);
+        Set<CartItemEntity> cartItemEntities = items.stream().map(cartItemRequest -> {
+            CartItemId cartItemId = new CartItemId(cartEntity.getId(), cartItemRequest.getProductId());
+            ProductEntity productEntity = ProductEntity.builder().id(cartItemRequest.getProductId()).build();
+            return CartItemEntity.builder().id(cartItemId).product(productEntity).quantity(cartItemRequest.getQuantity()).build();
+        }).collect(Collectors.toSet());
 
-		cartItemRepository.saveAll(cartItemEntities);
-	}
+        cartItemRepository.saveAll(cartItemEntities);
+    }
 
-	@Override
-	@Transactional
-	public void deleteItemToCart(long userId, Set<Long> items) {
-		if (items.isEmpty()) {
-			return;
-		}
+    @Override
+    @Transactional
+    public void deleteItemToCart(long userId, Set<Long> items) {
+        if (items.isEmpty()) {
+            return;
+        }
 
-		CartEntity cartEntity = getOrCreateCartEntity(userId);
-		Set<CartItemEntity> cartItemEntities = items.stream().map(productId -> {
-			CartItemId cartItemId = new CartItemId(cartEntity.getId(), productId);
-			ProductEntity productEntity = ProductEntity.builder().id(productId).build();
-			return CartItemEntity.builder().id(cartItemId).product(productEntity).build();
-		}).collect(Collectors.toSet());
+        CartEntity cartEntity = getOrCreateCartEntity(userId);
+        Set<CartItemEntity> cartItemEntities = items.stream().map(productId -> {
+            CartItemId cartItemId = new CartItemId(cartEntity.getId(), productId);
+            ProductEntity productEntity = ProductEntity.builder().id(productId).build();
+            return CartItemEntity.builder().id(cartItemId).product(productEntity).build();
+        }).collect(Collectors.toSet());
 
-		cartItemRepository.deleteAll(cartItemEntities);
-	}
+        cartItemRepository.deleteAll(cartItemEntities);
+    }
 
-	private CartEntity getOrCreateCartEntity(long userId) {
-		return cartRepository.findById(userId)
-			.orElseGet(() -> {
-				CartEntity newCartEntity = CartEntity.builder().id(userId).build();
-				return cartRepository.save(newCartEntity);
-			});
-	}
+    private CartEntity getOrCreateCartEntity(long userId) {
+        return cartRepository.findById(userId)
+                .orElseGet(() -> {
+                    CartEntity newCartEntity = CartEntity.builder().id(userId).build();
+                    return cartRepository.save(newCartEntity);
+                });
+    }
 
 }
