@@ -19,55 +19,58 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Mapper(
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-        uses = {ProductMapper.class, AccountMapper.class, ProductAttachMapper.class}
+	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+	uses = {ProductMapper.class, AccountMapper.class, ProductAttachMapper.class}
 )
 public interface CartMapper {
 
-    @Mapping(target = "cartItems", source = "cartItems")
-    Cart entityToDomain(CartEntity cartEntity);
+	@Mapping(target = "cartItems", source = "cartItems")
+	Cart entityToDomain(CartEntity cartEntity);
 
-    CartEntity domainToEntity(Cart cart);
+	CartEntity domainToEntity(Cart cart);
 
-    @Mapping(target = "shopItems", source = "cartItems", qualifiedByName = "artistItemsResponseMapping")
-    CartResponse domainToCartResponse(Cart cart);
+	@Mapping(target = "shopItems", source = "cartItems", qualifiedByName = "artistItemsResponseMapping")
+	CartResponse domainToCartResponse(Cart cart);
 
-    @Named("artistItemsResponseMapping")
-    default Set<ShopItemsResponse> artistItemsResponseMapping(Set<CartItem> cartItems) {
-        if (cartItems == null) {
-            return Collections.emptySet();
-        }
-        return cartItems.stream()
-                .collect(Collectors.groupingBy(
-                        cartItem -> cartItem.getProduct().getOwner(),
-                        Collectors.mapping(this::domainToCartItemResponse, Collectors.toSet())
-                ))
-                .entrySet().stream()
-                .map(entry -> new ShopItemsResponse(
-                        artistToArtistCartInfo(entry.getKey()),
-                        entry.getValue()
-                ))
-                .collect(Collectors.toSet());
-    }
+	@Named("artistItemsResponseMapping")
+	default Set<ShopItemsResponse> artistItemsResponseMapping(Set<CartItem> cartItems) {
+		if (cartItems == null) {
+			return Collections.emptySet();
+		}
+		return cartItems.stream()
+			.collect(Collectors.groupingBy(
+				cartItem -> cartItem.getProduct().getOwner(),
+				Collectors.mapping(this::domainToCartItemResponse, Collectors.toSet())
+			))
+			.entrySet().stream()
+			.map(entry -> new ShopItemsResponse(
+				artistToShopInCartResponse(entry.getKey()),
+				entry.getValue()
+			))
+			.collect(Collectors.toSet());
+	}
 
-    ShopInCartResponse artistToArtistCartInfo(Artist artist);
+	@Mapping(target = "id", source = "id")
+	@Mapping(target = "name", source = "shopName")
+	@Mapping(target = "owner", source = ".")
+	ShopInCartResponse artistToShopInCartResponse(Artist artist);
 
-    @Mapping(target = "id", source = "product.id")
-    @Mapping(target = "status", source = "product.status")
-    @Mapping(target = "price.unit", source = "product.price.unit")
-    @Mapping(target = "name", source = "product.name")
-    @Mapping(target = "thumbnailUrl", source = "product.thumbnailUrl")
-    @Mapping(target = "price.amount", source = "product.price.amount")
-    @Mapping(target = "description", source = "product.description")
-    @Mapping(target = "type", source = "product.type")
-    @Mapping(target = "remainingQuantity", source = "product.remainingQuantity")
-    @Mapping(target = "publishDatetime", source = "product.publishDatetime")
-    @Mapping(target = "maxItemsPerOrder", source = "product.maxItemsPerOrder")
-    @Mapping(target = "deliveryType", source = "product.deliveryType")
-    CartItemResponse domainToCartItemResponse(CartItem cartItem);
+	@Mapping(target = "id", source = "product.id")
+	@Mapping(target = "status", source = "product.status")
+	@Mapping(target = "price.unit", source = "product.price.unit")
+	@Mapping(target = "name", source = "product.name")
+	@Mapping(target = "thumbnailUrl", source = "product.thumbnailUrl")
+	@Mapping(target = "price.amount", source = "product.price.amount")
+	@Mapping(target = "description", source = "product.description")
+	@Mapping(target = "type", source = "product.type")
+	@Mapping(target = "remainingQuantity", source = "product.remainingQuantity")
+	@Mapping(target = "publishDatetime", source = "product.publishDatetime")
+	@Mapping(target = "maxItemsPerOrder", source = "product.maxItemsPerOrder")
+	@Mapping(target = "deliveryType", source = "product.deliveryType")
+	CartItemResponse domainToCartItemResponse(CartItem cartItem);
 
-    CartItem entityToDomain(CartItemEntity cartItemEntity);
+	CartItem entityToDomain(CartItemEntity cartItemEntity);
 
-    CartItemEntity domainToEntity(CartItem cartItem);
+	CartItemEntity domainToEntity(CartItem cartItem);
 
 }

@@ -15,12 +15,12 @@ import java.util.Set;
 @AllArgsConstructor
 public class CartEntity {
 
-    @Id
-    @Column(name = "user_id", nullable = false)
-    private Long id;
+	@Id
+	@Column(name = "user_id", nullable = false)
+	private Long id;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "cart_id")
-    private Set<CartItemEntity> cartItems = new LinkedHashSet<>();
+	@OneToMany(fetch = FetchType.EAGER)
+	@JoinColumn(name = "cart_id")
+	private Set<CartItemEntity> cartItems = new LinkedHashSet<>();
 
 }

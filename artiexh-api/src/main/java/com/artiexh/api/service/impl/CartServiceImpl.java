@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,29 +43,29 @@ public class CartServiceImpl implements CartService {
 
 		CartEntity cartEntity = getOrCreateCartEntity(userId);
 		Set<CartItemEntity> existedItems = cartEntity.getCartItems();
+		Map<CartItemId, CartItemEntity> existedItemsMap = existedItems.stream()
+			.collect(Collectors.toMap(CartItemEntity::getId, cartItemEntity -> cartItemEntity));
 
-		for (CartItemRequest item : items) {
-			boolean found = false;
-			for (CartItemEntity entity : existedItems) {
-				if (entity.getId().getProductId().equals(item.getProductId())) {
-					entity.setQuantity(entity.getQuantity() + item.getQuantity());
-					found = true;
-					break;
+		existedItems.addAll(items.stream()
+			.map(cartItemRequest -> {
+				var cartItemId = new CartItemId(cartEntity.getId(), cartItemRequest.getProductId());
+				var productEntity = ProductEntity.builder().id(cartItemRequest.getProductId()).build();
+				return CartItemEntity.builder()
+					.id(cartItemId)
+					.product(productEntity)
+					.quantity(cartItemRequest.getQuantity())
+					.build();
+			})
+			.filter(newCartItemEntity -> {
+				if (existedItemsMap.containsKey(newCartItemEntity.getId())) {
+					var existedItem = existedItemsMap.get(newCartItemEntity.getId());
+					existedItem.setQuantity(existedItem.getQuantity() + newCartItemEntity.getQuantity());
+					return false;
 				}
-			}
-			if (!found) {
-				CartItemId cartItemId = new CartItemId(cartEntity.getId(), item.getProductId());
-				ProductEntity productEntity = ProductEntity.builder().id(item.getProductId()).build();
-				existedItems.add(CartItemEntity.builder().id(cartItemId).product(productEntity).quantity(item.getQuantity()).build());
-			}
-		}
-
-
-//		Set<CartItemEntity> cartItemEntities = items.stream().map(cartItemRequest -> {
-//			CartItemId cartItemId = new CartItemId(cartEntity.getId(), cartItemRequest.getProductId());
-//			ProductEntity productEntity = ProductEntity.builder().id(cartItemRequest.getProductId()).build();
-//			return CartItemEntity.builder().id(cartItemId).product(productEntity).quantity(cartItemRequest.getQuantity()).build();
-//		}).collect(Collectors.toSet());
+				return true;
+			})
+			.collect(Collectors.toSet())
+		);
 
 		cartItemRepository.saveAll(existedItems);
 	}
