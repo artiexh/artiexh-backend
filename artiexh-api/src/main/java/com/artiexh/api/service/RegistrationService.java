@@ -8,7 +8,7 @@ public interface RegistrationService {
 
 	User createUser(User user);
 
-	Artist registerArtist(Long id);
+	Artist registerArtist(Long id, String shopName);
 
 	Account createAdmin(Account account);
 

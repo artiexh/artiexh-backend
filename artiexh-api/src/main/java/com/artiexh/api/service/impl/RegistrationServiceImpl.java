@@ -79,7 +79,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	@Override
-	public Artist registerArtist(Long id) {
+	public Artist registerArtist(Long id, String shopName) {
 		UserEntity userEntity = userRepository.findById(id)
 			.orElseThrow(EntityNotFoundException::new);
 
@@ -96,6 +96,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			.orElseThrow(EntityNotFoundException::new);
 
 		artistEntity.setRole((byte) Role.ARTIST.getValue());
+		artistEntity.setShopName(shopName);
 		return artistMapper.entityToDomain(artistRepository.save(artistEntity));
 	}
 
