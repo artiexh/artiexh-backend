@@ -34,6 +34,11 @@ public class ProductEntity {
 	@JoinColumn(name = "owner_id", nullable = false)
 	private ArtistEntity owner;
 
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@JoinColumn(name = "shop_id", nullable = false)
+	private ArtistEntity shop;
+
 	@Column(name = "status", nullable = false)
 	private Byte status;
 
