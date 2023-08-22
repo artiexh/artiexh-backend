@@ -57,7 +57,13 @@ public class GetAllProductFilter {
 		var queryBuilder = new NativeSearchQueryBuilder().withFilter(boolQuery);
 
 		if (StringUtils.hasText(keyword)) {
-			queryBuilder.withQuery(new MultiMatchQueryBuilder(keyword, "name", "owner.username", "owner.displayName").fuzziness(Fuzziness.AUTO));
+			queryBuilder.withQuery(new MultiMatchQueryBuilder(
+				keyword,
+				"name",
+				"owner.username",
+				"owner.displayName",
+				"owner.shopName")
+				.fuzziness(Fuzziness.AUTO));
 		}
 
 		return queryBuilder.build();
