@@ -25,6 +25,8 @@ import java.util.Set;
 )
 public interface ProductMapper {
 
+	@Mapping(target = "price.unit", source = "priceUnit")
+	@Mapping(target = "price.amount", source = "priceAmount")
 	@Mapping(target = "thumbnailUrl", source = "attaches")
 	Product entityToDomain(ProductEntity productEntity);
 
@@ -36,6 +38,8 @@ public interface ProductMapper {
 			.orElse(null);
 	}
 
+	@Mapping(target = "priceUnit", source = "price.unit")
+	@Mapping(target = "priceAmount", source = "price.amount")
 	@Mapping(target = "averageRate", constant = "0f")
 	ProductEntity domainToEntity(Product product);
 
@@ -43,6 +47,8 @@ public interface ProductMapper {
 
 	ProductResponse domainToProductResponse(Product product);
 
+	@Mapping(target = "price.unit", source = "priceUnit")
+	@Mapping(target = "price.amount", source = "priceAmount")
 	ProductDocument entityToDocument(ProductEntity productEntity);
 
 	default Page<ProductResponse> domainPageToProductResponsePage(Page<Product> productPage) {
