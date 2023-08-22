@@ -4,11 +4,13 @@ import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.ProductService;
 import com.artiexh.model.domain.Product;
+import com.artiexh.model.domain.ProductSuggestion;
 import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.product.request.CreateProductRequest;
 import com.artiexh.model.rest.product.request.GetAllProductFilter;
+import com.artiexh.model.rest.product.request.SuggestionFilter;
 import com.artiexh.model.rest.product.request.UpdateProductRequest;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
@@ -39,6 +41,18 @@ public class ProductController {
 			paginationAndSortingRequest.getPageable()
 		);
 		return new PageResponse<>(productMapper.domainPageToProductResponsePage(productPage));
+	}
+
+	@GetMapping(Endpoint.Product.SUGGESTION)
+	public PageResponse<ProductSuggestion> getSuggestionInPage(
+		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
+		@ParameterObject @Valid SuggestionFilter filter
+	) {
+		Page<ProductSuggestion> suggestionPage = productService.getSuggestionInPage(
+			filter.getQuery(),
+			paginationAndSortingRequest.getPageable()
+		);
+		return new PageResponse<>(suggestionPage);
 	}
 
 	@GetMapping(path = Endpoint.Product.PRODUCT_DETAIL)
