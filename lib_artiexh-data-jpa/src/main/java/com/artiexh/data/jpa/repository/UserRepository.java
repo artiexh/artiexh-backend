@@ -13,6 +13,4 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
 	Optional<UserEntity> findByFacebookId(String facebookId);
 
-	Optional<UserEntity> findByTwitterId(String twitterId);
-
 }

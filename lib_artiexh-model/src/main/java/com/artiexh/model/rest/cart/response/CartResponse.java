@@ -10,5 +10,5 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartResponse {
-	Set<ArtistItemsResponse> artistItems;
+    Set<ShopItemsResponse> shopItems;
 }

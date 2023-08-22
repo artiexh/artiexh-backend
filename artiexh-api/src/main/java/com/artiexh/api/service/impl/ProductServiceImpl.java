@@ -7,10 +7,7 @@ import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.jpa.entity.ProductTagEntity;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.data.opensearch.model.ProductDocument;
-import com.artiexh.model.domain.Product;
-import com.artiexh.model.domain.ProductAttach;
-import com.artiexh.model.domain.ProductAttachType;
-import com.artiexh.model.domain.ProductTag;
+import com.artiexh.model.domain.*;
 import com.artiexh.model.mapper.ProductMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -65,6 +62,12 @@ public class ProductServiceImpl implements ProductService {
 			product.setRemainingQuantity(entity.getRemainingQuantity());
 			product.getOwner().setAvatarUrl(entity.getOwner().getAvatarUrl());
 			product.setDescription(entity.getDescription());
+
+			Shop shop = Shop.builder()
+				.shopImageUrl(entity.getOwner().getShopImageUrl())
+				.shopName(entity.getOwner().getShopName())
+				.build();
+			product.setShop(shop);
 		}
 
 		return productPage;
