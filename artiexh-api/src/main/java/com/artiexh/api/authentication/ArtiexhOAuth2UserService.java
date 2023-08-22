@@ -129,7 +129,6 @@ public class ArtiexhOAuth2UserService implements OAuth2UserService<OAuth2UserReq
 		var userEntity = switch (provider) {
 			case "google" -> userRepository.findByGoogleId(sub);
 			case "facebook" -> userRepository.findByFacebookId(sub);
-			case "twitter" -> userRepository.findByTwitterId(sub);
 			default -> throw new OAuth2AuthenticationException(UNKNOWN_OAUTH2_PROVIDER);
 		};
 		return userEntity.map(userMapper::entityToDomain).orElse(null);

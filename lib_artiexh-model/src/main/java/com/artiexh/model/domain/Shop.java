@@ -1,20 +1,17 @@
 package com.artiexh.model.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Getter
-@Setter
 public class Shop {
-	@JsonSerialize(using = ToStringSerializer.class)
-	private Long id;
-
-	private String name;
-
-	private boolean isDefault;
+    private Long id;
+    private String shopName;
+	private String shopImageUrl;
+    private Artist owner;
 }

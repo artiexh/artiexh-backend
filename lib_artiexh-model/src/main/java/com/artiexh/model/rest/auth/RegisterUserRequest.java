@@ -35,9 +35,6 @@ public class RegisterUserRequest {
 	@Pattern(regexp = "^[0-9]{21}$", message = "Invalid google id")
 	private String googleId;
 
-	@Pattern(regexp = "^[0-9]{20}$", message = "Invalid twitter id")
-	private String twitterId;
-
 	@Pattern(regexp = "^[0-9]{16}$", message = "Invalid facebook id")
 	private String facebookId;
 
