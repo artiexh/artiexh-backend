@@ -17,9 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.artiexh.model.domain.Role.ADMIN;
-import static com.artiexh.model.domain.Role.USER;
-
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)

@@ -104,6 +104,6 @@ public class ProductEntity {
 		joinColumns = @JoinColumn(name = "product_id"),
 		inverseJoinColumns = @JoinColumn(name = "tag_id")
 	)
-	private Set<ProductTagEntity> productTags = new LinkedHashSet<>();
+	private Set<ProductTagEntity> tags = new LinkedHashSet<>();
 
 }
