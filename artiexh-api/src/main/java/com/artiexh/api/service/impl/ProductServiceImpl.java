@@ -41,6 +41,14 @@ public class ProductServiceImpl implements ProductService {
 	private final ElasticsearchOperations openSearchTemplate;
 
 	@Override
+	public Page<ProductSuggestion> getSuggestionInPage(Query query, Pageable pageable) {
+		query.setPageable(pageable);
+		SearchHits<ProductDocument> hits = openSearchTemplate.search(query, ProductDocument.class);
+		SearchPage<ProductDocument> hitPage = SearchHitSupport.searchPageFor(hits, pageable);
+		return hitPage.map(searchHit -> ProductSuggestion.builder().name(searchHit.getContent().getName()).build());
+	}
+
+	@Override
 	public Page<Product> getInPage(Query query, Pageable pageable) {
 		query.setPageable(pageable);
 		SearchHits<ProductDocument> hits = openSearchTemplate.search(query, ProductDocument.class);
