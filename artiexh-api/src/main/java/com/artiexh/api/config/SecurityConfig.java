@@ -58,7 +58,10 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.GET, Endpoint.Tag.ROOT).permitAll()
 				.requestMatchers(HttpMethod.GET, Endpoint.Province.ROOT).permitAll()
 				.requestMatchers(Endpoint.Account.ROOT + "/public/**").permitAll()
-				.requestMatchers(HttpMethod.GET, Endpoint.Product.ROOT, Endpoint.Product.ROOT + Endpoint.Product.PRODUCT_DETAIL).permitAll()
+				.requestMatchers(HttpMethod.GET,
+					Endpoint.Product.ROOT,
+					Endpoint.Product.ROOT + Endpoint.Product.PRODUCT_DETAIL,
+					Endpoint.Product.ROOT + Endpoint.Product.SUGGESTION).permitAll()
 				.anyRequest().authenticated()
 			)
 			.oauth2Login(oauth2 -> oauth2
