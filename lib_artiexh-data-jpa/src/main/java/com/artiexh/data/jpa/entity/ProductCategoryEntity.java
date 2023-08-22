@@ -6,13 +6,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+@Builder
 @Getter
 @Setter
 @Entity
 @Table(name = "product_category")
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProductCategoryEntity {
 
     @Id

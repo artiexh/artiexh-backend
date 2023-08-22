@@ -10,25 +10,24 @@ import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-        uses = {AccountMapper.class,
-                ProductMapper.class,
-                ProvinceMapper.class,
-                ProductCategoryMapper.class,
-                ProductTagMapper.class,
-                ProductAttachMapper.class,
-                ShopMapper.class,
-                PasswordMapper.class}
+	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+	uses = {AccountMapper.class,
+		ProductMapper.class,
+		ProvinceMapper.class,
+		ProductCategoryMapper.class,
+		ProductTagMapper.class,
+		ProductAttachMapper.class,
+		PasswordMapper.class}
 )
 public abstract class ArtistMapper {
 
-    @Mapping(target = "province", qualifiedByName = "provinceEntityToDomain")
-    public abstract Artist entityToDomain(ArtistEntity userEntity);
+	@Mapping(target = "province", qualifiedByName = "provinceEntityToDomain")
+	public abstract Artist entityToDomain(ArtistEntity userEntity);
 
-    abstract ArtistEntity domainToEntity(Artist user);
+	abstract ArtistEntity domainToEntity(Artist user);
 
-    @Named("provinceEntityToDomain")
-    @Mapping(target = "country.provinces", ignore = true)
-    abstract Province provinceEntityToDomain(ProvinceEntity provinceEntity);
+	@Named("provinceEntityToDomain")
+	@Mapping(target = "country.provinces", ignore = true)
+	abstract Province provinceEntityToDomain(ProvinceEntity provinceEntity);
 
 }

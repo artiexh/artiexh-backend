@@ -27,78 +27,83 @@ import java.util.Set;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class ProductEntity {
 
-    @Id
-    @Tsid
-    @Column(name = "id", nullable = false)
-    private Long id;
+	@Id
+	@Tsid
+	@Column(name = "id", nullable = false)
+	private Long id;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "owner_id", nullable = false)
-    private ArtistEntity owner;
+	@NotNull
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@JoinColumn(name = "owner_id", nullable = false)
+	private ArtistEntity owner;
 
-    @NotNull
-    @Column(name = "status", nullable = false)
-    private Byte status;
+	@NotNull
+	@Column(name = "status", nullable = false)
+	private Byte status;
 
-    @Size(max = 255)
-    @NotNull
-    @Column(name = "name", nullable = false)
-    private String name;
+	@Size(max = 255)
+	@NotNull
+	@Column(name = "name", nullable = false)
+	private String name;
 
-    @NotNull
-    @Column(name = "price_amount", nullable = false, precision = 15, scale = 2)
-    private BigDecimal priceAmount;
+	@NotNull
+	@Column(name = "price_amount", nullable = false, precision = 15, scale = 2)
+	private BigDecimal priceAmount;
 
-    @Size(max = 3)
-    @NotNull
-    @Column(name = "price_unit", nullable = false, length = 3)
-    private String priceUnit;
+	@Size(max = 3)
+	@NotNull
+	@Column(name = "price_unit", nullable = false, length = 3)
+	private String priceUnit;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "category_id")
-    private ProductCategoryEntity category;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "category_id")
+	private ProductCategoryEntity category;
 
-    @Size(max = 255)
-    @Column(name = "description")
-    private String description;
+	@Size(max = 255)
+	@Column(name = "description")
+	private String description;
 
-    @NotNull
-    @Column(name = "type", nullable = false)
-    private Byte type;
+	@NotNull
+	@Column(name = "type", nullable = false)
+	private Byte type;
 
-    @NotNull
-    @Column(name = "remaining_quantity", nullable = false)
-    private Integer remainingQuantity;
+	@NotNull
+	@Column(name = "remaining_quantity", nullable = false)
+	private Integer remainingQuantity;
 
-    @Column(name = "publish_datetime")
-    private Instant publishDatetime;
+	@Column(name = "publish_datetime")
+	private Instant publishDatetime;
 
-    @Column(name = "max_items_per_order")
-    private Integer maxItemsPerOrder;
+	@Column(name = "max_items_per_order")
+	private Integer maxItemsPerOrder;
 
-    @NotNull
-    @Column(name = "delivery_type", nullable = false)
-    private Byte deliveryType;
+	@NotNull
+	@Column(name = "delivery_type", nullable = false)
+	private Byte deliveryType;
 
-    @NotNull
-    @Column(name = "average_rate", nullable = false)
-    private Float averageRate;
+	@NotNull
+	@Column(name = "average_rate", nullable = false)
+	private Float averageRate;
 
-    @NotNull
-    @Column(name = "payment_method", nullable = false)
-    private byte[] paymentMethod;
+	@NotNull
+	@Column(name = "payment_method", nullable = false)
+	private byte[] paymentMethod;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "shop_id", nullable = false)
-    private ArtistEntity shop;
+	@NotNull
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "shop_id", nullable = false)
+	private ArtistEntity shop;
 
-    @OneToMany(mappedBy = "product")
-    private Set<ProductAttachEntity> productAttaches = new LinkedHashSet<>();
+	@OneToMany(fetch = FetchType.EAGER)
+	@JoinColumn(name = "product_id")
+	private Set<ProductAttachEntity> attaches = new LinkedHashSet<>();
 
-    @ManyToMany(mappedBy = "products")
-    private Set<ProductTagEntity> productTags = new LinkedHashSet<>();
+	@OneToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "product_tag_mapping",
+		joinColumns = @JoinColumn(name = "product_id"),
+		inverseJoinColumns = @JoinColumn(name = "tag_id")
+	)
+	private Set<ProductTagEntity> productTags = new LinkedHashSet<>();
 
 }
