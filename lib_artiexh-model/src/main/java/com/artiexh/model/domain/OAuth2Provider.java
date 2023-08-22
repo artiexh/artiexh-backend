@@ -1,9 +1,11 @@
 package com.artiexh.model.domain;
 
+import lombok.Getter;
+
+@Getter
 public enum OAuth2Provider {
 	GOOGLE("google"),
-	FACEBOOK("facebook"),
-	TWITTER("twitter");
+	FACEBOOK("facebook");
 
 	private final String value;
 
@@ -20,7 +22,4 @@ public enum OAuth2Provider {
 		throw new IllegalArgumentException("No OAuth2Provider with value " + value + " found");
 	}
 
-	public String getValue() {
-		return value;
-	}
 }

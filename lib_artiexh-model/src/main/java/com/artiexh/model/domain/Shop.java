@@ -1,14 +1,14 @@
-package com.artiexh.model.rest.cart.response;
+package com.artiexh.model.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartResponse {
-    Set<ShopItemsResponse> shopItems;
+public class Shop {
+    private Long id;
+    private String shopName;
+    private Artist owner;
 }

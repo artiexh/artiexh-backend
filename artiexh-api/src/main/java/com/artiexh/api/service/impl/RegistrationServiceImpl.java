@@ -46,11 +46,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 		UserEntity userEntity = userMapper.domainToEntity(user);
 
 		List<Pair<String, String>> cacheProviderSubKeys = new ArrayList<>();
-		if (!StringUtils.hasText(userEntity.getTwitterId()) || !recentOauth2LoginFailId.contain("twitter", userEntity.getTwitterId())) {
-			userEntity.setTwitterId(null);
-		} else {
-			cacheProviderSubKeys.add(Pair.of("twitter", userEntity.getTwitterId()));
-		}
 		if (!StringUtils.hasText(userEntity.getGoogleId()) || !recentOauth2LoginFailId.contain("google", userEntity.getGoogleId())) {
 			userEntity.setGoogleId(null);
 		} else {
@@ -63,7 +58,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}
 
 		if (!StringUtils.hasText(userEntity.getPassword()) &&
-			!StringUtils.hasText(userEntity.getTwitterId()) &&
 			!StringUtils.hasText(userEntity.getGoogleId()) &&
 			!StringUtils.hasText(userEntity.getFacebookId())) {
 			throw new IllegalArgumentException("Request has no password or invalid provider sub");
@@ -85,7 +79,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	@Override
-	public Artist registerArtist(Long id) {
+	public Artist registerArtist(Long id, String shopName) {
 		UserEntity userEntity = userRepository.findById(id)
 			.orElseThrow(EntityNotFoundException::new);
 
@@ -102,6 +96,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			.orElseThrow(EntityNotFoundException::new);
 
 		artistEntity.setRole((byte) Role.ARTIST.getValue());
+		artistEntity.setShopName(shopName);
 		return artistMapper.entityToDomain(artistRepository.save(artistEntity));
 	}
 
