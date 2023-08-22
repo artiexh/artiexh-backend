@@ -4,6 +4,7 @@ import com.artiexh.data.jpa.entity.ArtistEntity;
 import com.artiexh.data.jpa.entity.ProvinceEntity;
 import com.artiexh.model.domain.Artist;
 import com.artiexh.model.domain.Province;
+import com.artiexh.model.domain.Shop;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -30,5 +31,8 @@ public abstract class ArtistMapper {
 	@Named("provinceEntityToDomain")
 	@Mapping(target = "country.provinces", ignore = true)
 	abstract Province provinceEntityToDomain(ProvinceEntity provinceEntity);
+
+	@Mapping(target = "owner", source = ".")
+	abstract Shop artistEntityToShop(ArtistEntity artistEntity);
 
 }
