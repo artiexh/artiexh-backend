@@ -15,6 +15,7 @@ import java.util.Set;
 public class Product {
 	private Long id;
 	private Artist owner;
+	private Artist shop;
 	private ProductStatus status;
 	private String name;
 	private Money price;

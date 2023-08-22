@@ -20,18 +20,19 @@ import java.util.Set;
 @Table(name = "user")
 public class UserEntity extends AccountEntity {
 
-    @Size(max = 21)
-    @Column(name = "google_id", length = 21)
-    private String googleId;
+	@Size(max = 21)
+	@Column(name = "google_id", length = 21)
+	private String googleId;
 
-    @Size(max = 20)
-    @Column(name = "facebook_id", length = 20)
-    private String facebookId;
+	@Size(max = 20)
+	@Column(name = "facebook_id", length = 20)
+	private String facebookId;
 
-    @OneToOne(mappedBy = "user")
-    private CartEntity cart;
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id")
+	private CartEntity cart;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private Set<SubscriptionEntity> subscriptionsTo = new LinkedHashSet<>();
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+	private Set<SubscriptionEntity> subscriptionsTo = new LinkedHashSet<>();
 
 }

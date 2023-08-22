@@ -33,7 +33,7 @@ public class ProductEntity {
 	private Long id;
 
 	@NotNull
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "owner_id", nullable = false)
 	private ArtistEntity owner;
@@ -91,7 +91,7 @@ public class ProductEntity {
 	private byte[] paymentMethod;
 
 	@NotNull
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "shop_id", nullable = false)
 	private ArtistEntity shop;
 

@@ -15,76 +15,76 @@ import org.springframework.data.domain.Page;
 import java.util.Set;
 
 @Mapper(
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-        uses = {
-                ProductCategoryMapper.class,
-                ProductTagMapper.class,
-                ArtistMapper.class,
-                ProductAttachMapper.class
-        }
+	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+	uses = {
+		ProductCategoryMapper.class,
+		ProductTagMapper.class,
+		ArtistMapper.class,
+		ProductAttachMapper.class
+	}
 )
 public interface ProductMapper {
 
-    @Mapping(target = "thumbnailUrl", source = "attaches")
-    Product entityToDomain(ProductEntity productEntity);
+	@Mapping(target = "thumbnailUrl", source = "attaches")
+	Product entityToDomain(ProductEntity productEntity);
 
-    default String getThumbnailUrl(Set<ProductAttachEntity> productAttachEntities) {
-        return productAttachEntities.stream()
-                .filter(attachEntity -> attachEntity.getType() == ProductAttachType.THUMBNAIL.getValue())
-                .findFirst()
-                .map(ProductAttachEntity::getUrl)
-                .orElse(null);
-    }
+	default String getThumbnailUrl(Set<ProductAttachEntity> productAttachEntities) {
+		return productAttachEntities.stream()
+			.filter(attachEntity -> attachEntity.getType() == ProductAttachType.THUMBNAIL.getValue())
+			.findFirst()
+			.map(ProductAttachEntity::getUrl)
+			.orElse(null);
+	}
 
-    @Mapping(target = "averageRate", constant = "0f")
-    ProductEntity domainToEntity(Product product);
+	@Mapping(target = "averageRate", constant = "0f")
+	ProductEntity domainToEntity(Product product);
 
-    Product documentToDomain(ProductDocument productDocument);
+	Product documentToDomain(ProductDocument productDocument);
 
-    ProductResponse domainToProductResponse(Product product);
+	ProductResponse domainToProductResponse(Product product);
 
-    ProductDocument entityToDocument(ProductEntity productEntity);
+	ProductDocument entityToDocument(ProductEntity productEntity);
 
-    default Page<ProductResponse> domainPageToProductResponsePage(Page<Product> productPage) {
-        return productPage.map(this::domainToProductResponse);
-    }
+	default Page<ProductResponse> domainPageToProductResponsePage(Page<Product> productPage) {
+		return productPage.map(this::domainToProductResponse);
+	}
 
-    @Mapping(target = "category.id", source = "categoryId")
-    Product createProductRequestToProduct(CreateProductRequest createProductRequest);
+	@Mapping(target = "category.id", source = "categoryId")
+	Product createProductRequestToProduct(CreateProductRequest createProductRequest);
 
-    @Mapping(target = "category.id", source = "categoryId")
-    Product updateProductRequestToProduct(UpdateProductRequest updateProductRequest);
+	@Mapping(target = "category.id", source = "categoryId")
+	Product updateProductRequestToProduct(UpdateProductRequest updateProductRequest);
 
 
-    default Integer toValue(ProductStatus status) {
-        return status.getValue();
-    }
+	default Integer toValue(ProductStatus status) {
+		return status.getValue();
+	}
 
-    default ProductStatus toProductStatus(Integer value) {
-        return ProductStatus.fromValue(value);
-    }
+	default ProductStatus toProductStatus(Integer value) {
+		return ProductStatus.fromValue(value);
+	}
 
-    default Integer toValue(ProductType type) {
-        return type.getValue();
-    }
+	default Integer toValue(ProductType type) {
+		return type.getValue();
+	}
 
-    default ProductType toProductType(Integer value) {
-        return ProductType.fromValue(value);
-    }
+	default ProductType toProductType(Integer value) {
+		return ProductType.fromValue(value);
+	}
 
-    default Integer toValue(PaymentMethod paymentMethod) {
-        return paymentMethod.getValue();
-    }
+	default Integer toValue(PaymentMethod paymentMethod) {
+		return paymentMethod.getValue();
+	}
 
-    default PaymentMethod toPaymentMethod(Integer value) {
-        return PaymentMethod.fromValue(value);
-    }
+	default PaymentMethod toPaymentMethod(Integer value) {
+		return PaymentMethod.fromValue(value);
+	}
 
-    default Integer toValue(DeliveryType type) {
-        return type.getValue();
-    }
+	default Integer toValue(DeliveryType type) {
+		return type.getValue();
+	}
 
-    default DeliveryType toDeliveryType(Integer value) {
-        return DeliveryType.fromValue(value);
-    }
+	default DeliveryType toDeliveryType(Integer value) {
+		return DeliveryType.fromValue(value);
+	}
 }
