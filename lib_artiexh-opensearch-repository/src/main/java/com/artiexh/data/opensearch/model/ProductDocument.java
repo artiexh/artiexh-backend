@@ -51,6 +51,8 @@ public class ProductDocument {
 		private String displayName;
 		@Field(name = "province", type = FieldType.Object)
 		private Province province;
+		@Field(name = "shopName", type = FieldType.Text)
+		private String shopName;
 	}
 
 	@Data

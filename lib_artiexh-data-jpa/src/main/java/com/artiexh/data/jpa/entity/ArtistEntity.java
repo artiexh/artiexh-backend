@@ -22,6 +22,9 @@ public class ArtistEntity extends UserEntity {
 	@Column(name = "shop_name")
 	private String shopName;
 
+	@Column(name = "shop_image_url")
+	private String shopImageUrl;
+
 	@OneToMany(mappedBy = "artist")
 	private Set<SubscriptionEntity> subscriptionsFrom;
 
