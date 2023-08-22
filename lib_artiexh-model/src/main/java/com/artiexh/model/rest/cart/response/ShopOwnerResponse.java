@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ArtistCartInfoResponse {
-	@JsonSerialize(using = ToStringSerializer.class)
-	private Long id;
-	private String username;
-	private String displayName;
-	private String avatarUrl;
-	private String email;
+public class ShopOwnerResponse {
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long id;
+    private String username;
+    private String displayName;
+    private String avatarUrl;
+    private String email;
 }
