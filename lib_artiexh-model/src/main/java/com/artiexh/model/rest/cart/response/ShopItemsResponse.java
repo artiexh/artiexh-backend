@@ -9,7 +9,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ArtistItemsResponse {
-	private ArtistCartInfoResponse artist;
-	private Set<CartItemResponse> items;
+public class ShopItemsResponse {
+    private ShopInCartResponse shop;
+    private Set<CartItemResponse> items;
 }
