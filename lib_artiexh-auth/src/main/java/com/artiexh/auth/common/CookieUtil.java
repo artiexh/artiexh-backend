@@ -47,7 +47,6 @@ public final class CookieUtil {
 		cookie.setSecure(true);
 		cookie.setAttribute("SameSite", "None");
 		cookie.setMaxAge(expire);
-		cookie.setAttribute("SameSite", "Strict");
 		response.addCookie(cookie);
 	}
 
