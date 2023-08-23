@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ShopInCartResponse {
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long id;
-    private String shopName;
-    private ShopOwnerResponse owner;
+	@JsonSerialize(using = ToStringSerializer.class)
+	private Long id;
+	private String shopName;
+	private String imageUrl;
+	private ShopOwnerResponse owner;
 }
