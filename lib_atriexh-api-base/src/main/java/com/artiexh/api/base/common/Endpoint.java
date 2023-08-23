@@ -40,6 +40,12 @@ public final class Endpoint {
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class User {
+		public static final String ROOT = PREFIX + "/user";
+		public static final String ADDRESS = "/address";
+	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Product {
 		public static final String ROOT = PREFIX + "/product";
 		public static final String PRODUCT_DETAIL = "/{id}";
