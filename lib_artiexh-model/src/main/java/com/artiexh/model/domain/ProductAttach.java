@@ -1,5 +1,6 @@
 package com.artiexh.model.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.validation.constraints.NotBlank;
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ProductAttach {
 	@JsonSerialize(using = ToStringSerializer.class)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long id;
 
 	@NotBlank
