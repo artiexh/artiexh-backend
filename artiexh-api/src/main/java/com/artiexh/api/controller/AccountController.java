@@ -36,4 +36,14 @@ public class AccountController {
 
 	}
 
+	@PutMapping(value = Endpoint.Account.PROFILE)
+	public AccountProfile updateProfile(@PathVariable Long id) {
+		try {
+			return accountService.updateUserProfile(id);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(ErrorCode.USER_NOT_FOUND.getCode(), ErrorCode.USER_NOT_FOUND.getMessage(), ex);
+		}
+
+	}
+
 }

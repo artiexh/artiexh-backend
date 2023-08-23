@@ -11,4 +11,7 @@ import lombok.*;
 public class RegistrationShopRequest {
 	@NotEmpty
 	private String shopName;
+
+	@NotEmpty
+	private String shopImageUrl;
 }

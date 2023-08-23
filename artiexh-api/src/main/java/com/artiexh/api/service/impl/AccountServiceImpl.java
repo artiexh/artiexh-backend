@@ -43,6 +43,11 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
+	public AccountProfile updateUserProfile(Long id) {
+		return null;
+	}
+
+	@Override
 	public AccountProfile getUserProfile(Long id) {
 		AccountEntity entity = accountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 		switch (Role.fromValue(entity.getRole())) {

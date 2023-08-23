@@ -7,5 +7,7 @@ public interface AccountService {
 
 	Account getUserById(Long id);
 
+	AccountProfile updateUserProfile(Long id);
+
 	AccountProfile getUserProfile(Long id);
 }
