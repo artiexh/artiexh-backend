@@ -6,6 +6,7 @@ import com.artiexh.data.jpa.entity.UserEntity;
 import com.artiexh.data.jpa.repository.UserAddressRepository;
 import com.artiexh.model.domain.UserAddress;
 import com.artiexh.model.mapper.UserAddressMapper;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,12 +23,15 @@ public class UserAddressServiceImpl implements UserAddressService {
 
 	@Override
 	public Page<UserAddress> getByUserId(Long userId, Pageable pageable) {
-		return userAddressRepository.findByUserId(userId, pageable).map(userAddressMapper::entityToDomain);
+		return userAddressRepository.findByUserId(userId, pageable)
+			.map(userAddressMapper::entityToDomain);
 	}
 
 	@Override
 	public UserAddress getById(Long userId, Long id) {
-		return userAddressRepository.findByIdAndUserId(id, userId).map(userAddressMapper::entityToDomain).orElseThrow(() -> new IllegalArgumentException("UserAddress not existed"));
+		return userAddressRepository.findByIdAndUserId(id, userId)
+			.map(userAddressMapper::entityToDomain)
+			.orElseThrow(() -> new EntityNotFoundException("Address not existed"));
 	}
 
 	@Transactional
@@ -49,10 +53,11 @@ public class UserAddressServiceImpl implements UserAddressService {
 	@Transactional
 	@Override
 	public UserAddress update(Long userId, UserAddress userAddress) {
-		var oldEntity = userAddressRepository.findById(userAddress.getId()).orElseThrow(() -> new IllegalArgumentException("UserAddress not existed"));
+		var oldEntity = userAddressRepository.findById(userAddress.getId())
+			.orElseThrow(() -> new EntityNotFoundException("Address not existed"));
 
 		if (!userId.equals(oldEntity.getUser().getId())) {
-			throw new AccessDeniedException("Address owner is not valid");
+			throw new AccessDeniedException("User not own this address");
 		}
 
 		if (oldEntity.getIsDefault() && !userAddress.getIsDefault()) {
@@ -72,10 +77,10 @@ public class UserAddressServiceImpl implements UserAddressService {
 	@Override
 	public UserAddress delete(Long userId, Long id) {
 		var entity = userAddressRepository.findById(id)
-			.orElseThrow(() -> new IllegalArgumentException("UserAddress not existed"));
+			.orElseThrow(() -> new EntityNotFoundException("Address not existed"));
 
 		if (!userId.equals(entity.getUser().getId())) {
-			throw new AccessDeniedException("Address owner is not valid");
+			throw new AccessDeniedException("User not own this address");
 		}
 
 		if (entity.getIsDefault()) {
