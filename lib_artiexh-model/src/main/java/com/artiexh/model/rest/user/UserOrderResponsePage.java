@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class UserOrderResponsePage {
 	private Long id;
 
-	private Shop shop;
+	//private Shop shop;
 
 	private UserAddress shippingAddress;
 

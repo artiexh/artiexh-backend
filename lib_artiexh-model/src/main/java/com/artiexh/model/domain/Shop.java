@@ -1,5 +1,6 @@
 package com.artiexh.model.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,5 +14,5 @@ public class Shop {
     private Long id;
     private String shopName;
 	private String shopImageUrl;
-    private Artist owner;
+    //private Artist owner;
 }

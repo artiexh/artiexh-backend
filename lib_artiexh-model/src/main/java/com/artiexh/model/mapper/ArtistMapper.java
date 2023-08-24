@@ -33,7 +33,7 @@ public abstract class ArtistMapper {
 	@Mapping(target = "country.provinces", ignore = true)
 	abstract Province provinceEntityToDomain(ProvinceEntity provinceEntity);
 
-	@Mapping(target = "owner", source = ".")
+	//@Mapping(target = "owner", source = ".")
 	abstract Shop artistEntityToShop(ArtistEntity artistEntity);
 
 }

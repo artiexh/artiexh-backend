@@ -1,5 +1,6 @@
 package com.artiexh.api.service.impl;
 
+import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.ArtistService;
 import com.artiexh.api.service.OrderService;
 import com.artiexh.api.service.ProductService;
@@ -9,6 +10,7 @@ import com.artiexh.model.domain.Product;
 import com.artiexh.model.mapper.OrderMapper;
 import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.rest.PageResponse;
+import com.artiexh.model.rest.artist.ShopOrderResponse;
 import com.artiexh.model.rest.artist.ShopOrderResponsePage;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,15 @@ public class ArtistServiceImpl implements ArtistService {
 	public PageResponse<ProductResponse> getAllProducts(Query query, Pageable pageable) {
 		Page<Product> productPage = productService.getInPage(query, pageable);
 		return new PageResponse<>(productMapper.domainPageToProductResponsePage(productPage));
+	}
+
+	@Override
+	public ShopOrderResponse getOrderById(Long orderId, Long artistId) {
+		Order order = orderService.getById(orderId);
+		if (!order.getShop().getId().equals(artistId)) {
+			throw new IllegalArgumentException(ErrorCode.ORDER_IS_INVALID.getMessage());
+		}
+		return orderMapper.domainToArtistResponse(order);
 	}
 
 	@Override

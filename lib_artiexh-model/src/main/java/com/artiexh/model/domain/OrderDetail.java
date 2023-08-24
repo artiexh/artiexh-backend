@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class OrderDetail {
-	private Product product;
+	//private ProductOrder product;
 	private Integer quantity;
 }

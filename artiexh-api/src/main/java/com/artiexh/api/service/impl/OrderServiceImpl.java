@@ -11,6 +11,7 @@ import com.artiexh.model.domain.ProductStatus;
 import com.artiexh.model.mapper.OrderMapper;
 import com.artiexh.model.rest.order.request.CheckoutItem;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -117,6 +118,12 @@ public class OrderServiceImpl implements OrderService {
 		Page<OrderEntity> entities = orderRepository.findAll(specification, pageable);
 		Page<Order> orderPage = entities.map(orderMapper::entityToDomain);
 		return orderPage;
+	}
+
+	@Override
+	public Order getById(Long orderId) {
+		OrderEntity entity = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
+		return orderMapper.entityToDomain(entity);
 	}
 
 }

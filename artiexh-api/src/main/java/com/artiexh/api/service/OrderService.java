@@ -11,5 +11,5 @@ public interface OrderService {
 
 	void checkout(long userId, CheckoutRequest request);
 	Page<Order> getInPage(Specification<OrderEntity> query, Pageable pageable);
-
+	Order getById(Long orderId);
 }
