@@ -34,6 +34,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Fill new image ID ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1.1.3
