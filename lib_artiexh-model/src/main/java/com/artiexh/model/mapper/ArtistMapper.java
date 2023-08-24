@@ -24,6 +24,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public abstract class ArtistMapper {
 
 	@Mapping(target = "province", qualifiedByName = "provinceEntityToDomain")
+	@Mapping(target = "shoppingCart", ignore = true)
 	public abstract Artist entityToDomain(ArtistEntity userEntity);
 
 	abstract ArtistEntity domainToEntity(Artist user);

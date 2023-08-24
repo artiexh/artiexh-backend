@@ -8,10 +8,12 @@ import com.artiexh.model.rest.cart.request.DeleteCartItemRequest;
 import com.artiexh.model.rest.cart.request.UpdateCartItemRequest;
 import com.artiexh.model.rest.cart.response.CartResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RequiredArgsConstructor
 @RestController
@@ -33,10 +35,14 @@ public class CartController {
 	@PreAuthorize("hasAnyAuthority('USER','ARTIST')")
 	public CartResponse addItemToCart(Authentication authentication,
 									  @RequestBody @Validated UpdateCartItemRequest request) {
-		long userId = (Long) authentication.getPrincipal();
-		cartService.addItemToCart(userId, request.getItems());
-		Cart cart = cartService.getCart(userId);
-		return cartMapper.domainToCartResponse(cart);
+		try {
+			long userId = (Long) authentication.getPrincipal();
+			cartService.addItemToCart(userId, request.getItems());
+			Cart cart = cartService.getCart(userId);
+			return cartMapper.domainToCartResponse(cart);
+		} catch (IllegalArgumentException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
+		}
 	}
 
 	@DeleteMapping(Endpoint.Cart.ITEM)
