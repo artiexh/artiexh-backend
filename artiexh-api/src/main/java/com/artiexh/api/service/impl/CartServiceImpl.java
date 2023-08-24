@@ -1,5 +1,6 @@
 package com.artiexh.api.service.impl;
 
+import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.CartService;
 import com.artiexh.data.jpa.entity.CartEntity;
 import com.artiexh.data.jpa.entity.CartItemEntity;
@@ -7,6 +8,7 @@ import com.artiexh.data.jpa.entity.CartItemId;
 import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.jpa.repository.CartItemRepository;
 import com.artiexh.data.jpa.repository.CartRepository;
+import com.artiexh.data.jpa.repository.ProductRepository;
 import com.artiexh.model.domain.Cart;
 import com.artiexh.model.mapper.CartMapper;
 import com.artiexh.model.rest.cart.request.CartItemRequest;
@@ -25,6 +27,7 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final CartMapper cartMapper;
+	private final ProductRepository productRepository;
 
     @Override
     @Transactional
@@ -39,6 +42,13 @@ public class CartServiceImpl implements CartService {
         if (items.isEmpty()) {
             return;
         }
+
+		int numOfItemsBelongToUser = productRepository.countAllByIdInAndOwnerId(
+			items.stream().map(CartItemRequest::getProductId).toList(),
+			userId);
+		if (numOfItemsBelongToUser > 0) {
+			throw new IllegalArgumentException(ErrorCode.INVALID_ITEM.getMessage());
+		}
 
         CartEntity cartEntity = getOrCreateCartEntity(userId);
         Set<CartItemEntity> cartItemEntities = items.stream().map(cartItemRequest -> {
