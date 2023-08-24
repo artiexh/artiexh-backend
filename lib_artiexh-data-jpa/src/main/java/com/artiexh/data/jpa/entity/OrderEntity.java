@@ -3,8 +3,7 @@ package com.artiexh.data.jpa.entity;
 import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
@@ -12,9 +11,13 @@ import java.util.Set;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "order")
 public class OrderEntity {
+	
 	@Id
 	@Tsid
 	@Column(name = "id", nullable = false)

@@ -83,5 +83,6 @@ public final class Endpoint {
 	@NoArgsConstructor
 	public static class Order {
 		public static final String ROOT = PREFIX + "/order";
+		public static final String CHECKOUT = "/checkout";
 	}
 }

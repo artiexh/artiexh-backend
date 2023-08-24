@@ -1,5 +1,8 @@
 package com.artiexh.model.domain;
 
+import lombok.Getter;
+
+@Getter
 public enum ProductStatus {
 	DELETED(-1),
 	NOT_AVAILABLE(0),
@@ -19,10 +22,6 @@ public enum ProductStatus {
 			}
 		}
 		throw new IllegalArgumentException("No such value for ProductStatus: " + value);
-	}
-
-	public int getValue() {
-		return value;
 	}
 
 	public byte getByteValue() {
