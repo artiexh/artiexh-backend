@@ -4,6 +4,8 @@ import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
@@ -11,12 +13,13 @@ import java.util.Set;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "order")
-public class OrderEntity {
+@EntityListeners(AuditingEntityListener.class)
+public class OrderEntity extends BaseAuditEntity {
 	
 	@Id
 	@Tsid
@@ -47,13 +50,5 @@ public class OrderEntity {
 	@OneToMany
 	@JoinColumn(name = "order_id")
 	private Set<OrderDetailEntity> orderDetails = new LinkedHashSet<>();
-
-	@NotNull
-	@Column(name = "modified_date", nullable = false)
-	private LocalDateTime modifiedDate;
-
-	@NotNull
-	@Column(name = "created_date", nullable = false)
-	private LocalDateTime createdDate;
 
 }
