@@ -22,6 +22,9 @@ public enum ErrorCode {
 	ARTIST_NOT_FOUND(HttpStatus.OK, "Artist is not found"),
 	ARTIST_NOT_VALID(HttpStatus.BAD_REQUEST, "Artist is not valid"),
 
+	//Cart
+	INVALID_ITEM(HttpStatus.BAD_REQUEST, "Can not add your own product into cart"),
+
 	//AUTH
 	ACCOUNT_INFO_NOT_FOUND(HttpStatus.OK, "Can not get account information from request");
 	private final HttpStatus statusCode;

@@ -106,6 +106,7 @@ public class ProductServiceImpl implements ProductService {
 
 		ProductEntity productEntity = productMapper.domainToEntity(product);
 		productEntity.setOwner(artistEntity);
+		productEntity.setShop(artistEntity);
 		productEntity.setCategory(categoryEntity);
 		productEntity.setTags(tagEntities);
 

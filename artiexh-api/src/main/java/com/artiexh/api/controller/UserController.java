@@ -2,9 +2,12 @@ package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.UserAddressService;
+import com.artiexh.api.service.UserService;
 import com.artiexh.model.domain.UserAddress;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
+import com.artiexh.model.rest.order.request.OrderPageFilter;
+import com.artiexh.model.rest.user.UserOrderResponsePage;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +22,12 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(Endpoint.User.ROOT + Endpoint.User.ADDRESS)
-public class UserAddressController {
-
+@RequestMapping(Endpoint.User.ROOT)
+public class UserController {
+	private final UserService userService;
 	private final UserAddressService userAddressService;
 
-	@GetMapping
+	@GetMapping(Endpoint.User.ADDRESS)
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
 	public PageResponse<UserAddress> getAllUserAddress(Authentication authentication,
 													   @ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest) {
@@ -33,7 +36,7 @@ public class UserAddressController {
 		return new PageResponse<>(userAddresses);
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping(Endpoint.User.ADDRESS + "/{id}")
 	public UserAddress getUserAddress(Authentication authentication, @PathVariable Long id) {
 		long userId = (long) authentication.getPrincipal();
 		try {
@@ -43,7 +46,7 @@ public class UserAddressController {
 		}
 	}
 
-	@PostMapping
+	@PostMapping(Endpoint.User.ADDRESS)
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
 	public UserAddress createUserAddress(Authentication authentication,
 										 @RequestBody @Valid UserAddress userAddress) {
@@ -51,7 +54,7 @@ public class UserAddressController {
 		return userAddressService.create(userId, userAddress);
 	}
 
-	@PutMapping("/{id}")
+	@PutMapping(Endpoint.User.ADDRESS + "/{id}")
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
 	public UserAddress updateUserAddress(Authentication authentication,
 										 @PathVariable Long id,
@@ -69,7 +72,7 @@ public class UserAddressController {
 		}
 	}
 
-	@DeleteMapping("/{id}")
+	@DeleteMapping(Endpoint.User.ADDRESS + "/{id}")
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
 	public UserAddress deleteUserAddress(Authentication authentication, @PathVariable Long id) {
 		long userId = (long) authentication.getPrincipal();
@@ -82,6 +85,17 @@ public class UserAddressController {
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		}
+	}
+
+	@GetMapping(Endpoint.User.ORDER)
+	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
+	public PageResponse<UserOrderResponsePage> getAllOrder(
+		Authentication authentication,
+		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
+		@ParameterObject @Valid OrderPageFilter filter
+	) {
+		long userId = (long) authentication.getPrincipal();
+		return userService.getOrderInPage(filter.getSpecificationForUser(userId), paginationAndSortingRequest.getPageable());
 	}
 
 }

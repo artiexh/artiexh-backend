@@ -1,10 +1,13 @@
 package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
+import com.artiexh.api.service.AccountService;
 import com.artiexh.api.service.ArtistService;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.artist.filter.ProductPageFilter;
+import com.artiexh.model.rest.order.request.OrderPageFilter;
+import com.artiexh.model.rest.artist.ShopOrderResponsePage;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(Endpoint.Artist.ROOT)
 public class ArtistController {
     private final ArtistService artistService;
+	private final AccountService accountService;
 
     @GetMapping(Endpoint.Artist.ARTIST_PRODUCT)
     @PreAuthorize("hasAuthority('ARTIST')")
@@ -32,4 +36,15 @@ public class ArtistController {
         filter.setArtistId(userId);
         return artistService.getAllProducts(filter.getQuery(), paginationAndSortingRequest.getPageable());
     }
+
+	@GetMapping(Endpoint.Artist.ARTIST_ORDER)
+	@PreAuthorize("hasAuthority('ARTIST')")
+	public PageResponse<ShopOrderResponsePage> getAllOrder(
+		Authentication authentication,
+		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
+		@ParameterObject @Valid OrderPageFilter filter
+	) {
+		long userId = (long) authentication.getPrincipal();
+		return artistService.getAllOrder(filter.getSpecificationForArtist(userId), paginationAndSortingRequest.getPageable());
+	}
 }

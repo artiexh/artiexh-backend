@@ -18,6 +18,7 @@ import java.util.Set;
 )
 public interface UserMapper {
 
+	@Mapping(target = "shoppingCart", ignore = true)
 	User entityToDomain(UserEntity userEntity);
 
 	UserEntity domainToEntity(User user);
