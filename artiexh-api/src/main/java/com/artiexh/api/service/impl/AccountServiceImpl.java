@@ -5,6 +5,7 @@ import com.artiexh.data.jpa.entity.AccountEntity;
 import com.artiexh.data.jpa.entity.ArtistEntity;
 import com.artiexh.data.jpa.entity.UserEntity;
 import com.artiexh.data.jpa.repository.AccountRepository;
+import com.artiexh.data.jpa.repository.CartItemRepository;
 import com.artiexh.data.jpa.repository.SubscriptionRepository;
 import com.artiexh.model.domain.Account;
 import com.artiexh.model.domain.Artist;
@@ -31,6 +32,7 @@ public class AccountServiceImpl implements AccountService {
 	private final ArtistMapper artistMapper;
 	private final AccountMapper accountMapper;
 	private final SubscriptionRepository subscriptionRepository;
+	private final CartItemRepository cartItemRepository;
 
 	@Override
 	@Transactional
@@ -40,12 +42,12 @@ public class AccountServiceImpl implements AccountService {
 				case ADMIN -> accountMapper.entityToDomain(accountEntity);
 				case USER -> {
 					User user = userMapper.entityToDomain((UserEntity) accountEntity);
-					user.setCartItemCount(((UserEntity) accountEntity).getShoppingCart().getCartItems().size());
+					user.setCartItemCount(cartItemRepository.countAllByCartId(id));
 					yield user;
 				}
 				case ARTIST -> {
 					Artist artist = artistMapper.entityToDomain((ArtistEntity) accountEntity);
-					artist.setCartItemCount(((ArtistEntity) accountEntity).getShoppingCart().getCartItems().size());
+					artist.setCartItemCount(cartItemRepository.countAllByCartId(id));
 					yield artist;
 				}
 			})
