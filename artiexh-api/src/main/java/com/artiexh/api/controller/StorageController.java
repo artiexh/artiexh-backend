@@ -27,9 +27,9 @@ public class StorageController {
 
 	@GetMapping("download")
 	@ResponseBody
-	public ResponseEntity<byte[]> download(@RequestParam String presignedUrl) {
+	public ResponseEntity<byte[]> download(@RequestParam String fileName) {
 		try {
-			S3Object s3Object = service.download(presignedUrl);
+			S3Object s3Object = service.download(fileName);
 			String contentType = s3Object.getObjectMetadata().getContentType();
 			var bytes = s3Object.getObjectContent().readAllBytes();
 
