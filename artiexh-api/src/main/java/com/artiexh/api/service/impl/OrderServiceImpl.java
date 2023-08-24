@@ -2,13 +2,20 @@ package com.artiexh.api.service.impl;
 
 import com.artiexh.api.service.OrderService;
 import com.artiexh.data.jpa.entity.*;
+import com.artiexh.data.jpa.repository.OrderRepository;
 import com.artiexh.data.jpa.repository.ProductRepository;
 import com.artiexh.data.jpa.repository.UserAddressRepository;
+import com.artiexh.model.domain.Order;
 import com.artiexh.model.domain.OrderStatus;
 import com.artiexh.model.domain.ProductStatus;
+import com.artiexh.model.mapper.OrderMapper;
 import com.artiexh.model.rest.order.request.CheckoutItem;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +29,8 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
 	private final UserAddressRepository userAddressRepository;
 	private final ProductRepository productRepository;
+	private final OrderRepository orderRepository;
+	private final OrderMapper orderMapper;
 
 
 	@Transactional
@@ -101,6 +110,13 @@ public class OrderServiceImpl implements OrderService {
 		UserAddressEntity address = userAddressRepository.findByIdAndUserId(userId, checkoutRequest.getAddressId())
 			.orElseThrow(() -> new IllegalArgumentException("Address not existed"));
 		OrderStatus status = OrderStatus.PAYING;
+	}
+
+	@Override
+	public Page<Order> getInPage(Specification<OrderEntity> specification, Pageable pageable) {
+		Page<OrderEntity> entities = orderRepository.findAll(specification, pageable);
+		Page<Order> orderPage = entities.map(orderMapper::entityToDomain);
+		return orderPage;
 	}
 
 }

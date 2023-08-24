@@ -17,7 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "order")
+@Table(name = "`order`")
 @EntityListeners(AuditingEntityListener.class)
 public class OrderEntity extends BaseAuditEntity {
 	
