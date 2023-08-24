@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Set;
 
+import java.util.Collection;
+
 @Repository
 public interface ProductRepository extends JpaRepository<ProductEntity, Long>, JpaSpecificationExecutor<ProductEntity> {
 
@@ -17,4 +19,6 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long>, J
 	void softDelete(long id);
 
 	Set<ProductEntity> findAllByIdInAndShopIdAndStatus(Set<Long> ids, Long shopId, byte status);
+
+	int countAllByIdInAndOwnerId(Collection<Long> id, Long owner_id);
 }
