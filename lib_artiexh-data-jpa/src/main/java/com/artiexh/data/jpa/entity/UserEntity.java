@@ -35,4 +35,7 @@ public class UserEntity extends AccountEntity {
 	@OneToMany(mappedBy = "user")
 	private Set<UserAddressEntity> addresses = new LinkedHashSet<>();
 
+	@OneToMany(mappedBy = "user")
+	private Set<OrderEntity> orders = new LinkedHashSet<>();
+
 }

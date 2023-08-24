@@ -79,4 +79,9 @@ public final class Endpoint {
 	public static class Province {
 		public static final String ROOT = PREFIX + "/province";
 	}
+
+	@NoArgsConstructor
+	public static class Order {
+		public static final String ROOT = PREFIX + "/order";
+	}
 }
