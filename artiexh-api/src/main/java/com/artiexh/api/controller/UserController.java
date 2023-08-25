@@ -1,12 +1,15 @@
 package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
+import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.UserAddressService;
 import com.artiexh.api.service.UserService;
 import com.artiexh.model.domain.UserAddress;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
+import com.artiexh.model.rest.artist.ShopOrderResponse;
 import com.artiexh.model.rest.order.request.OrderPageFilter;
+import com.artiexh.model.rest.user.UserOrderResponse;
 import com.artiexh.model.rest.user.UserOrderResponsePage;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -96,6 +99,22 @@ public class UserController {
 	) {
 		long userId = (long) authentication.getPrincipal();
 		return userService.getOrderInPage(filter.getSpecificationForUser(userId), paginationAndSortingRequest.getPageable());
+	}
+
+	@GetMapping(Endpoint.User.ORDER + "/{id}")
+	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
+	public UserOrderResponse getOrderById(
+		@PathVariable Long id,
+		Authentication authentication
+	) {
+		try {
+			long userId = (long) authentication.getPrincipal();
+			return userService.getOrderById(id, userId);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(ErrorCode.ORDER_NOT_FOUND.getCode(), ErrorCode.ORDER_NOT_FOUND.getMessage(), exception);
+		} catch (IllegalArgumentException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
+		}
 	}
 
 }
