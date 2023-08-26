@@ -75,7 +75,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			recentOauth2LoginFailId.remove(cacheProviderSubKey.getFirst(), cacheProviderSubKey.getSecond());
 		}
 
-		return userMapper.entityToDomain(savedUserEntity);
+		return userMapper.entityToBasicUser(savedUserEntity);
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			.orElseThrow(EntityNotFoundException::new);
 
 		if (userEntity instanceof ArtistEntity existedArtistEntity) {
-			return artistMapper.entityToDomain(existedArtistEntity);
+			return artistMapper.basicArtistInfo(existedArtistEntity);
 		}
 
 		if ((int) userEntity.getRole() != Role.USER.getValue()) {
@@ -97,7 +97,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 		artistEntity.setRole((byte) Role.ARTIST.getValue());
 		artistEntity.setShopName(shopName);
-		return artistMapper.entityToDomain(artistRepository.save(artistEntity));
+		return artistMapper.basicArtistInfo(artistRepository.save(artistEntity));
 	}
 
 	@Override

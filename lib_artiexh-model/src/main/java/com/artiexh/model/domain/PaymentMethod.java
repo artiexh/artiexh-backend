@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum PaymentMethod {
 	CASH(1),
-	CARD(2);
+	VN_PAY(2);
 	private final int value;
 
 	public static PaymentMethod fromValue(int value) {

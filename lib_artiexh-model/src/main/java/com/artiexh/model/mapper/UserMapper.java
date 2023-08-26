@@ -3,12 +3,10 @@ package com.artiexh.model.mapper;
 import com.artiexh.data.jpa.entity.SubscriptionEntity;
 import com.artiexh.data.jpa.entity.UserEntity;
 import com.artiexh.model.domain.User;
+import com.artiexh.model.rest.account.AccountProfile;
 import com.artiexh.model.rest.auth.RegisterUserRequest;
 import org.hibernate.Hibernate;
-import org.mapstruct.Condition;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
 import java.util.Set;
 
@@ -18,7 +16,12 @@ import java.util.Set;
 )
 public interface UserMapper {
 
-	User entityToDomain(UserEntity userEntity);
+	@Named("entityToBasicUser")
+	@Mapping(target = "subscriptionsTo", ignore = true)
+	@Mapping(target = "shoppingCart", ignore = true)
+	User entityToBasicUser(UserEntity user);
+
+	AccountProfile entityToAccountProfile(UserEntity userEntity);
 
 	UserEntity domainToEntity(User user);
 

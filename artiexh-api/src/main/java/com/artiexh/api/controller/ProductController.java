@@ -40,7 +40,7 @@ public class ProductController {
 			filter.getQuery(),
 			paginationAndSortingRequest.getPageable()
 		);
-		return new PageResponse<>(productMapper.domainPageToProductResponsePage(productPage));
+		return new PageResponse<>(productMapper.productPageToProductResponsePage(productPage));
 	}
 
 	@GetMapping(Endpoint.Product.SUGGESTION)

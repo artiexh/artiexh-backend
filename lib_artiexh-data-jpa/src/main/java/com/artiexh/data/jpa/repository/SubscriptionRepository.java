@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SubscriptionRepository extends JpaRepository<SubscriptionEntity, SubscriptionEntityId> {
 	long countByArtistId(Long artistId);
+
+	long countByUserId(Long userId);
 }
