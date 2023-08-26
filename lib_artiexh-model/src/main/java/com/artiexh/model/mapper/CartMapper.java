@@ -79,7 +79,6 @@ public interface CartMapper {
 	@Mapping(target = "deliveryType", source = "product.deliveryType")
 	CartItemResponse domainToCartItemResponse(CartItem cartItem);
 
-
 	CartItemEntity domainToEntity(CartItem cartItem);
 
 }
