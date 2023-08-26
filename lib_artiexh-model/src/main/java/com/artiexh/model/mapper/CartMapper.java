@@ -69,10 +69,8 @@ public interface CartMapper {
 
 	@Mapping(target = "id", source = "product.id")
 	@Mapping(target = "status", source = "product.status")
-	//@Mapping(target = "price.unit", source = "product.price.unit")
 	@Mapping(target = "name", source = "product.name")
 	@Mapping(target = "thumbnailUrl", source = "product.thumbnailUrl")
-	//@Mapping(target = "price.amount", source = "product.price.amount")
 	@Mapping(target = "price", source = "product.price")
 	@Mapping(target = "description", source = "product.description")
 	@Mapping(target = "type", source = "product.type")
