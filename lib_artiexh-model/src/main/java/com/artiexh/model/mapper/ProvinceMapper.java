@@ -3,10 +3,7 @@ package com.artiexh.model.mapper;
 import com.artiexh.data.jpa.entity.ProvinceEntity;
 import com.artiexh.model.domain.Province;
 import com.artiexh.model.rest.address.ProvinceResponse;
-import org.mapstruct.Context;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
@@ -19,4 +16,9 @@ public interface ProvinceMapper {
 	@Mapping(target = "countryName", source = "country.name")
 	@Mapping(target = "fullAddress", expression = "java(provinceEntity.getName() + \", \" + provinceEntity.getCountry().getName())")
 	ProvinceResponse entityToResponse(ProvinceEntity provinceEntity);
+
+	@Named("provinceEntityToDomain")
+	@Mapping(target = "country.provinces", ignore = true)
+	Province provinceEntityToDomain(ProvinceEntity provinceEntity);
+
 }

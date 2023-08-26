@@ -1,35 +1,72 @@
 package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
+import com.artiexh.api.exception.ErrorCode;
+import com.artiexh.api.service.AccountService;
 import com.artiexh.api.service.ArtistService;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
+import com.artiexh.model.rest.artist.ShopOrderResponse;
+import com.artiexh.model.rest.artist.ShopOrderResponsePage;
 import com.artiexh.model.rest.artist.filter.ProductPageFilter;
+import com.artiexh.model.rest.order.request.OrderPageFilter;
 import com.artiexh.model.rest.product.response.ProductResponse;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(Endpoint.Artist.ROOT)
 public class ArtistController {
-    private final ArtistService artistService;
+	private final ArtistService artistService;
+	private final AccountService accountService;
 
-    @GetMapping(Endpoint.Artist.ARTIST_PRODUCT)
-    @PreAuthorize("hasAuthority('ARTIST')")
-    public PageResponse<ProductResponse> getAllProduct(
-            Authentication authentication,
-            @ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
-            @ParameterObject @Valid ProductPageFilter filter
-    ) {
-        long userId = (long) authentication.getPrincipal();
-        filter.setArtistId(userId);
-        return artistService.getAllProducts(filter.getQuery(), paginationAndSortingRequest.getPageable());
-    }
+	@GetMapping(Endpoint.Artist.ARTIST_PRODUCT)
+	@PreAuthorize("hasAuthority('ARTIST')")
+	public PageResponse<ProductResponse> getAllProduct(
+		Authentication authentication,
+		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
+		@ParameterObject @Valid ProductPageFilter filter
+	) {
+		long userId = (long) authentication.getPrincipal();
+		filter.setArtistId(userId);
+		return artistService.getAllProducts(filter.getQuery(), paginationAndSortingRequest.getPageable());
+	}
+
+	@GetMapping(Endpoint.Artist.ARTIST_ORDER)
+	@PreAuthorize("hasAuthority('ARTIST')")
+	public PageResponse<ShopOrderResponsePage> getAllOrder(
+		Authentication authentication,
+		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
+		@ParameterObject @Valid OrderPageFilter filter
+	) {
+		long userId = (long) authentication.getPrincipal();
+		return artistService.getAllOrder(filter.getSpecificationForArtist(userId), paginationAndSortingRequest.getPageable());
+	}
+
+	@GetMapping(Endpoint.Artist.ARTIST_ORDER + "/{id}")
+	@PreAuthorize("hasAuthority('ARTIST')")
+	public ShopOrderResponse getOrderById(
+		@PathVariable Long id,
+		Authentication authentication
+	) {
+		try {
+			long userId = (long) authentication.getPrincipal();
+			return artistService.getOrderById(id, userId);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(ErrorCode.ORDER_NOT_FOUND.getCode(), ErrorCode.ORDER_NOT_FOUND.getMessage(), exception);
+		} catch (IllegalArgumentException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
+		}
+	}
 }

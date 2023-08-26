@@ -131,7 +131,7 @@ public class ArtiexhOAuth2UserService implements OAuth2UserService<OAuth2UserReq
 			case "facebook" -> userRepository.findByFacebookId(sub);
 			default -> throw new OAuth2AuthenticationException(UNKNOWN_OAUTH2_PROVIDER);
 		};
-		return userEntity.map(userMapper::entityToDomain).orElse(null);
+		return userEntity.map(userMapper::entityToBasicUser).orElse(null);
 	}
 
 }

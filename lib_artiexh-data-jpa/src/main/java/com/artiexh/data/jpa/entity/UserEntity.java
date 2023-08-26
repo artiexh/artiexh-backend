@@ -21,12 +21,21 @@ public class UserEntity extends AccountEntity {
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private final Set<SubscriptionEntity> subscriptionsTo = new LinkedHashSet<>();
+
 	@Column(name = "facebook_id", length = 20)
 	private String facebookId;
+
 	@Column(name = "google_id", length = 21)
 	private String googleId;
+
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "id")
 	private CartEntity shoppingCart;
+
+	@OneToMany(mappedBy = "user")
+	private Set<UserAddressEntity> addresses = new LinkedHashSet<>();
+
+	@OneToMany(mappedBy = "user")
+	private Set<OrderEntity> orders = new LinkedHashSet<>();
 
 }

@@ -1,7 +1,5 @@
 package com.artiexh.model.mapper;
 
-import com.artiexh.data.jpa.entity.PreOrderProductEntity;
-import com.artiexh.model.domain.PreOrderProduct;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
@@ -11,8 +9,8 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 )
 public interface PreOrderProductMapper {
 
-	PreOrderProduct entityToDomain(PreOrderProductEntity preOrderProductEntity);
-
-	PreOrderProductEntity domainToEntity(PreOrderProduct preOrderProduct);
+//	PreOrderProduct entityToDomain(PreOrderProductEntity preOrderProductEntity);
+//
+//	PreOrderProductEntity domainToEntity(PreOrderProduct preOrderProduct);
 
 }

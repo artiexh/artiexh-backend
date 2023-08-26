@@ -1,7 +1,5 @@
 package com.artiexh.model.mapper;
 
-import com.artiexh.data.jpa.entity.SubscriptionEntity;
-import com.artiexh.model.domain.Subscription;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
@@ -11,7 +9,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 )
 public interface SubscriptionMapper {
 
-	Subscription entityToDomain(SubscriptionEntity subscriptionEntity);
-
-	SubscriptionEntity domainToEntity(Subscription subscription);
+//	Subscription entityToDomain(SubscriptionEntity subscriptionEntity);
+//
+//	SubscriptionEntity domainToEntity(Subscription subscription);
 }
