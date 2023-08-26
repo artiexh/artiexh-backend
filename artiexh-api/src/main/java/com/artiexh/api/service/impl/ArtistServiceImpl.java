@@ -65,6 +65,10 @@ public class ArtistServiceImpl implements ArtistService {
 		// CANCELLED
 
 		Order order = orderService.getById(orderId);
+		if (!order.getShop().getId().equals(artistId)) {
+			throw new IllegalArgumentException("Order is not belong to artist " + artistId);
+		}
+
 		OrderStatus orderStatus = order.getStatus();
 
 		if (orderStatusChangeMap.get(orderStatus).contains(newStatus)) {
