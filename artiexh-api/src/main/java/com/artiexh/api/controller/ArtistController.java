@@ -10,6 +10,7 @@ import com.artiexh.model.rest.artist.ShopOrderResponse;
 import com.artiexh.model.rest.artist.ShopOrderResponsePage;
 import com.artiexh.model.rest.artist.filter.ProductPageFilter;
 import com.artiexh.model.rest.order.request.OrderPageFilter;
+import com.artiexh.model.rest.order.request.UpdateOrderRequest;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -18,10 +19,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RequiredArgsConstructor
@@ -65,6 +63,23 @@ public class ArtistController {
 			return artistService.getOrderById(id, userId);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(ErrorCode.ORDER_NOT_FOUND.getCode(), ErrorCode.ORDER_NOT_FOUND.getMessage(), exception);
+		} catch (IllegalArgumentException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
+		}
+	}
+
+	@PutMapping(Endpoint.Artist.ARTIST_ORDER + "/{id}")
+	@PreAuthorize("hasAuthority('ARTIST')")
+	public ShopOrderResponse updateOrderStatus(
+		@PathVariable Long id,
+		@RequestBody @Valid UpdateOrderRequest updateOrderRequest,
+		Authentication authentication
+	) {
+		try {
+			long userId = (long) authentication.getPrincipal();
+			return artistService.updateOrderStatus(userId, id, updateOrderRequest.getStatus());
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.ORDER_NOT_FOUND.getMessage(), exception);
 		} catch (IllegalArgumentException exception) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
 		}

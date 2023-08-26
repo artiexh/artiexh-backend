@@ -16,4 +16,6 @@ public interface OrderService {
 	Page<Order> getInPage(Specification<OrderEntity> query, Pageable pageable);
 
 	Order getById(Long orderId);
+
+	Order updateOrder(Order newOrder);
 }
