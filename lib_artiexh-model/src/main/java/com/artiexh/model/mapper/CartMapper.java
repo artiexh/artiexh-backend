@@ -2,8 +2,10 @@ package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.CartEntity;
 import com.artiexh.data.jpa.entity.CartItemEntity;
+import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.model.domain.Cart;
 import com.artiexh.model.domain.CartItem;
+import com.artiexh.model.domain.Product;
 import com.artiexh.model.domain.Shop;
 import com.artiexh.model.rest.cart.response.CartItemResponse;
 import com.artiexh.model.rest.cart.response.CartResponse;
@@ -20,12 +22,22 @@ import java.util.stream.Collectors;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {ProductMapper.class, AccountMapper.class, ProductAttachMapper.class}
+	uses = {ProductMapper.class, AccountMapper.class, ProductAttachMapper.class, ShopMapper.class, ArtistMapper.class}
 )
 public interface CartMapper {
 
 	@Mapping(target = "cartItems", source = "cartItems")
 	Cart entityToDomain(CartEntity cartEntity);
+
+	@Mapping(target = "product", qualifiedByName = "productEntityToCartItemProduct")
+	CartItem entityToDomain(CartItemEntity cartItemEntity);
+
+	@Named("productEntityToCartItemProduct")
+	@Mapping(target = "tags", ignore = true)
+	@Mapping(target = "attaches", ignore = true)
+	@Mapping(target = "owner", qualifiedByName = "basicArtistInfo")
+	@Mapping(target = "shop", qualifiedByName = "basicShopInfo")
+	Product productEntityToCartItemProduct(ProductEntity productEntity);
 
 	CartEntity domainToEntity(Cart cart);
 
@@ -67,7 +79,6 @@ public interface CartMapper {
 	@Mapping(target = "deliveryType", source = "product.deliveryType")
 	CartItemResponse domainToCartItemResponse(CartItem cartItem);
 
-	CartItem entityToDomain(CartItemEntity cartItemEntity);
 
 	CartItemEntity domainToEntity(CartItem cartItem);
 

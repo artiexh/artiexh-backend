@@ -14,8 +14,10 @@ import org.springframework.stereotype.Service;
 public class AddressServiceImpl implements AddressService {
 	private final ProvinceRepository provinceRepository;
 	private final ProvinceMapper provinceMapper;
+
 	@Override
 	public Page<ProvinceResponse> getInPage(Pageable pageable) {
 		return provinceRepository.findAll(pageable).map(provinceMapper::entityToResponse);
 	}
+	
 }

@@ -21,4 +21,5 @@ public interface UserAddressMapper {
 	default UserAddress.Type byteToUserAddressType(Byte type) {
 		return UserAddress.Type.from(type);
 	}
+
 }

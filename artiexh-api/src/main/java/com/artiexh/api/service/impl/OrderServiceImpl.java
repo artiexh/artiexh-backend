@@ -43,7 +43,7 @@ public class OrderServiceImpl implements OrderService {
 			default -> onlinePaymentOrder(userId, checkoutRequest);
 		};
 
-		return orderEntities.stream().map(orderMapper::entityToDomain).collect(Collectors.toList());
+		return orderEntities.stream().map(orderMapper::entityToResponseDomain).collect(Collectors.toList());
 	}
 
 	private List<OrderEntity> cashPaymentOrder(long userId, CheckoutRequest checkoutRequest) {
@@ -170,14 +170,14 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public Page<Order> getInPage(Specification<OrderEntity> specification, Pageable pageable) {
 		Page<OrderEntity> entities = orderRepository.findAll(specification, pageable);
-		Page<Order> orderPage = entities.map(orderMapper::entityToDomain);
+		Page<Order> orderPage = entities.map(orderMapper::entityToResponseDomain);
 		return orderPage;
 	}
 
 	@Override
 	public Order getById(Long orderId) {
 		OrderEntity entity = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
-		return orderMapper.entityToDomain(entity);
+		return orderMapper.entityToResponseDomain(entity);
 	}
 
 }

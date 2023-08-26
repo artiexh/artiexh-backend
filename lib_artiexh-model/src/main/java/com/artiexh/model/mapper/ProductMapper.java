@@ -17,17 +17,28 @@ import java.util.Set;
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
 	uses = {
+		AccountMapper.class,
 		ProductCategoryMapper.class,
 		ProductTagMapper.class,
 		ArtistMapper.class,
-		ProductAttachMapper.class
+		ProductAttachMapper.class,
+		ShopMapper.class
 	}
 )
 public interface ProductMapper {
 
+	default Page<ProductResponse> productPageToProductResponsePage(Page<Product> productPage) {
+		return productPage.map(this::domainToProductResponse);
+	}
+
+	ProductResponse domainToProductResponse(Product product);
+
+
 	@Mapping(target = "price.unit", source = "priceUnit")
 	@Mapping(target = "price.amount", source = "priceAmount")
 	@Mapping(target = "thumbnailUrl", source = "attaches")
+	@Mapping(target = "owner", qualifiedByName = "basicArtistInfo")
+	@Mapping(target = "shop", qualifiedByName = "basicShopInfo")
 	Product entityToDomain(ProductEntity productEntity);
 
 	default String getThumbnailUrl(Set<ProductAttachEntity> productAttachEntities) {
@@ -45,22 +56,15 @@ public interface ProductMapper {
 
 	Product documentToDomain(ProductDocument productDocument);
 
-	ProductResponse domainToProductResponse(Product product);
-
 	@Mapping(target = "price.unit", source = "priceUnit")
 	@Mapping(target = "price.amount", source = "priceAmount")
 	ProductDocument entityToDocument(ProductEntity productEntity);
-
-	default Page<ProductResponse> domainPageToProductResponsePage(Page<Product> productPage) {
-		return productPage.map(this::domainToProductResponse);
-	}
 
 	@Mapping(target = "category.id", source = "categoryId")
 	Product createProductRequestToProduct(CreateProductRequest createProductRequest);
 
 	@Mapping(target = "category.id", source = "categoryId")
 	Product updateProductRequestToProduct(UpdateProductRequest updateProductRequest);
-
 
 	default Integer toValue(ProductStatus status) {
 		return status.getValue();

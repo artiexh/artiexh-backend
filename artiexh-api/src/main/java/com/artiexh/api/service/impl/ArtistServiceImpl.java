@@ -31,7 +31,7 @@ public class ArtistServiceImpl implements ArtistService {
 	@Override
 	public PageResponse<ProductResponse> getAllProducts(Query query, Pageable pageable) {
 		Page<Product> productPage = productService.getInPage(query, pageable);
-		return new PageResponse<>(productMapper.domainPageToProductResponsePage(productPage));
+		return new PageResponse<>(productMapper.productPageToProductResponsePage(productPage));
 	}
 
 	@Override
@@ -40,12 +40,12 @@ public class ArtistServiceImpl implements ArtistService {
 		if (!order.getShop().getId().equals(artistId)) {
 			throw new IllegalArgumentException(ErrorCode.ORDER_IS_INVALID.getMessage());
 		}
-		return orderMapper.domainToArtistResponse(order);
+		return orderMapper.orderToArtistResponse(order);
 	}
 
 	@Override
 	public PageResponse<ShopOrderResponsePage> getAllOrder(Specification<OrderEntity> specification, Pageable pageable) {
 		Page<Order> orderPage = orderService.getInPage(specification, pageable);
-		return new PageResponse<>(orderPage.map(orderMapper::domainToArtistResponsePage));
+		return new PageResponse<>(orderPage.map(orderMapper::orderToArtistResponse));
 	}
 }

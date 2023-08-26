@@ -17,29 +17,33 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
 	uses = {UserAddressMapper.class, UserMapper.class, ProductMapper.class, ShopMapper.class})
 public interface OrderMapper {
-	Order entityToDomain(OrderEntity entity);
 
-	ShopOrderResponsePage domainToArtistResponsePage(Order order);
+	@Mapping(target = "user", qualifiedByName = "entityToBasicUser")
+	Order entityToResponseDomain(OrderEntity entity);
+
+	ShopOrderResponse orderToArtistResponse(Order order);
+
+	UserOrderResponse orderToUserResponse(Order order);
+
+	ShopOrderResponsePage orderToArtistResponsePage(Order order);
 
 	UserOrderResponsePage domainToUserResponsePage(Order order);
 
-	ShopOrderResponse domainToArtistResponse(Order order);
 
-	UserOrderResponse domainToUserResponse(Order order);
-
-//	@Mapping(target = "id", source = "product.id")
-//	@Mapping(target = "status", source = "product.status")
-//	@Mapping(target = "price.unit", source = "product.price.unit")
-//	@Mapping(target = "name", source = "product.name")
-//	@Mapping(target = "thumbnailUrl", source = "product.thumbnailUrl")
-//	@Mapping(target = "price.amount", source = "product.price.amount")
-//	@Mapping(target = "description", source = "product.description")
-//	@Mapping(target = "type", source = "product.type")
-//	@Mapping(target = "remainingQuantity", source = "product.remainingQuantity")
-//	@Mapping(target = "publishDatetime", source = "product.publishDatetime")
-//	@Mapping(target = "maxItemsPerOrder", source = "product.maxItemsPerOrder")
-//	@Mapping(target = "deliveryType", source = "product.deliveryType")
+	@Mapping(target = "id", source = "product.id")
+	@Mapping(target = "status", source = "product.status")
+	@Mapping(target = "price.unit", source = "product.price.unit")
+	@Mapping(target = "name", source = "product.name")
+	@Mapping(target = "thumbnailUrl", source = "product.thumbnailUrl")
+	@Mapping(target = "price.amount", source = "product.price.amount")
+	@Mapping(target = "description", source = "product.description")
+	@Mapping(target = "type", source = "product.type")
+	@Mapping(target = "remainingQuantity", source = "product.remainingQuantity")
+	@Mapping(target = "publishDatetime", source = "product.publishDatetime")
+	@Mapping(target = "maxItemsPerOrder", source = "product.maxItemsPerOrder")
+	@Mapping(target = "deliveryType", source = "product.deliveryType")
 	OrderDetailResponse domainToOrderDetailResponse(OrderDetail order);
+
 	default Integer toValue(OrderStatus status) {
 		return status.getValue();
 	}

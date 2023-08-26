@@ -16,5 +16,5 @@ public class Shop {
 	private Long id;
 	private String shopName;
 	private String shopImageUrl;
-	//private Artist owner;
+	private Artist owner;
 }

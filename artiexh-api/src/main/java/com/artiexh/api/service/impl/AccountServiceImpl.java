@@ -20,9 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.artiexh.model.domain.Role.ADMIN;
-import static com.artiexh.model.domain.Role.USER;
-
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
@@ -41,12 +38,12 @@ public class AccountServiceImpl implements AccountService {
 			.map(accountEntity -> switch (Role.fromValue(accountEntity.getRole())) {
 				case ADMIN -> accountMapper.entityToDomain(accountEntity);
 				case USER -> {
-					User user = userMapper.entityToDomain((UserEntity) accountEntity);
+					User user = userMapper.entityToBasicUser((UserEntity) accountEntity);
 					user.setCartItemCount(cartItemRepository.countAllByCartId(id));
 					yield user;
 				}
 				case ARTIST -> {
-					Artist artist = artistMapper.entityToDomain((ArtistEntity) accountEntity);
+					Artist artist = artistMapper.basicArtistInfo((ArtistEntity) accountEntity);
 					artist.setCartItemCount(cartItemRepository.countAllByCartId(id));
 					yield artist;
 				}
@@ -57,18 +54,18 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public AccountProfile getUserProfile(Long id) {
 		AccountEntity entity = accountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-		switch (Role.fromValue(entity.getRole())) {
+		return switch (Role.fromValue(entity.getRole())) {
 			case USER -> {
-				return accountMapper.entityToResponse(entity);
+				AccountProfile profile = userMapper.entityToAccountProfile((UserEntity) entity);
+				profile.setNumOfSubscriptions(subscriptionRepository.countByUserId(entity.getId()));
+				yield profile;
 			}
 			case ARTIST -> {
-				AccountProfile profile = accountMapper.entityToResponse(entity);
-				profile.setNumOfSubscriptions(subscriptionRepository.countByArtistId(entity.getId()));
-				return profile;
+				AccountProfile profile = artistMapper.entityToAccountProfile((ArtistEntity) entity);
+				profile.setNumOfSubscriptions(subscriptionRepository.countByUserId(entity.getId()));
+				yield profile;
 			}
-			default -> {
-				return null;
-			}
-		}
+			default -> null;
+		};
 	}
 }

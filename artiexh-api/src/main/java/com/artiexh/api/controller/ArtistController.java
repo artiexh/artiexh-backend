@@ -3,14 +3,13 @@ package com.artiexh.api.controller;
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.AccountService;
-import com.artiexh.api.service.AccountService;
 import com.artiexh.api.service.ArtistService;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.artist.ShopOrderResponse;
+import com.artiexh.model.rest.artist.ShopOrderResponsePage;
 import com.artiexh.model.rest.artist.filter.ProductPageFilter;
 import com.artiexh.model.rest.order.request.OrderPageFilter;
-import com.artiexh.model.rest.artist.ShopOrderResponsePage;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -25,26 +24,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.swing.text.html.parser.Entity;
-
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(Endpoint.Artist.ROOT)
 public class ArtistController {
-    private final ArtistService artistService;
+	private final ArtistService artistService;
 	private final AccountService accountService;
 
-    @GetMapping(Endpoint.Artist.ARTIST_PRODUCT)
-    @PreAuthorize("hasAuthority('ARTIST')")
-    public PageResponse<ProductResponse> getAllProduct(
-            Authentication authentication,
-            @ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
-            @ParameterObject @Valid ProductPageFilter filter
-    ) {
-        long userId = (long) authentication.getPrincipal();
-        filter.setArtistId(userId);
-        return artistService.getAllProducts(filter.getQuery(), paginationAndSortingRequest.getPageable());
-    }
+	@GetMapping(Endpoint.Artist.ARTIST_PRODUCT)
+	@PreAuthorize("hasAuthority('ARTIST')")
+	public PageResponse<ProductResponse> getAllProduct(
+		Authentication authentication,
+		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
+		@ParameterObject @Valid ProductPageFilter filter
+	) {
+		long userId = (long) authentication.getPrincipal();
+		filter.setArtistId(userId);
+		return artistService.getAllProducts(filter.getQuery(), paginationAndSortingRequest.getPageable());
+	}
 
 	@GetMapping(Endpoint.Artist.ARTIST_ORDER)
 	@PreAuthorize("hasAuthority('ARTIST')")

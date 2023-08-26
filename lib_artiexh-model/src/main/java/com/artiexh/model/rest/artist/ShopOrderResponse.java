@@ -1,6 +1,5 @@
 package com.artiexh.model.rest.artist;
 
-import com.artiexh.model.domain.OrderDetail;
 import com.artiexh.model.rest.order.response.OrderDetailResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +12,6 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ShopOrderResponse extends ShopOrderResponsePage{
+public class ShopOrderResponse extends ShopOrderResponsePage {
 	private Set<OrderDetailResponse> orderDetails;
 }

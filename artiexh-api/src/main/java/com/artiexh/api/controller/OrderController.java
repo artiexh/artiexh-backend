@@ -34,7 +34,7 @@ public class OrderController {
 		try {
 
 			return orderService.checkout(userId, request).stream()
-				.map(orderMapper::domainToUserResponse)
+				.map(orderMapper::orderToUserResponse)
 				.toList();
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());

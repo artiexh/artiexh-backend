@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
 		if (!order.getUser().getId().equals(userId)) {
 			throw new IllegalArgumentException(ErrorCode.ORDER_IS_INVALID.getMessage());
 		}
-		return orderMapper.domainToUserResponse(order);
+		return orderMapper.orderToUserResponse(order);
 	}
 
 	@Override
