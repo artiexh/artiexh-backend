@@ -2,6 +2,7 @@ package com.artiexh.api.service.impl;
 
 import com.artiexh.api.service.OrderService;
 import com.artiexh.data.jpa.entity.*;
+import com.artiexh.data.jpa.repository.CartItemRepository;
 import com.artiexh.data.jpa.repository.OrderRepository;
 import com.artiexh.data.jpa.repository.ProductRepository;
 import com.artiexh.data.jpa.repository.UserAddressRepository;
@@ -10,7 +11,6 @@ import com.artiexh.model.domain.OrderStatus;
 import com.artiexh.model.domain.PaymentMethod;
 import com.artiexh.model.domain.ProductStatus;
 import com.artiexh.model.mapper.OrderMapper;
-import com.artiexh.model.rest.order.request.CheckoutItem;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
 import com.artiexh.model.rest.order.request.CheckoutShop;
 import jakarta.persistence.EntityNotFoundException;
@@ -33,9 +33,10 @@ public class OrderServiceImpl implements OrderService {
 	private final UserAddressRepository userAddressRepository;
 	private final ProductRepository productRepository;
 	private final OrderRepository orderRepository;
+	private final CartItemRepository cartItemRepository;
 	private final OrderMapper orderMapper;
 
-
+	@Transactional(isolation = Isolation.SERIALIZABLE)
 	@Override
 	public List<Order> checkout(long userId, CheckoutRequest checkoutRequest) {
 		List<OrderEntity> orderEntities = switch (checkoutRequest.getPaymentMethod()) {
@@ -52,13 +53,13 @@ public class OrderServiceImpl implements OrderService {
 		OrderStatus status = OrderStatus.PREPARING;
 
 		// check and reduce product quantity
-		validateShopProductAndReduceQuantity(checkoutRequest.getShops(), checkoutRequest.getPaymentMethod());
+		List<CartItemEntity> cartItemEntities = validateShopProductAndReduceQuantity(userId, checkoutRequest.getShops(), checkoutRequest.getPaymentMethod());
 
 		// create order and order details
 		try {
-			return createOrder(userId, address, status, checkoutRequest.getShops(), checkoutRequest.getPaymentMethod());
+			return createOrder(userId, address, status, checkoutRequest.getShops(), cartItemEntities, checkoutRequest.getPaymentMethod());
 		} catch (Exception ex) {
-			rollbackShopProductQuantity(checkoutRequest.getShops());
+			rollbackShopProductQuantity(cartItemEntities);
 			throw ex;
 		}
 	}
@@ -68,63 +69,68 @@ public class OrderServiceImpl implements OrderService {
 		UserAddressEntity address = getUserAddressEntity(userId, checkoutRequest.getAddressId());
 		OrderStatus status = OrderStatus.PAYING;
 
-		validateShopProductAndReduceQuantity(checkoutRequest.getShops(), checkoutRequest.getPaymentMethod());
+		List<CartItemEntity> cartItemEntities = validateShopProductAndReduceQuantity(userId, checkoutRequest.getShops(), checkoutRequest.getPaymentMethod());
 
 		// create order and order details
 		try {
-			return createOrder(userId, address, status, checkoutRequest.getShops(), checkoutRequest.getPaymentMethod());
+			return createOrder(userId, address, status, checkoutRequest.getShops(), cartItemEntities, checkoutRequest.getPaymentMethod());
 		} catch (Exception ex) {
-			rollbackShopProductQuantity(checkoutRequest.getShops());
+			rollbackShopProductQuantity(cartItemEntities);
 			throw ex;
 		}
 	}
 
-	@Transactional
+	//@Transactional
 	public UserAddressEntity getUserAddressEntity(long userId, long addressId) {
 		return userAddressRepository.findByIdAndUserId(addressId, userId)
 			.orElseThrow(() -> new IllegalArgumentException("Address not existed"));
 	}
 
-	@Transactional(isolation = Isolation.SERIALIZABLE)
-	public void validateShopProductAndReduceQuantity(Set<CheckoutShop> shops, PaymentMethod paymentMethod) {
-		for (var checkoutShop : shops) {
-			// product_id, shop_id, product_status
-			Set<ProductEntity> productEntities = productRepository.findAllByIdInAndShopIdAndStatus(
-				checkoutShop.getItems().stream().map(CheckoutItem::getProductId).collect(Collectors.toSet()),
-				checkoutShop.getShopId(),
-				ProductStatus.AVAILABLE.getByteValue()
-			);
-			if (productEntities.size() != checkoutShop.getItems().size()) {
-				throw new IllegalArgumentException("Not valid shopIds or productIds");
-			}
+	//@Transactional(isolation = Isolation.SERIALIZABLE)
+	public List<CartItemEntity> validateShopProductAndReduceQuantity(long userId, Set<CheckoutShop> shops, PaymentMethod paymentMethod) {
+		Set<CartItemId> itemIds = shops.stream()
+			.flatMap(checkoutShop -> checkoutShop.getItemIds().stream())
+			.map(itemId -> new CartItemId(userId, itemId))
+			.collect(Collectors.toSet());
 
-			// product_payment_method
-			for (var productEntity : productEntities) {
-				Set<Byte> acceptedPaymentMethods = Set.of(productEntity.getPaymentMethods());
-				if (!acceptedPaymentMethods.contains(paymentMethod.getByteValue())) {
-					throw new IllegalArgumentException("Not accepted payment method for product id: " + productEntity.getId());
-				}
-			}
-
-			for (var productEntity : productEntities) {
-				for (var checkoutItem : checkoutShop.getItems()) {
-					if (productEntity.getId().equals(checkoutItem.getProductId())) {
-						if (productEntity.getRemainingQuantity() < checkoutItem.getQuantity()) {
-							throw new IllegalArgumentException("Not enough quantity for product id: " + productEntity.getId());
-						} else {
-							productEntity.setRemainingQuantity(productEntity.getRemainingQuantity() - checkoutItem.getQuantity());
-						}
-					}
-				}
-			}
-
-			productRepository.saveAll(productEntities);
+		List<CartItemEntity> cartItemEntities = cartItemRepository.findAllById(itemIds);
+		if (itemIds.size() != cartItemEntities.size()) {
+			throw new IllegalArgumentException("itemIds not valid");
 		}
+
+		for (var checkoutShop : shops) {
+			for (var cartItemEntity : cartItemEntities) {
+				if (!checkoutShop.getItemIds().contains(cartItemEntity.getProduct().getId())) {
+					throw new IllegalArgumentException("shopId " + checkoutShop.getShopId() + " not contain itemId " + cartItemEntity.getProduct().getId());
+				}
+			}
+		}
+
+		for (var cartItemEntity : cartItemEntities) {
+			if (ProductStatus.AVAILABLE.getByteValue() != cartItemEntity.getProduct().getStatus()) {
+				throw new IllegalArgumentException("itemId " + cartItemEntity.getProduct().getId() + " not available");
+			}
+
+			Set<Byte> acceptedPaymentMethods = Set.of(cartItemEntity.getProduct().getPaymentMethods());
+			if (!acceptedPaymentMethods.contains(paymentMethod.getByteValue())) {
+				throw new IllegalArgumentException("Not accepted payment method for product id: " + cartItemEntity.getProduct().getId());
+			}
+
+			if (cartItemEntity.getQuantity() > cartItemEntity.getProduct().getRemainingQuantity()) {
+				throw new IllegalArgumentException("Not enough quantity for product id: " + cartItemEntity.getProduct().getId());
+			} else {
+				cartItemEntity.getProduct().setRemainingQuantity(cartItemEntity.getProduct().getRemainingQuantity() - cartItemEntity.getQuantity());
+			}
+		}
+
+		productRepository.saveAll(cartItemEntities.stream().map(CartItemEntity::getProduct).collect(Collectors.toSet()));
+		return cartItemEntities;
 	}
 
-	@Transactional
+	//@Transactional
 	public List<OrderEntity> createOrder(long userId, UserAddressEntity address, OrderStatus status,
-										 Set<CheckoutShop> shops, PaymentMethod paymentMethod) {
+										 Set<CheckoutShop> shops, List<CartItemEntity> cartItemEntities,
+										 PaymentMethod paymentMethod) {
 		Set<OrderEntity> orderEntities = shops.stream().map(checkoutShop ->
 				OrderEntity.builder()
 					.user(UserEntity.builder().id(userId).build())
@@ -133,10 +139,11 @@ public class OrderServiceImpl implements OrderService {
 					.note(checkoutShop.getNote())
 					.paymentMethod(paymentMethod.getByteValue())
 					.status(status.getByteValue())
-					.orderDetails(checkoutShop.getItems().stream()
-						.map(checkoutItem -> OrderDetailEntity.builder()
-							.product(ProductEntity.builder().id(checkoutItem.getProductId()).build())
-							.quantity(checkoutItem.getQuantity())
+					.orderDetails(cartItemEntities.stream()
+						.filter(cartItemEntity -> cartItemEntity.getProduct().getShop().getId().equals(checkoutShop.getShopId()))
+						.map(cartItemEntity -> OrderDetailEntity.builder()
+							.product(cartItemEntity.getProduct())
+							.quantity(cartItemEntity.getQuantity())
 							.build()
 						)
 						.collect(Collectors.toSet())
@@ -147,24 +154,17 @@ public class OrderServiceImpl implements OrderService {
 		return orderRepository.saveAll(orderEntities);
 	}
 
-	@Transactional(isolation = Isolation.SERIALIZABLE)
-	public void rollbackShopProductQuantity(Set<CheckoutShop> shops) {
-		for (var checkoutShop : shops) {
-			Set<ProductEntity> productEntities = productRepository.findAllByIdIn(checkoutShop.getItems().stream()
-				.map(CheckoutItem::getProductId)
-				.collect(Collectors.toSet())
-			);
+	//@Transactional(isolation = Isolation.SERIALIZABLE)
+	public void rollbackShopProductQuantity(List<CartItemEntity> cartItemEntities) {
+		Set<ProductEntity> productEntities = cartItemEntities.stream()
+			.map(cartItemEntity -> {
+				ProductEntity productEntity = cartItemEntity.getProduct();
+				productEntity.setRemainingQuantity(productEntity.getRemainingQuantity() + cartItemEntity.getQuantity());
+				return productEntity;
+			})
+			.collect(Collectors.toSet());
+		productRepository.saveAll(productEntities);
 
-			for (var productEntity : productEntities) {
-				for (var checkoutItem : checkoutShop.getItems()) {
-					if (productEntity.getId().equals(checkoutItem.getProductId())) {
-						productEntity.setRemainingQuantity(productEntity.getRemainingQuantity() + checkoutItem.getQuantity());
-					}
-				}
-			}
-
-			productRepository.saveAll(productEntities);
-		}
 	}
 
 	@Override

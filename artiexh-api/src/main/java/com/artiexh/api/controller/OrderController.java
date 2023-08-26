@@ -22,8 +22,8 @@ import java.util.List;
 @RestController
 @RequestMapping(Endpoint.Order.ROOT)
 public class OrderController {
-	private final OrderService orderService;
 
+	private final OrderService orderService;
 	private final OrderMapper orderMapper;
 
 	@PostMapping(Endpoint.Order.CHECKOUT)
