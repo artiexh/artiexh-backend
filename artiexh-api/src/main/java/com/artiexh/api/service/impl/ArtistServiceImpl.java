@@ -6,6 +6,7 @@ import com.artiexh.api.service.OrderService;
 import com.artiexh.api.service.ProductService;
 import com.artiexh.data.jpa.entity.OrderEntity;
 import com.artiexh.model.domain.Order;
+import com.artiexh.model.domain.OrderStatus;
 import com.artiexh.model.domain.Product;
 import com.artiexh.model.mapper.OrderMapper;
 import com.artiexh.model.mapper.ProductMapper;
@@ -13,6 +14,7 @@ import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.artist.ShopOrderResponse;
 import com.artiexh.model.rest.artist.ShopOrderResponsePage;
 import com.artiexh.model.rest.product.response.ProductResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class ArtistServiceImpl implements ArtistService {
+
 	private final ProductService productService;
 	private final OrderService orderService;
 	private final ProductMapper productMapper;
@@ -47,5 +50,17 @@ public class ArtistServiceImpl implements ArtistService {
 	public PageResponse<ShopOrderResponsePage> getAllOrder(Specification<OrderEntity> specification, Pageable pageable) {
 		Page<Order> orderPage = orderService.getInPage(specification, pageable);
 		return new PageResponse<>(orderPage.map(orderMapper::orderToArtistResponse));
+	}
+
+	@Transactional
+	@Override
+	public ShopOrderResponse updateOrderStatus(Long artistId, Long orderId, OrderStatus newStatus) {
+		Order order = orderService.getById(orderId);
+		if (!order.getShop().getId().equals(artistId)) {
+			throw new IllegalArgumentException("Order is not belong to artist " + artistId);
+		}
+
+		Order newOrder = orderService.updateOrderStatus(orderId, newStatus);
+		return orderMapper.orderToArtistResponse(newOrder);
 	}
 }

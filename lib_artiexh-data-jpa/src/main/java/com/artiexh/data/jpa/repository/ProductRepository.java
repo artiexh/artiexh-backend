@@ -20,6 +20,6 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long>, J
 	Set<ProductEntity> findAllByIdInAndShopIdAndStatus(Set<Long> ids, Long shopId, byte status);
 
 	Set<ProductEntity> findAllByIdIn(Set<Long> ids);
-  
+
 	int countAllByIdInAndOwnerId(Collection<Long> id, Long owner_id);
 }

@@ -1,6 +1,7 @@
 package com.artiexh.api.service;
 
 import com.artiexh.data.jpa.entity.OrderEntity;
+import com.artiexh.model.domain.OrderStatus;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.artist.ShopOrderResponse;
 import com.artiexh.model.rest.artist.ShopOrderResponsePage;
@@ -10,7 +11,11 @@ import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.jpa.domain.Specification;
 
 public interface ArtistService {
-	PageResponse<ProductResponse> getAllProducts (Query query, Pageable pageable);
-	ShopOrderResponse getOrderById (Long orderId, Long artistId);
-	PageResponse<ShopOrderResponsePage> getAllOrder (Specification<OrderEntity> specification, Pageable pageable);
+	PageResponse<ProductResponse> getAllProducts(Query query, Pageable pageable);
+
+	ShopOrderResponse getOrderById(Long orderId, Long artistId);
+
+	PageResponse<ShopOrderResponsePage> getAllOrder(Specification<OrderEntity> specification, Pageable pageable);
+
+	ShopOrderResponse updateOrderStatus(Long artistId, Long orderId, OrderStatus newStatus);
 }

@@ -1,5 +1,6 @@
 package com.artiexh.api.service.impl;
 
+import com.artiexh.api.service.CartService;
 import com.artiexh.api.service.OrderService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.CartItemRepository;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,11 +32,18 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class OrderServiceImpl implements OrderService {
+	private static final Map<OrderStatus, Set<OrderStatus>> orderStatusChangeMap = Map.of(
+		OrderStatus.PAYING, Set.of(OrderStatus.PREPARING, OrderStatus.CANCELLED),
+		OrderStatus.PREPARING, Set.of(OrderStatus.SHIPPING, OrderStatus.CANCELLED),
+		OrderStatus.SHIPPING, Set.of(OrderStatus.COMPLETED, OrderStatus.CANCELLED)
+	);
+
 	private final UserAddressRepository userAddressRepository;
 	private final ProductRepository productRepository;
 	private final OrderRepository orderRepository;
 	private final CartItemRepository cartItemRepository;
 	private final OrderMapper orderMapper;
+	private final CartService cartService;
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	@Override
@@ -57,7 +66,14 @@ public class OrderServiceImpl implements OrderService {
 
 		// create order and order details
 		try {
-			return createOrder(userId, address, status, checkoutRequest.getShops(), cartItemEntities, checkoutRequest.getPaymentMethod());
+			List<OrderEntity> createdOrder = createOrder(userId, address, status, checkoutRequest.getShops(), cartItemEntities, checkoutRequest.getPaymentMethod());
+			cartService.deleteItemToCart(
+				userId,
+				checkoutRequest.getShops().stream()
+					.flatMap(checkoutShop -> checkoutShop.getItemIds().stream())
+					.collect(Collectors.toSet())
+			);
+			return createdOrder;
 		} catch (Exception ex) {
 			rollbackShopProductQuantity(cartItemEntities);
 			throw ex;
@@ -180,4 +196,23 @@ public class OrderServiceImpl implements OrderService {
 		return orderMapper.entityToResponseDomain(entity);
 	}
 
+	// PAYING -> PREPARING -> SHIPPING -> COMPLETED
+	//   |           |            |
+	// CANCELLED
+	@Transactional
+	@Override
+	public Order updateOrderStatus(Long orderId, OrderStatus newStatus) {
+		OrderEntity orderEntity = orderRepository.findById(orderId)
+			.orElseThrow(EntityNotFoundException::new);
+
+		OrderStatus orderStatus = OrderStatus.fromValue(orderEntity.getStatus());
+
+		if (orderStatusChangeMap.get(orderStatus).contains(newStatus)) {
+			orderEntity.setStatus(newStatus.getByteValue());
+			orderRepository.save(orderEntity);
+			return orderMapper.entityToResponseDomain(orderEntity);
+		} else {
+			throw new IllegalArgumentException("Cannot change from " + orderStatus + " to " + newStatus);
+		}
+	}
 }
