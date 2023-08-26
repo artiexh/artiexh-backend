@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,12 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class OrderServiceImpl implements OrderService {
+	private static final Map<OrderStatus, Set<OrderStatus>> orderStatusChangeMap = Map.of(
+		OrderStatus.PAYING, Set.of(OrderStatus.PREPARING, OrderStatus.CANCELLED),
+		OrderStatus.PREPARING, Set.of(OrderStatus.SHIPPING, OrderStatus.CANCELLED),
+		OrderStatus.SHIPPING, Set.of(OrderStatus.COMPLETED, OrderStatus.CANCELLED)
+	);
+
 	private final UserAddressRepository userAddressRepository;
 	private final ProductRepository productRepository;
 	private final OrderRepository orderRepository;
@@ -189,4 +196,23 @@ public class OrderServiceImpl implements OrderService {
 		return orderMapper.entityToResponseDomain(entity);
 	}
 
+	// PAYING -> PREPARING -> SHIPPING -> COMPLETED
+	//   |           |            |
+	// CANCELLED
+	@Transactional
+	@Override
+	public Order updateOrderStatus(Long orderId, OrderStatus newStatus) {
+		OrderEntity orderEntity = orderRepository.findById(orderId)
+			.orElseThrow(EntityNotFoundException::new);
+
+		OrderStatus orderStatus = OrderStatus.fromValue(orderEntity.getStatus());
+
+		if (orderStatusChangeMap.get(orderStatus).contains(newStatus)) {
+			orderEntity.setStatus(newStatus.getByteValue());
+			orderRepository.save(orderEntity);
+			return orderMapper.entityToResponseDomain(orderEntity);
+		} else {
+			throw new IllegalArgumentException("Cannot change from " + orderStatus + " to " + newStatus);
+		}
+	}
 }

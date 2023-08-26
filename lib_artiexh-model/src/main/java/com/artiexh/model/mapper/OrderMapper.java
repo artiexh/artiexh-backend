@@ -21,6 +21,8 @@ public interface OrderMapper {
 	@Mapping(target = "user", qualifiedByName = "entityToBasicUser")
 	Order entityToResponseDomain(OrderEntity entity);
 
+	OrderEntity orderToOrderEntity(Order order);
+
 	ShopOrderResponse orderToArtistResponse(Order order);
 
 	UserOrderResponse orderToUserResponse(Order order);

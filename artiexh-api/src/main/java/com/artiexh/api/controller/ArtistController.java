@@ -19,8 +19,8 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RequiredArgsConstructor
 @RestController
@@ -68,7 +68,7 @@ public class ArtistController {
 		}
 	}
 
-	@PutMapping(Endpoint.Artist.ARTIST_ORDER + "/{id}")
+	@PutMapping(Endpoint.Artist.ARTIST_ORDER + "/{id}/status")
 	@PreAuthorize("hasAuthority('ARTIST')")
 	public ShopOrderResponse updateOrderStatus(
 		@PathVariable Long id,
