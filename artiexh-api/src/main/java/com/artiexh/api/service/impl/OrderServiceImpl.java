@@ -1,5 +1,6 @@
 package com.artiexh.api.service.impl;
 
+import com.artiexh.api.service.CartService;
 import com.artiexh.api.service.OrderService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.CartItemRepository;
@@ -35,6 +36,7 @@ public class OrderServiceImpl implements OrderService {
 	private final OrderRepository orderRepository;
 	private final CartItemRepository cartItemRepository;
 	private final OrderMapper orderMapper;
+	private final CartService cartService;
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	@Override
@@ -57,7 +59,14 @@ public class OrderServiceImpl implements OrderService {
 
 		// create order and order details
 		try {
-			return createOrder(userId, address, status, checkoutRequest.getShops(), cartItemEntities, checkoutRequest.getPaymentMethod());
+			List<OrderEntity> createdOrder = createOrder(userId, address, status, checkoutRequest.getShops(), cartItemEntities, checkoutRequest.getPaymentMethod());
+			cartService.deleteItemToCart(
+				userId,
+				checkoutRequest.getShops().stream()
+					.flatMap(checkoutShop -> checkoutShop.getItemIds().stream())
+					.collect(Collectors.toSet())
+			);
+			return createdOrder;
 		} catch (Exception ex) {
 			rollbackShopProductQuantity(cartItemEntities);
 			throw ex;
