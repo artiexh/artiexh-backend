@@ -32,7 +32,7 @@ public class StorageServiceImpl implements StorageService {
 		File file = convertMultiPartToFile(multipartFile);
 		String fileName = S3Util.generateFileName(multipartFile);
 		if (isPublic) {
-			fileUrl = "https://" + s3Config.getPublicBucketName() + ".s3." + s3Config.getRegion() + ".amazonaws.com/" + fileName;
+			fileUrl = S3Util.getPresignedString(s3Config.getRegion(), s3Config.getPublicBucketName(), s3Config.getAccessKey(), s3Config.getSecretKey(), fileName, true);
 
 			s3.putObject(new PutObjectRequest(s3Config.getPublicBucketName(), fileName, file)
 				.withCannedAcl(CannedAccessControlList.PublicRead));
@@ -48,7 +48,7 @@ public class StorageServiceImpl implements StorageService {
 
 	@Override
 	public S3Object download(String fileName) throws MalformedURLException {
-		URL url = new URL(S3Util.getPresignedString(s3Config.getRegion(), s3Config.getPrivateBucketName(), s3Config.getAccessKey(), s3Config.getSecretKey(), fileName));
+		URL url = new URL(S3Util.getPresignedString(s3Config.getRegion(), s3Config.getPrivateBucketName(), s3Config.getAccessKey(), s3Config.getSecretKey(), fileName, false));
 		return s3.download(new PresignedUrlDownloadRequest(
 			url
 		)).getS3Object();

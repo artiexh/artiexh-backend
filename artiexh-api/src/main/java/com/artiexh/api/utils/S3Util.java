@@ -11,14 +11,20 @@ import java.util.Map;
 
 public class S3Util {
 	private S3Util() {}
-	public static String getPresignedString(String regionName, String bucketName, String awsAccessKey, String awsSecretKey, String fileName) {
+	public static String getPresignedString(String regionName, String bucketName, String awsAccessKey, String awsSecretKey, String fileName, boolean isPublic) {
 		URL endpointUrl;
+		String endpointUrlString;
 		try {
 			if (regionName.equals("us-east-1")) {
-				endpointUrl = new URL("https://s3.amazonaws.com/" + bucketName + "/" + fileName);
+				endpointUrlString = "https://s3.amazonaws.com/" + bucketName + "/" + fileName;
+
 			} else {
-				endpointUrl = new URL("https://s3-" + regionName + ".amazonaws.com/" + bucketName + "/" + fileName);
+				endpointUrlString = "https://s3-" + regionName + ".amazonaws.com/" + bucketName + "/" + fileName;
 			}
+			if (isPublic) {
+				return endpointUrlString;
+			}
+			endpointUrl = new URL(endpointUrlString);
 		} catch (MalformedURLException e) {
 			throw new IllegalArgumentException("Unable to parse service endpoint: " + e.getMessage());
 		}
