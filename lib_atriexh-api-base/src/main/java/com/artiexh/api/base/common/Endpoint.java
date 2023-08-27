@@ -87,4 +87,12 @@ public final class Endpoint {
 		public static final String ROOT = PREFIX + "/order";
 		public static final String CHECKOUT = "/checkout";
 	}
+
+	@NoArgsConstructor
+	public static class Media {
+		public static final String ROOT = PREFIX + "/media";
+		public static final String DOWNLOAD = "/download";
+		public static final String PUBLIC_UPLOAD = "/public/upload";
+		public static final String UPLOAD = "/upload";
+	}
 }
