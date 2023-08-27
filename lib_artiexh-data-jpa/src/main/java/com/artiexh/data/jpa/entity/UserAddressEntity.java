@@ -33,4 +33,10 @@ public class UserAddressEntity {
 	@JoinColumn(name = "user_id", nullable = false)
 	private UserEntity user;
 
+	@Column(name = "phone", nullable = false, length = 15)
+	private String phone;
+
+	@Column(name = "receiver_name", nullable = false)
+	private String receiverName;
+
 }
