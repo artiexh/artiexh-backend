@@ -1,5 +1,6 @@
 package com.artiexh.model.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.validation.constraints.NotEmpty;
@@ -10,12 +11,17 @@ import lombok.Getter;
 @Data
 public class UserAddress {
 	@JsonSerialize(using = ToStringSerializer.class)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long id;
 	@NotEmpty
 	private String address;
 	@NotNull
 	private Type type;
 	private Boolean isDefault = false;
+	@NotNull
+	private String phone;
+	@NotNull
+	private String receiverName;
 
 	@Getter
 	public enum Type {
