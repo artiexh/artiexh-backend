@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.model.PresignedUrlDownloadRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.artiexh.api.config.S3Config;
+import com.artiexh.api.config.S3ConfigurationProperties;
 import com.artiexh.api.service.StorageService;
 import com.artiexh.api.utils.S3Util;
 import com.artiexh.model.rest.media.FileResponse;
@@ -18,19 +19,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Date;
 import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
 public class StorageServiceImpl implements StorageService {
-	private final S3Config s3Config;
+	private final S3ConfigurationProperties s3Config;
+	private final AmazonS3 s3;
 	@Override
 	public FileResponse upload(MultipartFile multipartFile, boolean isPublic) throws IOException {
 		String fileUrl = null;
 		File file = convertMultiPartToFile(multipartFile);
 		String fileName = S3Util.generateFileName(multipartFile);
-		AmazonS3 s3 = s3Config.initializeAmazon();
 		if (isPublic) {
 			fileUrl = "https://" + s3Config.getPublicBucketName() + ".s3." + s3Config.getRegion() + ".amazonaws.com/" + fileName;
 
@@ -49,13 +49,9 @@ public class StorageServiceImpl implements StorageService {
 	@Override
 	public S3Object download(String fileName) throws MalformedURLException {
 		URL url = new URL(S3Util.getPresignedString(s3Config.getRegion(), s3Config.getPrivateBucketName(), s3Config.getAccessKey(), s3Config.getSecretKey(), fileName));
-		return s3Config.initializeAmazon().download(new PresignedUrlDownloadRequest(
+		return s3.download(new PresignedUrlDownloadRequest(
 			url
 		)).getS3Object();
-	}
-
-	private void uploadFileTos3bucket(String fileName, File file, String bucketName) {
-
 	}
 
 	private File convertMultiPartToFile(MultipartFile file) throws IOException {

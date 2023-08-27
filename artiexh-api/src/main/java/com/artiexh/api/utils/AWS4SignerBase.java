@@ -3,6 +3,7 @@ package com.artiexh.api.utils;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -32,7 +33,7 @@ public abstract class AWS4SignerBase {
 	/**
 	 * Create a new AWS V4 signer.
 	 *
-	 * @param endpointUri
+	 * @param endpointUrl
 	 *            The service endpoint, including the path to any resource.
 	 * @param httpMethod
 	 *            The HTTP verb for the request, e.g. GET.
@@ -84,7 +85,7 @@ public abstract class AWS4SignerBase {
 		}
 
 		// step1: sort the headers by case-insensitive order
-		List<String> sortedHeaders = new ArrayList<String>();
+		List<String> sortedHeaders = new ArrayList<>();
 		sortedHeaders.addAll(headers.keySet());
 		Collections.sort(sortedHeaders, String.CASE_INSENSITIVE_ORDER);
 
@@ -200,7 +201,7 @@ public abstract class AWS4SignerBase {
 	public static byte[] hash(String text) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("SHA-256");
-			md.update(text.getBytes("UTF-8"));
+			md.update(text.getBytes(StandardCharsets.UTF_8));
 			return md.digest();
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Unable to compute hash while signing request: " + e.getMessage(), e);
@@ -222,7 +223,7 @@ public abstract class AWS4SignerBase {
 
 	protected static byte[] sign(String stringData, byte[] key, String algorithm) {
 		try {
-			byte[] data = stringData.getBytes("UTF-8");
+			byte[] data = stringData.getBytes(StandardCharsets.UTF_8);
 			Mac mac = Mac.getInstance(algorithm);
 			mac.init(new SecretKeySpec(key, algorithm));
 			return mac.doFinal(data);
