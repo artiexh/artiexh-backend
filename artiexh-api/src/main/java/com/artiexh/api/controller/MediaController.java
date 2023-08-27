@@ -5,13 +5,16 @@ import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.StorageService;
 import com.artiexh.model.rest.media.FileResponse;
+import com.artiexh.model.rest.media.UpdateSharedUsersRequest;
 import com.artiexh.model.rest.media.UploadRequest;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,7 +28,7 @@ public class MediaController {
 	@PostMapping(path = Endpoint.Media.PUBLIC_UPLOAD,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public FileResponse publicUpload(@Valid @ModelAttribute UploadRequest request) {
 		try {
-			return storageService.upload(request.getFile(), true);
+			return storageService.upload(request.getFile(), null);
 		} catch (IOException e) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.UPLOAD_FAILED.getMessage(), e);
 		} catch (IllegalArgumentException e) {
@@ -35,22 +38,35 @@ public class MediaController {
 	}
 
 	@PostMapping(path = Endpoint.Media.UPLOAD,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public FileResponse upload(@Valid @ModelAttribute UploadRequest request) {
+	public FileResponse upload(Authentication authentication,
+							   @Valid @ModelAttribute UploadRequest request) {
+		var userId = (Long) authentication.getPrincipal();
 		try {
-			return storageService.upload(request.getFile(), false);
+			return storageService.upload(request.getFile(), userId);
 		} catch (IOException e) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.UPLOAD_FAILED.getMessage(), e);
 		} catch (IllegalArgumentException e) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
 		}
+	}
 
+	@PutMapping(path = Endpoint.Media.DETAIL)
+	public void updateSharedUsers(Authentication authentication,
+										  @PathVariable Long id,
+										  @Valid @RequestBody UpdateSharedUsersRequest request) {
+		var userId = (Long) authentication.getPrincipal();
+		try {
+			storageService.updateSharedUsers(userId, request.getSharedUserIds(), id);
+		} catch (EntityNotFoundException e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorCode.MEDIA_NOT_FOUND.getMessage(), e);
+		}
 	}
 
 	@GetMapping("download")
-	@ResponseBody
-	public ResponseEntity<byte[]> download(@RequestParam String fileName) {
+	public ResponseEntity<byte[]> download(Authentication authentication, @RequestParam String fileName) {
+		var userId = (Long) authentication.getPrincipal();
 		try {
-			S3Object s3Object = storageService.download(fileName);
+			S3Object s3Object = storageService.download(fileName, userId);
 			String contentType = s3Object.getObjectMetadata().getContentType();
 			var bytes = s3Object.getObjectContent().readAllBytes();
 
@@ -62,6 +78,8 @@ public class MediaController {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.DOWNLOAD_FAILED.getMessage(), e);
 		} catch (IllegalArgumentException e) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+		} catch (EntityNotFoundException e) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, ErrorCode.DOWNLOAD_NOT_ALLOWED.getMessage(), e);
 		}
 	}
 }

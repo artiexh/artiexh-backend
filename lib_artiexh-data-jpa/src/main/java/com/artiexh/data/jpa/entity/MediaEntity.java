@@ -2,20 +2,26 @@ package com.artiexh.data.jpa.entity;
 
 import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "media")
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder(toBuilder = true)
 public class MediaEntity {
 	@Id
 	@Tsid
 	@Column(name = "id", nullable = false)
 	private Long id;
+
+	@Column(name = "file_name", nullable = false, unique = true)
+	private String fileName;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(name = "owner_id", nullable = true)
@@ -31,5 +37,5 @@ public class MediaEntity {
 			name = "shared_user_id", referencedColumnName = "id"
 		)
 	)
-	private List<AccountEntity> sharedUsers;
+	private Set<AccountEntity> sharedUsers;
 }
