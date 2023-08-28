@@ -82,9 +82,14 @@ public final class Endpoint {
 		public static final String ROOT = PREFIX + "/province";
 	}
 
-	@NoArgsConstructor
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Order {
 		public static final String ROOT = PREFIX + "/order";
 		public static final String CHECKOUT = "/checkout";
+	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class ProductBase {
+		public static final String ROOT = PREFIX + "/product-base";
 	}
 }
