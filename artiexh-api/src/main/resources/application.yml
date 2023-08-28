@@ -60,6 +60,9 @@ springdoc:
     disable-swagger-default-url: true
     csrf:
       enabled: true
+    operations-sorter: alpha
+    tags-sorter: alpha
+  writer-with-order-by-keys: true
 artiexh:
   aws:
     s3:

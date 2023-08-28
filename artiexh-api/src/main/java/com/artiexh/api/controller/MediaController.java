@@ -7,6 +7,9 @@ import com.artiexh.api.service.StorageService;
 import com.artiexh.model.rest.media.FileResponse;
 import com.artiexh.model.rest.media.UpdateSharedUsersRequest;
 import com.artiexh.model.rest.media.UploadRequest;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +29,7 @@ import java.io.IOException;
 public class MediaController {
 	private final StorageService storageService;
 	@PostMapping(path = Endpoint.Media.PUBLIC_UPLOAD,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public FileResponse publicUpload(@Valid @ModelAttribute UploadRequest request) {
+	public FileResponse publicUpload( @Valid @ModelAttribute UploadRequest request) {
 		try {
 			return storageService.upload(request.getFile(), null);
 		} catch (IOException e) {
@@ -79,7 +82,7 @@ public class MediaController {
 		} catch (IllegalArgumentException e) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
 		} catch (EntityNotFoundException e) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN, ErrorCode.DOWNLOAD_NOT_ALLOWED.getMessage(), e);
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.DOWNLOAD_NOT_ALLOWED.getMessage(), e);
 		}
 	}
 }

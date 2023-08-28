@@ -44,6 +44,7 @@ public class StorageServiceImpl implements StorageService {
 		String fileUrl = null;
 		File file = convertMultiPartToFile(multipartFile);
 		String fileName = S3Util.generateFileName(multipartFile);
+		MediaEntity entity = null;
 		if (userId == null) {
 			fileUrl = S3Util.getPresignedString(s3Config.getRegion(), s3Config.getPublicBucketName(), s3Config.getAccessKey(), s3Config.getSecretKey(), fileName, true);
 
@@ -54,7 +55,7 @@ public class StorageServiceImpl implements StorageService {
 			s3.putObject(new PutObjectRequest(s3Config.getPrivateBucketName(), fileName, file));
 
 			AccountEntity owner = accountRepository.getReferenceById(userId);
-			MediaEntity entity = MediaEntity.builder()
+			 entity = MediaEntity.builder()
 				.owner(owner)
 				.fileName(fileName)
 				.sharedUsers(Collections.emptySet())
@@ -63,9 +64,10 @@ public class StorageServiceImpl implements StorageService {
 		}
 		file.delete();
 		return FileResponse.builder()
-				.presignedUrl(fileUrl)
-				.fileName(fileName)
-				.build();
+			.id(entity == null ? null : entity.getId())
+			.presignedUrl(fileUrl)
+			.fileName(fileName)
+			.build();
 	}
 
 	@Override
