@@ -69,8 +69,7 @@ public class CartServiceImpl implements CartService {
 		CartEntity cartEntity = getOrCreateCartEntity(userId);
 		Set<CartItemEntity> cartItemEntities = items.stream().map(productId -> {
 			CartItemId cartItemId = new CartItemId(cartEntity.getId(), productId);
-			ProductEntity productEntity = ProductEntity.builder().id(productId).build();
-			return CartItemEntity.builder().id(cartItemId).product(productEntity).build();
+			return CartItemEntity.builder().id(cartItemId).build();
 		}).collect(Collectors.toSet());
 
 		cartItemRepository.deleteAll(cartItemEntities);
