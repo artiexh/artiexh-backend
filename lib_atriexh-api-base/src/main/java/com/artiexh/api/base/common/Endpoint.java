@@ -92,4 +92,10 @@ public final class Endpoint {
 	public static class ProductBase {
 		public static final String ROOT = PREFIX + "/product-base";
 	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Provider {
+		public static final String ROOT = PREFIX + "/provider";
+		public static final String PROVIDED_PRODUCT = "/{providerId}/product-base/{productBaseId}";
+	}
 }

@@ -1,7 +1,6 @@
 package com.artiexh.model.rest.provider;
 
 import com.artiexh.model.domain.ProvidedProductBase;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,9 +12,16 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProviderDetail extends ProviderInfo{
-	private String description;
+public class ProviderInfo {
+	private String businessCode;
 
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	private Set<ProvidedProductBaseDetail> providedProducts;
+	private String businessName;
+
+	private String address;
+
+	private String contactName;
+
+	private String email;
+
+	private String phone;
 }
