@@ -18,6 +18,7 @@ public enum OrderStatus {
 
 	public static OrderStatus fromValue(int value) {
 		return switch (value) {
+			case 0 -> PAYING;
 			case 1 -> PREPARING;
 			case 2 -> SHIPPING;
 			case 3 -> COMPLETED;

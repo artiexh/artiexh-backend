@@ -115,9 +115,12 @@ public class OrderServiceImpl implements OrderService {
 		}
 
 		for (var checkoutShop : shops) {
-			for (var cartItemEntity : cartItemEntities) {
-				if (!checkoutShop.getItemIds().contains(cartItemEntity.getProduct().getId())) {
-					throw new IllegalArgumentException("shopId " + checkoutShop.getShopId() + " not contain itemId " + cartItemEntity.getProduct().getId());
+			for (var checkoutItem : checkoutShop.getItemIds()) {
+				for (var cartItemEntity : cartItemEntities) {
+					ProductEntity productEntity = cartItemEntity.getProduct();
+					if (checkoutItem.equals(productEntity.getId()) && !checkoutShop.getShopId().equals(productEntity.getShop().getId())) {
+						throw new IllegalArgumentException("shopId " + checkoutShop.getShopId() + " not contain itemId " + checkoutItem);
+					}
 				}
 			}
 		}
