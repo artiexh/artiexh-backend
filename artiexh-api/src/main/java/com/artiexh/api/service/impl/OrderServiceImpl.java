@@ -89,7 +89,14 @@ public class OrderServiceImpl implements OrderService {
 
 		// create order and order details
 		try {
-			return createOrder(userId, address, status, checkoutRequest.getShops(), cartItemEntities, checkoutRequest.getPaymentMethod());
+			List<OrderEntity> createdOrder = createOrder(userId, address, status, checkoutRequest.getShops(), cartItemEntities, checkoutRequest.getPaymentMethod());
+			cartService.deleteItemToCart(
+				userId,
+				checkoutRequest.getShops().stream()
+					.flatMap(checkoutShop -> checkoutShop.getItemIds().stream())
+					.collect(Collectors.toSet())
+			);
+			return createdOrder;
 		} catch (Exception ex) {
 			rollbackShopProductQuantity(cartItemEntities);
 			throw ex;
