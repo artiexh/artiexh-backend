@@ -7,7 +7,6 @@ import com.artiexh.api.service.UserService;
 import com.artiexh.model.domain.UserAddress;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
-import com.artiexh.model.rest.artist.ShopOrderResponse;
 import com.artiexh.model.rest.order.request.OrderPageFilter;
 import com.artiexh.model.rest.user.UserOrderResponse;
 import com.artiexh.model.rest.user.UserOrderResponsePage;
@@ -16,6 +15,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,7 +37,18 @@ public class UserController {
 	public PageResponse<UserAddress> getAllUserAddress(Authentication authentication,
 													   @ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest) {
 		long userId = (long) authentication.getPrincipal();
-		Page<UserAddress> userAddresses = userAddressService.getByUserId(userId, paginationAndSortingRequest.getPageable());
+
+		Sort sort = Sort.by(Sort.Direction.DESC, "isDefault");
+		if (paginationAndSortingRequest.getSortBy() != null && !"isDefault".equals(paginationAndSortingRequest.getSortBy())) {
+			sort.and(Sort.by(paginationAndSortingRequest.getSortDirection(), paginationAndSortingRequest.getSortBy()));
+		}
+		Pageable pageable = PageRequest.of(
+			paginationAndSortingRequest.getPageNumber() - 1,
+			paginationAndSortingRequest.getPageSize(),
+			sort
+		);
+
+		Page<UserAddress> userAddresses = userAddressService.getByUserId(userId, pageable);
 		return new PageResponse<>(userAddresses);
 	}
 
