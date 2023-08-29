@@ -1,5 +1,6 @@
 package com.artiexh.api.base.response;
 
+import com.artiexh.api.base.common.Endpoint;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,6 +33,10 @@ public class ReformatResponseAdvice implements ResponseBodyAdvice<Object> {
 		HttpStatus httpStatus = HttpStatus.resolve(status);
 		Assert.notNull(httpStatus, "Invalid http status");
 		String path = request.getURI().getPath();
+
+		if (path.equals(Endpoint.Media.ROOT + Endpoint.Media.DOWNLOAD) && !selectedContentType.equals(MediaType.APPLICATION_PROBLEM_JSON)) {
+			return body;
+		}
 
 		if (body instanceof ProblemDetail problemDetail) {
 			return new ResponseModel(now, status, httpStatus.name(), problemDetail.getDetail(), path, null);

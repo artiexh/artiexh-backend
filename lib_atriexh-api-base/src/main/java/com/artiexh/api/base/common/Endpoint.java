@@ -36,7 +36,7 @@ public final class Endpoint {
 	public static class Account {
 		public static final String ROOT = PREFIX + "/account";
 		public static final String ME = "/me";
-		public static final String PROFILE = "public/{id}/profile";
+		public static final String PROFILE = "/{id}/profile";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -82,9 +82,18 @@ public final class Endpoint {
 		public static final String ROOT = PREFIX + "/province";
 	}
 
-	@NoArgsConstructor
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Order {
 		public static final String ROOT = PREFIX + "/order";
 		public static final String CHECKOUT = "/checkout";
+	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Media {
+		public static final String ROOT = PREFIX + "/media";
+		public static final String DOWNLOAD = "/download";
+		public static final String PUBLIC_UPLOAD = "/public-upload";
+		public static final String UPLOAD = "/upload";
+		public static final String DETAIL = "/{id}";
 	}
 }
