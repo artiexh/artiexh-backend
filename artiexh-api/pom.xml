@@ -36,7 +36,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk</artifactId>
+			<artifactId>aws-java-sdk-s3</artifactId>
 			<version>1.12.539</version>
 		</dependency>
 	</dependencies>
@@ -75,22 +75,6 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
-					<image>
-						<buildpacks>
-							<buildpack>gcr.io/paketo-buildpacks/ca-certificates:latest</buildpack>
-							<buildpack>gcr.io/paketo-buildpacks/eclipse-openj9:latest</buildpack>
-							<buildpack>gcr.io/paketo-buildpacks/syft:latest</buildpack>
-							<buildpack>gcr.io/paketo-buildpacks/executable-jar:latest</buildpack>
-							<buildpack>gcr.io/paketo-buildpacks/spring-boot:latest</buildpack>
-							<buildpack>gcr.io/paketo-buildpacks/environment-variables:latest</buildpack>
-							<buildpack>gcr.io/paketo-buildpacks/health-checker:latest</buildpack>
-						</buildpacks>
-						<env>
-							<BP_HEALTH_CHECKER_ENABLED>true</BP_HEALTH_CHECKER_ENABLED>
-							<BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>
-							<BPE_APPEND_JAVA_TOOL_OPTIONS>-Xss256K -XX:ReservedCodeCacheSize=60M</BPE_APPEND_JAVA_TOOL_OPTIONS>
-						</env>
-					</image>
 				</configuration>
 			</plugin>
 		</plugins>
