@@ -22,13 +22,13 @@ public class ProvidedProductBaseEntity {
 	private ProvidedProductBaseId id;
 
 	@MapsId("baseModelId")
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "product_base_id", nullable = false)
 	private ProductBaseEntity productBase;
 
 	@MapsId("businessCode")
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "business_code", nullable = false)
 	private ProviderEntity provider;
