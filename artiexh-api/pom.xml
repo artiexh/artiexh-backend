@@ -88,7 +88,7 @@
 						<env>
 							<BP_HEALTH_CHECKER_ENABLED>true</BP_HEALTH_CHECKER_ENABLED>
 							<BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>
-							<BPE_APPEND_JAVA_TOOL_OPTIONS>-Xss256K -XX:ReservedCodeCacheSize=60M</BPE_APPEND_JAVA_TOOL_OPTIONS>
+							<BPE_APPEND_JAVA_TOOL_OPTIONS>-Xss256K -XX:ReservedCodeCacheSize=32M -XX:MaxDirectMemorySize=32M</BPE_APPEND_JAVA_TOOL_OPTIONS>
 						</env>
 					</image>
 				</configuration>
