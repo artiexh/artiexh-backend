@@ -57,7 +57,8 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.GET, Endpoint.Category.ROOT).permitAll()
 				.requestMatchers(HttpMethod.GET, Endpoint.Tag.ROOT).permitAll()
 				.requestMatchers(HttpMethod.GET, Endpoint.Province.ROOT).permitAll()
-				.requestMatchers(Endpoint.Account.ROOT + "/public/**").permitAll()
+				.requestMatchers(Endpoint.Media.ROOT + Endpoint.Media.PUBLIC_UPLOAD).permitAll()
+				.requestMatchers(Endpoint.Account.ROOT + Endpoint.Account.PROFILE).permitAll()
 				.requestMatchers(HttpMethod.GET,
 					Endpoint.Product.ROOT,
 					Endpoint.Product.ROOT + Endpoint.Product.PRODUCT_DETAIL,

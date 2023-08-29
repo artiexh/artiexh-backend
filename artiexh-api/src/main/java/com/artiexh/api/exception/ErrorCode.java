@@ -29,6 +29,12 @@ public enum ErrorCode {
 	ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "Order is not found"),
 	ORDER_IS_INVALID(HttpStatus.BAD_REQUEST, "Your can not get this order"),
 
+	//Media
+	UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Upload file is failed!"),
+	DOWNLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Download file is failed!"),
+	MEDIA_NOT_FOUND(HttpStatus.BAD_REQUEST, "Media file is not found"),
+	DOWNLOAD_NOT_ALLOWED(HttpStatus.FORBIDDEN, "You are not allowed to download this file"),
+	OWNER_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "Shared User can not be owner"),
 	//AUTH
 	ACCOUNT_INFO_NOT_FOUND(HttpStatus.OK, "Can not get account information from request");
 	private final HttpStatus statusCode;
