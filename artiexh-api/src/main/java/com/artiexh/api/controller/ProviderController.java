@@ -14,6 +14,7 @@ import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.productbase.ProductBaseDetail;
 import com.artiexh.model.rest.provider.ProvidedProductBaseDetail;
 import com.artiexh.model.rest.provider.ProviderDetail;
+import com.artiexh.model.rest.provider.ProviderFilter;
 import com.artiexh.model.rest.provider.ProviderInfo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,8 +39,10 @@ public class ProviderController {
 	}
 	//Get Provider Detail
 	@GetMapping
-	public PageResponse<ProviderInfo> getInPage(@ParameterObject PaginationAndSortingRequest paginationAndSortingRequest) {
-		Page<Provider> providers = providerService.getInPage(paginationAndSortingRequest.getPageable());
+	public PageResponse<ProviderInfo> getInPage(
+		@ParameterObject PaginationAndSortingRequest paginationAndSortingRequest,
+		@ParameterObject ProviderFilter providerFilter) {
+		Page<Provider> providers = providerService.getInPage(providerFilter.getSpecification(), paginationAndSortingRequest.getPageable());
 		return new PageResponse<>(providers.map(providerMapper::domainToInfo));
 	}
 

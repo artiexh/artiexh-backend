@@ -22,4 +22,6 @@ public class ProductBase {
 	private List<Size> sizes;
 
 	private String description;
+
+	private Model3DCode model3DCode;
 }

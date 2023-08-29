@@ -38,6 +38,9 @@ public class ProductBaseEntity {
 	@Column(name = "description", nullable = false)
 	private String description;
 
+	@Column(name = "3D_model_code")
+	private Byte model3DCode;
+
 	@OneToMany(mappedBy = "productBase")
 	private Set<ProvidedProductBaseEntity> providedModels;
 }

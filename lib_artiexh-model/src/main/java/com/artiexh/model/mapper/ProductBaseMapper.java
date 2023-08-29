@@ -1,7 +1,9 @@
 package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.ProductBaseEntity;
+import com.artiexh.model.domain.Model3DCode;
 import com.artiexh.model.domain.ProductBase;
+import com.artiexh.model.domain.ProductStatus;
 import com.artiexh.model.rest.productbase.ProductBaseDetail;
 import com.artiexh.model.rest.productbase.ProductBaseInfo;
 import org.mapstruct.Mapper;
@@ -20,4 +22,12 @@ public interface ProductBaseMapper {
 	ProductBaseDetail domainToDetail(ProductBase domain);
 
 	ProductBaseInfo domainToInfo(ProductBase domain);
+
+	default Integer toValue(Model3DCode code) {
+		return code.getValue();
+	}
+
+	default Model3DCode toModel3DCode(Integer value) {
+		return Model3DCode.fromValue(value);
+	}
 }

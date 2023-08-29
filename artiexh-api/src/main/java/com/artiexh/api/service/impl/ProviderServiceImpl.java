@@ -10,6 +10,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,6 +34,12 @@ public class ProviderServiceImpl implements ProviderService {
 	@Override
 	public Page<Provider> getInPage(Pageable pageable) {
 		Page<ProviderEntity> page = providerRepository.findAll(pageable);
+		return page.map(providerMapper::entityToDomain);
+	}
+
+	@Override
+	public Page<Provider> getInPage(Specification<ProviderEntity> specification, Pageable pageable) {
+		Page<ProviderEntity> page = providerRepository.findAll(specification, pageable);
 		return page.map(providerMapper::entityToDomain);
 	}
 }

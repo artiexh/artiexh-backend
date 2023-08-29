@@ -1,5 +1,6 @@
 package com.artiexh.model.rest.productbase;
 
+import com.artiexh.model.domain.Model3DCode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -22,4 +23,6 @@ public class ProductBaseInfo {
 	private String type;
 
 	private String productFileUrl;
+
+	private Model3DCode model3DCode;
 }
