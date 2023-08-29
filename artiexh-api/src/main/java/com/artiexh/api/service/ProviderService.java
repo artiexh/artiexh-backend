@@ -7,6 +7,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface ProviderService {
 	Provider create(Provider provider);
-	ProviderDetail getById(Long providerId);
+	Provider getById(String businessCode);
 	Page<Provider> getInPage(Pageable pageable);
 }

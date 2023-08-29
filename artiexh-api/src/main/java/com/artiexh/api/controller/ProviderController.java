@@ -42,6 +42,13 @@ public class ProviderController {
 		Page<Provider> providers = providerService.getInPage(paginationAndSortingRequest.getPageable());
 		return new PageResponse<>(providers.map(providerMapper::domainToInfo));
 	}
+
+	@GetMapping(Endpoint.Provider.DETAIL)
+	public ProviderDetail getById(
+		@PathVariable("id") String businessCode) {
+		Provider provider = providerService.getById(businessCode);
+		return providerMapper.domainToDetail(provider);
+	}
 	//Create Provided Product
 	@PostMapping(Endpoint.Provider.PROVIDED_PRODUCT)
 	public ProvidedProductBaseDetail createProvidedProduct(

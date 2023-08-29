@@ -6,6 +6,7 @@ import com.artiexh.data.jpa.repository.ProviderRepository;
 import com.artiexh.model.domain.Provider;
 import com.artiexh.model.mapper.ProviderMapper;
 import com.artiexh.model.rest.provider.ProviderDetail;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,8 +25,9 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	@Override
-	public ProviderDetail getById(Long providerId) {
-		return null;
+	public Provider getById(String businessCode) {
+		ProviderEntity provider = providerRepository.findById(businessCode).orElseThrow(EntityNotFoundException::new);
+		return providerMapper.entityToDomain(provider);
 	}
 
 	@Override
