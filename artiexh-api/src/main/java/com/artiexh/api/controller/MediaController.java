@@ -62,6 +62,8 @@ public class MediaController {
 			storageService.updateSharedUsers(userId, request.getSharedUserIds(), id);
 		} catch (EntityNotFoundException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorCode.MEDIA_NOT_FOUND.getMessage(), e);
+		} catch (IllegalArgumentException e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
 		}
 	}
 

@@ -40,29 +40,38 @@ public class StorageServiceImpl implements StorageService {
 	private final AccountRepository accountRepository;
 	@Override
 	@Transactional
-	public FileResponse upload(MultipartFile multipartFile, Long userId) throws IOException {
+	public FileResponse upload(MultipartFile multipartFile, Long userId) {
 		String fileUrl = null;
-		File file = convertMultiPartToFile(multipartFile);
-		String fileName = S3Util.generateFileName(multipartFile);
+		File file = null;
 		MediaEntity entity = null;
-		if (userId == null) {
-			fileUrl = S3Util.getPresignedString(s3Config.getRegion(), s3Config.getPublicBucketName(), s3Config.getAccessKey(), s3Config.getSecretKey(), fileName, true);
+		String fileName = null;
+		try {
+			file = convertMultiPartToFile(multipartFile);
+			fileName = S3Util.generateFileName(multipartFile);
+			if (userId == null) {
+				fileUrl = S3Util.getPresignedString(s3Config.getRegion(), s3Config.getPublicBucketName(), s3Config.getAccessKey(), s3Config.getSecretKey(), fileName, true);
 
-			s3.putObject(new PutObjectRequest(s3Config.getPublicBucketName(), fileName, file)
-				.withCannedAcl(CannedAccessControlList.PublicRead));
-		} else {
+				s3.putObject(new PutObjectRequest(s3Config.getPublicBucketName(), fileName, file)
+					.withCannedAcl(CannedAccessControlList.PublicRead));
+			} else {
 
-			s3.putObject(new PutObjectRequest(s3Config.getPrivateBucketName(), fileName, file));
+				s3.putObject(new PutObjectRequest(s3Config.getPrivateBucketName(), fileName, file));
 
-			AccountEntity owner = accountRepository.getReferenceById(userId);
-			 entity = MediaEntity.builder()
-				.owner(owner)
-				.fileName(fileName)
-				.sharedUsers(Collections.emptySet())
-				.build();
-			mediaRepository.save(entity);
+				AccountEntity owner = accountRepository.getReferenceById(userId);
+				entity = MediaEntity.builder()
+					.owner(owner)
+					.fileName(fileName)
+					.sharedUsers(Collections.emptySet())
+					.build();
+				mediaRepository.save(entity);
+			}
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
+		} finally {
+			if (file != null) {
+				file.delete();
+			}
 		}
-		file.delete();
 		return FileResponse.builder()
 			.id(entity == null ? null : entity.getId())
 			.presignedUrl(fileUrl)
@@ -78,6 +87,10 @@ public class StorageServiceImpl implements StorageService {
 			throw new IllegalArgumentException(ErrorCode.ACCOUNT_INFO_NOT_FOUND.getMessage());
 		}
 		MediaEntity entity = mediaRepository.findByIdAndOwnerId(mediaId, userId).orElseThrow(EntityNotFoundException::new);
+
+		if(Arrays.stream(sharedIds).anyMatch(id -> id.equals(entity.getOwner().getId()))) {
+			throw new IllegalArgumentException(ErrorCode.OWNER_NOT_ALLOWED.getMessage());
+		}
 		entity.setSharedUsers(Arrays.stream(sharedIds)
 			.map(sharedId -> AccountEntity.builder().id(sharedId).build())
 			.collect(Collectors.toSet()));
@@ -97,7 +110,6 @@ public class StorageServiceImpl implements StorageService {
 		File convFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
 		try (FileOutputStream fos = new FileOutputStream(convFile)) {
 			fos.write(file.getBytes());
-			//fos.close();
 			return convFile;
 		}
 	}

@@ -82,13 +82,13 @@ public final class Endpoint {
 		public static final String ROOT = PREFIX + "/province";
 	}
 
-	@NoArgsConstructor
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Order {
 		public static final String ROOT = PREFIX + "/order";
 		public static final String CHECKOUT = "/checkout";
 	}
 
-	@NoArgsConstructor
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Media {
 		public static final String ROOT = PREFIX + "/media";
 		public static final String DOWNLOAD = "/download";
