@@ -106,6 +106,6 @@ public final class Endpoint {
 	public static class Provider {
 		public static final String ROOT = PREFIX + "/provider";
 		public static final String DETAIL = "/{id}";
-		public static final String PROVIDED_PRODUCT = "/{providerId}/product-base/{productBaseId}";
+		public static final String PROVIDED_PRODUCT = "/{providerId}/product-base/{productBaseId}/provided-product";
 	}
 }
