@@ -7,6 +7,7 @@ import com.artiexh.model.domain.ProductStatus;
 import com.artiexh.model.rest.productbase.ProductBaseDetail;
 import com.artiexh.model.rest.productbase.ProductBaseInfo;
 import org.mapstruct.Mapper;
+import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
@@ -21,6 +22,7 @@ public interface ProductBaseMapper {
 
 	ProductBaseDetail domainToDetail(ProductBase domain);
 
+	@Named("domainToInfo")
 	ProductBaseInfo domainToInfo(ProductBase domain);
 
 	default Integer toValue(Model3DCode code) {

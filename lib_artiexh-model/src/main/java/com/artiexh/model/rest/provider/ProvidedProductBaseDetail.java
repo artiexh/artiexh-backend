@@ -4,6 +4,7 @@ import com.artiexh.data.jpa.entity.Color;
 import com.artiexh.data.jpa.entity.ProvidedProductBaseId;
 import com.artiexh.data.jpa.entity.Size;
 import com.artiexh.model.domain.Money;
+import com.artiexh.model.rest.productbase.ProductBaseInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -54,4 +55,6 @@ public class ProvidedProductBaseDetail {
 
 	@NotBlank
 	private String providedProductFileUrl;
+
+	private ProductBaseInfo productBase;
 }

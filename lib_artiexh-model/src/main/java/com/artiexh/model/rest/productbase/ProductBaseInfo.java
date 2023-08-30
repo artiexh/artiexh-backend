@@ -29,6 +29,5 @@ public class ProductBaseInfo {
 	@NotBlank
 	private String productFileUrl;
 
-	@NotNull
 	private Model3DCode model3DCode;
 }

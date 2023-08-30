@@ -6,4 +6,5 @@ public interface ProvidedProductBaseService {
 	ProvidedProductBase create(ProvidedProductBase product);
 	ProvidedProductBase update(ProvidedProductBase product);
 	void delete(String businessCode, Long productBaseId);
+	ProvidedProductBase getById(String businessCode, Long productBaseId);
 }

@@ -34,4 +34,6 @@ public class ProvidedProductBase {
 	private String[] allowConfig;
 
 	private String providedProductFileUrl;
+
+	private ProductBase productBase;
 }

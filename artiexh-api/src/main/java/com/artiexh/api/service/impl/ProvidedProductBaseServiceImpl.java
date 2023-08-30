@@ -53,4 +53,14 @@ public class ProvidedProductBaseServiceImpl implements ProvidedProductBaseServic
 			.productBaseId(productBaseId)
 			.build());
 	}
+
+	@Override
+	public ProvidedProductBase getById(String businessCode, Long productBaseId) {
+		ProvidedProductBaseEntity entity = repository.findById(ProvidedProductBaseId.builder()
+			.productBaseId(productBaseId)
+			.businessCode(businessCode)
+			.build())
+			.orElseThrow(EntityNotFoundException::new);
+		return mapper.entityToDomain(entity);
+	}
 }

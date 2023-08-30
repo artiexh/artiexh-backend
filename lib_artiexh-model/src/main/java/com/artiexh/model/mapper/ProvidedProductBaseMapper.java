@@ -8,7 +8,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
-	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
+	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+	uses = {ProductBaseMapper.class}
 )
 public interface ProvidedProductBaseMapper {
 	ProvidedProductBase entityToDomain(ProvidedProductBaseEntity entity);
@@ -23,6 +24,7 @@ public interface ProvidedProductBaseMapper {
 	@Mapping(target = "productBaseId", source = "id.productBaseId")
 	@Mapping(target = "price.unit", source = "priceUnit")
 	@Mapping(target = "price.amount", source = "priceAmount")
+	@Mapping(target = "productBase", source = "productBase", qualifiedByName = "domainToInfo")
 	ProvidedProductBaseDetail domainToDetail(ProvidedProductBase domain);
 	ProvidedProductBaseEntity domainToEntity(ProvidedProductBase domain);
 }

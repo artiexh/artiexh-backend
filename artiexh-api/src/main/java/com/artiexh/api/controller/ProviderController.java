@@ -56,8 +56,14 @@ public class ProviderController {
 	@GetMapping(Endpoint.Provider.DETAIL)
 	public ProviderDetail getById(
 		@PathVariable("id") String businessCode) {
-		Provider provider = providerService.getById(businessCode);
-		return providerMapper.domainToDetail(provider);
+		try {
+			Provider provider = providerService.getById(businessCode);
+			return providerMapper.domainToDetail(provider);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+				ErrorCode.PROVIDER_NOT_FOUND.getMessage(),
+				exception);
+		}
 	}
 	//Create Provided Product
 	@PostMapping(Endpoint.Provider.PROVIDED_PRODUCT)
@@ -114,6 +120,19 @@ public class ProviderController {
 			throw new ResponseStatusException(ErrorCode.PRODUCT_NOT_FOUND.getCode(),
 				ErrorCode.PRODUCT_NOT_FOUND.getMessage());
 		}
+	}
 
+	@GetMapping(Endpoint.Provider.PROVIDED_PRODUCT)
+	public ProvidedProductBaseDetail getById(
+		@PathVariable("providerId") String businessCode,
+		@PathVariable("productBaseId") Long productBaseId) {
+		try {
+			ProvidedProductBase product = providedProductBaseService.getById(businessCode, productBaseId);
+			return providedProductBaseMapper.domainToDetail(product);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+				ErrorCode.PRODUCT_NOT_FOUND.getMessage(),
+				exception);
+		}
 	}
 }
