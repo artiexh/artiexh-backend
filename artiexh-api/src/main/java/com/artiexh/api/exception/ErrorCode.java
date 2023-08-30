@@ -33,6 +33,12 @@ public enum ErrorCode {
 	PROVIDER_NOT_FOUND(HttpStatus.NOT_FOUND, "Provider is not found"),
 	PRODUCT_EXISTED(HttpStatus.BAD_REQUEST, "Product is existed"),
 
+	//Media
+	UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Upload file is failed!"),
+	DOWNLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Download file is failed!"),
+	MEDIA_NOT_FOUND(HttpStatus.BAD_REQUEST, "Media file is not found"),
+	DOWNLOAD_NOT_ALLOWED(HttpStatus.FORBIDDEN, "You are not allowed to download this file"),
+	OWNER_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "Shared User can not be owner"),
 	//AUTH
 	ACCOUNT_INFO_NOT_FOUND(HttpStatus.OK, "Can not get account information from request");
 	private final HttpStatus statusCode;

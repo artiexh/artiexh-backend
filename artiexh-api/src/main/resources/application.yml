@@ -1,5 +1,9 @@
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
   application:
     name: artiexh-api
   datasource:
@@ -58,7 +62,17 @@ springdoc:
     disable-swagger-default-url: true
     csrf:
       enabled: true
+    operations-sorter: alpha
+    tags-sorter: alpha
+  writer-with-order-by-keys: true
 artiexh:
+  aws:
+    s3:
+      public-bucket-name: ${PUBLIC_BUCKET_NAME:}
+      private-bucket-name: ${PRIVATE_BUCKET_NAME:}
+      access-key: ${ACCESS_KEY:}
+      secret-key: ${SECRET_KEY:}
+      region: ${REGION:}
   security:
     admin:
       id: ${ADMIN_ID}
