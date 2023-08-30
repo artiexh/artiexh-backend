@@ -24,6 +24,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -37,6 +38,7 @@ public class ProviderController {
 	private final ProvidedProductBaseMapper providedProductBaseMapper;
 	//Create Provider
 	@PostMapping
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ProviderDetail create(@Valid @RequestBody ProviderDetail detail) {
 		Provider provider = providerMapper.detailToDomain(detail);
 		provider = providerService.create(provider);
@@ -59,6 +61,7 @@ public class ProviderController {
 	}
 	//Create Provided Product
 	@PostMapping(Endpoint.Provider.PROVIDED_PRODUCT)
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ProvidedProductBaseDetail createProvidedProduct(
 		@PathVariable("providerId") String businessCode,
 		@PathVariable("productBaseId") Long productBaseId,
@@ -80,6 +83,7 @@ public class ProviderController {
 	}
 	//Update Provided Product
 	@PutMapping(Endpoint.Provider.PROVIDED_PRODUCT)
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ProvidedProductBaseDetail updateProvidedProduct(
 		@PathVariable("providerId") String businessCode,
 		@PathVariable("productBaseId") Long productBaseId,
@@ -100,6 +104,7 @@ public class ProviderController {
 	}
 	//Remove Provided Product
 	@DeleteMapping(Endpoint.Provider.PROVIDED_PRODUCT)
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public void deleteProvidedProduct(
 		@PathVariable("providerId") String businessCode,
 		@PathVariable("productBaseId") Long productBaseId) {
