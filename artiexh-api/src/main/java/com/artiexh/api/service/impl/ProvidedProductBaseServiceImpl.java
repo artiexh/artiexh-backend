@@ -1,5 +1,6 @@
 package com.artiexh.api.service.impl;
 
+import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.ProvidedProductBaseService;
 import com.artiexh.data.jpa.entity.ProvidedProductBaseEntity;
 import com.artiexh.data.jpa.entity.ProvidedProductBaseId;
@@ -21,6 +22,9 @@ public class ProvidedProductBaseServiceImpl implements ProvidedProductBaseServic
 	private final ProductBaseRepository productBaseRepository;
 	@Override
 	public ProvidedProductBase create(ProvidedProductBase product) {
+		repository.findById(product.getId()).ifPresent(entity -> {
+			throw new IllegalArgumentException(ErrorCode.PRODUCT_EXISTED.getMessage());
+		});
 		ProvidedProductBaseEntity entity = mapper.domainToEntity(product);
 
 		entity.setProvider(providerRepository.getReferenceById(product.getId().getBusinessCode()));
@@ -40,6 +44,10 @@ public class ProvidedProductBaseServiceImpl implements ProvidedProductBaseServic
 
 	@Override
 	public void delete(String businessCode, Long productBaseId) {
+		repository.findById(ProvidedProductBaseId.builder()
+			.businessCode(businessCode)
+			.productBaseId(productBaseId).build())
+			.orElseThrow(EntityNotFoundException::new);
 		repository.deleteById(ProvidedProductBaseId.builder()
 			.businessCode(businessCode)
 			.productBaseId(productBaseId)

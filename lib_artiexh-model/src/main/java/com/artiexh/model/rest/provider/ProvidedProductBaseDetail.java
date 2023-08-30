@@ -8,6 +8,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.persistence.Column;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,17 +33,25 @@ public class ProvidedProductBaseDetail {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long productBaseId;
 
+	@NotNull
 	private Money price;
 
+	@NotBlank
 	private String description;
 
+	@NotNull
 	private Color color;
 
+	@NotEmpty
 	private List<Size> sizes;
 
+	@NotNull
+	@Min(1)
 	private Long maxLimit;
 
+	@NotEmpty
 	private String[] allowConfig;
 
+	@NotBlank
 	private String providedProductFileUrl;
 }

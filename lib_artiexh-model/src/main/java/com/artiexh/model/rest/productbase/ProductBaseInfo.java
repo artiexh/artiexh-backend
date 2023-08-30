@@ -4,6 +4,8 @@ import com.artiexh.model.domain.Model3DCode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,11 +20,15 @@ public class ProductBaseInfo {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long id;
 
+	@NotBlank
 	private String name;
 
+	@NotBlank
 	private String type;
 
+	@NotBlank
 	private String productFileUrl;
 
+	@NotNull
 	private Model3DCode model3DCode;
 }

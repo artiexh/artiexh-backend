@@ -1,6 +1,7 @@
 package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
+import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.ProvidedProductBaseService;
 import com.artiexh.api.service.ProviderService;
 import com.artiexh.data.jpa.entity.ProvidedProductBaseId;
@@ -16,11 +17,15 @@ import com.artiexh.model.rest.provider.ProvidedProductBaseDetail;
 import com.artiexh.model.rest.provider.ProviderDetail;
 import com.artiexh.model.rest.provider.ProviderFilter;
 import com.artiexh.model.rest.provider.ProviderInfo;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequiredArgsConstructor
@@ -63,8 +68,15 @@ public class ProviderController {
 			.productBaseId(productBaseId)
 			.businessCode(businessCode)
 			.build());
-		providedProduct = providedProductBaseService.create(providedProduct);
-		return providedProductBaseMapper.domainToDetail(providedProduct);
+		try {
+			providedProduct = providedProductBaseService.create(providedProduct);
+			return providedProductBaseMapper.domainToDetail(providedProduct);
+		} catch (IllegalArgumentException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+				exception.getMessage(),
+				exception);
+		}
+
 	}
 	//Update Provided Product
 	@PutMapping(Endpoint.Provider.PROVIDED_PRODUCT)
@@ -77,14 +89,26 @@ public class ProviderController {
 			.productBaseId(productBaseId)
 			.businessCode(businessCode)
 			.build());
-		providedProduct = providedProductBaseService.update(providedProduct);
-		return providedProductBaseMapper.domainToDetail(providedProduct);
+		try {
+			providedProduct = providedProductBaseService.update(providedProduct);
+			return providedProductBaseMapper.domainToDetail(providedProduct);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(ErrorCode.PRODUCT_NOT_FOUND.getCode(),
+				ErrorCode.PRODUCT_NOT_FOUND.getMessage());
+		}
+
 	}
 	//Remove Provided Product
 	@DeleteMapping(Endpoint.Provider.PROVIDED_PRODUCT)
 	public void deleteProvidedProduct(
 		@PathVariable("providerId") String businessCode,
 		@PathVariable("productBaseId") Long productBaseId) {
-		providedProductBaseService.delete(businessCode, productBaseId);
+		try {
+			providedProductBaseService.delete(businessCode, productBaseId);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(ErrorCode.PRODUCT_NOT_FOUND.getCode(),
+				ErrorCode.PRODUCT_NOT_FOUND.getMessage());
+		}
+
 	}
 }
