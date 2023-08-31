@@ -7,6 +7,7 @@ import com.artiexh.model.domain.ProductStatus;
 import com.artiexh.model.rest.productbase.ProductBaseDetail;
 import com.artiexh.model.rest.productbase.ProductBaseInfo;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
@@ -14,8 +15,12 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
 public interface ProductBaseMapper {
+	@Mapping(target = "price.unit", source = "priceUnit")
+	@Mapping(target = "price.amount", source = "priceAmount")
 	ProductBase entityToDomain(ProductBaseEntity entity);
 
+	@Mapping(target = "priceUnit", source = "price.unit")
+	@Mapping(target = "priceAmount", source = "price.amount")
 	ProductBaseEntity domainToEntity(ProductBase domain);
 
 	ProductBase detailToDomain(ProductBaseDetail detail);

@@ -8,6 +8,7 @@ import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.productbase.ProductBaseDetail;
 import com.artiexh.model.rest.productbase.ProductBaseInfo;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -23,7 +24,7 @@ public class ProductBaseController {
 	//Create Product Base
 	@PostMapping
 	@PreAuthorize("hasAuthority('ADMIN')")
-	public ProductBaseDetail create(@RequestBody ProductBaseDetail detail) {
+	public ProductBaseDetail create(@Valid @RequestBody ProductBaseDetail detail) {
 		ProductBase productBase = mapper.detailToDomain(detail);
 		productBase = productBaseService.create(productBase);
 		return mapper.domainToDetail(productBase);

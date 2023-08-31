@@ -35,6 +35,7 @@ public class ProvidedProductBaseDetail {
 	private Long productBaseId;
 
 	@NotNull
+	@Valid
 	private Money price;
 
 	@NotBlank
