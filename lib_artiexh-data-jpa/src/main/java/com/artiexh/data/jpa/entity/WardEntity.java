@@ -2,46 +2,38 @@ package com.artiexh.data.jpa.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
-import java.util.Set;
 
-@SuperBuilder(toBuilder = true)
-@NoArgsConstructor
 @Getter
 @Setter
 @ToString
+@RequiredArgsConstructor
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "artist")
-public class ArtistEntity extends UserEntity {
+@Table(name = "ward")
+public class WardEntity {
 
-	@OneToMany(mappedBy = "owner")
-	@ToString.Exclude
-	private Set<ProductEntity> products;
+	@Id
+	@Column(name = "id", nullable = false)
+	private Integer id;
 
-	@OneToMany(mappedBy = "shop")
-	@ToString.Exclude
-	private Set<ProductEntity> shopProducts;
+	@Column(name = "name", nullable = false)
+	private String name;
 
-	@Column(name = "shop_name")
-	private String shopName;
-
-	@Column(name = "shop_image_url")
-	private String shopImageUrl;
-
-	@OneToMany(mappedBy = "artist")
-	@ToString.Exclude
-	private Set<SubscriptionEntity> subscriptionsFrom;
+	@Column(name = "full_name")
+	private String fullName;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "shop_ward_id")
-	private WardEntity shopWard;
-
-	@Column(name = "shop_address")
-	private String shopAddress;
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@JoinColumn(name = "district_id")
+	@ToString.Exclude
+	private DistrictEntity district;
 
 	@Override
 	public final boolean equals(Object o) {
@@ -50,7 +42,7 @@ public class ArtistEntity extends UserEntity {
 		Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
 		Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
 		if (thisEffectiveClass != oEffectiveClass) return false;
-		ArtistEntity that = (ArtistEntity) o;
+		WardEntity that = (WardEntity) o;
 		return getId() != null && Objects.equals(getId(), that.getId());
 	}
 

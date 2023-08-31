@@ -6,6 +6,7 @@ import com.artiexh.data.jpa.entity.UserEntity;
 import com.artiexh.data.jpa.repository.UserAddressRepository;
 import com.artiexh.model.domain.UserAddress;
 import com.artiexh.model.mapper.UserAddressMapper;
+import com.artiexh.model.rest.user.UserAddressRequest;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,39 +37,39 @@ public class UserAddressServiceImpl implements UserAddressService {
 
 	@Transactional
 	@Override
-	public UserAddress create(Long userId, UserAddress userAddress) {
+	public UserAddress create(Long userId, UserAddressRequest userAddressRequest) {
 		if (!userAddressRepository.existsByUserId(userId)) {
-			userAddress.setIsDefault(true);
-		} else if (userAddress.getIsDefault()) {
+			userAddressRequest.setIsDefault(true);
+		} else if (Boolean.TRUE.equals(userAddressRequest.getIsDefault())) {
 			userAddressRepository.setAllNotDefaultByUserId(userId);
 		}
 
-		UserAddressEntity entity = userAddressMapper.domainToEntity(userAddress);
+		UserAddressEntity entity = userAddressMapper.userAddressRequestToEntity(userAddressRequest);
 		entity.setUser(UserEntity.builder().id(userId).build());
-		userAddressRepository.save(entity);
+		UserAddressEntity savedEntity = userAddressRepository.save(entity);
 
-		return userAddress;
+		return userAddressMapper.entityToDomain(savedEntity);
 	}
 
 	@Transactional
 	@Override
-	public UserAddress update(Long userId, UserAddress userAddress) {
-		var oldEntity = userAddressRepository.findById(userAddress.getId())
+	public UserAddress update(Long userId, UserAddressRequest userAddressRequest) {
+		var oldEntity = userAddressRepository.findById(userAddressRequest.getId())
 			.orElseThrow(() -> new EntityNotFoundException("Address not existed"));
 
 		if (!userId.equals(oldEntity.getUser().getId())) {
 			throw new AccessDeniedException("User not own this address");
 		}
 
-		if (oldEntity.getIsDefault() && !userAddress.getIsDefault()) {
+		if (Boolean.TRUE.equals(oldEntity.getIsDefault()) && !userAddressRequest.getIsDefault()) {
 			throw new IllegalArgumentException("Cannot make default address become non default");
 		}
 
-		if (userAddress.getIsDefault()) {
+		if (Boolean.TRUE.equals(userAddressRequest.getIsDefault())) {
 			userAddressRepository.setAllNotDefaultByUserId(userId);
 		}
 
-		var newEntity = userAddressMapper.domainToEntity(userAddress);
+		var newEntity = userAddressMapper.userAddressRequestToEntity(userAddressRequest);
 		newEntity.setUser(oldEntity.getUser());
 		return userAddressMapper.entityToDomain(userAddressRepository.save(newEntity));
 	}
@@ -83,7 +84,7 @@ public class UserAddressServiceImpl implements UserAddressService {
 			throw new AccessDeniedException("User not own this address");
 		}
 
-		if (entity.getIsDefault()) {
+		if (Boolean.TRUE.equals(entity.getIsDefault())) {
 			throw new IllegalArgumentException("Cannot delete default address");
 		}
 

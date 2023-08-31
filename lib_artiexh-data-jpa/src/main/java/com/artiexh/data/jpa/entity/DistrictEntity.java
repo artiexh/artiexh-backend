@@ -12,25 +12,25 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "province")
-public class ProvinceEntity {
+@Table(name = "district")
+public class DistrictEntity {
 
 	@Id
 	@Column(name = "id", nullable = false)
 	private Integer id;
 
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JoinColumn(name = "country_id", nullable = false)
-	private CountryEntity country;
-
 	@Column(name = "name", nullable = false)
 	private String name;
 
-	@Column(name = "full_name", nullable = false)
+	@Column(name = "full_name")
 	private String fullName;
 
-	@OneToMany(mappedBy = "province")
-	private Set<DistrictEntity> districts = new LinkedHashSet<>();
+	@ManyToOne(fetch = FetchType.LAZY)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@JoinColumn(name = "province_id")
+	private ProvinceEntity province;
+
+	@OneToMany(mappedBy = "district")
+	private Set<WardEntity> wards = new LinkedHashSet<>();
 
 }
