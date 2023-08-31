@@ -23,5 +23,7 @@ public class ProductBase {
 
 	private String description;
 
+	private Money price;
+
 	private Model3DCode model3DCode;
 }
