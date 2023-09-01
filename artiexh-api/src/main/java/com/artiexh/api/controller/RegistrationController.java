@@ -52,10 +52,10 @@ public class RegistrationController {
 
 	@PostMapping(Endpoint.Registration.ARTIST)
 	@PreAuthorize("hasAuthority('USER')")
-	public Artist registerArtist(Authentication authentication, @RequestBody RegistrationShopRequest request) {
+	public Artist registerArtist(Authentication authentication, @RequestBody @Valid RegistrationShopRequest request) {
 		Long id = (Long) authentication.getPrincipal();
 		try {
-			return registrationService.registerArtist(id, request.getShopName());
+			return registrationService.registerArtist(id, request);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
 		}

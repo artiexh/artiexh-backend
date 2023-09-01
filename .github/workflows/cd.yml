@@ -53,4 +53,3 @@ jobs:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: artiexh-api-svc
           cluster: artiexh-dev
-          wait-for-service-stability: true

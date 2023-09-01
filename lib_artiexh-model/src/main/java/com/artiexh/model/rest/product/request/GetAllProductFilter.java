@@ -27,6 +27,8 @@ public class GetAllProductFilter {
 	private BigDecimal maxPrice;
 	private Float averageRate;
 	private Integer provinceId;
+	private Integer districtId;
+	private Integer wardId;
 	private Integer categoryId;
 	private String[] tagNames;
 

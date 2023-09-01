@@ -4,12 +4,10 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.StorageService;
-import com.artiexh.model.rest.media.FileResponse;
+import com.artiexh.model.domain.Role;
+import com.artiexh.model.rest.media.FileResponseList;
 import com.artiexh.model.rest.media.UpdateSharedUsersRequest;
 import com.artiexh.model.rest.media.UploadRequest;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
@@ -29,7 +28,7 @@ import java.io.IOException;
 public class MediaController {
 	private final StorageService storageService;
 	@PostMapping(path = Endpoint.Media.PUBLIC_UPLOAD,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public FileResponse publicUpload( @Valid @ModelAttribute UploadRequest request) {
+	public FileResponseList publicUpload(@Valid @ModelAttribute UploadRequest request) {
 		try {
 			return storageService.upload(request.getFile(), null);
 		} catch (IOException e) {
@@ -41,8 +40,8 @@ public class MediaController {
 	}
 
 	@PostMapping(path = Endpoint.Media.UPLOAD,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public FileResponse upload(Authentication authentication,
-							   @Valid @ModelAttribute UploadRequest request) {
+	public FileResponseList upload(Authentication authentication,
+								   @Valid @ModelAttribute UploadRequest request) {
 		var userId = (Long) authentication.getPrincipal();
 		try {
 			return storageService.upload(request.getFile(), userId);
@@ -71,7 +70,9 @@ public class MediaController {
 	public ResponseEntity<byte[]> download(Authentication authentication, @RequestParam String fileName) {
 		var userId = (Long) authentication.getPrincipal();
 		try {
-			S3Object s3Object = storageService.download(fileName, userId);
+			boolean isStaff = authentication.getAuthorities().stream()
+				.anyMatch(r -> r.getAuthority().equals(Role.STAFF.name()));
+			S3Object s3Object = storageService.download(fileName, userId, isStaff);
 			String contentType = s3Object.getObjectMetadata().getContentType();
 			var bytes = s3Object.getObjectContent().readAllBytes();
 
