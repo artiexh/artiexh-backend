@@ -96,4 +96,16 @@ public final class Endpoint {
 		public static final String UPLOAD = "/upload";
 		public static final String DETAIL = "/{id}";
 	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class ProductBase {
+		public static final String ROOT = PREFIX + "/product-base";
+	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Provider {
+		public static final String ROOT = PREFIX + "/provider";
+		public static final String DETAIL = "/{id}";
+		public static final String PROVIDED_PRODUCT = "/{providerId}/product-base/{productBaseId}/provided-product";
+	}
 }
