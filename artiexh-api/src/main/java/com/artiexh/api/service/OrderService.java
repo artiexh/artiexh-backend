@@ -22,7 +22,7 @@ public interface OrderService {
 
 	Order updateOrderStatus(Long orderId, OrderStatus newStatus);
 
-	String payment(Long id, PaymentQueryProperties paymentQueryProperties);
+	String payment(Long id, PaymentQueryProperties paymentQueryProperties, Long userId);
 
 	String confirmPayment(PaymentQueryProperties paymentQueryProperties);
 }

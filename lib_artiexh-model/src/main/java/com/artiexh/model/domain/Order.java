@@ -33,5 +33,7 @@ public class Order {
 	private LocalDateTime modifiedDate;
 
 	private LocalDateTime createdDate;
+
+	private OrderTransaction currentTransaction;
 	
 }

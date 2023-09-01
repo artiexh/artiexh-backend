@@ -95,4 +95,25 @@ public class PaymentUtils {
 	public static String HmacSecureHash(String key, String data, HmacAlgorithms algorithm) {
 		return new HmacUtils(algorithm, key).hmacHex(data);
 	}
+
+	public static String hashAllFields(Map<String, String> fields, String secretKey) {
+		List<String> fieldNames = new ArrayList<>(fields.keySet());
+		Collections.sort(fieldNames);
+		StringBuilder sb = new StringBuilder();
+		Iterator<String> itr = fieldNames.iterator();
+		while (itr.hasNext()) {
+			String fieldName = itr.next();
+			String fieldValue = fields.get(fieldName);
+			if ((fieldValue != null) && (fieldValue.length() > 0)) {
+				sb.append(fieldName);
+				sb.append("=");
+				sb.append(fieldValue);
+			}
+			if (itr.hasNext()) {
+				sb.append("&");
+			}
+		}
+		return HmacSecureHash(secretKey,sb.toString(), HmacAlgorithms.HMAC_SHA_512);
+	}
+
 }

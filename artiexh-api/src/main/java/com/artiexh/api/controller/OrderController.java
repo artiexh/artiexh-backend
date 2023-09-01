@@ -50,7 +50,8 @@ public class OrderController {
 	}
 
 	@GetMapping(Endpoint.Order.PAYMENT)
-	public PaymentResponse payment(@PathVariable Long id, HttpServletRequest request) {
+	public PaymentResponse payment(Authentication authentication, @PathVariable Long id, HttpServletRequest request) {
+		var userId = (Long) authentication.getPrincipal();
 		try {
 			String ip = request.getHeader("X-FORWARDED-FOR");
 
@@ -58,7 +59,15 @@ public class OrderController {
 				ip = request.getRemoteAddr();
 			}
 			return PaymentResponse.builder()
-				.paymentUrl(orderService.payment(id, PaymentQueryProperties.builder().vnp_IpAddr(ip).build())).build();
+				.paymentUrl(orderService.payment(
+					id,
+					PaymentQueryProperties.builder()
+						.vnp_IpAddr(ip)
+						.build(),
+					userId
+					)
+				)
+				.build();
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
 		} catch (EntityNotFoundException ex) {

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface OrderRepository extends JpaRepository<OrderEntity, Long>, JpaSpecificationExecutor<OrderEntity> {
 	@Query(nativeQuery = true,
 	value = """
-SELECT sum(p.price_amount * od.quantity) as priceAmount, p.price_unit as priceUnit
+SELECT sum(p.price_amount * od.quantity) as priceAmount, p.price_unit as priceUnit, o.user_id as ownerId, o.status as status
 from `order` o
 inner join order_detail od on o.id = od.order_id
 inner join product p on od.product_id = p.id

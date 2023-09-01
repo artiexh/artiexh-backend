@@ -1,6 +1,7 @@
 package com.artiexh.api.service.impl;
 
 import com.artiexh.api.config.VnpConfigurationProperties;
+import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.CartService;
 import com.artiexh.api.service.OrderService;
 import com.artiexh.api.utils.DateTimeUtils;
@@ -13,6 +14,7 @@ import com.artiexh.model.domain.OrderStatus;
 import com.artiexh.model.domain.PaymentMethod;
 import com.artiexh.model.domain.ProductStatus;
 import com.artiexh.model.mapper.OrderMapper;
+import com.artiexh.model.mapper.OrderTransactionMapper;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
 import com.artiexh.model.rest.order.request.CheckoutShop;
 import com.artiexh.model.rest.order.request.PaymentQueryProperties;
@@ -50,6 +52,7 @@ public class OrderServiceImpl implements OrderService {
 	private final OrderMapper orderMapper;
 	private final CartService cartService;
 	private final VnpConfigurationProperties vnpProperties;
+	private final OrderTransactionMapper orderTransactionMapper;
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	@Override
@@ -208,8 +211,11 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public Order getById(Long orderId) {
-		OrderEntity entity = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
-		return orderMapper.entityToResponseDomain(entity);
+		OrderEntity order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
+		OrderTransactionEntity orderTransaction = order.getOrderTransaction().stream().max(Comparator.comparing(OrderTransactionEntity::getPayDate)).orElse(null);
+		Order domain = orderMapper.entityToResponseDomain(order);
+		domain.setCurrentTransaction(orderTransactionMapper.entityToDomain(orderTransaction));
+		return domain;
 	}
 
 	// PAYING -> PREPARING -> SHIPPING -> COMPLETED
@@ -233,10 +239,14 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public String payment(Long id, PaymentQueryProperties paymentQueryProperties) {
+	public String payment(Long id, PaymentQueryProperties paymentQueryProperties, Long userId) {
 		Bill bill = orderRepository.getBillInfo(id);
 		if (bill == null || bill.getPriceAmount() == null || bill.getPriceUnit() == null) {
 			throw new EntityNotFoundException();
+		}
+
+		if (!userId.equals(bill.getOwnerId()) || bill.getStatus() != OrderStatus.PAYING.getByteValue()) {
+			throw new IllegalArgumentException(ErrorCode.ORDER_IS_INVALID.getMessage());
 		}
 
 		String vnp_OrderInfo = "Thanh toan don hang " + id;
@@ -271,7 +281,7 @@ public class OrderServiceImpl implements OrderService {
 			.bankCode(paymentQueryProperties.getVnp_BankCode())
 			.cardType(paymentQueryProperties.getVnp_CardType())
 			.payDate(DateTimeUtils.stringToInstant(paymentQueryProperties.getVnp_PayDate(), "yyyyMMddHHmmss"))
-			.priceAmount(new BigDecimal(paymentQueryProperties.getVnp_Amount()))
+			.priceAmount(new BigDecimal(paymentQueryProperties.getVnp_Amount()).divide(new BigDecimal(100)))
 			.responseCode(paymentQueryProperties.getVnp_ResponseCode())
 			.transactionStatus(paymentQueryProperties.getVnp_TransactionStatus())
 			.orderId(Long.parseLong(paymentQueryProperties.getVnp_TxnRef()))

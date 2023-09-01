@@ -6,4 +6,8 @@ public interface Bill {
 	BigDecimal getPriceAmount();
 
 	String getPriceUnit();
+
+	Long getOwnerId();
+
+	Byte getStatus();
 }
