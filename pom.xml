@@ -23,7 +23,8 @@
 		<module>lib_artiexh-auth</module>
 		<module>lib_atriexh-api-base</module>
 		<module>lib_artiexh-opensearch-repository</module>
-	</modules>
+        <module>lib_artiexh-ghtk-client</module>
+    </modules>
 
 	<properties>
 		<java.version>17</java.version>

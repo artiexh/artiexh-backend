@@ -108,4 +108,13 @@ public final class Endpoint {
 		public static final String DETAIL = "/{id}";
 		public static final String PROVIDED_PRODUCT = "/{providerId}/product-base/{productBaseId}/provided-product";
 	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Address {
+		public static final String ROOT = PREFIX + "/address";
+		public static final String COUNTRY = "/country";
+		public static final String PROVINCE = "/province";
+		public static final String DISTRICT = "/district";
+		public static final String WARD = "/ward";
+	}
 }

@@ -1,6 +1,5 @@
 package com.artiexh.model.rest.address;
 
-import com.artiexh.model.domain.Country;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;

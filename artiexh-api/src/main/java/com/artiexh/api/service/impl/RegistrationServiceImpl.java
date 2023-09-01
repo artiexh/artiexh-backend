@@ -2,14 +2,8 @@ package com.artiexh.api.service.impl;
 
 import com.artiexh.api.service.RegistrationService;
 import com.artiexh.auth.service.RecentOauth2LoginFailId;
-import com.artiexh.data.jpa.entity.AccountEntity;
-import com.artiexh.data.jpa.entity.ArtistEntity;
-import com.artiexh.data.jpa.entity.CartEntity;
-import com.artiexh.data.jpa.entity.UserEntity;
-import com.artiexh.data.jpa.repository.AccountRepository;
-import com.artiexh.data.jpa.repository.ArtistRepository;
-import com.artiexh.data.jpa.repository.CartRepository;
-import com.artiexh.data.jpa.repository.UserRepository;
+import com.artiexh.data.jpa.entity.*;
+import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.Account;
 import com.artiexh.model.domain.Artist;
 import com.artiexh.model.domain.Role;
@@ -17,6 +11,7 @@ import com.artiexh.model.domain.User;
 import com.artiexh.model.mapper.AccountMapper;
 import com.artiexh.model.mapper.ArtistMapper;
 import com.artiexh.model.mapper.UserMapper;
+import com.artiexh.model.rest.artist.RegistrationShopRequest;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
@@ -39,6 +34,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private final UserRepository userRepository;
 	private final ArtistRepository artistRepository;
 	private final CartRepository cartRepository;
+	private final WardRepository wardRepository;
 	private final RecentOauth2LoginFailId recentOauth2LoginFailId;
 
 	@Override
@@ -79,7 +75,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	@Override
-	public Artist registerArtist(Long id, String shopName) {
+	public Artist registerArtist(Long id, RegistrationShopRequest request) {
 		UserEntity userEntity = userRepository.findById(id)
 			.orElseThrow(EntityNotFoundException::new);
 
@@ -91,12 +87,22 @@ public class RegistrationServiceImpl implements RegistrationService {
 			throw new IllegalArgumentException("User role is not USER, cannot register as ARTIST");
 		}
 
+		if (!wardRepository.existsById(request.getShopWardId())) {
+			throw new IllegalArgumentException("wardId not existed");
+		}
+
 		artistRepository.createArtistByExistedUserId(id);
 		ArtistEntity artistEntity = artistRepository.findById(id)
 			.orElseThrow(EntityNotFoundException::new);
 
 		artistEntity.setRole((byte) Role.ARTIST.getValue());
-		artistEntity.setShopName(shopName);
+		artistEntity.setShopName(request.getShopName());
+		if (!StringUtils.hasText(request.getShopImageUrl())) {
+			request.setShopImageUrl(artistEntity.getAvatarUrl());
+		}
+		artistEntity.setShopImageUrl(request.getShopImageUrl());
+		artistEntity.setShopWard(WardEntity.builder().id(request.getShopWardId()).build());
+		artistEntity.setShopAddress(request.getShopAddress());
 		return artistMapper.basicArtistInfo(artistRepository.save(artistEntity));
 	}
 

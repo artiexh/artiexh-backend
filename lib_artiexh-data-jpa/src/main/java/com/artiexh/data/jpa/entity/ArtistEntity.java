@@ -12,7 +12,6 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @AllArgsConstructor
 @Entity
 @Table(name = "artist")
@@ -36,9 +35,12 @@ public class ArtistEntity extends UserEntity {
 	@ToString.Exclude
 	private Set<SubscriptionEntity> subscriptionsFrom;
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "province_id")
-	private ProvinceEntity province;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "shop_ward_id")
+	private WardEntity shopWard;
+
+	@Column(name = "shop_address")
+	private String shopAddress;
 
 	@Override
 	public final boolean equals(Object o) {
