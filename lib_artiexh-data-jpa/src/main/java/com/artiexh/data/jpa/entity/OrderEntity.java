@@ -50,4 +50,8 @@ public class OrderEntity extends BaseAuditEntity {
 	@JoinColumn(name = "order_id")
 	private Set<OrderDetailEntity> orderDetails = new LinkedHashSet<>();
 
+	@OneToMany
+	@JoinColumn(name = "order_id")
+	private Set<OrderTransactionEntity> orderTransaction = new LinkedHashSet<>();
+
 }

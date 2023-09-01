@@ -1,12 +1,13 @@
 package com.artiexh.api.service.impl;
 
+import com.artiexh.api.config.VnpConfigurationProperties;
 import com.artiexh.api.service.CartService;
 import com.artiexh.api.service.OrderService;
+import com.artiexh.api.utils.DateTimeUtils;
+import com.artiexh.api.utils.PaymentUtils;
 import com.artiexh.data.jpa.entity.*;
-import com.artiexh.data.jpa.repository.CartItemRepository;
-import com.artiexh.data.jpa.repository.OrderRepository;
-import com.artiexh.data.jpa.repository.ProductRepository;
-import com.artiexh.data.jpa.repository.UserAddressRepository;
+import com.artiexh.data.jpa.projection.Bill;
+import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.Order;
 import com.artiexh.model.domain.OrderStatus;
 import com.artiexh.model.domain.PaymentMethod;
@@ -14,8 +15,10 @@ import com.artiexh.model.domain.ProductStatus;
 import com.artiexh.model.mapper.OrderMapper;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
 import com.artiexh.model.rest.order.request.CheckoutShop;
+import com.artiexh.model.rest.order.request.PaymentQueryProperties;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -23,14 +26,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.math.BigDecimal;
+import java.net.InetAddress;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
+@Slf4j
 public class OrderServiceImpl implements OrderService {
 	private static final Map<OrderStatus, Set<OrderStatus>> orderStatusChangeMap = Map.of(
 		OrderStatus.PAYING, Set.of(OrderStatus.PREPARING, OrderStatus.CANCELLED),
@@ -42,8 +46,10 @@ public class OrderServiceImpl implements OrderService {
 	private final ProductRepository productRepository;
 	private final OrderRepository orderRepository;
 	private final CartItemRepository cartItemRepository;
+	private final OrderTransactionRepository orderTransactionRepository;
 	private final OrderMapper orderMapper;
 	private final CartService cartService;
+	private final VnpConfigurationProperties vnpProperties;
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	@Override
@@ -224,5 +230,55 @@ public class OrderServiceImpl implements OrderService {
 		} else {
 			throw new IllegalArgumentException("Cannot change from " + orderStatus + " to " + newStatus);
 		}
+	}
+
+	@Override
+	public String payment(Long id, PaymentQueryProperties paymentQueryProperties) {
+		Bill bill = orderRepository.getBillInfo(id);
+		if (bill == null || bill.getPriceAmount() == null || bill.getPriceUnit() == null) {
+			throw new EntityNotFoundException();
+		}
+
+		String vnp_OrderInfo = "Thanh toan don hang " + id;
+
+		return PaymentUtils.generatePaymentUrl(
+			vnpProperties.getVersion(),
+			vnpProperties.getCommand(),
+			vnp_OrderInfo,
+			id.toString(),
+			paymentQueryProperties.getVnp_IpAddr(),
+			vnpProperties.getTmnCode(),
+			vnpProperties.getReturnUrl(),
+			bill.getPriceAmount().multiply(new BigDecimal(100)).toBigInteger().toString(),
+			bill.getPriceUnit(),
+			"vn",
+			vnpProperties.getUrl(),
+			vnpProperties.getSecretKey()
+		);
+	}
+
+	@Override
+	@Transactional
+	public String confirmPayment(PaymentQueryProperties paymentQueryProperties) {
+		String confirmUrl = vnpProperties.getFeConfirmUrl();
+		if (paymentQueryProperties.getVnp_ResponseCode().equals("00")) {
+			log.info("Payment is done successfully. Transaction No" + paymentQueryProperties.getVnp_TransactionNo());
+			updateOrderStatus(Long.parseLong(paymentQueryProperties.getVnp_TxnRef()), OrderStatus.PREPARING);
+		}
+		OrderTransactionEntity orderTransaction = OrderTransactionEntity.builder()
+			.transactionNo(paymentQueryProperties.getVnp_TransactionNo())
+			.orderInfo(paymentQueryProperties.getVnp_OrderInfo())
+			.bankCode(paymentQueryProperties.getVnp_BankCode())
+			.cardType(paymentQueryProperties.getVnp_CardType())
+			.payDate(DateTimeUtils.stringToInstant(paymentQueryProperties.getVnp_PayDate(), "yyyyMMddHHmmss"))
+			.priceAmount(new BigDecimal(paymentQueryProperties.getVnp_Amount()))
+			.responseCode(paymentQueryProperties.getVnp_ResponseCode())
+			.transactionStatus(paymentQueryProperties.getVnp_TransactionStatus())
+			.orderId(Long.parseLong(paymentQueryProperties.getVnp_TxnRef()))
+			.build();
+		orderTransactionRepository.save(orderTransaction);
+		log.warn("Payment Transaction" + paymentQueryProperties.getVnp_TransactionNo() + " Status " + paymentQueryProperties.getVnp_TransactionStatus());
+		log.warn("Payment Transaction" + paymentQueryProperties.getVnp_TransactionNo() + " Response Code " + paymentQueryProperties.getVnp_ResponseCode());
+		return confirmUrl;
 	}
 }

@@ -19,7 +19,7 @@ spring:
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
-      ddl-auto: update
+#      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
@@ -66,6 +66,15 @@ springdoc:
     tags-sorter: alpha
   writer-with-order-by-keys: true
 artiexh:
+  payment:
+    vnp:
+      tmn-code: ${TMN_CODE:1IC4NLOV}
+      version: ${VNP_VERSION:2.1.0}
+      command: ${PAY:pay}
+      return-url: ${RETURN_URL:http://localhost:8081/api/v1/order/payment/vnpay-return}
+      url: ${VNP_URL:https://sandbox.vnpayment.vn/paymentv2/vpcpay.html}
+      secret-key: ${VNP_SECRET_KEY:ORMMOKOXKQPOISPOMVDFCJUQBJKRRIYJ}
+      fe-confirm-url: ${FE_CONFIRM_URL:http://localhost:9200/order-confirm}
   aws:
     s3:
       public-bucket-name: ${PUBLIC_BUCKET_NAME:}

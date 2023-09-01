@@ -4,10 +4,12 @@ import com.artiexh.data.jpa.entity.OrderEntity;
 import com.artiexh.model.domain.Order;
 import com.artiexh.model.domain.OrderStatus;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
+import com.artiexh.model.rest.order.request.PaymentQueryProperties;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 public interface OrderService {
@@ -19,4 +21,8 @@ public interface OrderService {
 	Order getById(Long orderId);
 
 	Order updateOrderStatus(Long orderId, OrderStatus newStatus);
+
+	String payment(Long id, PaymentQueryProperties paymentQueryProperties);
+
+	String confirmPayment(PaymentQueryProperties paymentQueryProperties);
 }
