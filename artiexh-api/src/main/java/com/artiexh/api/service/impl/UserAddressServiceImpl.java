@@ -4,6 +4,7 @@ import com.artiexh.api.service.UserAddressService;
 import com.artiexh.data.jpa.entity.UserAddressEntity;
 import com.artiexh.data.jpa.entity.UserEntity;
 import com.artiexh.data.jpa.repository.UserAddressRepository;
+import com.artiexh.data.jpa.repository.WardRepository;
 import com.artiexh.model.domain.UserAddress;
 import com.artiexh.model.mapper.UserAddressMapper;
 import com.artiexh.model.rest.user.UserAddressRequest;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class UserAddressServiceImpl implements UserAddressService {
 	private final UserAddressRepository userAddressRepository;
+	private final WardRepository wardRepository;
 	private final UserAddressMapper userAddressMapper;
 
 	@Override
@@ -38,6 +40,10 @@ public class UserAddressServiceImpl implements UserAddressService {
 	@Transactional
 	@Override
 	public UserAddress create(Long userId, UserAddressRequest userAddressRequest) {
+		if (!wardRepository.existsById(userAddressRequest.getWardId())) {
+			throw new IllegalArgumentException("WardId not existed");
+		}
+
 		if (!userAddressRepository.existsByUserId(userId)) {
 			userAddressRequest.setIsDefault(true);
 		} else if (Boolean.TRUE.equals(userAddressRequest.getIsDefault())) {
@@ -54,6 +60,10 @@ public class UserAddressServiceImpl implements UserAddressService {
 	@Transactional
 	@Override
 	public UserAddress update(Long userId, UserAddressRequest userAddressRequest) {
+		if (!wardRepository.existsById(userAddressRequest.getWardId())) {
+			throw new IllegalArgumentException("WardId not existed");
+		}
+
 		var oldEntity = userAddressRepository.findById(userAddressRequest.getId())
 			.orElseThrow(() -> new EntityNotFoundException("Address not existed"));
 

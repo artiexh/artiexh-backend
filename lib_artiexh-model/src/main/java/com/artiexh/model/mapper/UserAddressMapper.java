@@ -8,7 +8,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
-	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
+	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+	uses = {AddressMapper.class}
 )
 public interface UserAddressMapper {
 
@@ -18,8 +19,6 @@ public interface UserAddressMapper {
 	@Mapping(target = "ward.id", source = "wardId")
 	UserAddressEntity userAddressRequestToEntity(UserAddressRequest userAddressRequest);
 
-	@Mapping(target = "ward.district.wards", ignore = true)
-	@Mapping(target = "ward.district.province.districts", ignore = true)
 	UserAddress entityToDomain(UserAddressEntity userAddressEntity);
 
 	default Byte userAddressTypeToByte(UserAddress.Type type) {

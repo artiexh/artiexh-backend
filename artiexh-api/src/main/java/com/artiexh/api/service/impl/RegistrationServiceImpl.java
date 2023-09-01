@@ -3,10 +3,7 @@ package com.artiexh.api.service.impl;
 import com.artiexh.api.service.RegistrationService;
 import com.artiexh.auth.service.RecentOauth2LoginFailId;
 import com.artiexh.data.jpa.entity.*;
-import com.artiexh.data.jpa.repository.AccountRepository;
-import com.artiexh.data.jpa.repository.ArtistRepository;
-import com.artiexh.data.jpa.repository.CartRepository;
-import com.artiexh.data.jpa.repository.UserRepository;
+import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.Account;
 import com.artiexh.model.domain.Artist;
 import com.artiexh.model.domain.Role;
@@ -37,6 +34,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private final UserRepository userRepository;
 	private final ArtistRepository artistRepository;
 	private final CartRepository cartRepository;
+	private final WardRepository wardRepository;
 	private final RecentOauth2LoginFailId recentOauth2LoginFailId;
 
 	@Override
@@ -87,6 +85,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 		if ((int) userEntity.getRole() != Role.USER.getValue()) {
 			throw new IllegalArgumentException("User role is not USER, cannot register as ARTIST");
+		}
+
+		if (!wardRepository.existsById(request.getShopWardId())) {
+			throw new IllegalArgumentException("wardId not existed");
 		}
 
 		artistRepository.createArtistByExistedUserId(id);

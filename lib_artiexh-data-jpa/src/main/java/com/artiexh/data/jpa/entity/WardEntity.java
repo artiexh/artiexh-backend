@@ -10,10 +10,8 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@ToString
 @RequiredArgsConstructor
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "ward")
@@ -32,7 +30,6 @@ public class WardEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "district_id")
-	@ToString.Exclude
 	private DistrictEntity district;
 
 	@Override

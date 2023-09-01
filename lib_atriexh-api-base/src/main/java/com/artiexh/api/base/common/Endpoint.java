@@ -96,4 +96,13 @@ public final class Endpoint {
 		public static final String UPLOAD = "/upload";
 		public static final String DETAIL = "/{id}";
 	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Address {
+		public static final String ROOT = PREFIX + "/address";
+		public static final String COUNTRY = "/country";
+		public static final String PROVINCE = "/province";
+		public static final String DISTRICT = "/district";
+		public static final String WARD = "/ward";
+	}
 }

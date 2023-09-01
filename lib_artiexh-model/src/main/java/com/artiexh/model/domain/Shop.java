@@ -16,5 +16,7 @@ public class Shop {
 	private Long id;
 	private String shopName;
 	private String shopImageUrl;
+	private String shopAddress;
+	private Ward shopWard;
 	private Artist owner;
 }

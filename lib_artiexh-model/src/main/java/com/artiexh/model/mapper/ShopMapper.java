@@ -20,6 +20,9 @@ public interface ShopMapper {
 
 	@Named("basicShopInfo")
 	@Mapping(target = "owner", source = ".", qualifiedByName = "basicArtistInfo")
+	@Mapping(target = "shopWard.district.wards", ignore = true)
+	@Mapping(target = "shopWard.district.province.districts", ignore = true)
+	@Mapping(target = "shopWard.district.province.country.provinces", ignore = true)
 	Shop entityToDomain(ArtistEntity entity);
 
 }
