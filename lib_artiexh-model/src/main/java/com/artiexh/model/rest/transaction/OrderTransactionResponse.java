@@ -38,5 +38,7 @@ public class OrderTransactionResponse {
 
 	private String responseCode;
 
+	private String message;
+
 	private String transactionStatus;
 }
