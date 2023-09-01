@@ -68,7 +68,7 @@ public class ArtistController {
 		}
 	}
 
-	@PutMapping(Endpoint.Artist.ARTIST_ORDER + "/{id}/status")
+	@PutMapping(Endpoint.Artist.ARTIST_ORDER + "/{id}")
 	@PreAuthorize("hasAuthority('ARTIST')")
 	public ShopOrderResponse updateOrderStatus(
 		@PathVariable Long id,

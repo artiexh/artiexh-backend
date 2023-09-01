@@ -49,10 +49,32 @@ public class ProductDocument {
 		private String username;
 		@Field(name = "displayName", type = FieldType.Text)
 		private String displayName;
+		@Field(name = "ward", type = FieldType.Object)
+		private Ward ward;
+		@Field(name = "district", type = FieldType.Object)
+		private District district;
 		@Field(name = "province", type = FieldType.Object)
 		private Province province;
+		@Field(name = "country", type = FieldType.Object)
+		private Country country;
 		@Field(name = "shopName", type = FieldType.Text)
 		private String shopName;
+	}
+
+	@Data
+	public static class Ward {
+		@Field(name = "id", type = FieldType.Long)
+		private Long id;
+		@Field(name = "name", type = FieldType.Keyword)
+		private String name;
+	}
+
+	@Data
+	public static class District {
+		@Field(name = "id", type = FieldType.Long)
+		private Long id;
+		@Field(name = "name", type = FieldType.Keyword)
+		private String name;
 	}
 
 	@Data
@@ -61,8 +83,6 @@ public class ProductDocument {
 		private Long id;
 		@Field(name = "name", type = FieldType.Keyword)
 		private String name;
-		@Field(name = "country", type = FieldType.Object)
-		private Country country;
 	}
 
 	@Data

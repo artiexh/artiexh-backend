@@ -8,6 +8,7 @@ import com.artiexh.model.domain.UserAddress;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.order.request.OrderPageFilter;
+import com.artiexh.model.rest.user.UserAddressRequest;
 import com.artiexh.model.rest.user.UserOrderResponse;
 import com.artiexh.model.rest.user.UserOrderResponsePage;
 import jakarta.persistence.EntityNotFoundException;
@@ -65,20 +66,20 @@ public class UserController {
 	@PostMapping(Endpoint.User.ADDRESS)
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
 	public UserAddress createUserAddress(Authentication authentication,
-										 @RequestBody @Valid UserAddress userAddress) {
+										 @RequestBody @Valid UserAddressRequest userAddressRequest) {
 		long userId = (long) authentication.getPrincipal();
-		return userAddressService.create(userId, userAddress);
+		return userAddressService.create(userId, userAddressRequest);
 	}
 
 	@PutMapping(Endpoint.User.ADDRESS + "/{id}")
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
 	public UserAddress updateUserAddress(Authentication authentication,
 										 @PathVariable Long id,
-										 @RequestBody @Valid UserAddress userAddress) {
+										 @RequestBody @Valid UserAddressRequest userAddressRequest) {
 		long userId = (long) authentication.getPrincipal();
-		userAddress.setId(id);
+		userAddressRequest.setId(id);
 		try {
-			return userAddressService.update(userId, userAddress);
+			return userAddressService.update(userId, userAddressRequest);
 		} catch (EntityNotFoundException ex) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
 		} catch (AccessDeniedException ex) {

@@ -8,6 +8,7 @@ import com.artiexh.data.jpa.entity.ProductTagEntity;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.data.opensearch.model.ProductDocument;
 import com.artiexh.model.domain.*;
+import com.artiexh.model.mapper.AddressMapper;
 import com.artiexh.model.mapper.ProductMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ public class ProductServiceImpl implements ProductService {
 	private final ProductMapper productMapper;
 	private final ProductRepository productRepository;
 	private final ElasticsearchOperations openSearchTemplate;
+	private final AddressMapper addressMapper;
 
 	@Override
 	public Page<ProductSuggestion> getSuggestionInPage(Query query, Pageable pageable) {
@@ -74,6 +76,8 @@ public class ProductServiceImpl implements ProductService {
 			Shop shop = Shop.builder()
 				.shopImageUrl(entity.getOwner().getShopImageUrl())
 				.shopName(entity.getOwner().getShopName())
+				.shopAddress(entity.getOwner().getShopAddress())
+				.shopWard(addressMapper.wardEntityToWard(entity.getOwner().getShopWard()))
 				.build();
 			product.setShop(shop);
 		}

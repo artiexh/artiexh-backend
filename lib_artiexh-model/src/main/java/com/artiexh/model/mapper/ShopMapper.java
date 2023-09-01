@@ -8,10 +8,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Mapper(
-	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {ArtistMapper.class}
-)
+@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, uses = {ArtistMapper.class, AddressMapper.class})
 public interface ShopMapper {
 
 	ArtistEntity domainToEntity(Shop shop);

@@ -1,10 +1,7 @@
 package com.artiexh.api.service.impl;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.PresignedUrlDownloadRequest;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.*;
 import com.artiexh.api.config.S3Config;
 import com.artiexh.api.config.S3ConfigurationProperties;
 import com.artiexh.api.exception.ErrorCode;
@@ -15,6 +12,7 @@ import com.artiexh.data.jpa.entity.MediaEntity;
 import com.artiexh.data.jpa.repository.AccountRepository;
 import com.artiexh.data.jpa.repository.MediaRepository;
 import com.artiexh.model.rest.media.FileResponse;
+import com.artiexh.model.rest.media.FileResponseList;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,9 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -81,6 +77,19 @@ public class StorageServiceImpl implements StorageService {
 
 	@Override
 	@Transactional
+	public FileResponseList upload(List<MultipartFile> multipartFile, Long userId) {
+		List<FileResponse> fileResponses = new ArrayList<>();
+		for (MultipartFile file : multipartFile) {
+			FileResponse fileResponse = upload(file, userId);
+			fileResponses.add(fileResponse);
+		}
+		return FileResponseList.builder()
+			.fileResponses(fileResponses)
+			.build();
+	}
+
+	@Override
+	@Transactional
 	public void updateSharedUsers(Long userId, Long[] sharedIds, Long mediaId) {
 		int numOfNotExisted = accountRepository.countByIdsIn(sharedIds);
 		if (numOfNotExisted < sharedIds.length) {
@@ -98,8 +107,11 @@ public class StorageServiceImpl implements StorageService {
 	}
 
 	@Override
-	public S3Object download(String fileName, Long userId) throws MalformedURLException {
-		mediaRepository.findByFileNameAndSharedUsersId(fileName, userId).orElseThrow(EntityNotFoundException::new);
+	public S3Object download(String fileName, Long userId, boolean isStaff) throws MalformedURLException {
+		if (!isStaff) {
+			mediaRepository.findByFileNameAndSharedUsersId(fileName, userId).orElseThrow(EntityNotFoundException::new);
+		}
+
 		URL url = new URL(S3Util.getPresignedString(s3Config.getRegion(), s3Config.getPrivateBucketName(), s3Config.getAccessKey(), s3Config.getSecretKey(), fileName, false));
 		return s3.download(new PresignedUrlDownloadRequest(
 			url

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface ArtistRepository extends JpaRepository<ArtistEntity, Long> {
 
 	@Modifying(flushAutomatically = true, clearAutomatically = true)
-	@Query(value = " INSERT INTO artist(id) VALUES(:id)", nativeQuery = true)
+	@Query(value = "INSERT INTO artist(id) VALUES(:id)", nativeQuery = true)
 	void createArtistByExistedUserId(@Param("id") Long id);
 
 }

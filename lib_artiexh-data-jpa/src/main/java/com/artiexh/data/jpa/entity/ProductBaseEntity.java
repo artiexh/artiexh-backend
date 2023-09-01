@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Type;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
@@ -37,6 +38,12 @@ public class ProductBaseEntity {
 
 	@Column(name = "description", nullable = false)
 	private String description;
+
+	@Column(name = "price_amount", nullable = false)
+	private BigDecimal priceAmount;
+
+	@Column(name = "price_unit", nullable = false, length = 3)
+	private String priceUnit;
 
 	@Column(name = "3D_model_code")
 	private Byte model3DCode;

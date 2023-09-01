@@ -47,6 +47,7 @@ public class AccountServiceImpl implements AccountService {
 					artist.setCartItemCount(cartItemRepository.countAllByCartId(id));
 					yield artist;
 				}
+				default -> null;
 			})
 			.orElse(null);
 	}

@@ -39,4 +39,8 @@ public class UserAddressEntity {
 	@Column(name = "receiver_name", nullable = false)
 	private String receiverName;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "ward_id")
+	private WardEntity ward;
+
 }
