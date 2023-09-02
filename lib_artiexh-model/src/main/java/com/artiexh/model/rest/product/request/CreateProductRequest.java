@@ -1,19 +1,28 @@
 package com.artiexh.model.rest.product.request;
 
-import com.artiexh.model.domain.*;
+import com.artiexh.model.domain.DeliveryType;
+import com.artiexh.model.domain.Money;
+import com.artiexh.model.domain.PaymentMethod;
+import com.artiexh.model.domain.ProductAttach;
+import com.artiexh.model.domain.ProductStatus;
+import com.artiexh.model.domain.ProductType;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import java.time.Instant;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.Instant;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateProductRequest {
+
 	@NotNull
 	private ProductStatus status;
 
@@ -51,4 +60,7 @@ public class CreateProductRequest {
 
 	@Valid
 	private Set<ProductAttach> attaches;
+
+	@NotNull
+	private Float weight;
 }
