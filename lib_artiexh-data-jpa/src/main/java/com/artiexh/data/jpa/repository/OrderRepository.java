@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface OrderRepository extends JpaRepository<OrderEntity, Long>, JpaSpecificationExecutor<OrderEntity> {
 	@Query(nativeQuery = true,
@@ -20,4 +22,7 @@ where o.id = :id
 group by o.id
 """)
 	Bill getBillInfo(@Param("id") Long id);
+
+	Optional<OrderEntity> findByIdAndShopId(Long orderId, Long artistId);
+
 }

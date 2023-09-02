@@ -12,6 +12,7 @@ import lombok.*;
 @Entity
 @Table(name = "order_detail")
 public class OrderDetailEntity {
+
 	@EmbeddedId
 	private OrderDetailId id;
 
