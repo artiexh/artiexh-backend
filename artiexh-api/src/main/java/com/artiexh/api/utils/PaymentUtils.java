@@ -56,17 +56,15 @@ public class PaymentUtils {
 			}
 		}
 		vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
-		Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
 		ZonedDateTime time = ZonedDateTime.now()              // Current moment in a particular time zone.
 			.withZoneSameInstant( ZoneId.of( "Asia/Ho_Chi_Minh" ));
 
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-		DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-		String vnp_CreateDate = time.format(formatter1);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+		String vnp_CreateDate = time.format(formatter);
 
 		vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
-		cld.add(Calendar.MINUTE, 15);
-		String vnp_ExpireDate = formatter.format(cld.getTime());
+		time = time.plusMinutes(15);
+		String vnp_ExpireDate = time.format(formatter);
 		vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 		List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
 		Collections.sort(fieldNames);
