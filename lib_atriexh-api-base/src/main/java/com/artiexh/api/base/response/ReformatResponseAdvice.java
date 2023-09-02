@@ -38,6 +38,10 @@ public class ReformatResponseAdvice implements ResponseBodyAdvice<Object> {
 			return body;
 		}
 
+		if (path.contains(Endpoint.Order.ROOT + Endpoint.Order.PAYMENT_RETURN)) {
+			return body;
+		}
+
 		if (body instanceof ProblemDetail problemDetail) {
 			return new ResponseModel(now, status, httpStatus.name(), problemDetail.getDetail(), path, null);
 		} else if ("/error".equals(path)) {
