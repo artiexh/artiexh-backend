@@ -13,10 +13,7 @@ import com.artiexh.model.mapper.ProviderMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.productbase.ProductBaseDetail;
-import com.artiexh.model.rest.provider.ProvidedProductBaseDetail;
-import com.artiexh.model.rest.provider.ProviderDetail;
-import com.artiexh.model.rest.provider.ProviderFilter;
-import com.artiexh.model.rest.provider.ProviderInfo;
+import com.artiexh.model.rest.provider.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -64,6 +61,16 @@ public class ProviderController {
 				ErrorCode.PROVIDER_NOT_FOUND.getMessage(),
 				exception);
 		}
+	}
+
+	@GetMapping(Endpoint.Provider.PROVIDER_PRODUCT)
+	public PageResponse<ProvidedProductBaseDetail> getProvidedProduct(
+		@ParameterObject PaginationAndSortingRequest paginationAndSortingRequest,
+		@ParameterObject ProviderProductFilter filter,
+		@PathVariable("id") String businessCode) {
+		filter.setBusinessCode(businessCode);
+		Page<ProvidedProductBase> productPage = providedProductBaseService.getAll(filter.getSpecification(), paginationAndSortingRequest.getPageable());
+		return new PageResponse<>(productPage.map(providedProductBaseMapper::domainToDetail));
 	}
 	//Create Provided Product
 	@PostMapping(Endpoint.Provider.PROVIDED_PRODUCT)
