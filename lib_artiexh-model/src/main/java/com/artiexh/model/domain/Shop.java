@@ -19,4 +19,5 @@ public class Shop {
 	private String shopAddress;
 	private Ward shopWard;
 	private Artist owner;
+	private String shopPhone;
 }

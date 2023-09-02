@@ -1,4 +1,3 @@
-
 spring:
   servlet:
     multipart:
@@ -95,3 +94,6 @@ artiexh:
       refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:}
     recent_oauth2_fail_id:
       expiration: ${CACHE_RECENT_OAUTH2_FAIL_ID_EXPIRE:}
+  ghtk:
+    base-url: ${GHTK_BASE_URL:}
+    token: ${GHTK_TOKEN:}
