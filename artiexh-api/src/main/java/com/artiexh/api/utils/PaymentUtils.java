@@ -63,7 +63,7 @@ public class PaymentUtils {
 		String vnp_CreateDate = time.format(formatter);
 
 		vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
-		time.plusMinutes(15);
+		time = time.plusMinutes(15);
 		String vnp_ExpireDate = time.format(formatter);
 		vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 		List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
