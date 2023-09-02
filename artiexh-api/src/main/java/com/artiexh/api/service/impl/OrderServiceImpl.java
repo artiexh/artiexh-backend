@@ -285,10 +285,10 @@ public class OrderServiceImpl implements OrderService {
 			.transactionStatus(paymentQueryProperties.getVnp_TransactionStatus())
 			.orderId(Long.parseLong(paymentQueryProperties.getVnp_TxnRef()))
 			.build();
-		orderTransactionRepository.save(orderTransaction);
+		orderTransactionRepository.saveAndFlush(orderTransaction);
 		if (paymentQueryProperties.getVnp_ResponseCode().equals("00")) {
 			log.info("Payment is done successfully. Transaction No" + paymentQueryProperties.getVnp_TransactionNo());
-			updateOrderStatus(Long.parseLong(paymentQueryProperties.getVnp_TxnRef()), OrderStatus.PREPARING);
+			orderRepository.updatePayment(Long.parseLong(paymentQueryProperties.getVnp_TxnRef()));
 		}
 		log.warn("Payment Transaction" + paymentQueryProperties.getVnp_TransactionNo() + " Status " + paymentQueryProperties.getVnp_TransactionStatus());
 		log.warn("Payment Transaction" + paymentQueryProperties.getVnp_TransactionNo() + " Response Code " + paymentQueryProperties.getVnp_ResponseCode());
