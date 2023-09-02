@@ -21,8 +21,6 @@ import com.artiexh.model.rest.order.request.UpdateShippingOrderRequest;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
-import java.math.BigDecimal;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +28,9 @@ import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+
+import java.math.BigDecimal;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -60,7 +61,7 @@ public class ArtistServiceImpl implements ArtistService {
 
 	@Override
 	public PageResponse<ShopOrderResponsePage> getAllOrder(Specification<OrderEntity> specification,
-		Pageable pageable) {
+														   Pageable pageable) {
 		Page<Order> orderPage = orderService.getInPage(specification, pageable);
 		return new PageResponse<>(orderPage.map(orderMapper::orderToArtistResponse));
 	}
@@ -68,7 +69,7 @@ public class ArtistServiceImpl implements ArtistService {
 	@Transactional
 	@Override
 	public ShopOrderResponse updateShippingOrderStatus(Long artistId, Long orderId,
-		UpdateShippingOrderRequest updateShippingOrderRequest) {
+													   UpdateShippingOrderRequest updateShippingOrderRequest) {
 		OrderEntity orderEntity = orderRepository.findByIdAndShopId(orderId, artistId).orElseThrow(
 			() -> new IllegalArgumentException("OrderId " + orderId + " is not belongs to artist " + artistId));
 
@@ -102,6 +103,7 @@ public class ArtistServiceImpl implements ArtistService {
 			.district(orderEntity.getShippingAddress().getWard().getDistrict().getFullName())
 			.ward(orderEntity.getShippingAddress().getWard().getFullName()).hamlet("Khác")
 			.tel(orderEntity.getShippingAddress().getPhone()).email(orderEntity.getUser().getEmail())
+			.weightOption("gram")
 			.value(updateShippingOrderRequest.getValue().intValue()).build();
 
 		var request = CreateOrderRequest.builder().order(order).products(products).build();
