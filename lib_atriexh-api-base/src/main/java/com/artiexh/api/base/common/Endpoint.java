@@ -86,6 +86,7 @@ public final class Endpoint {
 	public static class Order {
 		public static final String ROOT = PREFIX + "/order";
 		public static final String CHECKOUT = "/checkout";
+		public static final String SHIPPING_FEE = "/shipping-fee";
 		public static final String PAYMENT = "/{id}/payment";
 		public static final String PAYMENT_RETURN = "/payment/vnpay-return";
 	}
@@ -114,10 +115,12 @@ public final class Endpoint {
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Address {
+
 		public static final String ROOT = PREFIX + "/address";
 		public static final String COUNTRY = "/country";
 		public static final String PROVINCE = "/province";
 		public static final String DISTRICT = "/district";
 		public static final String WARD = "/ward";
 	}
+
 }

@@ -1,6 +1,7 @@
 package com.artiexh.api.service;
 
 import com.artiexh.data.jpa.entity.OrderEntity;
+import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
 import com.artiexh.model.domain.Order;
 import com.artiexh.model.domain.OrderStatus;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
@@ -21,6 +22,8 @@ public interface OrderService {
 	Order getById(Long orderId);
 
 	Order updateOrderStatus(Long orderId, OrderStatus newStatus);
+
+	ShipFeeResponse.ShipFee getShippingFee(Long userId, Long addressId, Long shopId, Integer weight);
 
 	String payment(Long id, PaymentQueryProperties paymentQueryProperties, Long userId);
 

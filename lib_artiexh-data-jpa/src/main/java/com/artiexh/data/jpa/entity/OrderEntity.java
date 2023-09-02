@@ -2,13 +2,11 @@ package com.artiexh.data.jpa.entity;
 
 import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -48,8 +46,8 @@ public class OrderEntity extends BaseAuditEntity {
 	@Column(name = "status", nullable = false)
 	private Byte status;
 
-	@OneToMany(cascade = CascadeType.ALL)
-	@PrimaryKeyJoinColumn
+	@OneToMany
+	@JoinColumn(name = "order_id")
 	private Set<OrderDetailEntity> orderDetails = new LinkedHashSet<>();
 
 	@OneToMany

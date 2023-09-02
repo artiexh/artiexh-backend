@@ -10,6 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RegistrationShopRequest {
+
 	@NotEmpty
 	private String shopName;
 
@@ -20,4 +21,7 @@ public class RegistrationShopRequest {
 
 	@NotEmpty
 	private String shopAddress;
+
+	@NotEmpty
+	private String shopPhone;
 }

@@ -9,6 +9,10 @@ import com.artiexh.api.utils.PaymentUtils;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.projection.Bill;
 import com.artiexh.data.jpa.repository.*;
+import com.artiexh.ghtk.client.model.GhtkResponse;
+import com.artiexh.ghtk.client.model.shipfee.ShipFeeRequest;
+import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
+import com.artiexh.ghtk.client.service.GhtkOrderService;
 import com.artiexh.model.domain.Order;
 import com.artiexh.model.domain.OrderStatus;
 import com.artiexh.model.domain.PaymentMethod;
@@ -27,10 +31,13 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.math.BigDecimal;
-import java.net.InetAddress;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -52,6 +59,8 @@ public class OrderServiceImpl implements OrderService {
 	private final OrderTransactionRepository orderTransactionRepository;
 	private final OrderMapper orderMapper;
 	private final CartService cartService;
+	private final GhtkOrderService ghtkOrderService;
+	private final ArtistRepository artistRepository;
 	private final VnpConfigurationProperties vnpProperties;
 	private final OrderTransactionMapper orderTransactionMapper;
 
@@ -239,6 +248,37 @@ public class OrderServiceImpl implements OrderService {
 		} else {
 			throw new IllegalArgumentException("Cannot change from " + orderStatus + " to " + newStatus);
 		}
+	}
+
+	@Transactional
+	@Override
+	public ShipFeeResponse.ShipFee getShippingFee(Long userId, Long addressId, Long shopId, Integer weight) {
+		var addressEntity = userAddressRepository.findByIdAndUserId(addressId, userId)
+			.orElseThrow(() -> new IllegalArgumentException("AddressId not belong to user"));
+
+		var shopEntity = artistRepository.findById(shopId)
+			.orElseThrow(() -> new IllegalArgumentException("ShopId not existed"));
+
+		var request = ShipFeeRequest.builder()
+			.pickAddress(shopEntity.getShopAddress())
+			.pickProvince(shopEntity.getShopWard().getDistrict().getProvince().getFullName())
+			.pickDistrict(shopEntity.getShopWard().getDistrict().getFullName())
+			.pickWard(shopEntity.getShopWard().getFullName())
+			.address(addressEntity.getAddress())
+			.province(addressEntity.getWard().getDistrict().getProvince().getFullName())
+			.district(addressEntity.getWard().getDistrict().getFullName())
+			.ward(addressEntity.getWard().getFullName())
+			.weight(weight)
+			.deliverOption("none")
+			.build();
+		var response = ghtkOrderService.getShipFee(request)
+			.doOnError(WebClientResponseException.class, throwable -> {
+				throw new IllegalArgumentException(
+					"Create ghtk order failed: " + throwable.getResponseBodyAs(GhtkResponse.class).getMessage());
+			})
+			.block();
+
+		return response.getFee();
 	}
 
 	@Override
