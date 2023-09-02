@@ -3,10 +3,7 @@ package com.artiexh.api.service.impl;
 import com.artiexh.api.service.CartService;
 import com.artiexh.api.service.OrderService;
 import com.artiexh.data.jpa.entity.*;
-import com.artiexh.data.jpa.repository.CartItemRepository;
-import com.artiexh.data.jpa.repository.OrderRepository;
-import com.artiexh.data.jpa.repository.ProductRepository;
-import com.artiexh.data.jpa.repository.UserAddressRepository;
+import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.Order;
 import com.artiexh.model.domain.OrderStatus;
 import com.artiexh.model.domain.PaymentMethod;
@@ -41,6 +38,7 @@ public class OrderServiceImpl implements OrderService {
 	private final UserAddressRepository userAddressRepository;
 	private final ProductRepository productRepository;
 	private final OrderRepository orderRepository;
+	private final OrderDetailRepository orderDetailRepository;
 	private final CartItemRepository cartItemRepository;
 	private final OrderMapper orderMapper;
 	private final CartService cartService;
@@ -53,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
 			default -> onlinePaymentOrder(userId, checkoutRequest);
 		};
 
-		return orderEntities.stream().map(orderMapper::entityToResponseDomain).collect(Collectors.toList());
+		return orderEntities.stream().map(orderMapper::entityToResponseDomain).toList();
 	}
 
 	private List<OrderEntity> cashPaymentOrder(long userId, CheckoutRequest checkoutRequest) {
@@ -103,14 +101,12 @@ public class OrderServiceImpl implements OrderService {
 		}
 	}
 
-	//@Transactional
-	public UserAddressEntity getUserAddressEntity(long userId, long addressId) {
+	private UserAddressEntity getUserAddressEntity(long userId, long addressId) {
 		return userAddressRepository.findByIdAndUserId(addressId, userId)
 			.orElseThrow(() -> new IllegalArgumentException("Address not existed"));
 	}
 
-	//@Transactional(isolation = Isolation.SERIALIZABLE)
-	public List<CartItemEntity> validateShopProductAndReduceQuantity(long userId, Set<CheckoutShop> shops, PaymentMethod paymentMethod) {
+	private List<CartItemEntity> validateShopProductAndReduceQuantity(long userId, Set<CheckoutShop> shops, PaymentMethod paymentMethod) {
 		Set<CartItemId> itemIds = shops.stream()
 			.flatMap(checkoutShop -> checkoutShop.getItemIds().stream())
 			.map(itemId -> new CartItemId(userId, itemId))
@@ -153,35 +149,39 @@ public class OrderServiceImpl implements OrderService {
 		return cartItemEntities;
 	}
 
-	//@Transactional
-	public List<OrderEntity> createOrder(long userId, UserAddressEntity address, OrderStatus status,
-										 Set<CheckoutShop> shops, List<CartItemEntity> cartItemEntities,
-										 PaymentMethod paymentMethod) {
-		Set<OrderEntity> orderEntities = shops.stream().map(checkoutShop ->
-				OrderEntity.builder()
+	private List<OrderEntity> createOrder(long userId, UserAddressEntity address, OrderStatus status,
+										  Set<CheckoutShop> shops, List<CartItemEntity> cartItemEntities,
+										  PaymentMethod paymentMethod) {
+		Set<OrderEntity> orderEntities = shops.stream().map(checkoutShop -> {
+				var orderEntity = OrderEntity.builder()
 					.user(UserEntity.builder().id(userId).build())
 					.shop(ArtistEntity.builder().id(checkoutShop.getShopId()).build())
 					.shippingAddress(address)
 					.note(checkoutShop.getNote())
 					.paymentMethod(paymentMethod.getByteValue())
 					.status(status.getByteValue())
-					.orderDetails(cartItemEntities.stream()
-						.filter(cartItemEntity -> cartItemEntity.getProduct().getShop().getId().equals(checkoutShop.getShopId()))
-						.map(cartItemEntity -> OrderDetailEntity.builder()
-							.product(cartItemEntity.getProduct())
-							.quantity(cartItemEntity.getQuantity())
-							.build()
-						)
-						.collect(Collectors.toSet())
+					.build();
+
+				var savedOrderEntity = orderRepository.save(orderEntity);
+				var orderDetailEntities = cartItemEntities.stream()
+					.filter(cartItemEntity -> cartItemEntity.getProduct().getShop().getId().equals(checkoutShop.getShopId()))
+					.map(cartItemEntity -> OrderDetailEntity.builder()
+						.id(new OrderDetailId(savedOrderEntity.getId(), null))
+						.product(cartItemEntity.getProduct())
+						.quantity(cartItemEntity.getQuantity())
+						.build()
 					)
-					.build()
-			)
+					.collect(Collectors.toSet());
+
+				orderDetailRepository.saveAll(orderDetailEntities);
+
+				return savedOrderEntity;
+			})
 			.collect(Collectors.toSet());
-		return orderRepository.saveAll(orderEntities);
+		return orderEntities.stream().toList();
 	}
 
-	//@Transactional(isolation = Isolation.SERIALIZABLE)
-	public void rollbackShopProductQuantity(List<CartItemEntity> cartItemEntities) {
+	private void rollbackShopProductQuantity(List<CartItemEntity> cartItemEntities) {
 		Set<ProductEntity> productEntities = cartItemEntities.stream()
 			.map(cartItemEntity -> {
 				ProductEntity productEntity = cartItemEntity.getProduct();
