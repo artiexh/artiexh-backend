@@ -52,9 +52,6 @@ public class ArtistEntity extends UserEntity {
 	@Column(name = "shop_address")
 	private String shopAddress;
 
-	@Column(name = "province_id")
-	private Integer provinceId;
-
 	@Size(max = 15)
 	@Column(name = "shop_phone", length = 15)
 	private String shopPhone;

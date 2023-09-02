@@ -1,24 +1,14 @@
 package com.artiexh.data.jpa.entity;
 
 import io.hypersistence.utils.hibernate.id.Tsid;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -56,8 +46,12 @@ public class OrderEntity extends BaseAuditEntity {
 	@Column(name = "status", nullable = false)
 	private Byte status;
 
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany
 	@JoinColumn(name = "order_id")
 	private Set<OrderDetailEntity> orderDetails = new LinkedHashSet<>();
+
+	@OneToMany
+	@JoinColumn(name = "order_id")
+	private Set<OrderTransactionEntity> orderTransaction = new LinkedHashSet<>();
 
 }

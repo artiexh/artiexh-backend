@@ -10,7 +10,6 @@ public final class Endpoint {
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static final class OAuth2 {
-
 		public static final String ROOT = PREFIX + "/oauth2";
 		public static final String AUTHORIZATION = "/authorization";
 		public static final String CALLBACK = "/callback/*";
@@ -18,7 +17,6 @@ public final class Endpoint {
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static final class Auth {
-
 		public static final String ROOT = PREFIX + "/auth";
 		public static final String LOGIN = "/login";
 		public static final String REFRESH = "/refresh";
@@ -27,7 +25,6 @@ public final class Endpoint {
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Registration {
-
 		public static final String ROOT = PREFIX + "/registration";
 		public static final String USER = "/user";
 		public static final String PRINTER_PROVIDER = "/printer-provider";
@@ -37,7 +34,6 @@ public final class Endpoint {
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Account {
-
 		public static final String ROOT = PREFIX + "/account";
 		public static final String ME = "/me";
 		public static final String PROFILE = "/{id}/profile";
@@ -45,7 +41,6 @@ public final class Endpoint {
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class User {
-
 		public static final String ROOT = PREFIX + "/user";
 		public static final String ADDRESS = "/address";
 		public static final String ORDER = "/order";
@@ -53,7 +48,6 @@ public final class Endpoint {
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Product {
-
 		public static final String ROOT = PREFIX + "/product";
 		public static final String PRODUCT_DETAIL = "/{id}";
 		public static final String SUGGESTION = "/suggestion";
@@ -61,14 +55,12 @@ public final class Endpoint {
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Cart {
-
 		public static final String ROOT = PREFIX + "/cart";
 		public static final String ITEM = "/item";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Artist {
-
 		public static final String ROOT = PREFIX + "/artist";
 		public static final String ARTIST_DETAIL = "/{id}";
 		public static final String ARTIST_PRODUCT = "/product";
@@ -77,33 +69,30 @@ public final class Endpoint {
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Category {
-
 		public static final String ROOT = PREFIX + "/category";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Tag {
-
 		public static final String ROOT = PREFIX + "/tag";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Province {
-
 		public static final String ROOT = PREFIX + "/province";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Order {
-
 		public static final String ROOT = PREFIX + "/order";
 		public static final String CHECKOUT = "/checkout";
 		public static final String SHIPPING_FEE = "/shipping-fee";
+		public static final String PAYMENT = "/{id}/payment";
+		public static final String PAYMENT_RETURN = "/payment/vnpay-return";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Media {
-
 		public static final String ROOT = PREFIX + "/media";
 		public static final String DOWNLOAD = "/download";
 		public static final String PUBLIC_UPLOAD = "/public-upload";
@@ -113,15 +102,14 @@ public final class Endpoint {
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class ProductBase {
-
 		public static final String ROOT = PREFIX + "/product-base";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Provider {
-
 		public static final String ROOT = PREFIX + "/provider";
 		public static final String DETAIL = "/{id}";
+		public static final String PROVIDER_PRODUCT = "/{id}/provided-product";
 		public static final String PROVIDED_PRODUCT = "/{providerId}/product-base/{productBaseId}/provided-product";
 	}
 
@@ -134,4 +122,5 @@ public final class Endpoint {
 		public static final String DISTRICT = "/district";
 		public static final String WARD = "/ward";
 	}
+
 }

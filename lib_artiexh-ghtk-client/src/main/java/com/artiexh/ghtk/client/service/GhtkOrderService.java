@@ -18,7 +18,7 @@ public interface GhtkOrderService {
 	@GetExchange("/services/shipment/fee")
 	Mono<ShipFeeResponse> getShipFee(@RequestBody ShipFeeRequest request);
 
-	@PostExchange("/services/shipment/order/")
+	@PostExchange("/services/shipment/order")
 	Mono<CreateOrderResponse> createOrder(@RequestBody CreateOrderRequest createOrderRequest, @RequestParam String ver);
 
 	@GetExchange("/services/shipment/v2/{orderId}")

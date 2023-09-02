@@ -55,8 +55,7 @@ public class ArtistController {
 		@ParameterObject @Valid OrderPageFilter filter
 	) {
 		long userId = (long) authentication.getPrincipal();
-		return artistService.getAllOrder(filter.getSpecificationForArtist(userId),
-			paginationAndSortingRequest.getPageable());
+		return artistService.getAllOrder(filter.getSpecificationForArtist(userId), paginationAndSortingRequest.getPageable());
 	}
 
 	@GetMapping(Endpoint.Artist.ARTIST_ORDER + "/{id}")
@@ -69,8 +68,7 @@ public class ArtistController {
 			long userId = (long) authentication.getPrincipal();
 			return artistService.getOrderById(id, userId);
 		} catch (EntityNotFoundException exception) {
-			throw new ResponseStatusException(ErrorCode.ORDER_NOT_FOUND.getCode(),
-				ErrorCode.ORDER_NOT_FOUND.getMessage(), exception);
+			throw new ResponseStatusException(ErrorCode.ORDER_NOT_FOUND.getCode(), ErrorCode.ORDER_NOT_FOUND.getMessage(), exception);
 		} catch (IllegalArgumentException exception) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
 		}
@@ -87,8 +85,7 @@ public class ArtistController {
 			long userId = (long) authentication.getPrincipal();
 			return artistService.updateShippingOrderStatus(userId, id, updateShippingOrderRequest);
 		} catch (EntityNotFoundException exception) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.ORDER_NOT_FOUND.getMessage(),
-				exception);
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.ORDER_NOT_FOUND.getMessage(), exception);
 		} catch (IllegalArgumentException exception) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
 		}
