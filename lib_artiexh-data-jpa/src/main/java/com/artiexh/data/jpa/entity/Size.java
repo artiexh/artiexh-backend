@@ -12,4 +12,5 @@ import lombok.Setter;
 public class Size {
 	private String name;
 	private String range;
+	private int quantity;
 }
