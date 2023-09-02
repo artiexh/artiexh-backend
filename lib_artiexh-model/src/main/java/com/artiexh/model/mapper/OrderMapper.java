@@ -20,7 +20,8 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 		UserMapper.class,
 		ProductMapper.class,
 		ShopMapper.class,
-		OrderTransactionMapper.class})
+		OrderTransactionMapper.class,
+		AddressMapper.class})
 public interface OrderMapper {
 
 	@Mapping(target = "user", qualifiedByName = "entityToBasicUser")
