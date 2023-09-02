@@ -56,6 +56,7 @@ public class PaymentUtils {
 			}
 		}
 		vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
+
 		ZonedDateTime time = ZonedDateTime.now()              // Current moment in a particular time zone.
 			.withZoneSameInstant( ZoneId.of( "Asia/Ho_Chi_Minh" ));
 
