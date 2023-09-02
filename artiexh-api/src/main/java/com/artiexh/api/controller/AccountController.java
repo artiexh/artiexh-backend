@@ -33,7 +33,6 @@ public class AccountController {
 		} catch (EntityNotFoundException ex) {
 			throw new ResponseStatusException(ErrorCode.USER_NOT_FOUND.getCode(), ErrorCode.USER_NOT_FOUND.getMessage(), ex);
 		}
-
 	}
 
 }
