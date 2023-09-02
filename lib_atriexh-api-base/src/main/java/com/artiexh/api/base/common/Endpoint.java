@@ -86,6 +86,8 @@ public final class Endpoint {
 	public static class Order {
 		public static final String ROOT = PREFIX + "/order";
 		public static final String CHECKOUT = "/checkout";
+		public static final String PAYMENT = "/{id}/payment";
+		public static final String PAYMENT_RETURN = "/payment/vnpay-return";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)

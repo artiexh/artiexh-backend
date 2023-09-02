@@ -65,6 +65,15 @@ springdoc:
     tags-sorter: alpha
   writer-with-order-by-keys: true
 artiexh:
+  payment:
+    vnp:
+      tmn-code: ${TMN_CODE:}
+      version: ${VNP_VERSION:}
+      command: ${PAY:}
+      return-url: ${RETURN_URL:}
+      url: ${VNP_URL:}
+      secret-key: ${VNP_SECRET_KEY:}
+      fe-confirm-url: ${FE_CONFIRM_URL:}
   aws:
     s3:
       public-bucket-name: ${PUBLIC_BUCKET_NAME:}
