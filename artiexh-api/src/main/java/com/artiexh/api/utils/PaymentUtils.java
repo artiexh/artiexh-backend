@@ -10,6 +10,9 @@ import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class PaymentUtils {
@@ -54,9 +57,12 @@ public class PaymentUtils {
 		}
 		vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 		Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+		ZonedDateTime time = ZonedDateTime.now()              // Current moment in a particular time zone.
+			.withZoneSameInstant( ZoneId.of( "Asia/Ho_Chi_Minh" ));
 
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-		String vnp_CreateDate = formatter.format(cld.getTime());
+		DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+		String vnp_CreateDate = time.format(formatter1);
 
 		vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 		cld.add(Calendar.MINUTE, 15);
