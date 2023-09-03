@@ -23,9 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.view.RedirectView;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.List;
 
@@ -55,7 +53,7 @@ public class OrderController {
 	@GetMapping(Order.SHIPPING_FEE)
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
 	public ShipFeeResponse.ShipFee getShippingFee(Authentication authentication,
-												  @RequestBody @Valid GetShippingFeeRequest request) {
+												  @Valid GetShippingFeeRequest request) {
 		var userId = (Long) authentication.getPrincipal();
 		try {
 			return orderService.getShippingFee(userId, request.getAddressId(), request.getShopId(), request.getTotalWeight());
@@ -75,11 +73,11 @@ public class OrderController {
 			}
 			return PaymentResponse.builder()
 				.paymentUrl(orderService.payment(
-					id,
-					PaymentQueryProperties.builder()
-						.vnp_IpAddr(ip)
-						.build(),
-					userId
+						id,
+						PaymentQueryProperties.builder()
+							.vnp_IpAddr(ip)
+							.build(),
+						userId
 					)
 				)
 				.build();
@@ -92,7 +90,7 @@ public class OrderController {
 
 	@GetMapping(Endpoint.Order.PAYMENT_RETURN)
 	public ResponseEntity<Void> confirmUrl(@ParameterObject PaymentQueryProperties paymentQueryProperties,
-									 RedirectAttributes attributes) {
+										   RedirectAttributes attributes) {
 		String confirmUrl = orderService.confirmPayment(paymentQueryProperties);
 		URI uri = URI.create(confirmUrl + "/" + paymentQueryProperties.getVnp_TxnRef());
 		return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
