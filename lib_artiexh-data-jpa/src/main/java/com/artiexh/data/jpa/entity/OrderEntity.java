@@ -2,11 +2,13 @@ package com.artiexh.data.jpa.entity;
 
 import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -53,5 +55,9 @@ public class OrderEntity extends BaseAuditEntity {
 	@OneToMany
 	@JoinColumn(name = "order_id")
 	private Set<OrderTransactionEntity> orderTransaction = new LinkedHashSet<>();
+
+	@OneToMany
+	@JoinColumn(name = "oder_id")
+	private Set<OrderHistoryEntity> orderHistories = new LinkedHashSet<>();
 
 }
