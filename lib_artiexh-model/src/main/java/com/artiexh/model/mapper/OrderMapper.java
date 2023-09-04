@@ -24,7 +24,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 		AddressMapper.class})
 public interface OrderMapper {
 
-	@Mapping(target = "user", qualifiedByName = "entityToBasicUser")
+	//@Mapping(target = "user", qualifiedByName = "entityToBasicUser")
 	Order entityToResponseDomain(OrderEntity entity);
 
 	OrderEntity orderToOrderEntity(Order order);

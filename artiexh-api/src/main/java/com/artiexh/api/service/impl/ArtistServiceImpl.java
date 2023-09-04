@@ -97,12 +97,12 @@ public class ArtistServiceImpl implements ArtistService {
 			.pickDistrict(orderEntity.getShop().getShopWard().getDistrict().getFullName())
 			.pickWard(orderEntity.getShop().getShopWard().getFullName()).pickTel(orderEntity.getShop().getShopPhone())
 			.pickTel(orderEntity.getShop().getShopPhone())
-			.name(orderEntity.getShippingAddress().getReceiverName())
-			.address(orderEntity.getShippingAddress().getAddress())
-			.province(orderEntity.getShippingAddress().getWard().getDistrict().getProvince().getFullName())
-			.district(orderEntity.getShippingAddress().getWard().getDistrict().getFullName())
-			.ward(orderEntity.getShippingAddress().getWard().getFullName()).hamlet("Khác")
-			.tel(orderEntity.getShippingAddress().getPhone()).email(orderEntity.getUser().getEmail())
+//			.name(orderEntity.getShippingAddress().getReceiverName())
+//			.address(orderEntity.getShippingAddress().getAddress())
+//			.province(orderEntity.getShippingAddress().getWard().getDistrict().getProvince().getFullName())
+//			.district(orderEntity.getShippingAddress().getWard().getDistrict().getFullName())
+//			.ward(orderEntity.getShippingAddress().getWard().getFullName()).hamlet("Khác")
+//			.tel(orderEntity.getShippingAddress().getPhone()).email(orderEntity.getUser().getEmail())
 			.weightOption("gram")
 			.value(updateShippingOrderRequest.getValue().intValue()).build();
 

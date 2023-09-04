@@ -16,5 +16,4 @@ import java.util.Set;
 @AllArgsConstructor
 public class UserOrderResponse extends UserOrderResponsePage {
 	private Set<OrderDetailResponse> orderDetails;
-	private OrderTransactionResponse currentTransaction;
 }

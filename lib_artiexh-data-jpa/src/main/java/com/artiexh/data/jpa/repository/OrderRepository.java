@@ -20,7 +20,8 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long>, JpaSp
 	@Query(nativeQuery = true,
 		value = """
 			SELECT sum(p.price_amount * od.quantity) as priceAmount, p.price_unit as priceUnit, o.user_id as ownerId, o.status as status
-			from `order` o
+			from order_group og
+			inner join `order` o on o.id = o.order_group_id
 			inner join order_detail od on o.id = od.order_id
 			inner join product p on od.product_id = p.id
 			where o.id = :id
@@ -29,6 +30,6 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long>, JpaSp
 	Bill getBillInfo(@Param("id") Long id);
 
 	@Modifying(flushAutomatically = true)
-	@Query("update OrderEntity set status = cast(1 as byte) where id = :id")
+	@Query("update OrderEntity set status = cast(1 as byte) where orderGroupId = :id")
 	void updatePayment(@Param("id") Long id);
 }

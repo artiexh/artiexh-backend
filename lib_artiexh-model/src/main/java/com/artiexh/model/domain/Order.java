@@ -16,11 +16,11 @@ public class Order {
 
 	private Long id;
 
-	private User user;
+	//private User user;
 
 	private Shop shop;
 
-	private UserAddress shippingAddress;
+	//private UserAddress shippingAddress;
 
 	private String note;
 
@@ -34,6 +34,6 @@ public class Order {
 
 	private LocalDateTime createdDate;
 
-	private OrderTransaction currentTransaction;
+	//private OrderTransaction currentTransaction;
 	
 }

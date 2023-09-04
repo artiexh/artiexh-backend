@@ -18,6 +18,7 @@ spring:
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect

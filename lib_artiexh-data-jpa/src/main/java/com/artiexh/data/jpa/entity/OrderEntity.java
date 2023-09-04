@@ -25,17 +25,17 @@ public class OrderEntity extends BaseAuditEntity {
 	@Column(name = "id", nullable = false)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "user_id", nullable = false)
-	private UserEntity user;
+//	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+//	@JoinColumn(name = "user_id", nullable = false)
+//	private UserEntity user;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "shop_id", nullable = false)
 	private ArtistEntity shop;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "shipping_address_id", nullable = false)
-	private UserAddressEntity shippingAddress;
+//	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+//	@JoinColumn(name = "shipping_address_id", nullable = false)
+//	private UserAddressEntity shippingAddress;
 
 	@Column(name = "note")
 	private String note;
@@ -50,8 +50,10 @@ public class OrderEntity extends BaseAuditEntity {
 	@JoinColumn(name = "order_id")
 	private Set<OrderDetailEntity> orderDetails = new LinkedHashSet<>();
 
-	@OneToMany
-	@JoinColumn(name = "order_id")
-	private Set<OrderTransactionEntity> orderTransaction = new LinkedHashSet<>();
+//	@OneToMany
+//	@JoinColumn(name = "order_id")
+//	private Set<OrderTransactionEntity> orderTransaction = new LinkedHashSet<>();
 
+	@Column(name = "order_group_id")
+	private Long orderGroupId;
 }
