@@ -11,9 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class OrderHistory {
 
-	private Long oderId;
-
-	private OrderHistory status;
+	private OrderHistoryStatus status;
 
 	private LocalDateTime datetime;
 

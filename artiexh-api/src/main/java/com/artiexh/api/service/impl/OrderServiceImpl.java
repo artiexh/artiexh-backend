@@ -13,10 +13,7 @@ import com.artiexh.ghtk.client.model.GhtkResponse;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeRequest;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
 import com.artiexh.ghtk.client.service.GhtkOrderService;
-import com.artiexh.model.domain.Order;
-import com.artiexh.model.domain.OrderStatus;
-import com.artiexh.model.domain.PaymentMethod;
-import com.artiexh.model.domain.ProductStatus;
+import com.artiexh.model.domain.*;
 import com.artiexh.model.mapper.OrderMapper;
 import com.artiexh.model.mapper.OrderTransactionMapper;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
@@ -63,6 +60,7 @@ public class OrderServiceImpl implements OrderService {
 	private final ArtistRepository artistRepository;
 	private final VnpConfigurationProperties vnpProperties;
 	private final OrderTransactionMapper orderTransactionMapper;
+	private final OrderHistoryRepository orderHistoryRepository;
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	@Override
@@ -195,6 +193,11 @@ public class OrderServiceImpl implements OrderService {
 					.collect(Collectors.toSet());
 
 				orderDetailRepository.saveAll(orderDetailEntities);
+
+				orderHistoryRepository.save(OrderHistoryEntity.builder()
+					.id(new OrderHistoryEntityId(savedOrderEntity.getId(), OrderHistoryStatus.CREATED.getByteValue()))
+					.build()
+				);
 
 				return savedOrderEntity;
 			})
