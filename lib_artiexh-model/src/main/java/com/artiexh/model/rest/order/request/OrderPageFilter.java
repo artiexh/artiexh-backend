@@ -1,7 +1,9 @@
 package com.artiexh.model.rest.order.request;
 
 import com.artiexh.data.jpa.entity.OrderEntity;
+import com.artiexh.data.jpa.entity.OrderGroupEntity;
 import com.artiexh.model.domain.OrderStatus;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -39,12 +41,13 @@ public class OrderPageFilter {
 		};
 	}
 
-	public Specification<OrderEntity> getSpecificationForUser(Long userId) {
+	public Specification<OrderGroupEntity> getSpecificationForUser(Long userId) {
 		return (root, cQuery, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			predicates.add(builder.equal(root.get("user").get("id"), userId));
 			if (status != null) {
-				predicates.add(builder.equal(root.get("status"), status.getByteValue()));
+				Join<OrderEntity, OrderGroupEntity> orderJoin = root.join("orders");
+				predicates.add(builder.equal(orderJoin.get("status"), status.getByteValue()));
 			}
 			if (from != null) {
 				predicates.add(builder.greaterThanOrEqualTo(root.get("createdDate"), from));

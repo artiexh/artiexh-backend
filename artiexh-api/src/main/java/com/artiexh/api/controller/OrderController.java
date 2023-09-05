@@ -11,7 +11,7 @@ import com.artiexh.model.mapper.OrderMapper;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
 import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
 import com.artiexh.model.rest.order.request.PaymentQueryProperties;
-import com.artiexh.model.rest.order.response.UserOrderGroupResponse;
+import com.artiexh.model.rest.order.response.CheckoutResponse;
 import com.artiexh.model.rest.order.response.PaymentResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,13 +39,13 @@ public class OrderController {
 
 	@PostMapping(Endpoint.Order.CHECKOUT)
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
-	public UserOrderGroupResponse checkout(Authentication authentication,
-										   @RequestBody @Valid CheckoutRequest request) {
+	public CheckoutResponse checkout(Authentication authentication,
+									 @RequestBody @Valid CheckoutRequest request) {
 		var userId = (Long) authentication.getPrincipal();
 		try {
 
 			OrderGroup orderGroup = orderService.checkout(userId, request);
-			return orderGroupMapper.domainToUserResponse(orderGroup);
+			return orderGroupMapper.domainToCheckoutResponse(orderGroup);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
 		}

@@ -226,18 +226,32 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public Page<Order> getInPage(Specification<OrderEntity> specification, Pageable pageable) {
+	public Page<Order> getOrderInPage(Specification<OrderEntity> specification, Pageable pageable) {
 		Page<OrderEntity> entities = orderRepository.findAll(specification, pageable);
 		Page<Order> orderPage = entities.map(orderMapper::entityToResponseDomain);
 		return orderPage;
 	}
 
 	@Override
-	public Order getById(Long orderId) {
+	public Page<OrderGroup> getInPage(Specification<OrderGroupEntity> specification, Pageable pageable) {
+		Page<OrderGroupEntity> entities = orderGroupRepository.findAll(specification, pageable);
+		Page<OrderGroup> orderPage = entities.map(orderGroupMapper::entityToDomain);
+		return orderPage;
+	}
+
+	@Override
+	public OrderGroup getById(Long orderGroupId) {
+		OrderGroupEntity order = orderGroupRepository.findById(orderGroupId).orElseThrow(EntityNotFoundException::new);
+		OrderTransactionEntity orderTransaction = order.getOrderTransaction().stream().max(Comparator.comparing(OrderTransactionEntity::getPayDate)).orElse(null);
+		OrderGroup domain = orderGroupMapper.entityToDomain(order);
+		domain.setCurrentTransaction(orderTransactionMapper.entityToDomain(orderTransaction));
+		return domain;
+	}
+
+	@Override
+	public Order getOrderById(Long orderId) {
 		OrderEntity order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
-		//OrderTransactionEntity orderTransaction = order.getOrderTransaction().stream().max(Comparator.comparing(OrderTransactionEntity::getPayDate)).orElse(null);
 		Order domain = orderMapper.entityToResponseDomain(order);
-		//domain.setCurrentTransaction(orderTransactionMapper.entityToDomain(orderTransaction));
 		return domain;
 	}
 

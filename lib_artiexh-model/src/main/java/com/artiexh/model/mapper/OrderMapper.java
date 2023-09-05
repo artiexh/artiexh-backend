@@ -9,9 +9,9 @@ import com.artiexh.model.rest.artist.ShopOrderResponsePage;
 import com.artiexh.model.rest.order.response.OrderDetailResponse;
 import com.artiexh.model.rest.user.UserOrderResponse;
 import com.artiexh.model.rest.user.UserOrderResponsePage;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
+
+import java.util.Set;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
@@ -29,13 +29,23 @@ public interface OrderMapper {
 
 	OrderEntity orderToOrderEntity(Order order);
 
-	ShopOrderResponse orderToArtistResponse(Order order);
+	ShopOrderResponse domainToArtistResponse(Order order);
 
-	UserOrderResponse orderToUserResponse(Order order);
+	@Named("domainToUserResponse")
+	UserOrderResponse domainToUserResponse(Order order);
 
-	ShopOrderResponsePage orderToArtistResponsePage(Order order);
+	@IterableMapping(qualifiedByName = "domainToUserResponse")
+	@Named("domainsToUserResponses")
+	Set<UserOrderResponse> domainsToUserResponses(Set<Order> orders);
 
+	ShopOrderResponsePage domainToArtistResponsePage(Order order);
+
+	@Named("domainToUserResponsePage")
 	UserOrderResponsePage domainToUserResponsePage(Order order);
+
+	@IterableMapping(qualifiedByName = "domainToUserResponsePage")
+	@Named("domainsToUserResponsePages")
+	Set<UserOrderResponsePage> domainsToUserResponsePages(Set<Order> orders);
 
 
 	@Mapping(target = "id", source = "product.id")
