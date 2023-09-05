@@ -36,5 +36,7 @@ public class Order {
 	private LocalDateTime createdDate;
 
 	//private OrderTransaction currentTransaction;
-	
+
+	private Set<OrderHistory> orderHistories;
+
 }

@@ -34,4 +34,5 @@ public class ShopOrderResponsePage {
 	private LocalDateTime modifiedDate;
 
 	private LocalDateTime createdDate;
+
 }

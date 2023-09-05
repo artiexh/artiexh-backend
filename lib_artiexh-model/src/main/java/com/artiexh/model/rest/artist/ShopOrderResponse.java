@@ -1,5 +1,6 @@
 package com.artiexh.model.rest.artist;
 
+import com.artiexh.model.domain.OrderHistory;
 import com.artiexh.model.rest.order.response.OrderDetailResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,4 +15,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class ShopOrderResponse extends ShopOrderResponsePage {
 	private Set<OrderDetailResponse> orderDetails;
+
+	private Set<OrderHistory> orderHistories;
 }

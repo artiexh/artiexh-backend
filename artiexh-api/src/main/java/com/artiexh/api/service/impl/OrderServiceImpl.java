@@ -33,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.math.BigDecimal;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,6 +63,7 @@ public class OrderServiceImpl implements OrderService {
 	private final ArtistRepository artistRepository;
 	private final VnpConfigurationProperties vnpProperties;
 	private final OrderTransactionMapper orderTransactionMapper;
+	private final OrderHistoryRepository orderHistoryRepository;
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	@Override
@@ -172,8 +172,8 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	private OrderGroupEntity createOrder(long userId, UserAddressEntity address, OrderStatus status,
-										  Set<CheckoutShop> shops, List<CartItemEntity> cartItemEntities,
-										  PaymentMethod paymentMethod) {
+										 Set<CheckoutShop> shops, List<CartItemEntity> cartItemEntities,
+										 PaymentMethod paymentMethod) {
 		OrderGroupEntity orderGroupEntity = new OrderGroupEntity();
 		orderGroupEntity.setShippingAddress(address);
 		orderGroupEntity.setUser(UserEntity.builder().id(userId).build());
@@ -203,6 +203,11 @@ public class OrderServiceImpl implements OrderService {
 					.collect(Collectors.toSet());
 
 				orderDetailRepository.saveAll(orderDetailEntities);
+
+				orderHistoryRepository.save(OrderHistoryEntity.builder()
+					.id(new OrderHistoryEntityId(savedOrderEntity.getId(), OrderHistoryStatus.CREATED.getByteValue()))
+					.build()
+				);
 
 				savedOrderEntity.setOrderDetails(orderDetailEntities);
 				return savedOrderEntity;
@@ -347,7 +352,20 @@ public class OrderServiceImpl implements OrderService {
 		orderTransactionRepository.saveAndFlush(orderTransaction);
 		if (paymentQueryProperties.getVnp_ResponseCode().equals("00")) {
 			log.info("Payment is done successfully. Transaction No" + paymentQueryProperties.getVnp_TransactionNo());
-			orderRepository.updatePayment(Long.parseLong(paymentQueryProperties.getVnp_TxnRef()));
+
+			long orderGroupId = Long.parseLong(paymentQueryProperties.getVnp_TxnRef());
+
+			var orderHistoryEntities = orderRepository.getAllByOrderGroupId(orderGroupId).stream()
+				.map(OrderEntity::getId)
+				.map(orderId -> OrderHistoryEntity.builder()
+					.id(new OrderHistoryEntityId(orderId, OrderHistoryStatus.PAID.getByteValue()))
+					.build()
+				)
+				.collect(Collectors.toSet());
+			
+			orderHistoryRepository.saveAll(orderHistoryEntities);
+
+			orderRepository.updatePayment(orderGroupId);
 		}
 		log.warn("Payment Transaction" + paymentQueryProperties.getVnp_TransactionNo() + " Status " + paymentQueryProperties.getVnp_TransactionStatus());
 		log.warn("Payment Transaction" + paymentQueryProperties.getVnp_TransactionNo() + " Response Code " + paymentQueryProperties.getVnp_ResponseCode());

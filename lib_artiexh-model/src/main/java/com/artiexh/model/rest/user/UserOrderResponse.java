@@ -1,6 +1,6 @@
 package com.artiexh.model.rest.user;
 
-import com.artiexh.model.domain.OrderDetail;
+import com.artiexh.model.domain.OrderHistory;
 import com.artiexh.model.rest.order.response.OrderDetailResponse;
 import com.artiexh.model.rest.transaction.OrderTransactionResponse;
 import lombok.AllArgsConstructor;
@@ -18,4 +18,6 @@ import java.util.Set;
 public class UserOrderResponse extends UserOrderResponsePage {
 	private Set<OrderDetailResponse> orderDetails;
 	private BigDecimal shippingFee;
+	private OrderTransactionResponse currentTransaction;
+	private Set<OrderHistory> orderHistories;
 }
