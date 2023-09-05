@@ -3,6 +3,7 @@ package com.artiexh.data.jpa.repository;
 import com.artiexh.data.jpa.entity.OrderGroupEntity;
 import com.artiexh.data.jpa.projection.Bill;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface OrderGroupRepository extends JpaRepository<OrderGroupEntity, Long> {
+public interface OrderGroupRepository extends JpaRepository<OrderGroupEntity, Long>, JpaSpecificationExecutor<OrderGroupEntity> {
 	@Query(nativeQuery = true,
 		value = """
 		SELECT o.id as orderId, sum(p.price_amount * od.quantity) + o.shipping_fee as orderAmount, p.price_unit as priceUnit, og.user_id as ownerId, o.status as status

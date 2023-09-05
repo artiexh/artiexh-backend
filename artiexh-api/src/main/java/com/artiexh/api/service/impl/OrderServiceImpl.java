@@ -14,9 +14,7 @@ import com.artiexh.ghtk.client.model.shipfee.ShipFeeRequest;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
 import com.artiexh.ghtk.client.service.GhtkOrderService;
 import com.artiexh.model.domain.*;
-import com.artiexh.model.mapper.OrderGroupMapper;
-import com.artiexh.model.mapper.OrderMapper;
-import com.artiexh.model.mapper.OrderTransactionMapper;
+import com.artiexh.model.mapper.*;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
 import com.artiexh.model.rest.order.request.CheckoutShop;
 import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
@@ -33,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,6 +62,8 @@ public class OrderServiceImpl implements OrderService {
 	private final ArtistRepository artistRepository;
 	private final VnpConfigurationProperties vnpProperties;
 	private final OrderTransactionMapper orderTransactionMapper;
+	private final UserMapper userMapper;
+	private final UserAddressMapper userAddressMapper;
 	private final OrderHistoryRepository orderHistoryRepository;
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
@@ -231,18 +232,38 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public Page<Order> getInPage(Specification<OrderEntity> specification, Pageable pageable) {
+	public Page<Order> getOrderInPage(Specification<OrderEntity> specification, Pageable pageable) {
 		Page<OrderEntity> entities = orderRepository.findAll(specification, pageable);
-		Page<Order> orderPage = entities.map(orderMapper::entityToResponseDomain);
+		return entities.map(order -> {
+			Order domain = orderMapper.entityToResponseDomain(order);
+			domain.setShippingAddress(userAddressMapper.entityToDomain(order.getOrderGroup().getShippingAddress()));
+			domain.setUser(userMapper.entityToBasicUser(order.getOrderGroup().getUser()));
+			return domain;
+		});
+	}
+
+	@Override
+	public Page<OrderGroup> getInPage(Specification<OrderGroupEntity> specification, Pageable pageable) {
+		Page<OrderGroupEntity> entities = orderGroupRepository.findAll(specification, pageable);
+		Page<OrderGroup> orderPage = entities.map(orderGroupMapper::entityToDomain);
 		return orderPage;
 	}
 
 	@Override
-	public Order getById(Long orderId) {
+	public OrderGroup getById(Long orderGroupId) {
+		OrderGroupEntity order = orderGroupRepository.findById(orderGroupId).orElseThrow(EntityNotFoundException::new);
+		OrderTransactionEntity orderTransaction = order.getOrderTransaction().stream().max(Comparator.comparing(OrderTransactionEntity::getPayDate)).orElse(null);
+		OrderGroup domain = orderGroupMapper.entityToDomain(order);
+		domain.setCurrentTransaction(orderTransactionMapper.entityToDomain(orderTransaction));
+		return domain;
+	}
+
+	@Override
+	public Order getOrderById(Long orderId) {
 		OrderEntity order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
-		//OrderTransactionEntity orderTransaction = order.getOrderTransaction().stream().max(Comparator.comparing(OrderTransactionEntity::getPayDate)).orElse(null);
 		Order domain = orderMapper.entityToResponseDomain(order);
-		//domain.setCurrentTransaction(orderTransactionMapper.entityToDomain(orderTransaction));
+		domain.setShippingAddress(userAddressMapper.entityToDomain(order.getOrderGroup().getShippingAddress()));
+		domain.setUser(userMapper.entityToBasicUser(order.getOrderGroup().getUser()));
 		return domain;
 	}
 
@@ -362,7 +383,7 @@ public class OrderServiceImpl implements OrderService {
 					.build()
 				)
 				.collect(Collectors.toSet());
-			
+
 			orderHistoryRepository.saveAll(orderHistoryEntities);
 
 			orderRepository.updatePayment(orderGroupId);

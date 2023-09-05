@@ -51,18 +51,18 @@ public class ArtistServiceImpl implements ArtistService {
 
 	@Override
 	public ShopOrderResponse getOrderById(Long orderId, Long artistId) {
-		Order order = orderService.getById(orderId);
+		Order order = orderService.getOrderById(orderId);
 		if (!order.getShop().getId().equals(artistId)) {
 			throw new IllegalArgumentException(ErrorCode.ORDER_IS_INVALID.getMessage());
 		}
-		return orderMapper.orderToArtistResponse(order);
+		return orderMapper.domainToArtistResponse(order);
 	}
 
 	@Override
 	public PageResponse<ShopOrderResponsePage> getAllOrder(Specification<OrderEntity> specification,
 														   Pageable pageable) {
-		Page<Order> orderPage = orderService.getInPage(specification, pageable);
-		return new PageResponse<>(orderPage.map(orderMapper::orderToArtistResponse));
+		Page<Order> orderPage = orderService.getOrderInPage(specification, pageable);
+		return new PageResponse<>(orderPage.map(orderMapper::domainToArtistResponsePage));
 	}
 
 	@Transactional
@@ -164,6 +164,6 @@ public class ArtistServiceImpl implements ArtistService {
 
 		orderEntity.setStatus(OrderStatus.SHIPPING.getByteValue());
 		orderRepository.save(orderEntity);
-		return orderMapper.orderToArtistResponse(orderMapper.entityToResponseDomain(orderEntity));
+		return orderMapper.domainToArtistResponse(orderMapper.entityToResponseDomain(orderEntity));
 	}
 }

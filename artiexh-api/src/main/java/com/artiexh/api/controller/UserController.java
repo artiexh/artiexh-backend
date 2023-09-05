@@ -9,8 +9,9 @@ import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.order.request.OrderPageFilter;
 import com.artiexh.model.rest.user.UserAddressRequest;
+import com.artiexh.model.rest.user.UserOrderGroupResponse;
+import com.artiexh.model.rest.user.UserOrderGroupResponsePage;
 import com.artiexh.model.rest.user.UserOrderResponse;
-import com.artiexh.model.rest.user.UserOrderResponsePage;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -106,7 +107,7 @@ public class UserController {
 
 	@GetMapping(Endpoint.User.ORDER)
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
-	public PageResponse<UserOrderResponsePage> getAllOrder(
+	public PageResponse<UserOrderGroupResponsePage> getAllOrder(
 		Authentication authentication,
 		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
 		@ParameterObject @Valid OrderPageFilter filter
@@ -117,7 +118,7 @@ public class UserController {
 
 	@GetMapping(Endpoint.User.ORDER + "/{id}")
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
-	public UserOrderResponse getOrderById(
+	public UserOrderGroupResponse getOrderById(
 		@PathVariable Long id,
 		Authentication authentication
 	) {

@@ -5,10 +5,7 @@ import com.artiexh.model.rest.transaction.OrderTransactionResponse;
 import com.artiexh.model.rest.user.UserOrderResponse;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Set;
 
@@ -16,7 +13,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserOrderGroupResponse {
+public class CheckoutResponse {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	private Set<UserOrderResponse> orders;
