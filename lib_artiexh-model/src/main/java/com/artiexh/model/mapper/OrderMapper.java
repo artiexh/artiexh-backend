@@ -13,15 +13,7 @@ import org.mapstruct.*;
 
 import java.util.Set;
 
-@Mapper(
-	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {
-		UserAddressMapper.class,
-		UserMapper.class,
-		ProductMapper.class,
-		ShopMapper.class,
-		OrderTransactionMapper.class,
-		AddressMapper.class})
+@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, uses = {UserAddressMapper.class, UserMapper.class, ProductMapper.class, ShopMapper.class, OrderTransactionMapper.class, AddressMapper.class, OrderHistoryMapper.class})
 public interface OrderMapper {
 
 	//@Mapping(target = "user", qualifiedByName = "entityToBasicUser")
