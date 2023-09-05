@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface OrderRepository extends JpaRepository<OrderEntity, Long>, JpaSpecificationExecutor<OrderEntity> {
@@ -18,4 +19,6 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long>, JpaSp
 	@Modifying(flushAutomatically = true)
 	@Query("update OrderEntity set status = cast(1 as byte) where orderGroupId = :id")
 	void updatePayment(@Param("id") Long id);
+
+	Set<OrderEntity> getAllByOrderGroupId(Long orderGroupId);
 }

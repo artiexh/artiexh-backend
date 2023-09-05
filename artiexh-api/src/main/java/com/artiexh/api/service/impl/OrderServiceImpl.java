@@ -352,7 +352,20 @@ public class OrderServiceImpl implements OrderService {
 		orderTransactionRepository.saveAndFlush(orderTransaction);
 		if (paymentQueryProperties.getVnp_ResponseCode().equals("00")) {
 			log.info("Payment is done successfully. Transaction No" + paymentQueryProperties.getVnp_TransactionNo());
-			orderRepository.updatePayment(Long.parseLong(paymentQueryProperties.getVnp_TxnRef()));
+
+			long orderGroupId = Long.parseLong(paymentQueryProperties.getVnp_TxnRef());
+
+			var orderHistoryEntities = orderRepository.getAllByOrderGroupId(orderGroupId).stream()
+				.map(OrderEntity::getId)
+				.map(orderId -> OrderHistoryEntity.builder()
+					.id(new OrderHistoryEntityId(orderId, OrderHistoryStatus.PAID.getByteValue()))
+					.build()
+				)
+				.collect(Collectors.toSet());
+			
+			orderHistoryRepository.saveAll(orderHistoryEntities);
+
+			orderRepository.updatePayment(orderGroupId);
 		}
 		log.warn("Payment Transaction" + paymentQueryProperties.getVnp_TransactionNo() + " Status " + paymentQueryProperties.getVnp_TransactionStatus());
 		log.warn("Payment Transaction" + paymentQueryProperties.getVnp_TransactionNo() + " Response Code " + paymentQueryProperties.getVnp_ResponseCode());
