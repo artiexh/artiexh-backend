@@ -17,7 +17,7 @@ public class Order {
 
 	private Long id;
 
-	//private User user;
+	private User user;
 
 	private UserAddress shippingAddress;
 
