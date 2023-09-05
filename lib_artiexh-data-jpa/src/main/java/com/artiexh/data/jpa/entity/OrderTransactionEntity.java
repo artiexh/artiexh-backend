@@ -25,8 +25,8 @@ public class OrderTransactionEntity {
 	private Long id;
 	private String transactionNo;
 
-	@Column(name = "order_id", nullable = false)
-	private Long orderId;
+	@Column(name = "order_group_id", nullable = false)
+	private Long orderGroupId;
 
 	private BigDecimal priceAmount;
 

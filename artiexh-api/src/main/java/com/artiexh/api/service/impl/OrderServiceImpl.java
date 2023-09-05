@@ -342,7 +342,7 @@ public class OrderServiceImpl implements OrderService {
 			.priceAmount(new BigDecimal(paymentQueryProperties.getVnp_Amount()).divide(new BigDecimal(100)))
 			.responseCode(paymentQueryProperties.getVnp_ResponseCode())
 			.transactionStatus(paymentQueryProperties.getVnp_TransactionStatus())
-			.orderId(Long.parseLong(paymentQueryProperties.getVnp_TxnRef()))
+			.orderGroupId(Long.parseLong(paymentQueryProperties.getVnp_TxnRef()))
 			.build();
 		orderTransactionRepository.saveAndFlush(orderTransaction);
 		if (paymentQueryProperties.getVnp_ResponseCode().equals("00")) {
