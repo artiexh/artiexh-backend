@@ -28,6 +28,10 @@ public class OrderTransactionEntity {
 	@Column(name = "order_group_id", nullable = false)
 	private Long orderGroupId;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "order_group_id", updatable = false, insertable = false)
+	private OrderGroupEntity orderGroup;
+
 	private BigDecimal priceAmount;
 
 	private String bankCode;
