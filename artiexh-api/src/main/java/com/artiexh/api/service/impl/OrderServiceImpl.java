@@ -187,6 +187,7 @@ public class OrderServiceImpl implements OrderService {
 					.paymentMethod(paymentMethod.getByteValue())
 					.status(status.getByteValue())
 					.orderGroupId(orderGroupEntity.getId())
+					.shippingFee(checkoutShop.getShippingFee())
 					.build();
 
 				var savedOrderEntity = orderRepository.save(orderEntity);
@@ -202,6 +203,7 @@ public class OrderServiceImpl implements OrderService {
 
 				orderDetailRepository.saveAll(orderDetailEntities);
 
+				savedOrderEntity.setOrderDetails(orderDetailEntities);
 				return savedOrderEntity;
 			})
 			.collect(Collectors.toSet());

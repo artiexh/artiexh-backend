@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -56,4 +57,7 @@ public class OrderEntity extends BaseAuditEntity {
 
 	@Column(name = "order_group_id")
 	private Long orderGroupId;
+
+	@Column(name = "shipping_fee", nullable = false)
+	private BigDecimal shippingFee;
 }

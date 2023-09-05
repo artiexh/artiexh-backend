@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -20,7 +21,7 @@ public class Order {
 
 	private Shop shop;
 
-	//private UserAddress shippingAddress;
+	private BigDecimal shippingFee;
 
 	private String note;
 
