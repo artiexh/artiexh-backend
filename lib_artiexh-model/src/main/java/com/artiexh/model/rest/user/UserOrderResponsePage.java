@@ -1,6 +1,9 @@
 package com.artiexh.model.rest.user;
 
-import com.artiexh.model.domain.*;
+import com.artiexh.model.domain.OrderStatus;
+import com.artiexh.model.domain.PaymentMethod;
+import com.artiexh.model.domain.Shop;
+import com.artiexh.model.domain.UserAddress;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
@@ -9,7 +12,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -32,6 +34,4 @@ public class UserOrderResponsePage {
 	private LocalDateTime modifiedDate;
 
 	private LocalDateTime createdDate;
-
-	private Set<OrderHistory> orderHistories;
 }
