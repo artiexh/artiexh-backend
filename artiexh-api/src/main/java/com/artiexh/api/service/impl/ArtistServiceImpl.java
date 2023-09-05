@@ -99,9 +99,15 @@ public class ArtistServiceImpl implements ArtistService {
 			.note(updateShippingOrderRequest.getNote())
 			.weightOption("gram")
 			.value(updateShippingOrderRequest.getValue().intValue())
-			.pickWorkShift(updateShippingOrderRequest.getPickWorkShift().getValue())
-			.deliverWorkShift(updateShippingOrderRequest.getDeliverWorkShift().getValue())
 			.tags(updateShippingOrderRequest.getTags());
+
+		if (updateShippingOrderRequest.getPickWorkShift() != null) {
+			orderBuilder.pickWorkShift(updateShippingOrderRequest.getPickWorkShift().getValue());
+		}
+
+		if (updateShippingOrderRequest.getDeliverWorkShift() != null) {
+			orderBuilder.deliverWorkShift(updateShippingOrderRequest.getDeliverWorkShift().getValue());
+		}
 
 		if (StringUtils.hasText(updateShippingOrderRequest.getPickAddress()) &&
 			StringUtils.hasText(updateShippingOrderRequest.getPickProvince()) &&
@@ -129,7 +135,7 @@ public class ArtistServiceImpl implements ArtistService {
 				.pickEmail(orderEntity.getShop().getEmail());
 		}
 
-		if (updateShippingOrderRequest.getUseReturnAddress() == 1 &&
+		if (Integer.valueOf(1).equals(updateShippingOrderRequest.getUseReturnAddress()) &&
 			StringUtils.hasText(updateShippingOrderRequest.getReturnName()) &&
 			StringUtils.hasText(updateShippingOrderRequest.getReturnAddress()) &&
 			StringUtils.hasText(updateShippingOrderRequest.getReturnProvince()) &&
