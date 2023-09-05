@@ -90,12 +90,12 @@ public class ArtistServiceImpl implements ArtistService {
 
 		var orderBuilder = CreateOrderRequest.Order.builder().id(orderEntity.getId().toString())
 			.pickMoney(0) // no cod
-			.name(orderEntity.getShippingAddress().getReceiverName())
-			.address(orderEntity.getShippingAddress().getAddress())
-			.province(orderEntity.getShippingAddress().getWard().getDistrict().getProvince().getFullName())
-			.district(orderEntity.getShippingAddress().getWard().getDistrict().getFullName())
-			.ward(orderEntity.getShippingAddress().getWard().getFullName()).hamlet("Khác")
-			.tel(orderEntity.getShippingAddress().getPhone()).email(orderEntity.getUser().getEmail())
+			.name(orderEntity.getOrderGroup().getShippingAddress().getReceiverName())
+			.address(orderEntity.getOrderGroup().getShippingAddress().getAddress())
+			.province(orderEntity.getOrderGroup().getShippingAddress().getWard().getDistrict().getProvince().getFullName())
+			.district(orderEntity.getOrderGroup().getShippingAddress().getWard().getDistrict().getFullName())
+			.ward(orderEntity.getOrderGroup().getShippingAddress().getWard().getFullName()).hamlet("Khác")
+			.tel(orderEntity.getOrderGroup().getShippingAddress().getPhone()).email(orderEntity.getOrderGroup().getUser().getEmail())
 			.note(updateShippingOrderRequest.getNote())
 			.weightOption("gram")
 			.value(updateShippingOrderRequest.getValue().intValue())

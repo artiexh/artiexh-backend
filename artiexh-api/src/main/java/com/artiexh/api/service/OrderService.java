@@ -3,6 +3,7 @@ package com.artiexh.api.service;
 import com.artiexh.data.jpa.entity.OrderEntity;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
 import com.artiexh.model.domain.Order;
+import com.artiexh.model.domain.OrderGroup;
 import com.artiexh.model.domain.OrderStatus;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
 import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
@@ -15,7 +16,7 @@ import java.util.List;
 
 public interface OrderService {
 
-	List<Order> checkout(long userId, CheckoutRequest request);
+	OrderGroup checkout(long userId, CheckoutRequest request);
 
 	Page<Order> getInPage(Specification<OrderEntity> query, Pageable pageable);
 

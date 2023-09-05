@@ -24,9 +24,9 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserOrderResponse getOrderById(Long id, Long userId) {
 		Order order = orderService.getById(id);
-		if (!order.getUser().getId().equals(userId)) {
-			throw new IllegalArgumentException(ErrorCode.ORDER_IS_INVALID.getMessage());
-		}
+//		if (!order.getUser().getId().equals(userId)) {
+//			throw new IllegalArgumentException(ErrorCode.ORDER_IS_INVALID.getMessage());
+//		}
 		return orderMapper.orderToUserResponse(order);
 	}
 

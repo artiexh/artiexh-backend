@@ -3,7 +3,9 @@ package com.artiexh.data.jpa.projection;
 import java.math.BigDecimal;
 
 public interface Bill {
-	BigDecimal getPriceAmount();
+	Long getOrderId();
+
+	BigDecimal getOrderAmount();
 
 	String getPriceUnit();
 
