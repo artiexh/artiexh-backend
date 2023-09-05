@@ -1,6 +1,7 @@
 package com.artiexh.api.service;
 
 import com.artiexh.data.jpa.entity.OrderEntity;
+import com.artiexh.data.jpa.entity.OrderGroupEntity;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
 import com.artiexh.model.domain.Order;
 import com.artiexh.model.domain.OrderGroup;
@@ -16,9 +17,13 @@ public interface OrderService {
 
 	OrderGroup checkout(long userId, CheckoutRequest request);
 
-	Page<Order> getInPage(Specification<OrderEntity> query, Pageable pageable);
+	Page<Order> getOrderInPage(Specification<OrderEntity> query, Pageable pageable);
 
-	Order getById(Long orderId);
+	Page<OrderGroup> getInPage(Specification<OrderGroupEntity> query, Pageable pageable);
+
+	OrderGroup getById(Long orderGroupId);
+
+	Order getOrderById(Long orderId);
 
 	Order updateOrderStatus(Long orderId, OrderStatus newStatus);
 
