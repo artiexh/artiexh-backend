@@ -34,6 +34,10 @@ public class OrderEntity extends BaseAuditEntity {
 	@JoinColumn(name = "shop_id", nullable = false)
 	private ArtistEntity shop;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "order_group_id", insertable = false, updatable = false)
+	private OrderGroupEntity orderGroup;
+
 //	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 //	@JoinColumn(name = "shipping_address_id", nullable = false)
 //	private UserAddressEntity shippingAddress;

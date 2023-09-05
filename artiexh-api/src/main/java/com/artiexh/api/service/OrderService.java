@@ -6,12 +6,12 @@ import com.artiexh.model.domain.Order;
 import com.artiexh.model.domain.OrderGroup;
 import com.artiexh.model.domain.OrderStatus;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
+import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
 import com.artiexh.model.rest.order.request.PaymentQueryProperties;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 public interface OrderService {
@@ -24,7 +24,7 @@ public interface OrderService {
 
 	Order updateOrderStatus(Long orderId, OrderStatus newStatus);
 
-	ShipFeeResponse.ShipFee getShippingFee(Long userId, Long addressId, Long shopId, Integer weight);
+	ShipFeeResponse.ShipFee getShippingFee(Long userId, Long addressId, GetShippingFeeRequest request);
 
 	String payment(Long id, PaymentQueryProperties paymentQueryProperties, Long userId);
 

@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -27,5 +29,5 @@ public class ShipFeeRequest {
 	private Integer value;
 	private String transport;
 	private String deliverOption;
-	private String tags;
+	private Set<String> tags;
 }

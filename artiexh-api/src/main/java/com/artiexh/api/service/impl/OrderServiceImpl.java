@@ -19,6 +19,7 @@ import com.artiexh.model.mapper.OrderMapper;
 import com.artiexh.model.mapper.OrderTransactionMapper;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
 import com.artiexh.model.rest.order.request.CheckoutShop;
+import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
 import com.artiexh.model.rest.order.request.PaymentQueryProperties;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -262,11 +263,11 @@ public class OrderServiceImpl implements OrderService {
 
 	@Transactional
 	@Override
-	public ShipFeeResponse.ShipFee getShippingFee(Long userId, Long addressId, Long shopId, Integer weight) {
+	public ShipFeeResponse.ShipFee getShippingFee(Long userId, Long addressId, GetShippingFeeRequest getShippingFeeRequest) {
 		var addressEntity = userAddressRepository.findByIdAndUserId(addressId, userId)
 			.orElseThrow(() -> new IllegalArgumentException("AddressId not belong to user"));
 
-		var shopEntity = artistRepository.findById(shopId)
+		var shopEntity = artistRepository.findById(getShippingFeeRequest.getShopId())
 			.orElseThrow(() -> new IllegalArgumentException("ShopId not existed"));
 
 		var request = ShipFeeRequest.builder()
@@ -278,8 +279,9 @@ public class OrderServiceImpl implements OrderService {
 			.province(addressEntity.getWard().getDistrict().getProvince().getFullName())
 			.district(addressEntity.getWard().getDistrict().getFullName())
 			.ward(addressEntity.getWard().getFullName())
-			.weight(weight)
+			.weight(getShippingFeeRequest.getTotalWeight())
 			.deliverOption("none")
+			.tags(getShippingFeeRequest.getTags())
 			.build();
 		var response = ghtkOrderService.getShipFee(request)
 			.doOnError(WebClientResponseException.class, throwable -> {
