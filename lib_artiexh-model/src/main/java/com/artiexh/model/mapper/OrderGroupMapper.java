@@ -5,7 +5,6 @@ import com.artiexh.model.domain.OrderGroup;
 import com.artiexh.model.rest.order.response.CheckoutResponse;
 import com.artiexh.model.rest.user.UserOrderGroupResponse;
 import com.artiexh.model.rest.user.UserOrderGroupResponsePage;
-import com.artiexh.model.rest.order.response.UserOrderGroupResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
