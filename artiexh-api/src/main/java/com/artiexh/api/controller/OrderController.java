@@ -5,12 +5,14 @@ import com.artiexh.api.base.common.Endpoint.Order;
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.OrderService;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
+import com.artiexh.model.domain.OrderGroup;
+import com.artiexh.model.mapper.OrderGroupMapper;
 import com.artiexh.model.mapper.OrderMapper;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
 import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
 import com.artiexh.model.rest.order.request.PaymentQueryProperties;
 import com.artiexh.model.rest.order.response.PaymentResponse;
-import com.artiexh.model.rest.user.UserOrderResponse;
+import com.artiexh.model.rest.order.response.UserOrderGroupResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -25,7 +27,6 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.net.URI;
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -34,17 +35,17 @@ public class OrderController {
 
 	private final OrderService orderService;
 	private final OrderMapper orderMapper;
+	private final OrderGroupMapper orderGroupMapper;
 
 	@PostMapping(Endpoint.Order.CHECKOUT)
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
-	public List<UserOrderResponse> checkout(Authentication authentication,
-											@RequestBody @Valid CheckoutRequest request) {
+	public UserOrderGroupResponse checkout(Authentication authentication,
+										   @RequestBody @Valid CheckoutRequest request) {
 		var userId = (Long) authentication.getPrincipal();
 		try {
 
-			return orderService.checkout(userId, request).stream()
-				.map(orderMapper::orderToUserResponse)
-				.toList();
+			OrderGroup orderGroup = orderService.checkout(userId, request);
+			return orderGroupMapper.domainToUserResponse(orderGroup);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
 		}
@@ -56,7 +57,7 @@ public class OrderController {
 												  @Valid GetShippingFeeRequest request) {
 		var userId = (Long) authentication.getPrincipal();
 		try {
-			return orderService.getShippingFee(userId, request.getAddressId(), request.getShopId(), request.getTotalWeight());
+			return orderService.getShippingFee(userId, request.getAddressId(), request);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
 		}

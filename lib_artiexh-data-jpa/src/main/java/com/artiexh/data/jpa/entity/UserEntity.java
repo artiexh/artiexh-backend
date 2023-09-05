@@ -36,6 +36,6 @@ public class UserEntity extends AccountEntity {
 	private Set<UserAddressEntity> addresses = new LinkedHashSet<>();
 
 	@OneToMany(mappedBy = "user")
-	private Set<OrderEntity> orders = new LinkedHashSet<>();
+	private Set<OrderGroupEntity> orderGroups = new LinkedHashSet<>();
 
 }

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 @Data
@@ -17,6 +18,8 @@ public class CheckoutShop {
 	private Long shopId;
 
 	private String note;
+
+	private BigDecimal shippingFee;
 
 	@NotEmpty
 	private Set<Long> itemIds;
