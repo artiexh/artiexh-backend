@@ -15,4 +15,6 @@ public class OrderHistory {
 
 	private LocalDateTime datetime;
 
+	private String message;
+
 }
