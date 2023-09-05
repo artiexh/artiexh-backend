@@ -1,6 +1,5 @@
 package com.artiexh.api.service.impl;
 
-import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.OrderService;
 import com.artiexh.api.service.UserService;
 import com.artiexh.data.jpa.entity.OrderEntity;
@@ -24,9 +23,9 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserOrderResponse getOrderById(Long id, Long userId) {
 		Order order = orderService.getById(id);
-		if (!order.getUser().getId().equals(userId)) {
-			throw new IllegalArgumentException(ErrorCode.ORDER_IS_INVALID.getMessage());
-		}
+//		if (!order.getUser().getId().equals(userId)) {
+//			throw new IllegalArgumentException(ErrorCode.ORDER_IS_INVALID.getMessage());
+//		}
 		return orderMapper.orderToUserResponse(order);
 	}
 

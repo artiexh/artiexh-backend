@@ -13,14 +13,13 @@ import com.artiexh.ghtk.client.model.GhtkResponse;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeRequest;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
 import com.artiexh.ghtk.client.service.GhtkOrderService;
-import com.artiexh.model.domain.Order;
-import com.artiexh.model.domain.OrderStatus;
-import com.artiexh.model.domain.PaymentMethod;
-import com.artiexh.model.domain.ProductStatus;
+import com.artiexh.model.domain.*;
+import com.artiexh.model.mapper.OrderGroupMapper;
 import com.artiexh.model.mapper.OrderMapper;
 import com.artiexh.model.mapper.OrderTransactionMapper;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
 import com.artiexh.model.rest.order.request.CheckoutShop;
+import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
 import com.artiexh.model.rest.order.request.PaymentQueryProperties;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.math.BigDecimal;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,25 +55,28 @@ public class OrderServiceImpl implements OrderService {
 	private final OrderDetailRepository orderDetailRepository;
 	private final CartItemRepository cartItemRepository;
 	private final OrderTransactionRepository orderTransactionRepository;
+	private final OrderGroupRepository orderGroupRepository;
+	private final OrderGroupMapper orderGroupMapper;
 	private final OrderMapper orderMapper;
 	private final CartService cartService;
 	private final GhtkOrderService ghtkOrderService;
 	private final ArtistRepository artistRepository;
 	private final VnpConfigurationProperties vnpProperties;
 	private final OrderTransactionMapper orderTransactionMapper;
+	private final OrderHistoryRepository orderHistoryRepository;
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	@Override
-	public List<Order> checkout(long userId, CheckoutRequest checkoutRequest) {
-		List<OrderEntity> orderEntities = switch (checkoutRequest.getPaymentMethod()) {
+	public OrderGroup checkout(long userId, CheckoutRequest checkoutRequest) {
+		OrderGroupEntity orderGroup = switch (checkoutRequest.getPaymentMethod()) {
 			case CASH -> cashPaymentOrder(userId, checkoutRequest);
 			default -> onlinePaymentOrder(userId, checkoutRequest);
 		};
 
-		return orderEntities.stream().map(orderMapper::entityToResponseDomain).toList();
+		return orderGroupMapper.entityToDomain(orderGroup);
 	}
 
-	private List<OrderEntity> cashPaymentOrder(long userId, CheckoutRequest checkoutRequest) {
+	private OrderGroupEntity cashPaymentOrder(long userId, CheckoutRequest checkoutRequest) {
 		// check common data
 		UserAddressEntity address = getUserAddressEntity(userId, checkoutRequest.getAddressId());
 		OrderStatus status = OrderStatus.PREPARING;
@@ -85,7 +86,7 @@ public class OrderServiceImpl implements OrderService {
 
 		// create order and order details
 		try {
-			List<OrderEntity> createdOrder = createOrder(userId, address, status, checkoutRequest.getShops(), cartItemEntities, checkoutRequest.getPaymentMethod());
+			OrderGroupEntity createdOrder = createOrder(userId, address, status, checkoutRequest.getShops(), cartItemEntities, checkoutRequest.getPaymentMethod());
 			cartService.deleteItemToCart(
 				userId,
 				checkoutRequest.getShops().stream()
@@ -99,7 +100,7 @@ public class OrderServiceImpl implements OrderService {
 		}
 	}
 
-	private List<OrderEntity> onlinePaymentOrder(long userId, CheckoutRequest checkoutRequest) {
+	private OrderGroupEntity onlinePaymentOrder(long userId, CheckoutRequest checkoutRequest) {
 		// check common data
 		UserAddressEntity address = getUserAddressEntity(userId, checkoutRequest.getAddressId());
 		OrderStatus status = OrderStatus.PAYING;
@@ -108,7 +109,7 @@ public class OrderServiceImpl implements OrderService {
 
 		// create order and order details
 		try {
-			List<OrderEntity> createdOrder = createOrder(userId, address, status, checkoutRequest.getShops(), cartItemEntities, checkoutRequest.getPaymentMethod());
+			OrderGroupEntity createdOrder = createOrder(userId, address, status, checkoutRequest.getShops(), cartItemEntities, checkoutRequest.getPaymentMethod());
 			cartService.deleteItemToCart(
 				userId,
 				checkoutRequest.getShops().stream()
@@ -170,17 +171,24 @@ public class OrderServiceImpl implements OrderService {
 		return cartItemEntities;
 	}
 
-	private List<OrderEntity> createOrder(long userId, UserAddressEntity address, OrderStatus status,
-										  Set<CheckoutShop> shops, List<CartItemEntity> cartItemEntities,
-										  PaymentMethod paymentMethod) {
+	private OrderGroupEntity createOrder(long userId, UserAddressEntity address, OrderStatus status,
+										 Set<CheckoutShop> shops, List<CartItemEntity> cartItemEntities,
+										 PaymentMethod paymentMethod) {
+		OrderGroupEntity orderGroupEntity = new OrderGroupEntity();
+		orderGroupEntity.setShippingAddress(address);
+		orderGroupEntity.setUser(UserEntity.builder().id(userId).build());
+		orderGroupRepository.save(orderGroupEntity);
+
 		Set<OrderEntity> orderEntities = shops.stream().map(checkoutShop -> {
 				var orderEntity = OrderEntity.builder()
-					.user(UserEntity.builder().id(userId).build())
+					//.user(UserEntity.builder().id(userId).build())
 					.shop(ArtistEntity.builder().id(checkoutShop.getShopId()).build())
-					.shippingAddress(address)
+					//.shippingAddress(address)
 					.note(checkoutShop.getNote())
 					.paymentMethod(paymentMethod.getByteValue())
 					.status(status.getByteValue())
+					.orderGroupId(orderGroupEntity.getId())
+					.shippingFee(checkoutShop.getShippingFee())
 					.build();
 
 				var savedOrderEntity = orderRepository.save(orderEntity);
@@ -196,10 +204,18 @@ public class OrderServiceImpl implements OrderService {
 
 				orderDetailRepository.saveAll(orderDetailEntities);
 
+				orderHistoryRepository.save(OrderHistoryEntity.builder()
+					.id(new OrderHistoryEntityId(savedOrderEntity.getId(), OrderHistoryStatus.CREATED.getByteValue()))
+					.build()
+				);
+
+				savedOrderEntity.setOrderDetails(orderDetailEntities);
 				return savedOrderEntity;
 			})
 			.collect(Collectors.toSet());
-		return orderEntities.stream().toList();
+
+		orderGroupEntity.setOrders(orderEntities);
+		return orderGroupEntity;
 	}
 
 	private void rollbackShopProductQuantity(List<CartItemEntity> cartItemEntities) {
@@ -224,9 +240,9 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public Order getById(Long orderId) {
 		OrderEntity order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
-		OrderTransactionEntity orderTransaction = order.getOrderTransaction().stream().max(Comparator.comparing(OrderTransactionEntity::getPayDate)).orElse(null);
+		//OrderTransactionEntity orderTransaction = order.getOrderTransaction().stream().max(Comparator.comparing(OrderTransactionEntity::getPayDate)).orElse(null);
 		Order domain = orderMapper.entityToResponseDomain(order);
-		domain.setCurrentTransaction(orderTransactionMapper.entityToDomain(orderTransaction));
+		//domain.setCurrentTransaction(orderTransactionMapper.entityToDomain(orderTransaction));
 		return domain;
 	}
 
@@ -252,11 +268,11 @@ public class OrderServiceImpl implements OrderService {
 
 	@Transactional
 	@Override
-	public ShipFeeResponse.ShipFee getShippingFee(Long userId, Long addressId, Long shopId, Integer weight) {
+	public ShipFeeResponse.ShipFee getShippingFee(Long userId, Long addressId, GetShippingFeeRequest getShippingFeeRequest) {
 		var addressEntity = userAddressRepository.findByIdAndUserId(addressId, userId)
 			.orElseThrow(() -> new IllegalArgumentException("AddressId not belong to user"));
 
-		var shopEntity = artistRepository.findById(shopId)
+		var shopEntity = artistRepository.findById(getShippingFeeRequest.getShopId())
 			.orElseThrow(() -> new IllegalArgumentException("ShopId not existed"));
 
 		var request = ShipFeeRequest.builder()
@@ -268,8 +284,9 @@ public class OrderServiceImpl implements OrderService {
 			.province(addressEntity.getWard().getDistrict().getProvince().getFullName())
 			.district(addressEntity.getWard().getDistrict().getFullName())
 			.ward(addressEntity.getWard().getFullName())
-			.weight(weight)
+			.weight(getShippingFeeRequest.getTotalWeight())
 			.deliverOption("none")
+			.tags(getShippingFeeRequest.getTags())
 			.build();
 		var response = ghtkOrderService.getShipFee(request)
 			.doOnError(WebClientResponseException.class, throwable -> {
@@ -283,13 +300,21 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public String payment(Long id, PaymentQueryProperties paymentQueryProperties, Long userId) {
-		Bill bill = orderRepository.getBillInfo(id);
-		if (bill == null || bill.getPriceAmount() == null || bill.getPriceUnit() == null) {
+		List<Bill> bills = orderGroupRepository.getBillInfo(id);
+
+		if (bills == null || bills.isEmpty()) {
 			throw new EntityNotFoundException();
 		}
 
-		if (!userId.equals(bill.getOwnerId()) || bill.getStatus() != OrderStatus.PAYING.getByteValue()) {
+		if (!userId.equals(bills.get(0).getOwnerId()) || !bills.get(0).getStatus().equals(OrderStatus.PAYING.getByteValue())) {
 			throw new IllegalArgumentException(ErrorCode.ORDER_IS_INVALID.getMessage());
+		}
+
+		BigDecimal totalPrice = BigDecimal.ZERO;
+		for (Bill bill : bills) {
+			totalPrice = totalPrice.add(bill.getOrderAmount());
+
+			//TODO: Calculate with voucher (shop + system)
 		}
 
 		String vnp_OrderInfo = "Thanh toan don hang " + id;
@@ -302,8 +327,8 @@ public class OrderServiceImpl implements OrderService {
 			paymentQueryProperties.getVnp_IpAddr(),
 			vnpProperties.getTmnCode(),
 			vnpProperties.getReturnUrl(),
-			bill.getPriceAmount().multiply(new BigDecimal(100)).toBigInteger().toString(),
-			bill.getPriceUnit(),
+			totalPrice.multiply(new BigDecimal(100)).toBigInteger().toString(),
+			bills.get(0).getPriceUnit(),
 			"vn",
 			vnpProperties.getUrl(),
 			vnpProperties.getSecretKey()
@@ -322,12 +347,25 @@ public class OrderServiceImpl implements OrderService {
 			.priceAmount(new BigDecimal(paymentQueryProperties.getVnp_Amount()).divide(new BigDecimal(100)))
 			.responseCode(paymentQueryProperties.getVnp_ResponseCode())
 			.transactionStatus(paymentQueryProperties.getVnp_TransactionStatus())
-			.orderId(Long.parseLong(paymentQueryProperties.getVnp_TxnRef()))
+			.orderGroupId(Long.parseLong(paymentQueryProperties.getVnp_TxnRef()))
 			.build();
 		orderTransactionRepository.saveAndFlush(orderTransaction);
 		if (paymentQueryProperties.getVnp_ResponseCode().equals("00")) {
 			log.info("Payment is done successfully. Transaction No" + paymentQueryProperties.getVnp_TransactionNo());
-			orderRepository.updatePayment(Long.parseLong(paymentQueryProperties.getVnp_TxnRef()));
+
+			long orderGroupId = Long.parseLong(paymentQueryProperties.getVnp_TxnRef());
+
+			var orderHistoryEntities = orderRepository.getAllByOrderGroupId(orderGroupId).stream()
+				.map(OrderEntity::getId)
+				.map(orderId -> OrderHistoryEntity.builder()
+					.id(new OrderHistoryEntityId(orderId, OrderHistoryStatus.PAID.getByteValue()))
+					.build()
+				)
+				.collect(Collectors.toSet());
+			
+			orderHistoryRepository.saveAll(orderHistoryEntities);
+
+			orderRepository.updatePayment(orderGroupId);
 		}
 		log.warn("Payment Transaction" + paymentQueryProperties.getVnp_TransactionNo() + " Status " + paymentQueryProperties.getVnp_TransactionStatus());
 		log.warn("Payment Transaction" + paymentQueryProperties.getVnp_TransactionNo() + " Response Code " + paymentQueryProperties.getVnp_ResponseCode());
