@@ -14,9 +14,7 @@ import com.artiexh.ghtk.client.model.shipfee.ShipFeeRequest;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
 import com.artiexh.ghtk.client.service.GhtkOrderService;
 import com.artiexh.model.domain.*;
-import com.artiexh.model.mapper.OrderGroupMapper;
-import com.artiexh.model.mapper.OrderMapper;
-import com.artiexh.model.mapper.OrderTransactionMapper;
+import com.artiexh.model.mapper.*;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
 import com.artiexh.model.rest.order.request.CheckoutShop;
 import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
@@ -64,6 +62,8 @@ public class OrderServiceImpl implements OrderService {
 	private final ArtistRepository artistRepository;
 	private final VnpConfigurationProperties vnpProperties;
 	private final OrderTransactionMapper orderTransactionMapper;
+	private final UserMapper userMapper;
+	private final UserAddressMapper userAddressMapper;
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	@Override
@@ -228,8 +228,12 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public Page<Order> getOrderInPage(Specification<OrderEntity> specification, Pageable pageable) {
 		Page<OrderEntity> entities = orderRepository.findAll(specification, pageable);
-		Page<Order> orderPage = entities.map(orderMapper::entityToResponseDomain);
-		return orderPage;
+		return entities.map(order -> {
+			Order domain = orderMapper.entityToResponseDomain(order);
+			domain.setShippingAddress(userAddressMapper.entityToDomain(order.getOrderGroup().getShippingAddress()));
+			domain.setUser(userMapper.entityToBasicUser(order.getOrderGroup().getUser()));
+			return domain;
+		});
 	}
 
 	@Override
@@ -252,6 +256,8 @@ public class OrderServiceImpl implements OrderService {
 	public Order getOrderById(Long orderId) {
 		OrderEntity order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
 		Order domain = orderMapper.entityToResponseDomain(order);
+		domain.setShippingAddress(userAddressMapper.entityToDomain(order.getOrderGroup().getShippingAddress()));
+		domain.setUser(userMapper.entityToBasicUser(order.getOrderGroup().getUser()));
 		return domain;
 	}
 
