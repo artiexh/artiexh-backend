@@ -56,7 +56,7 @@ public class OrderController {
 												  @Valid GetShippingFeeRequest request) {
 		var userId = (Long) authentication.getPrincipal();
 		try {
-			return orderService.getShippingFee(userId, request.getAddressId(), request.getShopId(), request.getTotalWeight());
+			return orderService.getShippingFee(userId, request.getAddressId(), request);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
 		}
