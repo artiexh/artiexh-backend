@@ -13,7 +13,7 @@ import java.util.List;
 public interface OrderGroupRepository extends JpaRepository<OrderGroupEntity, Long> {
 	@Query(nativeQuery = true,
 		value = """
-		SELECT o.id as orderId, sum(p.price_amount * od.quantity) - o.shipping_fee as orderAmount, p.price_unit as priceUnit, og.user_id as ownerId, o.status as status
+		SELECT o.id as orderId, sum(p.price_amount * od.quantity) + o.shipping_fee as orderAmount, p.price_unit as priceUnit, og.user_id as ownerId, o.status as status
 		from order_group og
 		inner join `order` o on og.id = o.order_group_id
 		inner join order_detail od on o.id = od.order_id
