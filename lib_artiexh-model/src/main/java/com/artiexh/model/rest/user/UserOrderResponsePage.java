@@ -3,7 +3,6 @@ package com.artiexh.model.rest.user;
 import com.artiexh.model.domain.OrderStatus;
 import com.artiexh.model.domain.PaymentMethod;
 import com.artiexh.model.domain.Shop;
-import com.artiexh.model.domain.UserAddress;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
@@ -22,8 +21,6 @@ public class UserOrderResponsePage {
 	private Long id;
 
 	private Shop shop;
-
-	//private UserAddress shippingAddress;
 
 	private String note;
 

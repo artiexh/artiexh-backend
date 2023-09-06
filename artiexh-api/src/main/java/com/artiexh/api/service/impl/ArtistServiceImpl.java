@@ -1,6 +1,5 @@
 package com.artiexh.api.service.impl;
 
-import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.ArtistService;
 import com.artiexh.api.service.OrderService;
 import com.artiexh.api.service.ProductService;
@@ -51,10 +50,7 @@ public class ArtistServiceImpl implements ArtistService {
 
 	@Override
 	public ShopOrderResponse getOrderById(Long orderId, Long artistId) {
-		Order order = orderService.getOrderById(orderId);
-		if (!order.getShop().getId().equals(artistId)) {
-			throw new IllegalArgumentException(ErrorCode.ORDER_IS_INVALID.getMessage());
-		}
+		Order order = orderService.getOrderByIdAndShopId(orderId, artistId);
 		return orderMapper.domainToArtistResponse(order);
 	}
 

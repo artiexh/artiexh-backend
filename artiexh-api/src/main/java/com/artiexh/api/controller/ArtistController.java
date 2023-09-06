@@ -19,12 +19,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RequiredArgsConstructor
@@ -68,9 +63,7 @@ public class ArtistController {
 			long userId = (long) authentication.getPrincipal();
 			return artistService.getOrderById(id, userId);
 		} catch (EntityNotFoundException exception) {
-			throw new ResponseStatusException(ErrorCode.ORDER_NOT_FOUND.getCode(), ErrorCode.ORDER_NOT_FOUND.getMessage(), exception);
-		} catch (IllegalArgumentException exception) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
+			throw new ResponseStatusException(ErrorCode.ORDER_IS_INVALID.getCode(), ErrorCode.ORDER_IS_INVALID.getMessage(), exception);
 		}
 	}
 

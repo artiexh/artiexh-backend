@@ -3,17 +3,16 @@ package com.artiexh.api.controller;
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.base.common.Endpoint.Order;
 import com.artiexh.api.exception.ErrorCode;
+import com.artiexh.api.service.OrderGroupService;
 import com.artiexh.api.service.OrderService;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
 import com.artiexh.model.domain.OrderGroup;
 import com.artiexh.model.mapper.OrderGroupMapper;
-import com.artiexh.model.mapper.OrderMapper;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
 import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
 import com.artiexh.model.rest.order.request.PaymentQueryProperties;
 import com.artiexh.model.rest.order.response.CheckoutResponse;
 import com.artiexh.model.rest.order.response.PaymentResponse;
-import com.artiexh.model.rest.order.response.UserOrderGroupResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -35,7 +34,7 @@ import java.net.URI;
 public class OrderController {
 
 	private final OrderService orderService;
-	private final OrderMapper orderMapper;
+	private final OrderGroupService orderGroupService;
 	private final OrderGroupMapper orderGroupMapper;
 
 	@PostMapping(Endpoint.Order.CHECKOUT)
@@ -45,7 +44,7 @@ public class OrderController {
 		var userId = (Long) authentication.getPrincipal();
 		try {
 
-			OrderGroup orderGroup = orderService.checkout(userId, request);
+			OrderGroup orderGroup = orderGroupService.checkout(userId, request);
 			return orderGroupMapper.domainToCheckoutResponse(orderGroup);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
@@ -74,7 +73,7 @@ public class OrderController {
 				ip = request.getRemoteAddr();
 			}
 			return PaymentResponse.builder()
-				.paymentUrl(orderService.payment(
+				.paymentUrl(orderGroupService.payment(
 						id,
 						PaymentQueryProperties.builder()
 							.vnp_IpAddr(ip)
@@ -93,7 +92,7 @@ public class OrderController {
 	@GetMapping(Endpoint.Order.PAYMENT_RETURN)
 	public ResponseEntity<Void> confirmUrl(@ParameterObject PaymentQueryProperties paymentQueryProperties,
 										   RedirectAttributes attributes) {
-		String confirmUrl = orderService.confirmPayment(paymentQueryProperties);
+		String confirmUrl = orderGroupService.confirmPayment(paymentQueryProperties);
 		URI uri = URI.create(confirmUrl + "/" + paymentQueryProperties.getVnp_TxnRef());
 		return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
 	}
