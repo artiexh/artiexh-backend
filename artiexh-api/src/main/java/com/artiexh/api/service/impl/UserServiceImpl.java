@@ -45,11 +45,13 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Page<UserOrderResponsePage> getOrderInPage(Specification<OrderEntity> specification, Pageable pageable) {
-		return null;
+		return orderService.getOrderInPage(specification, pageable)
+			.map(orderMapper::domainToUserResponsePage);
 	}
 
 	@Override
 	public UserOrderResponse getOrderById(Long id, Long userId) {
-		return null;
+		var userOrder = orderService.getOrderByIdAndUserId(id, userId);
+		return orderMapper.domainToUserResponse(userOrder);
 	}
 }

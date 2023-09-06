@@ -21,7 +21,6 @@ public class CheckoutRequest {
 	@NotNull
 	private PaymentMethod paymentMethod;
 
-
 	@NotEmpty
 	@Valid
 	private Set<CheckoutShop> shops;

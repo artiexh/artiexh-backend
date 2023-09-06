@@ -10,8 +10,8 @@ import com.artiexh.ghtk.client.model.shipfee.ShipFeeRequest;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
 import com.artiexh.ghtk.client.service.GhtkOrderService;
 import com.artiexh.model.domain.Order;
-import com.artiexh.model.domain.OrderStatus;
 import com.artiexh.model.mapper.OrderMapper;
+import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.mapper.UserAddressMapper;
 import com.artiexh.model.mapper.UserMapper;
 import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
@@ -24,20 +24,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import java.util.Map;
-import java.util.Set;
-
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
-
 public class OrderServiceImpl implements OrderService {
-	private static final Map<OrderStatus, Set<OrderStatus>> orderStatusChangeMap = Map.of(
-		OrderStatus.PAYING, Set.of(OrderStatus.PREPARING, OrderStatus.CANCELLED),
-		OrderStatus.PREPARING, Set.of(OrderStatus.SHIPPING, OrderStatus.CANCELLED),
-		OrderStatus.SHIPPING, Set.of(OrderStatus.COMPLETED, OrderStatus.CANCELLED)
-	);
-
 	private final UserAddressRepository userAddressRepository;
 	private final OrderRepository orderRepository;
 	private final OrderMapper orderMapper;
@@ -45,6 +35,7 @@ public class OrderServiceImpl implements OrderService {
 	private final ArtistRepository artistRepository;
 	private final UserMapper userMapper;
 	private final UserAddressMapper userAddressMapper;
+	private final ProductMapper productMapper;
 
 
 	@Override
@@ -54,6 +45,7 @@ public class OrderServiceImpl implements OrderService {
 			Order domain = orderMapper.entityToResponseDomain(order);
 			domain.setShippingAddress(userAddressMapper.entityToDomain(order.getOrderGroup().getShippingAddress()));
 			domain.setUser(userMapper.entityToBasicUser(order.getOrderGroup().getUser()));
+			domain.setPaymentMethod(productMapper.toPaymentMethod((int) order.getOrderGroup().getPaymentMethod()));
 			return domain;
 		});
 	}
@@ -64,27 +56,19 @@ public class OrderServiceImpl implements OrderService {
 		Order domain = orderMapper.entityToResponseDomain(order);
 		domain.setShippingAddress(userAddressMapper.entityToDomain(order.getOrderGroup().getShippingAddress()));
 		domain.setUser(userMapper.entityToBasicUser(order.getOrderGroup().getUser()));
+		domain.setPaymentMethod(productMapper.toPaymentMethod((int) order.getOrderGroup().getPaymentMethod()));
 		return domain;
 	}
 
-	// PAYING -> PREPARING -> SHIPPING -> COMPLETED
-	//   |           |            |
-	// CANCELLED
-	@Transactional
 	@Override
-	public Order updateOrderStatus(Long orderId, OrderStatus newStatus) {
-		OrderEntity orderEntity = orderRepository.findById(orderId)
+	public Order getOrderByIdAndUserId(Long orderId, Long userId) {
+		OrderEntity order = orderRepository.findByIdAndOrderGroupUserId(orderId, userId)
 			.orElseThrow(EntityNotFoundException::new);
-
-		OrderStatus orderStatus = OrderStatus.fromValue(orderEntity.getStatus());
-
-		if (orderStatusChangeMap.get(orderStatus).contains(newStatus)) {
-			orderEntity.setStatus(newStatus.getByteValue());
-			orderRepository.save(orderEntity);
-			return orderMapper.entityToResponseDomain(orderEntity);
-		} else {
-			throw new IllegalArgumentException("Cannot change from " + orderStatus + " to " + newStatus);
-		}
+		Order domain = orderMapper.entityToResponseDomain(order);
+		domain.setShippingAddress(userAddressMapper.entityToDomain(order.getOrderGroup().getShippingAddress()));
+		domain.setUser(userMapper.entityToBasicUser(order.getOrderGroup().getUser()));
+		domain.setPaymentMethod(productMapper.toPaymentMethod((int) order.getOrderGroup().getPaymentMethod()));
+		return domain;
 	}
 
 	@Transactional

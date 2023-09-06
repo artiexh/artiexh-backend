@@ -3,7 +3,6 @@ package com.artiexh.api.service;
 import com.artiexh.data.jpa.entity.OrderEntity;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
 import com.artiexh.model.domain.Order;
-import com.artiexh.model.domain.OrderStatus;
 import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +14,7 @@ public interface OrderService {
 
 	Order getOrderById(Long orderId);
 
-	Order updateOrderStatus(Long orderId, OrderStatus newStatus);
+	Order getOrderByIdAndUserId(Long orderId, Long userId);
 
 	ShipFeeResponse.ShipFee getShippingFee(Long userId, Long addressId, GetShippingFeeRequest request);
 

@@ -161,6 +161,7 @@ public class OrderGroupServiceImpl implements OrderGroupService {
 		OrderGroupEntity orderGroupEntity = new OrderGroupEntity();
 		orderGroupEntity.setShippingAddress(address);
 		orderGroupEntity.setUser(UserEntity.builder().id(userId).build());
+		orderGroupEntity.setPaymentMethod(paymentMethod.getByteValue());
 		orderGroupRepository.save(orderGroupEntity);
 
 		Set<OrderEntity> orderEntities = shops.stream().map(checkoutShop -> {
@@ -169,7 +170,6 @@ public class OrderGroupServiceImpl implements OrderGroupService {
 					.shop(ArtistEntity.builder().id(checkoutShop.getShopId()).build())
 					//.shippingAddress(address)
 					.note(checkoutShop.getNote())
-					.paymentMethod(paymentMethod.getByteValue())
 					.status(status.getByteValue())
 					.orderGroupId(orderGroupEntity.getId())
 					.shippingFee(checkoutShop.getShippingFee())

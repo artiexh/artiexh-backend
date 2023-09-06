@@ -30,7 +30,7 @@ public class OrderPageFilter {
 	}
 
 	public Specification<OrderEntity> getSpecificationForUser(Long userId) {
-		return getSpecification(root -> root.get("userId"), userId);
+		return getSpecification(root -> root.get("orderGroup").get("user").get("id"), userId);
 	}
 
 	private Specification<OrderEntity> getSpecification(Function<Root<OrderEntity>, Path<Long>> identifier, Long id) {

@@ -15,7 +15,6 @@ public interface UserAddressMapper {
 
 	UserAddressEntity domainToEntity(UserAddress userAddress);
 
-
 	@Mapping(target = "ward.id", source = "wardId")
 	UserAddressEntity userAddressRequestToEntity(UserAddressRequest userAddressRequest);
 
