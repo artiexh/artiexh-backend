@@ -19,6 +19,7 @@ public class CheckoutShop {
 
 	private String note;
 
+	@NotNull
 	private BigDecimal shippingFee;
 
 	@NotEmpty

@@ -16,6 +16,8 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long>, JpaSp
 
 	Optional<OrderEntity> findByIdAndShopId(Long orderId, Long artistId);
 
+	Optional<OrderEntity> findByIdAndOrderGroupUserId(Long orderId, Long userId);
+
 	@Modifying(flushAutomatically = true)
 	@Query("update OrderEntity set status = cast(1 as byte) where orderGroupId = :id")
 	void updatePayment(@Param("id") Long id);

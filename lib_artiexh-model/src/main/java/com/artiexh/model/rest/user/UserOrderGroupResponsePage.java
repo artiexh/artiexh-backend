@@ -1,5 +1,6 @@
 package com.artiexh.model.rest.user;
 
+import com.artiexh.model.domain.PaymentMethod;
 import com.artiexh.model.domain.UserAddress;
 import com.artiexh.model.rest.transaction.OrderTransactionResponse;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -21,5 +22,5 @@ public class UserOrderGroupResponsePage {
 	private Set<UserOrderResponsePage> orders;
 	private UserAddress shippingAddress;
 	private OrderTransactionResponse currentTransaction;
-
+	private PaymentMethod paymentMethod;
 }

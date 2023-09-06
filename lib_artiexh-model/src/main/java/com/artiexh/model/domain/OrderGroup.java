@@ -17,4 +17,5 @@ public class OrderGroup {
 	private UserAddress shippingAddress;
 	private OrderTransaction currentTransaction;
 	private Set<Order> orders;
+	private PaymentMethod paymentMethod;
 }

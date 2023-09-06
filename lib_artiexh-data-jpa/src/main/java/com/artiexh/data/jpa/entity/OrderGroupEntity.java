@@ -20,7 +20,7 @@ import java.util.Set;
 @Entity
 @Table(name = "order_group")
 @EntityListeners(AuditingEntityListener.class)
-public class OrderGroupEntity extends BaseAuditEntity{
+public class OrderGroupEntity extends BaseAuditEntity {
 	@Id
 	@Tsid
 	@Column(name = "id", nullable = false)
@@ -41,4 +41,7 @@ public class OrderGroupEntity extends BaseAuditEntity{
 	@OneToMany
 	@JoinColumn(name = "order_group_id")
 	private Set<OrderTransactionEntity> orderTransaction = new LinkedHashSet<>();
+
+	@Column(name = "payment_method", nullable = false)
+	private Byte paymentMethod;
 }

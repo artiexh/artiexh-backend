@@ -43,6 +43,7 @@ public final class Endpoint {
 	public static class User {
 		public static final String ROOT = PREFIX + "/user";
 		public static final String ADDRESS = "/address";
+		public static final String ORDER_GROUP = "/order-group";
 		public static final String ORDER = "/order";
 	}
 
@@ -64,7 +65,7 @@ public final class Endpoint {
 		public static final String ROOT = PREFIX + "/artist";
 		public static final String ARTIST_DETAIL = "/{id}";
 		public static final String ARTIST_PRODUCT = "/product";
-		public static final String ARTIST_ORDER = "/order";
+		public static final String ARTIST_ORDER = "/order-shop";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)

@@ -7,11 +7,9 @@ import com.artiexh.api.service.UserService;
 import com.artiexh.model.domain.UserAddress;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
+import com.artiexh.model.rest.order.request.OrderGroupPageFilter;
 import com.artiexh.model.rest.order.request.OrderPageFilter;
-import com.artiexh.model.rest.user.UserAddressRequest;
-import com.artiexh.model.rest.user.UserOrderGroupResponse;
-import com.artiexh.model.rest.user.UserOrderGroupResponsePage;
-import com.artiexh.model.rest.user.UserOrderResponse;
+import com.artiexh.model.rest.user.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -105,30 +103,61 @@ public class UserController {
 		}
 	}
 
-	@GetMapping(Endpoint.User.ORDER)
+	@GetMapping(Endpoint.User.ORDER_GROUP)
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
-	public PageResponse<UserOrderGroupResponsePage> getAllOrder(
+	public PageResponse<UserOrderGroupResponsePage> getAllOrderGroup(
 		Authentication authentication,
 		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
-		@ParameterObject @Valid OrderPageFilter filter
+		@ParameterObject @Valid OrderGroupPageFilter filter
 	) {
 		long userId = (long) authentication.getPrincipal();
-		return userService.getOrderInPage(filter.getSpecificationForUser(userId), paginationAndSortingRequest.getPageable());
+		return userService.getOrderGroupInPage(filter.getSpecificationForUser(userId), paginationAndSortingRequest.getPageable());
 	}
 
-	@GetMapping(Endpoint.User.ORDER + "/{id}")
+	@GetMapping(Endpoint.User.ORDER_GROUP + "/{id}")
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
-	public UserOrderGroupResponse getOrderById(
+	public UserOrderGroupResponse getOrderGroupById(
 		@PathVariable Long id,
 		Authentication authentication
 	) {
 		try {
 			long userId = (long) authentication.getPrincipal();
-			return userService.getOrderById(id, userId);
+			return userService.getOrderGroupById(id, userId);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(ErrorCode.ORDER_NOT_FOUND.getCode(), ErrorCode.ORDER_NOT_FOUND.getMessage(), exception);
 		} catch (IllegalArgumentException exception) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
+		}
+	}
+
+	@GetMapping(Endpoint.User.ORDER)
+	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
+	public PageResponse<UserOrderResponsePage> getAllOrder(Authentication authentication,
+														   @ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
+														   @ParameterObject @Valid OrderPageFilter filter) {
+		try {
+			long userId = (long) authentication.getPrincipal();
+			var userOrdersPage = userService.getOrderInPage(
+				filter.getSpecificationForUser(userId),
+				paginationAndSortingRequest.getPageable()
+			);
+			return new PageResponse<>(userOrdersPage);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(ErrorCode.ORDER_NOT_FOUND.getCode(), ErrorCode.ORDER_NOT_FOUND.getMessage(), exception);
+		} catch (IllegalArgumentException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
+		}
+	}
+
+	@GetMapping(Endpoint.User.ORDER + "/{id}")
+	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
+	public UserOrderResponse getOrderDetail(Authentication authentication,
+											@PathVariable Long id) {
+		try {
+			long userId = (long) authentication.getPrincipal();
+			return userService.getOrderById(id, userId);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(ErrorCode.ORDER_IS_INVALID.getCode(), ErrorCode.ORDER_IS_INVALID.getMessage(), exception);
 		}
 	}
 
