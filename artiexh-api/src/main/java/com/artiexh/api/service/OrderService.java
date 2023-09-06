@@ -14,6 +14,8 @@ public interface OrderService {
 
 	Order getOrderById(Long orderId);
 
+	Order getOrderByIdAndShopId(Long orderId, Long shopId);
+
 	Order getOrderByIdAndUserId(Long orderId, Long userId);
 
 	ShipFeeResponse.ShipFee getShippingFee(Long userId, Long addressId, GetShippingFeeRequest request);

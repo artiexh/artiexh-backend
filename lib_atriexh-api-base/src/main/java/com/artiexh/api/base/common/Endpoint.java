@@ -65,7 +65,7 @@ public final class Endpoint {
 		public static final String ROOT = PREFIX + "/artist";
 		public static final String ARTIST_DETAIL = "/{id}";
 		public static final String ARTIST_PRODUCT = "/product";
-		public static final String ARTIST_ORDER = "/order";
+		public static final String ARTIST_ORDER = "/order-shop";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)

@@ -61,6 +61,17 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
+	public Order getOrderByIdAndShopId(Long orderId, Long shopId) {
+		OrderEntity order = orderRepository.findByIdAndShopId(orderId, shopId)
+			.orElseThrow(EntityNotFoundException::new);
+		Order domain = orderMapper.entityToResponseDomain(order);
+		domain.setShippingAddress(userAddressMapper.entityToDomain(order.getOrderGroup().getShippingAddress()));
+		domain.setUser(userMapper.entityToBasicUser(order.getOrderGroup().getUser()));
+		domain.setPaymentMethod(productMapper.toPaymentMethod((int) order.getOrderGroup().getPaymentMethod()));
+		return domain;
+	}
+
+	@Override
 	public Order getOrderByIdAndUserId(Long orderId, Long userId) {
 		OrderEntity order = orderRepository.findByIdAndOrderGroupUserId(orderId, userId)
 			.orElseThrow(EntityNotFoundException::new);
