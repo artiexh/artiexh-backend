@@ -130,7 +130,7 @@ public class UserController {
 		}
 	}
 
-	@GetMapping(Endpoint.User.ORDER)
+	@GetMapping(Endpoint.User.ORDER_SHOP)
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
 	public PageResponse<UserOrderResponsePage> getAllOrder(Authentication authentication,
 														   @ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
@@ -149,7 +149,7 @@ public class UserController {
 		}
 	}
 
-	@GetMapping(Endpoint.User.ORDER + "/{id}")
+	@GetMapping(Endpoint.User.ORDER_SHOP + "/{id}")
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
 	public UserOrderResponse getOrderDetail(Authentication authentication,
 											@PathVariable Long id) {
