@@ -103,7 +103,7 @@ public class UserController {
 		}
 	}
 
-	@GetMapping(Endpoint.User.ORDER_GROUP)
+	@GetMapping(Endpoint.User.ORDER)
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
 	public PageResponse<UserOrderGroupResponsePage> getAllOrderGroup(
 		Authentication authentication,
@@ -114,7 +114,7 @@ public class UserController {
 		return userService.getOrderGroupInPage(filter.getSpecificationForUser(userId), paginationAndSortingRequest.getPageable());
 	}
 
-	@GetMapping(Endpoint.User.ORDER_GROUP + "/{id}")
+	@GetMapping(Endpoint.User.ORDER + "/{id}")
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
 	public UserOrderGroupResponse getOrderGroupById(
 		@PathVariable Long id,
