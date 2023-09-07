@@ -1,6 +1,7 @@
 package com.artiexh.api.service;
 
 import com.artiexh.data.jpa.entity.ProvidedProductBaseEntity;
+import com.artiexh.model.domain.Collection;
 import com.artiexh.model.domain.ProvidedProductBase;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

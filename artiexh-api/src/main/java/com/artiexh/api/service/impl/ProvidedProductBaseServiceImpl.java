@@ -8,6 +8,7 @@ import com.artiexh.data.jpa.repository.ProductBaseRepository;
 import com.artiexh.data.jpa.repository.ProvidedProductBaseRepository;
 import com.artiexh.data.jpa.repository.ProviderRepository;
 import com.artiexh.model.domain.ProvidedProductBase;
+import com.artiexh.model.domain.ProvidedProductType;
 import com.artiexh.model.mapper.ProvidedProductBaseMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -25,13 +26,16 @@ public class ProvidedProductBaseServiceImpl implements ProvidedProductBaseServic
 	private final ProductBaseRepository productBaseRepository;
 	@Override
 	public ProvidedProductBase create(ProvidedProductBase product) {
-		repository.findById(product.getId()).ifPresent(entity -> {
+		repository.findByProvidedProductBaseIdAndTypesContains(
+			product.getProvidedProductBaseId(),
+			new Byte[]{ProvidedProductType.SINGLE.getByteValue()}
+		).ifPresent(entity -> {
 			throw new IllegalArgumentException(ErrorCode.PRODUCT_EXISTED.getMessage());
 		});
+
 		ProvidedProductBaseEntity entity = mapper.domainToEntity(product);
 
-		entity.setProvider(providerRepository.getReferenceById(product.getId().getBusinessCode()));
-		entity.setProductBase(productBaseRepository.getReferenceById(product.getId().getProductBaseId()));
+		entity.setTypes(new Byte[] {ProvidedProductType.SINGLE.getByteValue()});
 
 		repository.save(entity);
 		return product;
@@ -39,7 +43,7 @@ public class ProvidedProductBaseServiceImpl implements ProvidedProductBaseServic
 
 	@Override
 	public ProvidedProductBase update(ProvidedProductBase product) {
-		repository.findById(product.getId()).orElseThrow(EntityNotFoundException::new);
+		repository.findByProvidedProductBaseId(product.getProvidedProductBaseId()).orElseThrow(EntityNotFoundException::new);
 		ProvidedProductBaseEntity entity = mapper.domainToEntity(product);
 		repository.save(entity);
 		return product;
@@ -47,22 +51,18 @@ public class ProvidedProductBaseServiceImpl implements ProvidedProductBaseServic
 
 	@Override
 	public void delete(String businessCode, Long productBaseId) {
-		repository.findById(ProvidedProductBaseId.builder()
+		ProvidedProductBaseEntity product = repository.findByProvidedProductBaseId(ProvidedProductBaseId.builder()
 			.businessCode(businessCode)
 			.productBaseId(productBaseId).build())
 			.orElseThrow(EntityNotFoundException::new);
-		repository.deleteById(ProvidedProductBaseId.builder()
-			.businessCode(businessCode)
-			.productBaseId(productBaseId)
-			.build());
+		repository.deleteById(product.getId());
 	}
 
 	@Override
 	public ProvidedProductBase getById(String businessCode, Long productBaseId) {
-		ProvidedProductBaseEntity entity = repository.findById(ProvidedProductBaseId.builder()
-			.productBaseId(productBaseId)
-			.businessCode(businessCode)
-			.build())
+		ProvidedProductBaseEntity entity = repository.findByProvidedProductBaseId(ProvidedProductBaseId.builder()
+				.businessCode(businessCode)
+				.productBaseId(productBaseId).build())
 			.orElseThrow(EntityNotFoundException::new);
 		return mapper.entityToDomain(entity);
 	}

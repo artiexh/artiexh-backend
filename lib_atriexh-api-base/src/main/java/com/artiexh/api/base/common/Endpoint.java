@@ -111,6 +111,7 @@ public final class Endpoint {
 		public static final String DETAIL = "/{id}";
 		public static final String PROVIDER_PRODUCT = "/{id}/provided-product";
 		public static final String PROVIDED_PRODUCT = "/{providerId}/product-base/{productBaseId}/provided-product";
+		public static final String COLLECTION = "/{providerId}/product-base/collection";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
