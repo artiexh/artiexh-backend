@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 @Getter
@@ -14,5 +15,7 @@ import java.util.Set;
 public class Collection {
 	private Long id;
 	private String name;
+	private String imageUrl;
+	private BigDecimal priceAmount;
 	private Set<ProvidedProductBase> providedProducts;
 }

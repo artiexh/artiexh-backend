@@ -20,6 +20,7 @@ public interface ProvidedProductBaseMapper {
 	@Mapping(source = "productBaseId", target = "providedProductBaseId.productBaseId")
 	@Mapping(source = "price.unit", target = "priceUnit")
 	@Mapping(source = "price.amount", target = "priceAmount")
+	@Mapping(target = "productBase", ignore = true)
 	ProvidedProductBase detailToDomain(ProvidedProductBaseDetail detail);
 
 	@Mapping(target = "businessCode", source = "providedProductBaseId.businessCode")

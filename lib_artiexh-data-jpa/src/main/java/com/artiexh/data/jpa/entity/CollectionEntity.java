@@ -4,6 +4,7 @@ import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 @Builder
@@ -18,6 +19,10 @@ public class CollectionEntity {
 	@Tsid
 	private Long id;
 	private String name;
+	@Column(name = "image_url")
+	private String imageUrl;
+	@Column(name = "price_amount")
+	private BigDecimal priceAmount;
 	@Column(name = "business_code")
 	private String businessCode;
 

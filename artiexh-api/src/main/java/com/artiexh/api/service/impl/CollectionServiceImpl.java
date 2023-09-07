@@ -35,6 +35,9 @@ public class CollectionServiceImpl implements CollectionService {
 	public Collection create(Collection collection, String businessCode) {
 		CollectionEntity collectionEntity = CollectionEntity.builder()
 			.name(collection.getName())
+			.businessCode(businessCode)
+			.imageUrl(collection.getImageUrl())
+			.priceAmount(collection.getPriceAmount())
 			.build();
 		collectionRepository.save(collectionEntity);
 
@@ -77,6 +80,8 @@ public class CollectionServiceImpl implements CollectionService {
 
 		collection.setId(collectionEntity.getId());
 		collection.setName(collectionEntity.getName());
+		collection.setImageUrl(collectionEntity.getImageUrl());
+		collection.setPriceAmount(collection.getPriceAmount());
 		collection.setProvidedProducts(providedProductBases);
 
 		return collection;

@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.provider;
+package com.artiexh.model.rest.provider.filter;
 
 import com.artiexh.data.jpa.entity.ProvidedProductBaseEntity;
 import com.artiexh.data.jpa.entity.ProviderEntity;
