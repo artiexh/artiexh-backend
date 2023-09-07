@@ -55,4 +55,8 @@ public class OrderEntity extends BaseAuditEntity {
 
 	@Column(name = "shipping_fee", nullable = false)
 	private BigDecimal shippingFee;
+
+	@Column(name = "shipping_label")
+	private String shippingLabel;
+
 }

@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -15,6 +16,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class ShopOrderResponse extends ShopOrderResponsePage {
 	private Set<OrderDetailResponse> orderDetails;
-
-	private Set<OrderHistory> orderHistories;
+	private List<OrderHistory> orderHistories;
+	private String shippingLabel;
 }
