@@ -21,4 +21,8 @@ public enum Model3DCode {
 	public int getValue() {
 		return value;
 	}
+
+	public Byte getByteValue() {
+		return Integer.valueOf(value).byteValue();
+	}
 }

@@ -4,6 +4,7 @@ import com.artiexh.data.jpa.entity.Color;
 import com.artiexh.data.jpa.entity.ProvidedProductBaseId;
 import com.artiexh.data.jpa.entity.Size;
 import com.artiexh.model.domain.Money;
+import com.artiexh.model.domain.ProvidedProductType;
 import com.artiexh.model.rest.productbase.ProductBaseInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -27,14 +28,15 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProvidedProductBaseDetail {
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@JsonSerialize(using = ToStringSerializer.class)
+	private Long id;
+	//@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private String businessCode;
 
 	@JsonSerialize(using = ToStringSerializer.class)
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	//@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long productBaseId;
 
-	@NotNull
 	@Valid
 	private Money price;
 
@@ -44,7 +46,7 @@ public class ProvidedProductBaseDetail {
 	@NotNull
 	private Color color;
 
-	@NotEmpty
+	@NotNull
 	private List<Size> sizes;
 
 	@NotNull
@@ -58,4 +60,6 @@ public class ProvidedProductBaseDetail {
 	private String providedProductFileUrl;
 
 	private ProductBaseInfo productBase;
+
+	private ProvidedProductType[] types;
 }

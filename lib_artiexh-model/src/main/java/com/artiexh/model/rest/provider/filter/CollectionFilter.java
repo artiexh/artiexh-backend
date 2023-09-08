@@ -1,7 +1,7 @@
-package com.artiexh.model.rest.provider;
+package com.artiexh.model.rest.provider.filter;
 
+import com.artiexh.data.jpa.entity.CollectionEntity;
 import com.artiexh.data.jpa.entity.ProvidedProductBaseEntity;
-import com.artiexh.data.jpa.entity.ProvidedProductBaseId;
 import com.artiexh.data.jpa.entity.ProviderEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -20,20 +20,22 @@ import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class ProviderProductFilter {
+@NoArgsConstructor
+public class CollectionFilter {
 	@JsonSerialize(using = StringArraySerializer.class)
 	private Long[] productBaseIds;
 	@JsonIgnore
 	private String businessCode;
 
-	public Specification<ProvidedProductBaseEntity> getSpecification() {
+	public Specification<CollectionEntity> getSpecification() {
 		return (root, cQuery, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
-			predicates.add(builder.equal(root.get("id").get("businessCode"), businessCode));
+
+			Join<CollectionEntity, ProvidedProductBaseEntity> joinProduct = root.join("providedProducts");
+			predicates.add(builder.equal(joinProduct.get("providedProductBaseId").get("businessCode"), businessCode));
 			if (productBaseIds != null && productBaseIds.length > 0) {
-				predicates.add(root.get("id").get("productBaseId").in(Arrays.asList(productBaseIds)));
+				predicates.add(joinProduct.get("providedProductBaseId").get("productBaseId").in(Arrays.asList(productBaseIds)));
 			}
 			return builder.and(predicates.toArray(new Predicate[0]));
 		};
