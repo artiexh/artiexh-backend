@@ -61,6 +61,13 @@ public class CollectionServiceImpl implements CollectionService {
 				//Update collection
 				entity.getCollections().add(collectionEntity);
 			} else {
+				productRepository.findByProvidedProductBaseId(ProvidedProductBaseId.builder()
+					.productBaseId(product.getProvidedProductBaseId().getProductBaseId())
+					.businessCode(businessCode)
+					.build())
+					.ifPresent(providedProduct -> {
+					throw new IllegalArgumentException(ErrorCode.PRODUCT_EXISTED.getMessage() + providedProduct.getId());
+				});
 				entity = productMapper.domainToEntity(product);
 
 				entity.setProvidedProductBaseId(ProvidedProductBaseId.builder()
