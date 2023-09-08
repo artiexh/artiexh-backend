@@ -69,7 +69,7 @@ public class ArtistController {
 
 	@PutMapping(Endpoint.Artist.ARTIST_ORDER + "/{id}/shipping")
 	@PreAuthorize("hasAuthority('ARTIST')")
-	public ShopOrderResponse updateOrderStatus(
+	public ShopOrderResponse updateOrderToShippingStatus(
 		@PathVariable Long id,
 		@RequestBody @Valid UpdateShippingOrderRequest updateShippingOrderRequest,
 		Authentication authentication

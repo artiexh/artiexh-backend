@@ -4,11 +4,15 @@ import com.artiexh.api.service.ArtistService;
 import com.artiexh.api.service.OrderService;
 import com.artiexh.api.service.ProductService;
 import com.artiexh.data.jpa.entity.OrderEntity;
+import com.artiexh.data.jpa.entity.OrderHistoryEntity;
+import com.artiexh.data.jpa.entity.OrderHistoryEntityId;
+import com.artiexh.data.jpa.repository.OrderHistoryRepository;
 import com.artiexh.data.jpa.repository.OrderRepository;
 import com.artiexh.ghtk.client.model.GhtkResponse;
 import com.artiexh.ghtk.client.model.order.CreateOrderRequest;
 import com.artiexh.ghtk.client.service.GhtkOrderService;
 import com.artiexh.model.domain.Order;
+import com.artiexh.model.domain.OrderHistoryStatus;
 import com.artiexh.model.domain.OrderStatus;
 import com.artiexh.model.domain.Product;
 import com.artiexh.model.mapper.OrderMapper;
@@ -41,6 +45,7 @@ public class ArtistServiceImpl implements ArtistService {
 	private final ProductMapper productMapper;
 	private final OrderMapper orderMapper;
 	private final GhtkOrderService ghtkOrderService;
+	private final OrderHistoryRepository orderHistoryRepository;
 
 	@Override
 	public PageResponse<ProductResponse> getAllProducts(Query query, Pageable pageable) {
@@ -151,15 +156,30 @@ public class ArtistServiceImpl implements ArtistService {
 		}
 
 		var request = CreateOrderRequest.builder().order(orderBuilder.build()).products(products).build();
-		ghtkOrderService.createOrder(request, "1.5")
+		var ghtkCreateOrderResponse = ghtkOrderService.createOrder(request, "1.5")
 			.doOnError(WebClientResponseException.class, throwable -> {
+				var response = throwable.getResponseBodyAs(GhtkResponse.class);
 				throw new IllegalArgumentException(
-					"Create ghtk order failed: " + throwable.getResponseBodyAs(GhtkResponse.class).getMessage());
+					"Create ghtk order failed: " + ((response != null && response.getMessage() != null) ? response.getMessage() : "Unknown response"));
 			})
 			.block();
 
+		if (ghtkCreateOrderResponse == null) {
+			throw new IllegalArgumentException("Create ghtk order failed: Unknown response");
+		} else if (ghtkCreateOrderResponse.getOrder() == null) {
+			throw new IllegalArgumentException("Create ghtk order failed: " + ghtkCreateOrderResponse.getMessage());
+		}
+
 		orderEntity.setStatus(OrderStatus.SHIPPING.getByteValue());
+		orderEntity.setShippingLabel(ghtkCreateOrderResponse.getOrder().getLabel());
 		orderRepository.save(orderEntity);
+
+		var orderHistoryEntity = OrderHistoryEntity.builder()
+			.id(new OrderHistoryEntityId(orderId, OrderHistoryStatus.SHIPPED.getByteValue()))
+			.build();
+		orderHistoryRepository.save(orderHistoryEntity);
+
+		orderEntity.getOrderHistories().add(orderHistoryEntity);
 		return orderMapper.domainToArtistResponse(orderMapper.entityToResponseDomain(orderEntity));
 	}
 }

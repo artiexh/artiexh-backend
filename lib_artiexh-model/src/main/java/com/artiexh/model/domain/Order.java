@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -37,8 +38,8 @@ public class Order {
 
 	private LocalDateTime createdDate;
 
-	//private OrderTransaction currentTransaction;
+	private List<OrderHistory> orderHistories;
 
-	private Set<OrderHistory> orderHistories;
+	private String shippingLabel;
 
 }
