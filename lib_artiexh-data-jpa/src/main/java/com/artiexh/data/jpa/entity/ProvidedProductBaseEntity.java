@@ -1,5 +1,6 @@
 package com.artiexh.data.jpa.entity;
 
+import io.hypersistence.utils.hibernate.id.Tsid;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.Type;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -18,19 +20,21 @@ import java.util.List;
 @Table(name = "provided_product")
 @Builder(toBuilder = true)
 public class ProvidedProductBaseEntity {
-	@EmbeddedId
-	private ProvidedProductBaseId id;
+	@Id
+	@Tsid
+	private Long id;
 
-	@MapsId("baseModelId")
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	@Embedded
+	private ProvidedProductBaseId providedProductBaseId;
+
+	@ManyToOne(fetch = FetchType.EAGER)
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JoinColumn(name = "product_base_id", nullable = false)
+	@JoinColumn(name = "product_base_id", insertable = false, updatable = false)
 	private ProductBaseEntity productBase;
 
-	@MapsId("businessCode")
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JoinColumn(name = "business_code", nullable = false)
+	@JoinColumn(name = "business_code", insertable = false, updatable = false)
 	private ProviderEntity provider;
 
 	@Column(name = "price_amount", nullable = false)
@@ -59,4 +63,15 @@ public class ProvidedProductBaseEntity {
 
 	@Column(name = "provided_product_file_url", nullable = false)
 	private String providedProductFileUrl;
+
+	@Column(name = "type", nullable = false)
+	@Lob
+	private Byte[] types;
+
+	@ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.EAGER)
+	@JoinTable(
+		name = "collection_provided_product_mapping",
+		joinColumns = @JoinColumn(name = "provided_product_id"),
+		inverseJoinColumns = @JoinColumn(name = "collection_id"))
+	private Set<CollectionEntity> collections;
 }

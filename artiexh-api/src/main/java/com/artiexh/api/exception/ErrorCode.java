@@ -31,7 +31,8 @@ public enum ErrorCode {
 
 	//Provider
 	PROVIDER_NOT_FOUND(HttpStatus.NOT_FOUND, "Provider is not found"),
-	PRODUCT_EXISTED(HttpStatus.BAD_REQUEST, "Product is existed"),
+	PRODUCT_EXISTED(HttpStatus.BAD_REQUEST, "Product is existed with Id: "),
+	PROVIDED_PRODUCT_INVALID(HttpStatus.BAD_REQUEST, "Provided product is invalid with Id: "),
 
 	//Media
 	UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Upload file is failed!"),

@@ -17,7 +17,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class ProvidedProductBase {
-	private ProvidedProductBaseId id;
+	private Long id;
+	private ProvidedProductBaseId providedProductBaseId;
 
 	private BigDecimal priceAmount;
 
@@ -36,4 +37,6 @@ public class ProvidedProductBase {
 	private String providedProductFileUrl;
 
 	private ProductBase productBase;
+
+	private ProvidedProductType[] types;
 }

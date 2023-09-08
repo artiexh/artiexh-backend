@@ -2,25 +2,28 @@ package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.exception.ErrorCode;
+import com.artiexh.api.service.CollectionService;
 import com.artiexh.api.service.ProvidedProductBaseService;
 import com.artiexh.api.service.ProviderService;
 import com.artiexh.data.jpa.entity.ProvidedProductBaseId;
-import com.artiexh.model.domain.ProductBase;
+import com.artiexh.model.domain.Collection;
 import com.artiexh.model.domain.ProvidedProductBase;
 import com.artiexh.model.domain.Provider;
+import com.artiexh.model.mapper.CollectionMapper;
 import com.artiexh.model.mapper.ProvidedProductBaseMapper;
 import com.artiexh.model.mapper.ProviderMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
-import com.artiexh.model.rest.productbase.ProductBaseDetail;
 import com.artiexh.model.rest.provider.*;
+import com.artiexh.model.rest.provider.filter.CollectionFilter;
+import com.artiexh.model.rest.provider.filter.ProviderFilter;
+import com.artiexh.model.rest.provider.filter.ProviderProductFilter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -33,6 +36,8 @@ public class ProviderController {
 	private final ProviderMapper providerMapper;
 	private final ProvidedProductBaseService providedProductBaseService;
 	private final ProvidedProductBaseMapper providedProductBaseMapper;
+	private final CollectionService collectionService;
+	private final CollectionMapper collectionMapper;
 	//Create Provider
 	@PostMapping
 	@PreAuthorize("hasAuthority('ADMIN')")
@@ -80,7 +85,7 @@ public class ProviderController {
 		@PathVariable("productBaseId") Long productBaseId,
 		@Valid @RequestBody ProvidedProductBaseDetail detail) {
 		ProvidedProductBase providedProduct = providedProductBaseMapper.detailToDomain(detail);
-		providedProduct.setId(ProvidedProductBaseId.builder()
+		providedProduct.setProvidedProductBaseId(ProvidedProductBaseId.builder()
 			.productBaseId(productBaseId)
 			.businessCode(businessCode)
 			.build());
@@ -94,6 +99,40 @@ public class ProviderController {
 		}
 
 	}
+
+	@PostMapping(Endpoint.Provider.COLLECTION)
+	@PreAuthorize("hasAuthority('ADMIN')")
+	public CollectionDetail createCollection(
+		@PathVariable("providerId") String businessCode,
+		@Valid @RequestBody CollectionDetail detail) {
+		Collection collection = collectionMapper.detailToDomain(detail);
+
+		try {
+			collection = collectionService.create(collection, businessCode);
+			return collectionMapper.domainToDetail(collection);
+		} catch (EntityNotFoundException exception){
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+				ErrorCode.PRODUCT_NOT_FOUND.getMessage(),
+				exception);
+		} catch (IllegalArgumentException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+				exception.getMessage(),
+				exception);
+		}
+
+	}
+
+	@GetMapping(Endpoint.Provider.COLLECTION)
+	public PageResponse<CollectionDetail> getCollection(
+		@PathVariable("providerId") String businessCode,
+		@ParameterObject PaginationAndSortingRequest paginationAndSortingRequest,
+		@ParameterObject CollectionFilter filter) {
+
+		filter.setBusinessCode(businessCode);
+		Page<Collection> collections = collectionService.get(filter.getSpecification(), paginationAndSortingRequest.getPageable());
+		return new PageResponse<>(collections.map(collectionMapper::domainToDetail));
+
+	}
 	//Update Provided Product
 	@PutMapping(Endpoint.Provider.PROVIDED_PRODUCT)
 	@PreAuthorize("hasAuthority('ADMIN')")
@@ -102,7 +141,7 @@ public class ProviderController {
 		@PathVariable("productBaseId") Long productBaseId,
 		@Valid @RequestBody ProvidedProductBaseDetail detail) {
 		ProvidedProductBase providedProduct = providedProductBaseMapper.detailToDomain(detail);
-		providedProduct.setId(ProvidedProductBaseId.builder()
+		providedProduct.setProvidedProductBaseId(ProvidedProductBaseId.builder()
 			.productBaseId(productBaseId)
 			.businessCode(businessCode)
 			.build());

@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.provider;
+package com.artiexh.model.rest.provider.filter;
 
 import com.artiexh.data.jpa.entity.ProvidedProductBaseEntity;
 import com.artiexh.data.jpa.entity.ProviderEntity;
@@ -34,7 +34,7 @@ public class ProviderFilter {
 			}
 			if (productBaseIds != null && productBaseIds.length > 0) {
 				Join<ProviderEntity, ProvidedProductBaseEntity> joinProviderProvidedProduct = root.join("providedProducts");
-				predicates.add(joinProviderProvidedProduct.get("id").get("productBaseId").in(Arrays.asList(productBaseIds)));
+				predicates.add(joinProviderProvidedProduct.get("providedProductBaseId").get("productBaseId").in(Arrays.asList(productBaseIds)));
 			}
 			return builder.and(predicates.toArray(new Predicate[0]));
 		};
