@@ -30,7 +30,7 @@ public class ProvidedProductBaseServiceImpl implements ProvidedProductBaseServic
 			product.getProvidedProductBaseId(),
 			new Byte[]{ProvidedProductType.SINGLE.getByteValue()}
 		).ifPresent(entity -> {
-			throw new IllegalArgumentException(ErrorCode.PRODUCT_EXISTED.getMessage());
+			throw new IllegalArgumentException(ErrorCode.PRODUCT_EXISTED.getMessage() + entity.getId());
 		});
 
 		ProvidedProductBaseEntity entity = mapper.domainToEntity(product);
