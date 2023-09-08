@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -19,5 +20,6 @@ public class UserOrderResponse extends UserOrderResponsePage {
 	private Set<OrderDetailResponse> orderDetails;
 	private BigDecimal shippingFee;
 	private OrderTransactionResponse currentTransaction;
-	private Set<OrderHistory> orderHistories;
+	private List<OrderHistory> orderHistories;
+	private String shippingLabel;
 }
