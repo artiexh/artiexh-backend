@@ -27,7 +27,7 @@ import java.util.Set;
 )
 public interface OrderMapper {
 
-	//@Mapping(target = "user", qualifiedByName = "entityToBasicUser")
+	@Mapping(target = "orderId", source = "orderGroup.id")
 	Order entityToResponseDomain(OrderEntity entity);
 
 	OrderEntity orderToOrderEntity(Order order);
