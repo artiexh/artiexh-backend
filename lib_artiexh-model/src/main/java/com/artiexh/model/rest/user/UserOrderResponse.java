@@ -1,6 +1,7 @@
 package com.artiexh.model.rest.user;
 
 import com.artiexh.model.domain.OrderHistory;
+import com.artiexh.model.domain.UserAddress;
 import com.artiexh.model.rest.order.response.OrderDetailResponse;
 import com.artiexh.model.rest.transaction.OrderTransactionResponse;
 import lombok.AllArgsConstructor;
@@ -22,4 +23,5 @@ public class UserOrderResponse extends UserOrderResponsePage {
 	private OrderTransactionResponse currentTransaction;
 	private List<OrderHistory> orderHistories;
 	private String shippingLabel;
+	private UserAddress shippingAddress;
 }
