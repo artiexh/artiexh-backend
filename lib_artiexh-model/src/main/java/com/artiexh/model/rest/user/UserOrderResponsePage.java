@@ -31,4 +31,7 @@ public class UserOrderResponsePage {
 	private LocalDateTime modifiedDate;
 
 	private LocalDateTime createdDate;
+
+	@JsonSerialize(using = ToStringSerializer.class)
+	private Long orderId;
 }

@@ -42,4 +42,6 @@ public class Order {
 
 	private String shippingLabel;
 
+	private Long orderId;
+
 }
