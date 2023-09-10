@@ -31,7 +31,7 @@ public class AuthConfiguration {
 			"http://localhost:8080",
 			"https://artiexh.com",
 			"https://api.artiexh.com",
-			"https://artiexh-marketplace-frontend-o1yq-git-feat-prepa-39cf07-artiexh.vercel.app"
+			"https://artiexh-marketplace-frontend.vercel.app"
 		));
 		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(List.of("*"));
