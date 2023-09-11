@@ -12,5 +12,4 @@ public class VnpConfigurationProperties {
 	private String returnUrl;
 	private String url;
 	private String secretKey;
-	private String feConfirmUrl;
 }

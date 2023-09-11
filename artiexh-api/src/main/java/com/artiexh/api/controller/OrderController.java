@@ -18,13 +18,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.net.URI;
 
@@ -36,6 +36,7 @@ public class OrderController {
 	private final OrderService orderService;
 	private final OrderGroupService orderGroupService;
 	private final OrderGroupMapper orderGroupMapper;
+	private final StringRedisTemplate redisTemplate;
 
 	@PostMapping(Endpoint.Order.CHECKOUT)
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
@@ -64,7 +65,11 @@ public class OrderController {
 	}
 
 	@GetMapping(Endpoint.Order.PAYMENT)
-	public PaymentResponse payment(Authentication authentication, @PathVariable Long id, HttpServletRequest request) {
+	public PaymentResponse payment(Authentication authentication,
+								   HttpServletRequest request,
+								   @PathVariable Long id,
+								   @RequestParam String confirmUrl
+	) {
 		var userId = (Long) authentication.getPrincipal();
 		try {
 			String ip = request.getHeader("X-FORWARDED-FOR");
@@ -75,10 +80,9 @@ public class OrderController {
 			return PaymentResponse.builder()
 				.paymentUrl(orderGroupService.payment(
 						id,
-						PaymentQueryProperties.builder()
-							.vnp_IpAddr(ip)
-							.build(),
-						userId
+						PaymentQueryProperties.builder().vnp_IpAddr(ip).build(),
+						userId,
+						confirmUrl
 					)
 				)
 				.build();
@@ -90,9 +94,10 @@ public class OrderController {
 	}
 
 	@GetMapping(Endpoint.Order.PAYMENT_RETURN)
-	public ResponseEntity<Void> confirmUrl(@ParameterObject PaymentQueryProperties paymentQueryProperties,
-										   RedirectAttributes attributes) {
-		String confirmUrl = orderGroupService.confirmPayment(paymentQueryProperties);
+	public ResponseEntity<Void> confirmUrl(@ParameterObject PaymentQueryProperties paymentQueryProperties) {
+		orderGroupService.confirmPayment(paymentQueryProperties);
+		String confirmUrl =
+			redisTemplate.boundValueOps("payment_confirm_url_" + paymentQueryProperties.getVnp_TxnRef()).getAndDelete();
 		URI uri = URI.create(confirmUrl + "/" + paymentQueryProperties.getVnp_TxnRef());
 		return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
 	}

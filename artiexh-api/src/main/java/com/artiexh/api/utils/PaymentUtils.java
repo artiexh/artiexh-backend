@@ -3,79 +3,77 @@ package com.artiexh.api.utils;
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class PaymentUtils {
-	private PaymentUtils() {}
-	public static String generatePaymentUrl(
-		String vnp_Version,
-		String vnp_Command,
-		String vnp_OrderInfo,
-		String vnp_TxnRef,
-		String vnp_IpAddr,
-		String vnp_TmnCode,
-		String vnp_ReturnUrl,
-		String amount,
-		String vnp_CurrCode,
-		String vnp_Locale,
-		String vnp_PaymentViewUrl,
-		String vnp_SecretHash) {
-		Map<String, String> vnp_Params = new HashMap<>();
-		vnp_Params.put("vnp_Version", vnp_Version);
-		vnp_Params.put("vnp_Command", vnp_Command);
-		vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
-		vnp_Params.put("vnp_Amount", amount);
-		vnp_Params.put("vnp_CurrCode", vnp_CurrCode);
-		//vnp_Params.put("vnp_BankCode", "ACB");
-		vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-		vnp_Params.put("vnp_OrderInfo", vnp_OrderInfo);
-		vnp_Params.put("vnp_OrderType", "billpayment");
+	private PaymentUtils() {
+	}
 
-		if (vnp_Locale != null && !vnp_Command.isEmpty()) {
-			vnp_Params.put("vnp_Locale", vnp_Locale);
+	public static String generatePaymentUrl(String vnpVersion,
+											String vnpCommand,
+											String vnpOrderInfo,
+											String vnpTxnRef,
+											String vnpIpAddr,
+											String vnpTmnCode,
+											String vnpReturnUrl,
+											String amount,
+											String vnpCurrCode,
+											String vnpLocale,
+											String vnpPaymentViewUrl,
+											String vnpSecretHash) {
+		Map<String, String> vnpParams = new HashMap<>();
+		vnpParams.put("vnp_Version", vnpVersion);
+		vnpParams.put("vnp_Command", vnpCommand);
+		vnpParams.put("vnp_TmnCode", vnpTmnCode);
+		vnpParams.put("vnp_Amount", amount);
+		vnpParams.put("vnp_CurrCode", vnpCurrCode);
+		//vnpParams.put("vnp_BankCode", "ACB");
+		vnpParams.put("vnp_TxnRef", vnpTxnRef);
+		vnpParams.put("vnp_OrderInfo", vnpOrderInfo);
+		vnpParams.put("vnp_OrderType", "billpayment");
+
+		if (vnpLocale != null && !vnpCommand.isEmpty()) {
+			vnpParams.put("vnp_Locale", vnpLocale);
 		} else {
-			vnp_Params.put("vnp_Locale", "vn");
+			vnpParams.put("vnp_Locale", "vn");
 		}
-		vnp_Params.put("vnp_ReturnUrl", vnp_ReturnUrl);
-		if(vnp_IpAddr.equals("0:0:0:0:0:0:0:1") || vnp_IpAddr.equals("127.0.0.1")) {
+		vnpParams.put("vnp_ReturnUrl", vnpReturnUrl);
+		if (vnpIpAddr.equals("0:0:0:0:0:0:0:1") || vnpIpAddr.equals("127.0.0.1")) {
 			try {
 				InetAddress hostAddress = InetAddress.getLocalHost();
-				vnp_IpAddr = hostAddress.getHostAddress();
+				vnpIpAddr = hostAddress.getHostAddress();
 			} catch (UnknownHostException e) {
 				throw new IllegalArgumentException(e);
 			}
 		}
-		vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
+		vnpParams.put("vnp_IpAddr", vnpIpAddr);
 
 		ZonedDateTime time = ZonedDateTime.now()              // Current moment in a particular time zone.
-			.withZoneSameInstant( ZoneId.of( "Asia/Ho_Chi_Minh" ));
+			.withZoneSameInstant(ZoneId.of("Asia/Ho_Chi_Minh"));
 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-		String vnp_CreateDate = time.format(formatter);
+		String vnpCreateDate = time.format(formatter);
 
-		vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
+		vnpParams.put("vnp_CreateDate", vnpCreateDate);
 		time = time.plusMinutes(15);
-		String vnp_ExpireDate = time.format(formatter);
-		vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
-		List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
+		String vnpExpireDate = time.format(formatter);
+		vnpParams.put("vnp_ExpireDate", vnpExpireDate);
+		List<String> fieldNames = new ArrayList<>(vnpParams.keySet());
 		Collections.sort(fieldNames);
 		StringBuilder hashData = new StringBuilder();
 		StringBuilder query = new StringBuilder();
 		Iterator<String> itr = fieldNames.iterator();
 		while (itr.hasNext()) {
 			String fieldName = itr.next();
-			String fieldValue = vnp_Params.get(fieldName);
-			if ((fieldValue != null) && (fieldValue.length() > 0)) {
+			String fieldValue = vnpParams.get(fieldName);
+			if ((fieldValue != null) && !fieldValue.isEmpty()) {
 				//Build hash data
 				hashData.append(fieldName);
 				hashData.append('=');
@@ -92,12 +90,12 @@ public class PaymentUtils {
 			}
 		}
 		String queryUrl = query.toString();
-		String vnp_SecureHash = HmacSecureHash(vnp_SecretHash, hashData.toString(), HmacAlgorithms.HMAC_SHA_512);
-		queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
-		return vnp_PaymentViewUrl + "?" + queryUrl;
+		String vnpSecureHash = hmacSecureHash(vnpSecretHash, hashData.toString(), HmacAlgorithms.HMAC_SHA_512);
+		queryUrl += "&vnp_SecureHash=" + vnpSecureHash;
+		return vnpPaymentViewUrl + "?" + queryUrl;
 	}
 
-	public static String HmacSecureHash(String key, String data, HmacAlgorithms algorithm) {
+	public static String hmacSecureHash(String key, String data, HmacAlgorithms algorithm) {
 		return new HmacUtils(algorithm, key).hmacHex(data);
 	}
 
@@ -109,7 +107,7 @@ public class PaymentUtils {
 		while (itr.hasNext()) {
 			String fieldName = itr.next();
 			String fieldValue = fields.get(fieldName);
-			if ((fieldValue != null) && (fieldValue.length() > 0)) {
+			if ((fieldValue != null) && !fieldValue.isEmpty()) {
 				sb.append(fieldName);
 				sb.append("=");
 				sb.append(fieldValue);
@@ -118,7 +116,7 @@ public class PaymentUtils {
 				sb.append("&");
 			}
 		}
-		return HmacSecureHash(secretKey,sb.toString(), HmacAlgorithms.HMAC_SHA_512);
+		return hmacSecureHash(secretKey, sb.toString(), HmacAlgorithms.HMAC_SHA_512);
 	}
 
 }
