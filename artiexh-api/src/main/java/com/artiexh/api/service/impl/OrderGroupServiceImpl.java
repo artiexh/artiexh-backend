@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +49,7 @@ public class OrderGroupServiceImpl implements OrderGroupService {
 	private final OrderHistoryRepository orderHistoryRepository;
 	private final UserAddressRepository userAddressRepository;
 	private final OrderRepository orderRepository;
+	private final StringRedisTemplate redisTemplate;
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	@Override
@@ -231,7 +233,7 @@ public class OrderGroupServiceImpl implements OrderGroupService {
 	}
 
 	@Override
-	public String payment(Long id, PaymentQueryProperties paymentQueryProperties, Long userId) {
+	public String payment(Long id, PaymentQueryProperties paymentQueryProperties, Long userId, String confirmUrl) {
 		List<Bill> bills = orderGroupRepository.getBillInfo(id);
 
 		if (bills == null || bills.isEmpty()) {
@@ -246,6 +248,8 @@ public class OrderGroupServiceImpl implements OrderGroupService {
 		for (Bill bill : bills) {
 			totalPrice = totalPrice.add(bill.getOrderAmount());
 		}
+
+		redisTemplate.boundValueOps("payment_confirm_url_" + id).set(confirmUrl);
 
 		String vnpOrderInfo = "Thanh toan don hang " + id;
 
@@ -266,8 +270,8 @@ public class OrderGroupServiceImpl implements OrderGroupService {
 	}
 
 	@Override
-	public String confirmPayment(PaymentQueryProperties paymentQueryProperties) {
-		String confirmUrl = vnpProperties.getFeConfirmUrl();
+	@Transactional
+	public void confirmPayment(PaymentQueryProperties paymentQueryProperties) {
 		OrderTransactionEntity orderTransaction = OrderTransactionEntity.builder()
 			.transactionNo(paymentQueryProperties.getVnp_TransactionNo())
 			.orderInfo(paymentQueryProperties.getVnp_OrderInfo())
@@ -299,6 +303,5 @@ public class OrderGroupServiceImpl implements OrderGroupService {
 		}
 		log.info("Payment Transaction " + paymentQueryProperties.getVnp_TransactionNo() + " Status " + paymentQueryProperties.getVnp_TransactionStatus());
 		log.info("Payment Transaction " + paymentQueryProperties.getVnp_TransactionNo() + " Response Code " + paymentQueryProperties.getVnp_ResponseCode());
-		return confirmUrl;
 	}
 }
