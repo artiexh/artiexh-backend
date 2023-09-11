@@ -1,24 +1,8 @@
 package com.artiexh.data.jpa.entity;
 
 import io.hypersistence.utils.hibernate.id.Tsid;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +10,9 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+
+import java.math.BigDecimal;
+import java.util.Set;
 
 @SuperBuilder(toBuilder = true)
 @AllArgsConstructor
@@ -77,9 +64,6 @@ public class ProductEntity {
 
 	@Column(name = "remaining_quantity", columnDefinition = "INT UNSIGNED not null")
 	private Long remainingQuantity;
-
-	@Column(name = "publish_datetime")
-	private Instant publishDatetime;
 
 	@Column(name = "max_items_per_order", columnDefinition = "INT UNSIGNED")
 	private Long maxItemsPerOrder;

@@ -1,11 +1,11 @@
 package com.artiexh.model.domain;
 
-import java.time.Instant;
-import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -23,7 +23,6 @@ public class Product {
 	private String description;
 	private ProductType type;
 	private Long remainingQuantity;
-	private Instant publishDatetime;
 	private Long maxItemsPerOrder;
 	private DeliveryType deliveryType;
 	private Float averageRate;
