@@ -76,7 +76,6 @@ public interface CartMapper {
 	@Mapping(target = "description", source = "product.description")
 	@Mapping(target = "type", source = "product.type")
 	@Mapping(target = "remainingQuantity", source = "product.remainingQuantity")
-	@Mapping(target = "publishDatetime", source = "product.publishDatetime")
 	@Mapping(target = "maxItemsPerOrder", source = "product.maxItemsPerOrder")
 	@Mapping(target = "deliveryType", source = "product.deliveryType")
 	CartItemResponse domainToCartItemResponse(CartItem cartItem);
