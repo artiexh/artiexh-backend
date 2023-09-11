@@ -16,8 +16,8 @@ public interface OrderGroupService {
 
 	OrderGroup getById(Long orderGroupId);
 
-	String payment(Long id, PaymentQueryProperties paymentQueryProperties, Long userId);
+	String payment(Long id, PaymentQueryProperties paymentQueryProperties, Long userId, String confirmUrl);
 
-	String confirmPayment(PaymentQueryProperties paymentQueryProperties);
+	void confirmPayment(PaymentQueryProperties paymentQueryProperties);
 
 }
