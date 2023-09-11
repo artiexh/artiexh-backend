@@ -7,6 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 public interface CollectionService {
-	Collection create(Collection collection, String businessCode);
-	Page<Collection> get(Specification<CollectionEntity> specification, Pageable pageable);
+	Collection create(Collection collection);
+	Page<Collection> getAll(Specification<CollectionEntity> specification, Pageable pageable);
 }

@@ -21,15 +21,6 @@ public class CollectionEntity {
 	private String name;
 	@Column(name = "image_url")
 	private String imageUrl;
-	@Column(name = "price_amount")
-	private BigDecimal priceAmount;
-	@Column(name = "business_code")
-	private String businessCode;
-
-	@ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.EAGER)
-	@JoinTable(
-		name = "collection_provided_product_mapping",
-		joinColumns = @JoinColumn(name = "collection_id"),
-		inverseJoinColumns = @JoinColumn(name = "provided_product_id"))
-	private Set<ProvidedProductBaseEntity> providedProducts;
+	@Column(name = "artist_id")
+	private Long artistId;
 }
