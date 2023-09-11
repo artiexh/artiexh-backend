@@ -112,7 +112,6 @@ public final class Endpoint {
 		public static final String DETAIL = "/{id}";
 		public static final String PROVIDER_PRODUCT = "/{id}/provided-product";
 		public static final String PROVIDED_PRODUCT = "/{providerId}/product-base/{productBaseId}/provided-product";
-		public static final String COLLECTION = "/{providerId}/product-base/collection";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -123,6 +122,11 @@ public final class Endpoint {
 		public static final String PROVINCE = "/province";
 		public static final String DISTRICT = "/district";
 		public static final String WARD = "/ward";
+	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Collection {
+		public static final String ROOT = PREFIX + "/collection";
 	}
 
 }

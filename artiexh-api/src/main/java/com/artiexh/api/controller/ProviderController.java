@@ -14,8 +14,6 @@ import com.artiexh.model.mapper.ProvidedProductBaseMapper;
 import com.artiexh.model.mapper.ProviderMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
-import com.artiexh.model.rest.collection.CollectionDetail;
-import com.artiexh.model.rest.collection.request.CreateCollectionRequest;
 import com.artiexh.model.rest.provider.*;
 import com.artiexh.model.rest.provider.filter.ProviderFilter;
 import com.artiexh.model.rest.provider.filter.ProviderProductFilter;

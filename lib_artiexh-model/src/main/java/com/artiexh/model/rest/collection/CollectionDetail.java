@@ -1,6 +1,7 @@
 package com.artiexh.model.rest.collection;
 
 import com.artiexh.model.rest.provider.ProvidedProductBaseDetail;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -27,5 +28,6 @@ public class CollectionDetail {
 	private String name;
 	@NotBlank
 	private String imageUrl;
-	private Set<ProvidedProductBaseDetail> providedProducts;
+	@JsonIgnore
+	private Long artistId;
 }

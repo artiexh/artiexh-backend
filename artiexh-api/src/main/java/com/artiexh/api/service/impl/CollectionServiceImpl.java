@@ -26,32 +26,19 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CollectionServiceImpl implements CollectionService {
-	private final ProvidedProductBaseRepository productRepository;
 	private final CollectionRepository collectionRepository;
-	private final ProvidedProductBaseMapper productMapper;
 	private final CollectionMapper collectionMapper;
 	@Override
 	@Transactional
-	public Collection create(Set<Long> ids, Collection collection) {
-		CollectionEntity collectionEntity = CollectionEntity.builder()
-			.name(collection.getName())
-			.imageUrl(collection.getImageUrl())
-			.priceAmount(collection.getPriceAmount())
-			.providedProducts(
-				ids.stream()
-					.map(id -> ProvidedProductBaseEntity.builder()
-						.id(id)
-						.build())
-					.collect(Collectors.toSet())
-			)
-			.build();
-		collectionRepository.saveAndFlush(collectionEntity);
+	public Collection create(Collection collection) {
+		CollectionEntity collectionEntity = collectionMapper.domainToEntity(collection);
+		collectionRepository.save(collectionEntity);
 
-		collection.setId(collectionEntity.getId());
-		collection.setName(collectionEntity.getName());
-		collection.setImageUrl(collectionEntity.getImageUrl());
-		collection.setPriceAmount(collection.getPriceAmount());
-
+		collection.setId(collection.getId());
 		return collection;
+	}
+
+	public Page<Collection> getAll(Specification<CollectionEntity> specification, Pageable pageable) {
+		return collectionRepository.findAll(specification, pageable).map(collectionMapper::entityToDomain);
 	}
 }

@@ -29,8 +29,6 @@ public class ProviderProductFilter {
 	@JsonIgnore
 	private String businessCode;
 
-	private ProvidedProductType[] productTypes;
-
 	private Model3DCode model3DCode;
 
 	public Specification<ProvidedProductBaseEntity> getSpecification() {
@@ -42,17 +40,6 @@ public class ProviderProductFilter {
 			}
 			if (model3DCode != null) {
 				predicates.add(builder.equal(root.join("productBase").get("model3DCode"), model3DCode.getByteValue()));
-			}
-			if (productTypes != null && productTypes.length > 0) {
-				if (Arrays.asList(productTypes).contains(ProvidedProductType.COLLECTION) && !Arrays.asList(productTypes).contains(ProvidedProductType.SINGLE)) {
-					Byte[] types = new Byte[] {ProvidedProductType.SINGLE.getByteValue()};
-					predicates.add(builder.notEqual(root.get("types"), types));
-				}
-
-				if (Arrays.asList(productTypes).contains(ProvidedProductType.SINGLE) && !Arrays.asList(productTypes).contains(ProvidedProductType.COLLECTION)) {
-					Byte[] types = new Byte[] {ProvidedProductType.COLLECTION.getByteValue()};
-					predicates.add(builder.notEqual(root.get("types"), types));
-				}
 			}
 			return builder.and(predicates.toArray(new Predicate[0]));
 		};
