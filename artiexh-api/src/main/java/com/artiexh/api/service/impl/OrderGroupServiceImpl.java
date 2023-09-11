@@ -245,8 +245,6 @@ public class OrderGroupServiceImpl implements OrderGroupService {
 		BigDecimal totalPrice = BigDecimal.ZERO;
 		for (Bill bill : bills) {
 			totalPrice = totalPrice.add(bill.getOrderAmount());
-
-			//TODO: Calculate with voucher (shop + system)
 		}
 
 		String vnpOrderInfo = "Thanh toan don hang " + id;

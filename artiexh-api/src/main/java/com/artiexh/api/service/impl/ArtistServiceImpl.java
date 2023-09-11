@@ -99,8 +99,19 @@ public class ArtistServiceImpl implements ArtistService {
 			.tel(orderEntity.getOrderGroup().getShippingAddress().getPhone()).email(orderEntity.getOrderGroup().getUser().getEmail())
 			.note(updateShippingOrderRequest.getNote())
 			.weightOption("gram")
-			.value(updateShippingOrderRequest.getValue().intValue())
 			.tags(updateShippingOrderRequest.getTags());
+
+		if (updateShippingOrderRequest.getValue() != null) {
+			orderBuilder.value(updateShippingOrderRequest.getValue().intValue());
+		} else {
+			var value = orderEntity.getOrderDetails().stream()
+				.map(orderDetailEntity -> {
+					var productEntity = orderDetailEntity.getProduct();
+					return productEntity.getPriceAmount().multiply(BigDecimal.valueOf(orderDetailEntity.getQuantity()));
+				})
+				.reduce(BigDecimal.ZERO, BigDecimal::add);
+			orderBuilder.value(value.intValue());
+		}
 
 		if (updateShippingOrderRequest.getPickWorkShift() != null) {
 			orderBuilder.pickWorkShift(updateShippingOrderRequest.getPickWorkShift().getValue());
