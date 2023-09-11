@@ -16,6 +16,5 @@ public class Collection {
 	private Long id;
 	private String name;
 	private String imageUrl;
-	private BigDecimal priceAmount;
 	private Set<ProvidedProductBase> providedProducts;
 }

@@ -14,8 +14,9 @@ import com.artiexh.model.mapper.ProvidedProductBaseMapper;
 import com.artiexh.model.mapper.ProviderMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
+import com.artiexh.model.rest.collection.CollectionDetail;
+import com.artiexh.model.rest.collection.request.CreateCollectionRequest;
 import com.artiexh.model.rest.provider.*;
-import com.artiexh.model.rest.provider.filter.CollectionFilter;
 import com.artiexh.model.rest.provider.filter.ProviderFilter;
 import com.artiexh.model.rest.provider.filter.ProviderProductFilter;
 import jakarta.persistence.EntityNotFoundException;
@@ -100,39 +101,7 @@ public class ProviderController {
 
 	}
 
-	@PostMapping(Endpoint.Provider.COLLECTION)
-	@PreAuthorize("hasAuthority('ADMIN')")
-	public CollectionDetail createCollection(
-		@PathVariable("providerId") String businessCode,
-		@Valid @RequestBody CollectionDetail detail) {
-		Collection collection = collectionMapper.detailToDomain(detail);
 
-		try {
-			collection = collectionService.create(collection, businessCode);
-			return collectionMapper.domainToDetail(collection);
-		} catch (EntityNotFoundException exception){
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-				ErrorCode.PRODUCT_NOT_FOUND.getMessage(),
-				exception);
-		} catch (IllegalArgumentException exception) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-				exception.getMessage(),
-				exception);
-		}
-
-	}
-
-	@GetMapping(Endpoint.Provider.COLLECTION)
-	public PageResponse<CollectionDetail> getCollection(
-		@PathVariable("providerId") String businessCode,
-		@ParameterObject PaginationAndSortingRequest paginationAndSortingRequest,
-		@ParameterObject CollectionFilter filter) {
-
-		filter.setBusinessCode(businessCode);
-		Page<Collection> collections = collectionService.get(filter.getSpecification(), paginationAndSortingRequest.getPageable());
-		return new PageResponse<>(collections.map(collectionMapper::domainToDetail));
-
-	}
 	//Update Provided Product
 	@PutMapping(Endpoint.Provider.PROVIDED_PRODUCT)
 	@PreAuthorize("hasAuthority('ADMIN')")

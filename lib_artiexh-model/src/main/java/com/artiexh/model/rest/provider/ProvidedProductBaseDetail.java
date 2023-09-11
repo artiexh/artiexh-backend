@@ -30,11 +30,11 @@ import java.util.List;
 public class ProvidedProductBaseDetail {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
-	//@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private String businessCode;
 
 	@JsonSerialize(using = ToStringSerializer.class)
-	//@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long productBaseId;
 
 	@Valid

@@ -1,5 +1,6 @@
-package com.artiexh.model.rest.provider;
+package com.artiexh.model.rest.collection;
 
+import com.artiexh.model.rest.provider.ProvidedProductBaseDetail;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -26,8 +27,5 @@ public class CollectionDetail {
 	private String name;
 	@NotBlank
 	private String imageUrl;
-	@NotNull
-	@Min(1)
-	private BigDecimal priceAmount;
 	private Set<ProvidedProductBaseDetail> providedProducts;
 }
