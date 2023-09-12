@@ -1,12 +1,9 @@
 package com.artiexh.model.domain;
 
-import com.artiexh.data.jpa.entity.Color;
+import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
 import com.artiexh.data.jpa.entity.ProvidedProductBaseId;
-import com.artiexh.data.jpa.entity.Size;
-import io.hypersistence.utils.hibernate.type.json.JsonType;
-import jakarta.persistence.Column;
+import com.artiexh.data.jpa.entity.embededmodel.Size;
 import lombok.*;
-import org.hibernate.annotations.Type;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -26,7 +23,7 @@ public class ProvidedProductBase {
 
 	private String description;
 
-	private Color color;
+	private ImageCombination imageCombination;
 
 	private List<Size> sizes;
 

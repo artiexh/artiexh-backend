@@ -1,15 +1,13 @@
 package com.artiexh.model.rest.provider;
 
-import com.artiexh.data.jpa.entity.Color;
-import com.artiexh.data.jpa.entity.ProvidedProductBaseId;
-import com.artiexh.data.jpa.entity.Size;
+import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
+import com.artiexh.data.jpa.entity.embededmodel.Size;
 import com.artiexh.model.domain.Money;
 import com.artiexh.model.domain.ProvidedProductType;
 import com.artiexh.model.rest.productbase.ProductBaseInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import jakarta.persistence.Column;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -20,7 +18,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
@@ -44,7 +41,7 @@ public class ProvidedProductBaseDetail {
 	private String description;
 
 	@NotNull
-	private Color color;
+	private ImageCombination imageCombination;
 
 	@NotNull
 	private List<Size> sizes;

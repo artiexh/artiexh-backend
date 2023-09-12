@@ -15,12 +15,8 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
 public interface ProductBaseMapper {
-	@Mapping(target = "price.unit", source = "priceUnit")
-	@Mapping(target = "price.amount", source = "priceAmount")
 	ProductBase entityToDomain(ProductBaseEntity entity);
 
-	@Mapping(target = "priceUnit", source = "price.unit")
-	@Mapping(target = "priceAmount", source = "price.amount")
 	ProductBaseEntity domainToEntity(ProductBase domain);
 
 	ProductBase detailToDomain(ProductBaseDetail detail);

@@ -26,16 +26,14 @@ public class ProvidedProductBaseServiceImpl implements ProvidedProductBaseServic
 	private final ProductBaseRepository productBaseRepository;
 	@Override
 	public ProvidedProductBase create(ProvidedProductBase product) {
-		repository.findByProvidedProductBaseIdAndTypesContains(
-			product.getProvidedProductBaseId(),
-			new Byte[]{ProvidedProductType.SINGLE.getByteValue()}
-		).ifPresent(entity -> {
-			throw new IllegalArgumentException(ErrorCode.PRODUCT_EXISTED.getMessage() + entity.getId());
-		});
+//		repository.findByProvidedProductBaseIdAndTypesContains(
+//			product.getProvidedProductBaseId(),
+//			new Byte[]{ProvidedProductType.SINGLE.getByteValue()}
+//		).ifPresent(entity -> {
+//			throw new IllegalArgumentException(ErrorCode.PRODUCT_EXISTED.getMessage() + entity.getId());
+//		});
 
 		ProvidedProductBaseEntity entity = mapper.domainToEntity(product);
-
-		entity.setTypes(new Byte[] {ProvidedProductType.SINGLE.getByteValue()});
 
 		repository.save(entity);
 		return product;

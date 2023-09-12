@@ -1,12 +1,14 @@
 package com.artiexh.data.jpa.entity;
 
+import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
+import com.artiexh.data.jpa.entity.embededmodel.OptionConfig;
+import com.artiexh.data.jpa.entity.embededmodel.Size;
 import io.hypersistence.utils.hibernate.id.Tsid;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Type;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
@@ -26,28 +28,30 @@ public class ProductBaseEntity {
 	@Column(name = "name", nullable = false)
 	private String name;
 
-	@Column(name = "type", nullable = false)
-	private String type;
+//	@Column(name = "type", nullable = false)
+//	private String type;
 
 	@Column(name = "product_file_url", nullable = false)
 	private String productFileUrl;
 
 	@Type(JsonType.class)
 	@Column(name = "sizes", columnDefinition = "json", nullable = false)
-	private List<Size> sizes;
+	private List<OptionConfig> sizes;
 
 	@Column(name = "description", nullable = false)
 	private String description;
 
-	@Column(name = "price_amount", nullable = false)
-	private BigDecimal priceAmount;
-
-	@Column(name = "price_unit", nullable = false, length = 3)
-	private String priceUnit;
+	@Type(JsonType.class)
+	@Column(name = "image_combinations", columnDefinition = "json", nullable = false)
+	private List<ImageCombination> imageCombinations;
 
 	@Column(name = "3D_model_code")
 	private Byte model3DCode;
 
-	@OneToMany(mappedBy = "productBase")
+	@OneToMany(mappedBy = "productBase", fetch = FetchType.EAGER)
 	private Set<ProvidedProductBaseEntity> providedModels;
+
+	@OneToMany(fetch = FetchType.EAGER)
+	@JoinColumn(name = "product_id")
+	private Set<ProductOptionEntity> productOptions;
 }

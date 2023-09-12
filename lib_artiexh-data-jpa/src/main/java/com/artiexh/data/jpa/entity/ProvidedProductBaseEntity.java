@@ -1,5 +1,7 @@
 package com.artiexh.data.jpa.entity;
 
+import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
+import com.artiexh.data.jpa.entity.embededmodel.Size;
 import io.hypersistence.utils.hibernate.id.Tsid;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
@@ -40,38 +42,9 @@ public class ProvidedProductBaseEntity {
 	@Column(name = "price_amount", nullable = false)
 	private BigDecimal priceAmount;
 
-	@Column(name = "price_unit", nullable = false, length = 3)
-	private String priceUnit;
-
 	@Column(name = "description", nullable = false)
 	private String description;
 
-	@Type(JsonType.class)
-	@Column(name = "color", columnDefinition = "json", nullable = false)
-	private Color color;
-
-	@Type(JsonType.class)
-	@Column(name = "sizes", columnDefinition = "json", nullable = false)
-	private List<Size> sizes;
-
-	@Column(name = "max_limit", nullable = false)
-	private Long maxLimit;
-
-	@Type(JsonType.class)
-	@Column(name = "allow_config", columnDefinition = "json", nullable = false)
-	private String[] allowConfig;
-
 	@Column(name = "provided_product_file_url", nullable = false)
 	private String providedProductFileUrl;
-
-	@Column(name = "type", nullable = false)
-	@Lob
-	private Byte[] types;
-
-	@ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.EAGER)
-	@JoinTable(
-		name = "collection_provided_product_mapping",
-		joinColumns = @JoinColumn(name = "provided_product_id"),
-		inverseJoinColumns = @JoinColumn(name = "collection_id"))
-	private Set<CollectionEntity> collections;
 }
