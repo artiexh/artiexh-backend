@@ -129,4 +129,10 @@ public final class Endpoint {
 		public static final String ROOT = PREFIX + "/collection";
 	}
 
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Shop {
+		public static final String ROOT = PREFIX + "/shop";
+		public static final String ADDRESS = "/address";
+	}
+
 }
