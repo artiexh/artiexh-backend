@@ -26,8 +26,12 @@ import java.util.stream.Collectors;
 public class ProviderProductFilter {
 	@JsonSerialize(using = StringArraySerializer.class)
 	private Long[] productBaseIds;
-	@JsonIgnore
+//	@JsonIgnore
 	private String businessCode;
+
+	private String[] optionIds;
+
+	private String[] optionValues;
 
 	private Model3DCode model3DCode;
 

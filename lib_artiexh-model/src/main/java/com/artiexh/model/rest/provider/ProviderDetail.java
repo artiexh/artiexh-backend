@@ -18,4 +18,6 @@ public class ProviderDetail extends ProviderInfo{
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Set<ProvidedProductBaseDetail> providedProducts;
+
+	private String website;
 }
