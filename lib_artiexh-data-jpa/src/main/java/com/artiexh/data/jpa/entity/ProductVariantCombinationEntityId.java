@@ -18,8 +18,6 @@ public class ProductVariantCombinationEntityId implements Serializable {
 
 	@Column(name = "variant_id")
 	private Long variantId;
-	@Column(name = "option_id")
-	private Long optionId;
 	@Column(name = "option_value_id")
 	private Long optionValueId;
 }
