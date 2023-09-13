@@ -29,12 +29,10 @@ public interface ProvidedProductBaseMapper {
 	ProvidedProductBaseEntity domainToEntity(ProvidedProductBase domain);
 
 	@Mapping(source = "id.variantId", target = "variantId")
-	@Mapping(source = "id.optionId", target = "optionId")
 	@Mapping(source = "id.optionValueId", target = "optionValueId")
 	VariantCombination entityToDomain(ProductVariantCombinationEntity entity);
 
 	@Mapping(target = "id.variantId", source = "variantId")
-	@Mapping(target = "id.optionId", source = "optionId")
 	@Mapping(target = "id.optionValueId", source = "optionValueId")
 	ProductVariantCombinationEntity domainToEntity(VariantCombination domain);
 
