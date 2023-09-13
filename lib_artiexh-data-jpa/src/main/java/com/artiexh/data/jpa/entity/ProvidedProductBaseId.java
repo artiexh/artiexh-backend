@@ -21,7 +21,7 @@ public class ProvidedProductBaseId implements Serializable {
 	private static final long serialVersionUID = 650123199811833928L;
 
 	@NotNull
-	@Column(name = "business_code", nullable = false, length = 13)
+	@Column(name = "business_code", nullable = false)
 	private String businessCode;
 
 	@NotNull

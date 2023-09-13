@@ -37,4 +37,7 @@ public class ProviderInfo {
 	@Pattern(regexp = "^\\+(?:[0-9] ?){6,14}[0-9]$",
 		message = "Phone must be based on ITU-T standards. Ex: +84 382913108")
 	private String phone;
+
+	@NotBlank
+	private String imageUrl;
 }

@@ -7,6 +7,7 @@ import com.artiexh.data.jpa.entity.ProvidedProductBaseId;
 import com.artiexh.data.jpa.repository.ProductBaseRepository;
 import com.artiexh.data.jpa.repository.ProvidedProductBaseRepository;
 import com.artiexh.data.jpa.repository.ProviderRepository;
+import com.artiexh.data.jpa.repository.VariantCombinationRepository;
 import com.artiexh.model.domain.ProvidedProductBase;
 import com.artiexh.model.domain.ProvidedProductType;
 import com.artiexh.model.mapper.ProvidedProductBaseMapper;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,20 +26,24 @@ public class ProvidedProductBaseServiceImpl implements ProvidedProductBaseServic
 	private final ProvidedProductBaseMapper mapper;
 	private final ProviderRepository providerRepository;
 	private final ProductBaseRepository productBaseRepository;
+	private final VariantCombinationRepository variantCombinationRepository;
 	@Override
+	@Transactional
 	public ProvidedProductBase create(ProvidedProductBase product) {
-		repository.findByProvidedProductBaseIdAndTypesContains(
-			product.getProvidedProductBaseId(),
-			new Byte[]{ProvidedProductType.SINGLE.getByteValue()}
+		repository.findByProvidedProductBaseId(
+			product.getProvidedProductBaseId()
 		).ifPresent(entity -> {
 			throw new IllegalArgumentException(ErrorCode.PRODUCT_EXISTED.getMessage() + entity.getId());
 		});
 
 		ProvidedProductBaseEntity entity = mapper.domainToEntity(product);
 
-		entity.setTypes(new Byte[] {ProvidedProductType.SINGLE.getByteValue()});
-
 		repository.save(entity);
+
+		entity.getVariantCombinations().forEach(combination -> {
+			combination.getId().setVariantId(entity.getId());
+			variantCombinationRepository.save(combination);
+		});
 		return product;
 	}
 

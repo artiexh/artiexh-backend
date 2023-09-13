@@ -26,15 +26,21 @@ import java.util.stream.Collectors;
 public class ProviderProductFilter {
 	@JsonSerialize(using = StringArraySerializer.class)
 	private Long[] productBaseIds;
-	@JsonIgnore
+
 	private String businessCode;
+
+	private String[] optionIds;
+
+	private String[] optionValues;
 
 	private Model3DCode model3DCode;
 
 	public Specification<ProvidedProductBaseEntity> getSpecification() {
 		return (root, cQuery, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
-			predicates.add(builder.equal(root.get("providedProductBaseId").get("businessCode"), businessCode));
+			if (businessCode != null) {
+				predicates.add(builder.equal(root.get("providedProductBaseId").get("businessCode"), businessCode));
+			}
 			if (productBaseIds != null && productBaseIds.length > 0) {
 				predicates.add(root.get("id").get("productBaseId").in(Arrays.asList(productBaseIds)));
 			}

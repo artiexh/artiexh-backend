@@ -37,4 +37,10 @@ public class ProviderEntity {
 
 	@OneToMany(mappedBy = "provider", fetch = FetchType.EAGER)
 	private Set<ProvidedProductBaseEntity> providedProducts;
+
+	@Column(name = "website")
+	private String website;
+
+	@Column(name = "image_url", nullable = false)
+	private String imageUrl;
 }

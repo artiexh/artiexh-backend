@@ -15,12 +15,5 @@ import java.util.Optional;
 public interface ProvidedProductBaseRepository extends JpaRepository<ProvidedProductBaseEntity, Long>,
 	JpaSpecificationExecutor<ProvidedProductBaseEntity> {
 
-	@Query(
-		value = """
-		select p from ProvidedProductBaseEntity p where p.providedProductBaseId = :id and p.types in :types
-		"""
-	)
-	Optional<ProvidedProductBaseEntity> findByProvidedProductBaseIdAndTypesContains(@Param("id") ProvidedProductBaseId providedProductBaseId, @Param("types") Byte[] types);
-
 	Optional<ProvidedProductBaseEntity> findByProvidedProductBaseId(ProvidedProductBaseId providedProductBaseId);
 }

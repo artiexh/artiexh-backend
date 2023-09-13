@@ -1,27 +1,26 @@
-package com.artiexh.model.rest.collection;
+package com.artiexh.model.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+import java.util.Set;
+
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CollectionDetail {
-	@JsonSerialize(using = ToStringSerializer.class)
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	private Long id;
-	@NotBlank
+@Builder(toBuilder = true)
+public class ProductOption {
 	private String name;
-	@NotBlank
-	private String imageUrl;
-	@JsonIgnore
-	private Long artistId;
+	@JsonSerialize(using = ToStringSerializer.class)
+	private Long productId;
+	private Integer index;
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@JsonSerialize(using = ToStringSerializer.class)
+	private Long id;
+	private Set<OptionValue> optionValues;
 }

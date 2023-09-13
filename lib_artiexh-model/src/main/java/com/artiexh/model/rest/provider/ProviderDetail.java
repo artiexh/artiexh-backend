@@ -1,6 +1,6 @@
 package com.artiexh.model.rest.provider;
 
-import com.artiexh.model.domain.ProvidedProductBase;
+import com.artiexh.model.rest.providedproduct.ProvidedProductBaseDetail;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,4 +18,6 @@ public class ProviderDetail extends ProviderInfo{
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Set<ProvidedProductBaseDetail> providedProducts;
+
+	private String website;
 }

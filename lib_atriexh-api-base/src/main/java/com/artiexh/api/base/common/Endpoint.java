@@ -110,8 +110,12 @@ public final class Endpoint {
 	public static class Provider {
 		public static final String ROOT = PREFIX + "/provider";
 		public static final String DETAIL = "/{id}";
-		public static final String PROVIDER_PRODUCT = "/{id}/provided-product";
-		public static final String PROVIDED_PRODUCT = "/{providerId}/product-base/{productBaseId}/provided-product";
+	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class ProvidedProduct {
+		public static final String ROOT = PREFIX + "/provided-product";
+		public static final String DETAIL = "/{providerId}/product-base/{productBaseId}/provided-product";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)

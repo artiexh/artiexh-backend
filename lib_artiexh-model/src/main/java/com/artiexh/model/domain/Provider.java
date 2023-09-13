@@ -29,4 +29,8 @@ public class Provider {
 	private String description;
 
 	private Set<ProvidedProductBase> providedProducts;
+
+	private String website;
+
+	private String imageUrl;
 }
