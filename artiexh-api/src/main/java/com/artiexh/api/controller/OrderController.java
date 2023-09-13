@@ -55,7 +55,7 @@ public class OrderController {
 	@GetMapping(Order.SHIPPING_FEE)
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
 	public ShipFeeResponse.ShipFee getShippingFee(Authentication authentication,
-												  @Valid GetShippingFeeRequest request) {
+												  @ParameterObject @Valid GetShippingFeeRequest request) {
 		var userId = (Long) authentication.getPrincipal();
 		try {
 			return orderService.getShippingFee(userId, request.getAddressId(), request);
