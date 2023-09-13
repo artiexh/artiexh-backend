@@ -1,4 +1,3 @@
-
 spring:
   servlet:
     multipart:
@@ -19,11 +18,11 @@ spring:
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
-      ddl-auto: update
+      ddl-auto: none
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
-    show-sql: true
+    show-sql: false
   data:
     redis:
       host: ${REDIS_HOST:}
