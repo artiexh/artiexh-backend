@@ -16,4 +16,5 @@ public class ProductVariantCombinationEntity {
 
 	@EmbeddedId
 	private ProductVariantCombinationEntityId id;
+	private Integer quantity;
 }

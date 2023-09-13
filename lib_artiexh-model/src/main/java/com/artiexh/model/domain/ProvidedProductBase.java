@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -19,21 +20,13 @@ public class ProvidedProductBase {
 
 	private BigDecimal priceAmount;
 
-	private String priceUnit;
-
 	private String description;
 
-	private ImageCombination imageCombination;
-
-	private List<Size> sizes;
-
 	private Long maxLimit;
-
-	private String[] allowConfig;
 
 	private String providedProductFileUrl;
 
 	private ProductBase productBase;
 
-	private ProvidedProductType[] types;
+	private Set<VariantCombination> variantCombinations;
 }

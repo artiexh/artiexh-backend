@@ -42,9 +42,16 @@ public class ProvidedProductBaseEntity {
 	@Column(name = "price_amount", nullable = false)
 	private BigDecimal priceAmount;
 
+	@Column(name = "max_limit", nullable = false)
+	private Integer maxLimit;
+
 	@Column(name = "description", nullable = false)
 	private String description;
 
 	@Column(name = "provided_product_file_url", nullable = false)
 	private String providedProductFileUrl;
+
+	@OneToMany(fetch = FetchType.EAGER)
+	@JoinColumn(name = "variant_id")
+	private Set<ProductVariantCombinationEntity> variantCombinations;
 }

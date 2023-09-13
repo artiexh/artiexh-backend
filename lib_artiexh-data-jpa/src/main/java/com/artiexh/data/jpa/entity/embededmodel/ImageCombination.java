@@ -12,5 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 public class ImageCombination {
-	private List<Image> images;
+	private String name;
+	private String code;
+	private List<ImageConfig> images;
 }

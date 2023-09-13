@@ -1,5 +1,6 @@
 package com.artiexh.data.jpa.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +15,11 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Embeddable
 public class ProductVariantCombinationEntityId implements Serializable {
+
+	@Column(name = "variant_id")
 	private Long variantId;
+	@Column(name = "option_id")
 	private Long optionId;
+	@Column(name = "option_value_id")
 	private Long optionValueId;
 }
