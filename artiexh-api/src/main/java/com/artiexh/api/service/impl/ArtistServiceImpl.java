@@ -216,9 +216,9 @@ public class ArtistServiceImpl implements ArtistService {
 		var orderHistoryEntity = OrderHistoryEntity.builder()
 			.id(new OrderHistoryEntityId(orderId, OrderHistoryStatus.SHIPPED.getByteValue()))
 			.build();
-		orderHistoryRepository.save(orderHistoryEntity);
+		var savedOrderHistoryEntity = orderHistoryRepository.save(orderHistoryEntity);
 
-		orderEntity.getOrderHistories().add(orderHistoryEntity);
+		orderEntity.getOrderHistories().add(savedOrderHistoryEntity);
 		return orderMapper.domainToArtistResponse(orderMapper.entityToResponseDomain(orderEntity));
 	}
 }

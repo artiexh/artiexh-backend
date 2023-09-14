@@ -18,4 +18,11 @@ public class OrderGroup {
 	private OrderTransaction currentTransaction;
 	private Set<Order> orders;
 	private PaymentMethod paymentMethod;
+	private String deliveryAddress;
+	private String deliveryWard;
+	private String deliveryDistrict;
+	private String deliveryProvince;
+	private String deliveryCountry;
+	private String deliveryTel;
+	private String deliveryEmail;
 }

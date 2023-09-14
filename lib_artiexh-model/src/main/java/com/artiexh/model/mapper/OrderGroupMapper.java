@@ -2,7 +2,6 @@ package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.OrderGroupEntity;
 import com.artiexh.model.domain.OrderGroup;
-import com.artiexh.model.rest.order.response.CheckoutResponse;
 import com.artiexh.model.rest.user.UserOrderGroupResponse;
 import com.artiexh.model.rest.user.UserOrderGroupResponsePage;
 import org.mapstruct.Mapper;
@@ -22,8 +21,6 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface OrderGroupMapper {
 	@Mapping(target = "user", qualifiedByName = "entityToBasicUser")
 	OrderGroup entityToDomain(OrderGroupEntity entity);
-
-	CheckoutResponse domainToCheckoutResponse(OrderGroup orderGroup);
 
 	@Mapping(target = "orders", qualifiedByName = "domainsToUserResponsePages")
 	UserOrderGroupResponsePage domainToUserResponsePage(OrderGroup orderGroup);
