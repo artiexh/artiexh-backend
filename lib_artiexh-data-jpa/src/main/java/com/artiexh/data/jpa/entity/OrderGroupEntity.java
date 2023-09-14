@@ -44,4 +44,26 @@ public class OrderGroupEntity extends BaseAuditEntity {
 
 	@Column(name = "payment_method", nullable = false)
 	private Byte paymentMethod;
+
+	@Column(name = "delivery_address")
+	private String deliveryAddress;
+
+	@Column(name = "delivery_ward")
+	private String deliveryWard;
+
+	@Column(name = "delivery_district")
+	private String deliveryDistrict;
+
+	@Column(name = "delivery_province")
+	private String deliveryProvince;
+
+	@Column(name = "delivery_country")
+	private String deliveryCountry;
+
+	@Column(name = "delivery_tel", length = 15)
+	private String deliveryTel;
+
+	@Column(name = "delivery_email", length = 254)
+	private String deliveryEmail;
+
 }
