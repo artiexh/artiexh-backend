@@ -78,11 +78,6 @@ public class ArtistServiceImpl implements ArtistService {
 				"Cannot update order status from " + OrderStatus.fromValue(orderEntity.getStatus()) + " to SHIPPING");
 		}
 
-		if (updateShippingOrderRequest.getValue() == null
-			|| updateShippingOrderRequest.getValue().compareTo(BigDecimal.ZERO) <= 0) {
-			throw new IllegalArgumentException("Value must be greater than 0");
-		}
-
 		var products = orderEntity.getOrderDetails().stream().map(orderDetailEntity -> {
 			var productEntity = orderDetailEntity.getProduct();
 			return com.artiexh.ghtk.client.model.order.Product.builder().name(productEntity.getName())
