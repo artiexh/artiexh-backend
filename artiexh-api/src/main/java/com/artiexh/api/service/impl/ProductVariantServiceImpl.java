@@ -2,11 +2,9 @@ package com.artiexh.api.service.impl;
 
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.ProductVariantService;
+import com.artiexh.data.jpa.entity.ProductOptionEntity;
 import com.artiexh.data.jpa.entity.ProductVariantEntity;
-import com.artiexh.data.jpa.repository.ProductBaseRepository;
-import com.artiexh.data.jpa.repository.ProductVariantRepository;
-import com.artiexh.data.jpa.repository.ProviderRepository;
-import com.artiexh.data.jpa.repository.VariantCombinationRepository;
+import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.ProductVariant;
 import com.artiexh.model.mapper.ProductVariantMapper;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,8 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductVariantServiceImpl implements ProductVariantService {
 	private final ProductVariantRepository repository;
 	private final ProductVariantMapper mapper;
-	private final ProviderRepository providerRepository;
-	private final ProductBaseRepository productBaseRepository;
+	private final ProductOptionRepository productOptionRepository;
 	private final VariantCombinationRepository variantCombinationRepository;
 
 	@Override
@@ -41,6 +38,15 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 		repository.save(entity);
 
 		entity.getVariantCombinations().forEach(combination -> {
+			//Validation option id and option value
+			ProductOptionEntity productOption = productOptionRepository.findById(combination.getOptionId()).orElseThrow(
+				() -> new EntityNotFoundException(ErrorCode.OPTION_NOT_FOUND.getMessage() + combination.getOptionId())
+			);
+			boolean isValidOption = productOption.getOptionValues().stream().anyMatch(option -> option.getId().equals(combination.getId().getOptionValueId()));
+			if (!isValidOption) {
+				throw new IllegalArgumentException(ErrorCode.OPTION_VALUE_INVALID.getMessage() + combination.getOptionId());
+			}
+
 			combination.getId().setVariantId(entity.getId());
 			variantCombinationRepository.save(combination);
 		});

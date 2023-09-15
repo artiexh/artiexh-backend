@@ -35,6 +35,10 @@ public enum ErrorCode {
 	PROVIDER_EXISTED(HttpStatus.BAD_REQUEST, "Provider is existed with Business Code: "),
 	PROVIDED_PRODUCT_INVALID(HttpStatus.BAD_REQUEST, "Provided product is invalid with Id: "),
 
+	//Option - Option Value
+	OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "Option is not found with Id: "),
+	OPTION_VALUE_INVALID(HttpStatus.BAD_REQUEST, "Option value is not matched with Option Id: "),
+
 	//Media
 	UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Upload file is failed!"),
 	DOWNLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Download file is failed!"),
