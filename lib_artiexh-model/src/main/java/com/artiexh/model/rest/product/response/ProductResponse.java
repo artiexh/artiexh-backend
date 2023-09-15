@@ -1,19 +1,14 @@
 package com.artiexh.model.rest.product.response;
 
-import com.artiexh.model.domain.DeliveryType;
-import com.artiexh.model.domain.Money;
-import com.artiexh.model.domain.PaymentMethod;
-import com.artiexh.model.domain.ProductAttach;
-import com.artiexh.model.domain.ProductStatus;
-import com.artiexh.model.domain.ProductType;
-import com.artiexh.model.domain.Shop;
+import com.artiexh.model.domain.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import java.time.Instant;
-import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.Instant;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor

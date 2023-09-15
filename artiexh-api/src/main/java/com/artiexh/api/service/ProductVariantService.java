@@ -8,8 +8,12 @@ import org.springframework.data.jpa.domain.Specification;
 
 public interface ProductVariantService {
 	ProductVariant create(ProductVariant product);
+
 	ProductVariant update(ProductVariant product);
+
 	void delete(String businessCode, Long productBaseId);
+
 	ProductVariant getById(Long id);
+
 	Page<ProductVariant> getAll(Specification<ProductVariantEntity> specification, Pageable pageable);
 }

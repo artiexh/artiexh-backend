@@ -1,6 +1,6 @@
 package com.artiexh.model.rest.provider.filter;
 
-import com.artiexh.data.jpa.entity.*;
+import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.artiexh.model.domain.Model3DCode;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.impl.StringArraySerializer;
@@ -43,9 +43,9 @@ public class ProductVariantFilter {
 			if (model3DCode != null) {
 				predicates.add(builder.equal(root.join("productBase").get("model3DCode"), model3DCode.getByteValue()));
 			}
-			 if (optionValueIds != null && optionValueIds.length > 0) {
-				 predicates.add(root.join("variantCombinations").get("id").get("optionValueId").in(Arrays.asList(optionValueIds)));
-			 }
+			if (optionValueIds != null && optionValueIds.length > 0) {
+				predicates.add(root.join("variantCombinations").get("id").get("optionValueId").in(Arrays.asList(optionValueIds)));
+			}
 			if (optionIds != null && optionIds.length > 0) {
 				predicates.add(root.join("variantCombinations").get("optionId").in(Arrays.asList(optionIds)));
 			}

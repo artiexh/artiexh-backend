@@ -1,7 +1,5 @@
 package com.artiexh.data.jpa.entity;
 
-import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
-import com.artiexh.data.jpa.entity.embededmodel.Size;
 import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

@@ -2,8 +2,6 @@ package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.CategoryService;
-import com.artiexh.model.domain.ProductCategory;
-import com.artiexh.model.domain.ProductTag;
 import com.artiexh.model.mapper.ProductCategoryMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
@@ -22,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CategoryController {
 	private final CategoryService categoryService;
 	private final ProductCategoryMapper productCategoryMapper;
+
 	@GetMapping
 	public PageResponse<ProductCategoryResponse> getInPage(
 		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest

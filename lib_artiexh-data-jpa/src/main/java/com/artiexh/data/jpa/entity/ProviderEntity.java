@@ -47,8 +47,8 @@ public class ProviderEntity {
 	@ManyToMany()
 	@JoinTable(
 		name = "product_base_provider_mapping",
-		joinColumns = { @JoinColumn(name = "business_code") },
-		inverseJoinColumns = { @JoinColumn(name = "product_base_id") }
+		joinColumns = {@JoinColumn(name = "business_code")},
+		inverseJoinColumns = {@JoinColumn(name = "product_base_id")}
 	)
 	private Set<ProductBaseEntity> productBases;
 }

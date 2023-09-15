@@ -2,13 +2,8 @@ package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.TagService;
-import com.artiexh.model.domain.Product;
-import com.artiexh.model.domain.ProductTag;
-import com.artiexh.model.mapper.ProductTagMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
-import com.artiexh.model.rest.product.request.GetAllProductFilter;
-import com.artiexh.model.rest.product.response.ProductResponse;
 import com.artiexh.model.rest.tag.ProductTagResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = Endpoint.Tag.ROOT)
 public class TagController {
 	private final TagService tagService;
+
 	@GetMapping
 	public PageResponse<ProductTagResponse> getInPage(
 		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest

@@ -1,6 +1,5 @@
 package com.artiexh.api.utils;
 
-import com.artiexh.api.config.S3Config;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.MalformedURLException;
@@ -10,7 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class S3Util {
-	private S3Util() {}
+	private S3Util() {
+	}
+
 	public static String getPresignedString(String regionName, String bucketName, String awsAccessKey, String awsSecretKey, String fileName, boolean isPublic) {
 		URL endpointUrl;
 		String endpointUrlString;

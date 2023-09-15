@@ -25,6 +25,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 	private final ProviderRepository providerRepository;
 	private final ProductBaseRepository productBaseRepository;
 	private final VariantCombinationRepository variantCombinationRepository;
+
 	@Override
 	@Transactional
 	public ProductVariant create(ProductVariant product) {

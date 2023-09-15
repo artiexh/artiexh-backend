@@ -22,17 +22,18 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 	private final ProductBaseRepository productBaseRepository;
 	private final ProductOptionRepository productOptionRepository;
 	private final OptionValueRepository optionValueRepository;
+
 	@Override
 	@Transactional
 	public ProductBase create(ProductBase product) {
 		ProductBaseEntity entity = productBaseMapper.domainToEntity(product);
 		entity = productBaseRepository.save(entity);
 
-		for(ProductOptionEntity productOption : entity.getProductOptions()) {
+		for (ProductOptionEntity productOption : entity.getProductOptions()) {
 			productOption.setProductId(entity.getId());
 			productOption = productOptionRepository.save(productOption);
 
-			for(OptionValueEntity optionValue: productOption.getOptionValues()) {
+			for (OptionValueEntity optionValue : productOption.getOptionValues()) {
 				optionValue.setOptionId(productOption.getId());
 				optionValueRepository.save(optionValue);
 			}

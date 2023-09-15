@@ -13,6 +13,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface OrderTransactionMapper {
 	@Mapping(target = "message", source = "responseCode", qualifiedByName = "toMessage")
 	OrderTransactionResponse domainToResponse(OrderTransaction domain);
+
 	OrderTransaction entityToDomain(OrderTransactionEntity entity);
 
 	@Named("toMessage")

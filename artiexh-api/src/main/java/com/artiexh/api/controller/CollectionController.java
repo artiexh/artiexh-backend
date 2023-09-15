@@ -25,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class CollectionController {
 	private final CollectionMapper collectionMapper;
 	private final CollectionService collectionService;
+
 	@PostMapping()
 	@PreAuthorize("hasAuthority('ARTIST')")
 	public CollectionDetail create(
@@ -36,7 +37,7 @@ public class CollectionController {
 		try {
 			collection = collectionService.create(collection);
 			return collectionMapper.domainToDetail(collection);
-		} catch (EntityNotFoundException exception){
+		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
 				ErrorCode.PRODUCT_NOT_FOUND.getMessage(),
 				exception);

@@ -1,6 +1,5 @@
 package com.artiexh.data.jpa.entity.embededmodel;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

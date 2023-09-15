@@ -1,8 +1,10 @@
 package com.artiexh.api.service.impl;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.*;
-import com.artiexh.api.config.S3Config;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.PresignedUrlDownloadRequest;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
 import com.artiexh.api.config.S3ConfigurationProperties;
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.StorageService;
@@ -34,6 +36,7 @@ public class StorageServiceImpl implements StorageService {
 	private final AmazonS3 s3;
 	private final MediaRepository mediaRepository;
 	private final AccountRepository accountRepository;
+
 	@Override
 	@Transactional
 	public FileResponse upload(MultipartFile multipartFile, Long userId) {
@@ -97,7 +100,7 @@ public class StorageServiceImpl implements StorageService {
 		}
 		MediaEntity entity = mediaRepository.findByIdAndOwnerId(mediaId, userId).orElseThrow(EntityNotFoundException::new);
 
-		if(Arrays.stream(sharedIds).anyMatch(id -> id.equals(entity.getOwner().getId()))) {
+		if (Arrays.stream(sharedIds).anyMatch(id -> id.equals(entity.getOwner().getId()))) {
 			throw new IllegalArgumentException(ErrorCode.OWNER_NOT_ALLOWED.getMessage());
 		}
 		entity.setSharedUsers(Arrays.stream(sharedIds)

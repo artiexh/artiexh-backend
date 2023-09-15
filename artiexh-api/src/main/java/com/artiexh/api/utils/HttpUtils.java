@@ -10,7 +10,9 @@ import java.util.Map;
 
 @Slf4j
 public class HttpUtils {
-	private HttpUtils() {}
+	private HttpUtils() {
+	}
+
 	/**
 	 * Makes a http request to the specified endpoint
 	 */
@@ -20,7 +22,7 @@ public class HttpUtils {
 										   String requestBody) {
 		HttpURLConnection connection = createHttpConnection(endpointUrl, httpMethod, headers);
 		try {
-			if ( requestBody != null ) {
+			if (requestBody != null) {
 				DataOutputStream wr = new DataOutputStream(
 					connection.getOutputStream());
 				wr.writeBytes(requestBody);
@@ -68,8 +70,8 @@ public class HttpUtils {
 			HttpURLConnection connection = (HttpURLConnection) endpointUrl.openConnection();
 			connection.setRequestMethod(httpMethod);
 
-			if ( headers != null ) {
-				for ( String headerKey : headers.keySet() ) {
+			if (headers != null) {
+				for (String headerKey : headers.keySet()) {
 					log.info(headerKey + ": " + headers.get(headerKey));
 					connection.setRequestProperty(headerKey, headers.get(headerKey));
 				}
@@ -91,7 +93,7 @@ public class HttpUtils {
 		} catch (UnsupportedEncodingException e) {
 			throw new IllegalArgumentException("UTF-8 encoding is not supported.", e);
 		}
-		if ( keepPathSlash ) {
+		if (keepPathSlash) {
 			encoded = encoded.replace("%2F", "/");
 		}
 		return encoded;

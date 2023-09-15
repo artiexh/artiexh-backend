@@ -12,7 +12,10 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 )
 public interface CollectionMapper {
 	CollectionDetail domainToDetail(Collection collection);
+
 	Collection detailToDomain(CollectionDetail collection);
+
 	Collection entityToDomain(CollectionEntity collection);
+
 	CollectionEntity domainToEntity(Collection collection);
 }

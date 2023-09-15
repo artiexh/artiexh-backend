@@ -2,13 +2,11 @@ package com.artiexh.api.service.impl;
 
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.ProviderService;
-import com.artiexh.data.jpa.entity.ProductBaseEntity;
 import com.artiexh.data.jpa.entity.ProviderEntity;
 import com.artiexh.data.jpa.repository.ProductBaseRepository;
 import com.artiexh.data.jpa.repository.ProviderRepository;
 import com.artiexh.model.domain.Provider;
 import com.artiexh.model.mapper.ProviderMapper;
-import com.artiexh.model.rest.provider.ProviderDetail;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,16 +15,13 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 @Service
 @RequiredArgsConstructor
 public class ProviderServiceImpl implements ProviderService {
 	private final ProviderMapper providerMapper;
 	private final ProviderRepository providerRepository;
 	private final ProductBaseRepository productBaseRepository;
+
 	@Override
 	@Transactional
 	public Provider create(Provider provider) {

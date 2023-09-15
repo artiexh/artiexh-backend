@@ -25,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class ProductVariantController {
 	private final ProductVariantService productVariantService;
 	private final ProductVariantMapper productVariantMapper;
+
 	@GetMapping()
 	public PageResponse<ProductVariantDetail> getAll(
 		@ParameterObject PaginationAndSortingRequest paginationAndSortingRequest,
@@ -32,6 +33,7 @@ public class ProductVariantController {
 		Page<ProductVariant> productPage = productVariantService.getAll(filter.getSpecification(), paginationAndSortingRequest.getPageable());
 		return new PageResponse<>(productPage.map(productVariantMapper::domainToDetail));
 	}
+
 	//Create Provided Product
 	@PostMapping()
 	@PreAuthorize("hasAuthority('ADMIN')")

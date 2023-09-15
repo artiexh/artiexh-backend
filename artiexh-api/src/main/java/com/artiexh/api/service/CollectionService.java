@@ -8,5 +8,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 public interface CollectionService {
 	Collection create(Collection collection);
+
 	Page<Collection> getAll(Specification<CollectionEntity> specification, Pageable pageable);
 }

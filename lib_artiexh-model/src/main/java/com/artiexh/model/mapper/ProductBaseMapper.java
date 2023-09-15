@@ -3,11 +3,9 @@ package com.artiexh.model.mapper;
 import com.artiexh.data.jpa.entity.ProductBaseEntity;
 import com.artiexh.model.domain.Model3DCode;
 import com.artiexh.model.domain.ProductBase;
-import com.artiexh.model.domain.ProductStatus;
 import com.artiexh.model.rest.productbase.ProductBaseDetail;
 import com.artiexh.model.rest.productbase.ProductBaseInfo;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 

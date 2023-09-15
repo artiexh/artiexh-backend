@@ -16,7 +16,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProviderDetail extends ProviderInfo{
+public class ProviderDetail extends ProviderInfo {
 	private String description;
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)

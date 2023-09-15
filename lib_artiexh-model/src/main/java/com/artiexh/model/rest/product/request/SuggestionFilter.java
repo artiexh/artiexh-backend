@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.opensearch.common.unit.Fuzziness;
 import org.opensearch.data.client.orhlc.NativeSearchQueryBuilder;
-import org.opensearch.index.query.*;
+import org.opensearch.index.query.BoolQueryBuilder;
+import org.opensearch.index.query.QueryStringQueryBuilder;
+import org.opensearch.index.query.TermsQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.util.StringUtils;
 

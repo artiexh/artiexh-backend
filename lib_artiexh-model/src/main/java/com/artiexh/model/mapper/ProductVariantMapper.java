@@ -22,6 +22,7 @@ public interface ProductVariantMapper {
 
 	@Mapping(target = "productBase", source = "productBase", qualifiedByName = "domainToInfo")
 	ProductVariantDetail domainToDetail(ProductVariant domain);
+
 	ProductVariantEntity domainToEntity(ProductVariant domain);
 
 	@Mapping(source = "id.variantId", target = "variantId")

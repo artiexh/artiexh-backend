@@ -26,7 +26,8 @@ import java.io.IOException;
 @RequestMapping(Endpoint.Media.ROOT)
 public class MediaController {
 	private final StorageService storageService;
-	@PostMapping(path = Endpoint.Media.PUBLIC_UPLOAD,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+
+	@PostMapping(path = Endpoint.Media.PUBLIC_UPLOAD, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public FileResponseList publicUpload(@Valid @ModelAttribute UploadRequest request) {
 		try {
 			return storageService.upload(request.getFile(), null);
@@ -38,7 +39,7 @@ public class MediaController {
 
 	}
 
-	@PostMapping(path = Endpoint.Media.UPLOAD,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@PostMapping(path = Endpoint.Media.UPLOAD, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public FileResponseList upload(Authentication authentication,
 								   @Valid @ModelAttribute UploadRequest request) {
 		var userId = (Long) authentication.getPrincipal();
@@ -53,8 +54,8 @@ public class MediaController {
 
 	@PutMapping(path = Endpoint.Media.DETAIL)
 	public void updateSharedUsers(Authentication authentication,
-										  @PathVariable Long id,
-										  @Valid @RequestBody UpdateSharedUsersRequest request) {
+								  @PathVariable Long id,
+								  @Valid @RequestBody UpdateSharedUsersRequest request) {
 		var userId = (Long) authentication.getPrincipal();
 		try {
 			storageService.updateSharedUsers(userId, request.getSharedUserIds(), id);
