@@ -18,4 +18,20 @@ public class ShopOrderResponse extends ShopOrderResponsePage {
 	private Set<OrderDetailResponse> orderDetails;
 	private List<OrderHistory> orderHistories;
 	private String shippingLabel;
+	private String pickAddress;
+	private String pickWard;
+	private String pickDistrict;
+	private String pickProvince;
+	private String pickCountry;
+	private String pickTel;
+	private String pickName;
+	private String pickEmail;
+	private String returnAddress;
+	private String returnWard;
+	private String returnDistrict;
+	private String returnProvince;
+	private String returnCountry;
+	private String returnTel;
+	private String returnName;
+	private String returnEmail;
 }

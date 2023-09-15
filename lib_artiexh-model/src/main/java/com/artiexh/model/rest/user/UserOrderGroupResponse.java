@@ -23,4 +23,11 @@ public class UserOrderGroupResponse {
 	private UserAddress shippingAddress;
 	private OrderTransactionResponse currentTransaction;
 	private PaymentMethod paymentMethod;
+	private String deliveryAddress;
+	private String deliveryWard;
+	private String deliveryDistrict;
+	private String deliveryProvince;
+	private String deliveryCountry;
+	private String deliveryTel;
+	private String deliveryEmail;
 }

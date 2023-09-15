@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @Slf4j
 public class OrderGroupServiceImpl implements OrderGroupService {
+	private final UserRepository userRepository;
 	private final ProductRepository productRepository;
 	private final OrderDetailRepository orderDetailRepository;
 	private final CartItemRepository cartItemRepository;
@@ -64,6 +65,9 @@ public class OrderGroupServiceImpl implements OrderGroupService {
 
 	private OrderGroupEntity cashPaymentOrder(long userId, CheckoutRequest checkoutRequest) {
 		// check common data
+		var userEntity = userRepository.findById(userId)
+			.orElseThrow(() -> new IllegalArgumentException("User not existed"));
+
 		UserAddressEntity address = getUserAddressEntity(userId, checkoutRequest.getAddressId());
 		OrderStatus status = OrderStatus.PREPARING;
 
@@ -72,7 +76,7 @@ public class OrderGroupServiceImpl implements OrderGroupService {
 
 		// create order and order details
 		try {
-			OrderGroupEntity createdOrder = createOrder(userId, address, status, checkoutRequest.getShops(), cartItemEntities, checkoutRequest.getPaymentMethod());
+			OrderGroupEntity createdOrder = createOrder(userEntity, address, status, checkoutRequest.getShops(), cartItemEntities, checkoutRequest.getPaymentMethod());
 			cartService.deleteItemToCart(
 				userId,
 				checkoutRequest.getShops().stream()
@@ -88,14 +92,17 @@ public class OrderGroupServiceImpl implements OrderGroupService {
 
 	private OrderGroupEntity onlinePaymentOrder(long userId, CheckoutRequest checkoutRequest) {
 		// check common data
-		UserAddressEntity address = getUserAddressEntity(userId, checkoutRequest.getAddressId());
+		var userEntity = userRepository.findById(userId)
+			.orElseThrow(() -> new IllegalArgumentException("User not existed"));
+
+		var address = getUserAddressEntity(userId, checkoutRequest.getAddressId());
 		OrderStatus status = OrderStatus.PAYING;
 
 		List<CartItemEntity> cartItemEntities = validateShopProductAndReduceQuantity(userId, checkoutRequest.getShops(), checkoutRequest.getPaymentMethod());
 
 		// create order and order details
 		try {
-			OrderGroupEntity createdOrder = createOrder(userId, address, status, checkoutRequest.getShops(), cartItemEntities, checkoutRequest.getPaymentMethod());
+			OrderGroupEntity createdOrder = createOrder(userEntity, address, status, checkoutRequest.getShops(), cartItemEntities, checkoutRequest.getPaymentMethod());
 			cartService.deleteItemToCart(
 				userId,
 				checkoutRequest.getShops().stream()
@@ -157,12 +164,19 @@ public class OrderGroupServiceImpl implements OrderGroupService {
 		return cartItemEntities;
 	}
 
-	private OrderGroupEntity createOrder(long userId, UserAddressEntity address, OrderStatus status,
+	private OrderGroupEntity createOrder(UserEntity userEntity, UserAddressEntity address, OrderStatus status,
 										 Set<CheckoutShop> shops, List<CartItemEntity> cartItemEntities,
 										 PaymentMethod paymentMethod) {
 		OrderGroupEntity orderGroupEntity = new OrderGroupEntity();
 		orderGroupEntity.setShippingAddress(address);
-		orderGroupEntity.setUser(UserEntity.builder().id(userId).build());
+		orderGroupEntity.setDeliveryAddress(address.getAddress());
+		orderGroupEntity.setDeliveryWard(address.getWard().getFullName());
+		orderGroupEntity.setDeliveryDistrict(address.getWard().getDistrict().getFullName());
+		orderGroupEntity.setDeliveryProvince(address.getWard().getDistrict().getProvince().getFullName());
+		orderGroupEntity.setDeliveryCountry(address.getWard().getDistrict().getProvince().getCountry().getName());
+		orderGroupEntity.setDeliveryTel(address.getPhone());
+		orderGroupEntity.setDeliveryEmail(userEntity.getEmail());
+		orderGroupEntity.setUser(userEntity);
 		orderGroupEntity.setPaymentMethod(paymentMethod.getByteValue());
 		orderGroupRepository.save(orderGroupEntity);
 

@@ -78,25 +78,23 @@ public class ArtistServiceImpl implements ArtistService {
 				"Cannot update order status from " + OrderStatus.fromValue(orderEntity.getStatus()) + " to SHIPPING");
 		}
 
-		if (updateShippingOrderRequest.getValue() == null
-			|| updateShippingOrderRequest.getValue().compareTo(BigDecimal.ZERO) <= 0) {
-			throw new IllegalArgumentException("Value must be greater than 0");
-		}
-
 		var products = orderEntity.getOrderDetails().stream().map(orderDetailEntity -> {
 			var productEntity = orderDetailEntity.getProduct();
 			return com.artiexh.ghtk.client.model.order.Product.builder().name(productEntity.getName())
 				.weight(Double.valueOf(productEntity.getWeight())).productCode("").build();
 		}).collect(Collectors.toSet());
 
-		var orderBuilder = CreateOrderRequest.Order.builder().id(orderEntity.getId().toString())
+		var orderBuilder = CreateOrderRequest.Order.builder()
+			.id(orderEntity.getId().toString())
 			.pickMoney(0) // no cod
 			.name(orderEntity.getOrderGroup().getShippingAddress().getReceiverName())
-			.address(orderEntity.getOrderGroup().getShippingAddress().getAddress())
-			.province(orderEntity.getOrderGroup().getShippingAddress().getWard().getDistrict().getProvince().getFullName())
-			.district(orderEntity.getOrderGroup().getShippingAddress().getWard().getDistrict().getFullName())
-			.ward(orderEntity.getOrderGroup().getShippingAddress().getWard().getFullName()).hamlet("Khác")
-			.tel(orderEntity.getOrderGroup().getShippingAddress().getPhone()).email(orderEntity.getOrderGroup().getUser().getEmail())
+			.address(orderEntity.getOrderGroup().getDeliveryAddress())
+			.province(orderEntity.getOrderGroup().getDeliveryProvince())
+			.district(orderEntity.getOrderGroup().getDeliveryDistrict())
+			.ward(orderEntity.getOrderGroup().getDeliveryWard())
+			.hamlet("Khác")
+			.tel(orderEntity.getOrderGroup().getDeliveryTel())
+			.email(orderEntity.getOrderGroup().getDeliveryEmail())
 			.note(updateShippingOrderRequest.getNote())
 			.weightOption("gram")
 			.tags(updateShippingOrderRequest.getTags());
@@ -136,15 +134,30 @@ public class ArtistServiceImpl implements ArtistService {
 				.pickWard(updateShippingOrderRequest.getPickWard())
 				.pickTel(updateShippingOrderRequest.getPickTel())
 				.pickEmail(updateShippingOrderRequest.getPickEmail());
+			orderEntity.setPickName(updateShippingOrderRequest.getPickName());
+			orderEntity.setPickAddress(updateShippingOrderRequest.getPickAddress());
+			orderEntity.setPickProvince(updateShippingOrderRequest.getPickProvince());
+			orderEntity.setPickDistrict(updateShippingOrderRequest.getPickDistrict());
+			orderEntity.setPickWard(updateShippingOrderRequest.getPickWard());
+			orderEntity.setPickTel(updateShippingOrderRequest.getPickTel());
+			orderEntity.setPickEmail(updateShippingOrderRequest.getPickEmail());
 		} else {
 			orderBuilder
 				.pickName(orderEntity.getShop().getDisplayName()) // artist display name
 				.pickAddress(orderEntity.getShop().getShopAddress())
 				.pickProvince(orderEntity.getShop().getShopWard().getDistrict().getProvince().getFullName())
 				.pickDistrict(orderEntity.getShop().getShopWard().getDistrict().getFullName())
-				.pickWard(orderEntity.getShop().getShopWard().getFullName()).pickTel(orderEntity.getShop().getShopPhone())
+				.pickWard(orderEntity.getShop().getShopWard().getFullName())
+				.pickTel(orderEntity.getShop().getShopPhone())
 				.pickTel(orderEntity.getShop().getShopPhone())
 				.pickEmail(orderEntity.getShop().getEmail());
+			orderEntity.setPickName(orderEntity.getShop().getDisplayName());
+			orderEntity.setPickAddress(orderEntity.getShop().getShopAddress());
+			orderEntity.setPickProvince(orderEntity.getShop().getShopWard().getDistrict().getProvince().getFullName());
+			orderEntity.setPickDistrict(orderEntity.getShop().getShopWard().getDistrict().getFullName());
+			orderEntity.setPickWard(orderEntity.getShop().getShopWard().getFullName());
+			orderEntity.setPickTel(orderEntity.getShop().getShopPhone());
+			orderEntity.setPickEmail(orderEntity.getShop().getEmail());
 		}
 
 		if (Integer.valueOf(1).equals(updateShippingOrderRequest.getUseReturnAddress()) &&
@@ -164,6 +177,21 @@ public class ArtistServiceImpl implements ArtistService {
 				.returnWard(updateShippingOrderRequest.getReturnWard())
 				.returnTel(updateShippingOrderRequest.getReturnTel())
 				.returnEmail(updateShippingOrderRequest.getReturnEmail());
+			orderEntity.setReturnName(updateShippingOrderRequest.getReturnName());
+			orderEntity.setReturnAddress(updateShippingOrderRequest.getReturnAddress());
+			orderEntity.setReturnProvince(updateShippingOrderRequest.getReturnProvince());
+			orderEntity.setReturnDistrict(updateShippingOrderRequest.getReturnDistrict());
+			orderEntity.setReturnWard(updateShippingOrderRequest.getReturnWard());
+			orderEntity.setReturnTel(updateShippingOrderRequest.getReturnTel());
+			orderEntity.setReturnEmail(updateShippingOrderRequest.getReturnEmail());
+		} else {
+			orderEntity.setReturnName(orderEntity.getPickName());
+			orderEntity.setReturnAddress(orderEntity.getPickAddress());
+			orderEntity.setReturnProvince(orderEntity.getPickProvince());
+			orderEntity.setReturnDistrict(orderEntity.getPickDistrict());
+			orderEntity.setReturnWard(orderEntity.getPickWard());
+			orderEntity.setReturnTel(orderEntity.getPickTel());
+			orderEntity.setReturnEmail(orderEntity.getPickEmail());
 		}
 
 		var request = CreateOrderRequest.builder().order(orderBuilder.build()).products(products).build();
@@ -188,9 +216,9 @@ public class ArtistServiceImpl implements ArtistService {
 		var orderHistoryEntity = OrderHistoryEntity.builder()
 			.id(new OrderHistoryEntityId(orderId, OrderHistoryStatus.SHIPPED.getByteValue()))
 			.build();
-		orderHistoryRepository.save(orderHistoryEntity);
+		var savedOrderHistoryEntity = orderHistoryRepository.save(orderHistoryEntity);
 
-		orderEntity.getOrderHistories().add(orderHistoryEntity);
+		orderEntity.getOrderHistories().add(savedOrderHistoryEntity);
 		return orderMapper.domainToArtistResponse(orderMapper.entityToResponseDomain(orderEntity));
 	}
 }

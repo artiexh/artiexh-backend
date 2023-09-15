@@ -59,4 +59,52 @@ public class OrderEntity extends BaseAuditEntity {
 	@Column(name = "shipping_label")
 	private String shippingLabel;
 
+	@Column(name = "pick_address")
+	private String pickAddress;
+
+	@Column(name = "pick_ward")
+	private String pickWard;
+
+	@Column(name = "pick_district")
+	private String pickDistrict;
+
+	@Column(name = "pick_province")
+	private String pickProvince;
+
+	@Column(name = "pick_country")
+	private String pickCountry;
+
+	@Column(name = "pick_tel")
+	private String pickTel;
+
+	@Column(name = "pick_name")
+	private String pickName;
+
+	@Column(name = "pick_email", length = 254)
+	private String pickEmail;
+
+	@Column(name = "return_address")
+	private String returnAddress;
+
+	@Column(name = "return_ward")
+	private String returnWard;
+
+	@Column(name = "return_district")
+	private String returnDistrict;
+
+	@Column(name = "return_province")
+	private String returnProvince;
+
+	@Column(name = "return_country")
+	private String returnCountry;
+
+	@Column(name = "return_tel", length = 15)
+	private String returnTel;
+
+	@Column(name = "return_name")
+	private String returnName;
+
+	@Column(name = "return_email")
+	private String returnEmail;
+
 }
