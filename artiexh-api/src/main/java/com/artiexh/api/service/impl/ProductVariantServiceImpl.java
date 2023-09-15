@@ -2,14 +2,13 @@ package com.artiexh.api.service.impl;
 
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.ProvidedProductBaseService;
-import com.artiexh.data.jpa.entity.ProvidedProductBaseEntity;
+import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.artiexh.data.jpa.entity.ProvidedProductBaseId;
 import com.artiexh.data.jpa.repository.ProductBaseRepository;
 import com.artiexh.data.jpa.repository.ProvidedProductBaseRepository;
 import com.artiexh.data.jpa.repository.ProviderRepository;
 import com.artiexh.data.jpa.repository.VariantCombinationRepository;
 import com.artiexh.model.domain.ProvidedProductBase;
-import com.artiexh.model.domain.ProvidedProductType;
 import com.artiexh.model.mapper.ProvidedProductBaseMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +35,7 @@ public class ProvidedProductBaseServiceImpl implements ProvidedProductBaseServic
 			throw new IllegalArgumentException(ErrorCode.PRODUCT_EXISTED.getMessage() + entity.getId());
 		});
 
-		ProvidedProductBaseEntity entity = mapper.domainToEntity(product);
+		ProductVariantEntity entity = mapper.domainToEntity(product);
 
 		repository.save(entity);
 
@@ -50,14 +49,14 @@ public class ProvidedProductBaseServiceImpl implements ProvidedProductBaseServic
 	@Override
 	public ProvidedProductBase update(ProvidedProductBase product) {
 		repository.findByProvidedProductBaseId(product.getProvidedProductBaseId()).orElseThrow(EntityNotFoundException::new);
-		ProvidedProductBaseEntity entity = mapper.domainToEntity(product);
+		ProductVariantEntity entity = mapper.domainToEntity(product);
 		repository.save(entity);
 		return product;
 	}
 
 	@Override
 	public void delete(String businessCode, Long productBaseId) {
-		ProvidedProductBaseEntity product = repository.findByProvidedProductBaseId(ProvidedProductBaseId.builder()
+		ProductVariantEntity product = repository.findByProvidedProductBaseId(ProvidedProductBaseId.builder()
 			.businessCode(businessCode)
 			.productBaseId(productBaseId).build())
 			.orElseThrow(EntityNotFoundException::new);
@@ -66,7 +65,7 @@ public class ProvidedProductBaseServiceImpl implements ProvidedProductBaseServic
 
 	@Override
 	public ProvidedProductBase getById(String businessCode, Long productBaseId) {
-		ProvidedProductBaseEntity entity = repository.findByProvidedProductBaseId(ProvidedProductBaseId.builder()
+		ProductVariantEntity entity = repository.findByProvidedProductBaseId(ProvidedProductBaseId.builder()
 				.businessCode(businessCode)
 				.productBaseId(productBaseId).build())
 			.orElseThrow(EntityNotFoundException::new);
@@ -74,8 +73,8 @@ public class ProvidedProductBaseServiceImpl implements ProvidedProductBaseServic
 	}
 
 	@Override
-	public Page<ProvidedProductBase> getAll(Specification<ProvidedProductBaseEntity> specification, Pageable pageable) {
-		Page<ProvidedProductBaseEntity> productPage = repository.findAll(specification, pageable);
+	public Page<ProvidedProductBase> getAll(Specification<ProductVariantEntity> specification, Pageable pageable) {
+		Page<ProductVariantEntity> productPage = repository.findAll(specification, pageable);
 		return productPage.map(mapper::entityToDomain);
 	}
 }

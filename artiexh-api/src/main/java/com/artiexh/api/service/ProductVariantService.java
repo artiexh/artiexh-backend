@@ -1,7 +1,6 @@
 package com.artiexh.api.service;
 
-import com.artiexh.data.jpa.entity.ProvidedProductBaseEntity;
-import com.artiexh.model.domain.Collection;
+import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.artiexh.model.domain.ProvidedProductBase;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,5 +11,5 @@ public interface ProvidedProductBaseService {
 	ProvidedProductBase update(ProvidedProductBase product);
 	void delete(String businessCode, Long productBaseId);
 	ProvidedProductBase getById(String businessCode, Long productBaseId);
-	Page<ProvidedProductBase> getAll(Specification<ProvidedProductBaseEntity> specification, Pageable pageable);
+	Page<ProvidedProductBase> getAll(Specification<ProductVariantEntity> specification, Pageable pageable);
 }

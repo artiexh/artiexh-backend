@@ -1,7 +1,7 @@
 package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.ProductVariantCombinationEntity;
-import com.artiexh.data.jpa.entity.ProvidedProductBaseEntity;
+import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.artiexh.model.domain.ProvidedProductBase;
 import com.artiexh.model.domain.ProvidedProductType;
 import com.artiexh.model.domain.VariantCombination;
@@ -15,7 +15,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 	uses = {ProductBaseMapper.class}
 )
 public interface ProvidedProductBaseMapper {
-	ProvidedProductBase entityToDomain(ProvidedProductBaseEntity entity);
+	ProvidedProductBase entityToDomain(ProductVariantEntity entity);
 
 	@Mapping(source = "businessCode", target = "providedProductBaseId.businessCode")
 	@Mapping(source = "productBaseId", target = "providedProductBaseId.productBaseId")
@@ -26,7 +26,7 @@ public interface ProvidedProductBaseMapper {
 	@Mapping(target = "productBaseId", source = "providedProductBaseId.productBaseId")
 	@Mapping(target = "productBase", source = "productBase", qualifiedByName = "domainToInfo")
 	ProvidedProductBaseDetail domainToDetail(ProvidedProductBase domain);
-	ProvidedProductBaseEntity domainToEntity(ProvidedProductBase domain);
+	ProductVariantEntity domainToEntity(ProvidedProductBase domain);
 
 	@Mapping(source = "id.variantId", target = "variantId")
 	@Mapping(source = "id.optionValueId", target = "optionValueId")
