@@ -19,7 +19,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProviderProductFilter {
+public class ProductVariantFilter {
 	@JsonSerialize(using = StringArraySerializer.class)
 	private Long[] productBaseIds;
 
@@ -27,7 +27,7 @@ public class ProviderProductFilter {
 
 	private String[] optionIds;
 
-	private String[] optionValues;
+	private String[] optionValueIds;
 
 	private Model3DCode model3DCode;
 
@@ -42,6 +42,12 @@ public class ProviderProductFilter {
 			}
 			if (model3DCode != null) {
 				predicates.add(builder.equal(root.join("productBase").get("model3DCode"), model3DCode.getByteValue()));
+			}
+			 if (optionValueIds != null && optionValueIds.length > 0) {
+				 predicates.add(root.join("variantCombinations").get("id").get("optionValueId").in(Arrays.asList(optionValueIds)));
+			 }
+			if (optionIds != null && optionIds.length > 0) {
+				predicates.add(root.join("variantCombinations").get("optionId").in(Arrays.asList(optionIds)));
 			}
 			return builder.and(predicates.toArray(new Predicate[0]));
 		};

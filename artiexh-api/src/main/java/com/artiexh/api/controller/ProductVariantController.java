@@ -8,7 +8,7 @@ import com.artiexh.model.mapper.ProductVariantMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.providedproduct.ProductVariantDetail;
-import com.artiexh.model.rest.provider.filter.ProviderProductFilter;
+import com.artiexh.model.rest.provider.filter.ProductVariantFilter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class ProductVariantController {
 	@GetMapping()
 	public PageResponse<ProductVariantDetail> getAll(
 		@ParameterObject PaginationAndSortingRequest paginationAndSortingRequest,
-		@ParameterObject ProviderProductFilter filter) {
+		@ParameterObject ProductVariantFilter filter) {
 		Page<ProductVariant> productPage = productVariantService.getAll(filter.getSpecification(), paginationAndSortingRequest.getPageable());
 		return new PageResponse<>(productPage.map(productVariantMapper::domainToDetail));
 	}

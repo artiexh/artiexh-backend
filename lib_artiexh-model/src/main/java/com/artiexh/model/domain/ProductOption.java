@@ -17,6 +17,7 @@ import java.util.Set;
 public class ProductOption {
 	private String name;
 	@JsonSerialize(using = ToStringSerializer.class)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long productId;
 	private Integer index;
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
