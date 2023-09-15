@@ -33,9 +33,16 @@ public class ProviderController {
 	@PostMapping
 	@PreAuthorize("hasAuthority('ADMIN')")
 	public ProviderDetail create(@Valid @RequestBody ProviderDetail detail) {
-		Provider provider = providerMapper.detailToDomain(detail);
-		provider = providerService.create(provider);
-		return providerMapper.domainToDetail(provider);
+		try {
+			Provider provider = providerMapper.detailToDomain(detail);
+			provider = providerService.create(provider);
+			return providerMapper.domainToDetail(provider);
+		} catch (IllegalArgumentException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+				exception.getMessage(),
+				exception);
+		}
+
 	}
 	//Get Provider Detail
 	@GetMapping
