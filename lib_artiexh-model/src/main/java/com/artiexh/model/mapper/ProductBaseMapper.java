@@ -33,4 +33,8 @@ public interface ProductBaseMapper {
 	default Model3DCode toModel3DCode(Integer value) {
 		return Model3DCode.fromValue(value);
 	}
+
+	default ProductBase idToDomain(Long productId) {
+		return ProductBase.builder().id(productId).build();
+	}
 }

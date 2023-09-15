@@ -17,13 +17,9 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface ProductVariantMapper {
 	ProductVariant entityToDomain(ProductVariantEntity entity);
 
-	@Mapping(source = "businessCode", target = "providedProductBaseId.businessCode")
-	@Mapping(source = "productBaseId", target = "providedProductBaseId.productBaseId")
 	@Mapping(target = "productBase", ignore = true)
 	ProductVariant detailToDomain(ProductVariantDetail detail);
 
-	@Mapping(target = "businessCode", source = "providedProductBaseId.businessCode")
-	@Mapping(target = "productBaseId", source = "providedProductBaseId.productBaseId")
 	@Mapping(target = "productBase", source = "productBase", qualifiedByName = "domainToInfo")
 	ProductVariantDetail domainToDetail(ProductVariant domain);
 	ProductVariantEntity domainToEntity(ProductVariant domain);

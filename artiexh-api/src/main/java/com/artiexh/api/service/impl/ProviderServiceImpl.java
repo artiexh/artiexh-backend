@@ -1,7 +1,10 @@
 package com.artiexh.api.service.impl;
 
+import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.ProviderService;
+import com.artiexh.data.jpa.entity.ProductBaseEntity;
 import com.artiexh.data.jpa.entity.ProviderEntity;
+import com.artiexh.data.jpa.repository.ProductBaseRepository;
 import com.artiexh.data.jpa.repository.ProviderRepository;
 import com.artiexh.model.domain.Provider;
 import com.artiexh.model.mapper.ProviderMapper;
@@ -12,14 +15,24 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class ProviderServiceImpl implements ProviderService {
 	private final ProviderMapper providerMapper;
 	private final ProviderRepository providerRepository;
+	private final ProductBaseRepository productBaseRepository;
 	@Override
+	@Transactional
 	public Provider create(Provider provider) {
+		providerRepository.findById(provider.getBusinessCode()).ifPresent(entity -> {
+			throw new IllegalArgumentException(ErrorCode.PROVIDER_EXISTED.getMessage() + entity.getBusinessCode());
+		});
 		ProviderEntity entity = providerMapper.domainToEntity(provider);
 		providerRepository.save(entity);
 		return provider;

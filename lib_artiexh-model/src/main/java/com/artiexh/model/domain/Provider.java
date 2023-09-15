@@ -24,7 +24,9 @@ public class Provider {
 
 	private String description;
 
-	private Set<ProductVariant> providedProducts;
+	private Set<ProductVariant> productVariants;
+
+	private Set<ProductBase> productBases;
 
 	private String website;
 

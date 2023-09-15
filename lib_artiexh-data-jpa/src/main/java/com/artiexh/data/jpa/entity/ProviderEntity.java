@@ -43,4 +43,12 @@ public class ProviderEntity {
 
 	@Column(name = "image_url", nullable = false)
 	private String imageUrl;
+
+	@ManyToMany()
+	@JoinTable(
+		name = "product_base_provider_mapping",
+		joinColumns = { @JoinColumn(name = "business_code") },
+		inverseJoinColumns = { @JoinColumn(name = "product_base_id") }
+	)
+	private Set<ProductBaseEntity> productBases;
 }

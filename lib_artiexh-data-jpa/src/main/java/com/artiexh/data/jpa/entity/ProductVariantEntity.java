@@ -15,7 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "product_variant")
+@Table(name = "provided_product")
 @Builder(toBuilder = true)
 public class ProductVariantEntity {
 	@Id

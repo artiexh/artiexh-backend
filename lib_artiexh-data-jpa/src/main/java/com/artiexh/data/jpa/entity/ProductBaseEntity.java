@@ -53,4 +53,7 @@ public class ProductBaseEntity {
 	@OneToMany(fetch = FetchType.EAGER)
 	@JoinColumn(name = "product_id")
 	private Set<ProductOptionEntity> productOptions;
+
+	@ManyToMany(mappedBy = "productBases")
+	private Set<ProviderEntity> providers;
 }
