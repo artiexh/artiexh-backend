@@ -2,10 +2,10 @@ package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.exception.ErrorCode;
-import com.artiexh.api.service.ProvidedProductBaseService;
+import com.artiexh.api.service.ProductVariantService;
 import com.artiexh.api.service.ProviderService;
 import com.artiexh.model.domain.Provider;
-import com.artiexh.model.mapper.ProvidedProductBaseMapper;
+import com.artiexh.model.mapper.ProductVariantMapper;
 import com.artiexh.model.mapper.ProviderMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
@@ -27,8 +27,6 @@ import org.springframework.web.server.ResponseStatusException;
 public class ProviderController {
 	private final ProviderService providerService;
 	private final ProviderMapper providerMapper;
-	private final ProvidedProductBaseService providedProductBaseService;
-	private final ProvidedProductBaseMapper providedProductBaseMapper;
 	//Create Provider
 	@PostMapping
 	@PreAuthorize("hasAuthority('ADMIN')")
@@ -58,6 +56,4 @@ public class ProviderController {
 				exception);
 		}
 	}
-
-
 }

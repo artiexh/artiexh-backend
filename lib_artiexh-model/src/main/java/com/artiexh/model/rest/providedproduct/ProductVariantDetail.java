@@ -1,15 +1,10 @@
 package com.artiexh.model.rest.providedproduct;
 
-import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
-import com.artiexh.data.jpa.entity.embededmodel.Size;
-import com.artiexh.model.domain.Money;
-import com.artiexh.model.domain.ProvidedProductType;
 import com.artiexh.model.domain.VariantCombination;
 import com.artiexh.model.rest.productbase.ProductBaseInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -26,14 +21,15 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProvidedProductBaseDetail {
+public class ProductVariantDetail {
 	@JsonSerialize(using = ToStringSerializer.class)
-	private Long id;
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private Long id;
+	@NotNull
 	private String businessCode;
 
 	@JsonSerialize(using = ToStringSerializer.class)
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@NotNull
 	private Long productBaseId;
 
 	@NotNull

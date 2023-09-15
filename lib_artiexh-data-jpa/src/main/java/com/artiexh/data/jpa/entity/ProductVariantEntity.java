@@ -1,17 +1,13 @@
 package com.artiexh.data.jpa.entity;
 
-import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
-import com.artiexh.data.jpa.entity.embededmodel.Size;
 import io.hypersistence.utils.hibernate.id.Tsid;
-import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.hibernate.annotations.Type;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -19,15 +15,20 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "provided_product")
+@Table(name = "product_variant")
 @Builder(toBuilder = true)
-public class ProvidedProductBaseEntity {
+public class ProductVariantEntity {
 	@Id
 	@Tsid
 	private Long id;
 
-	@Embedded
-	private ProvidedProductBaseId providedProductBaseId;
+	@NotNull
+	@Column(name = "business_code", nullable = false)
+	private String businessCode;
+
+	@NotNull
+	@Column(name = "product_base_id", nullable = false)
+	private Long productBaseId;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@OnDelete(action = OnDeleteAction.CASCADE)

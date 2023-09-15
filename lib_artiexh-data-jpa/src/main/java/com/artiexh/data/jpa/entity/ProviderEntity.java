@@ -36,7 +36,7 @@ public class ProviderEntity {
 	private String description;
 
 	@OneToMany(mappedBy = "provider", fetch = FetchType.EAGER)
-	private Set<ProvidedProductBaseEntity> providedProducts;
+	private Set<ProductVariantEntity> providedProducts;
 
 	@Column(name = "website")
 	private String website;

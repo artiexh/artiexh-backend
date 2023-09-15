@@ -1,12 +1,8 @@
 package com.artiexh.model.domain;
 
-import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
-import com.artiexh.data.jpa.entity.ProvidedProductBaseId;
-import com.artiexh.data.jpa.entity.embededmodel.Size;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -14,9 +10,12 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ProvidedProductBase {
+public class ProductVariant {
 	private Long id;
-	private ProvidedProductBaseId providedProductBaseId;
+
+	private Long productBaseId;
+
+	private String businessCode;
 
 	private BigDecimal priceAmount;
 

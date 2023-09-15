@@ -2,11 +2,8 @@ package com.artiexh.model.rest.provider.filter;
 
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.model.domain.Model3DCode;
-import com.artiexh.model.domain.ProvidedProductType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.impl.StringArraySerializer;
-import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +14,6 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -35,7 +31,7 @@ public class ProviderProductFilter {
 
 	private Model3DCode model3DCode;
 
-	public Specification<ProvidedProductBaseEntity> getSpecification() {
+	public Specification<ProductVariantEntity> getSpecification() {
 		return (root, cQuery, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			if (businessCode != null) {

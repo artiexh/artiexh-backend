@@ -9,7 +9,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {ProvidedProductBaseMapper.class}
+	uses = {ProductVariantMapper.class}
 )
 public interface ProviderMapper {
 	Provider entityToDomain(ProviderEntity entity);

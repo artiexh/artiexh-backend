@@ -113,9 +113,9 @@ public final class Endpoint {
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
-	public static class ProvidedProduct {
-		public static final String ROOT = PREFIX + "/provided-product";
-		public static final String DETAIL = "/{providerId}/product-base/{productBaseId}/provided-product";
+	public static class ProductVariant {
+		public static final String ROOT = PREFIX + "/product-variant";
+		public static final String DETAIL = "/{id}";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)

@@ -2,7 +2,6 @@ package com.artiexh.data.jpa.entity;
 
 import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
 import com.artiexh.data.jpa.entity.embededmodel.OptionConfig;
-import com.artiexh.data.jpa.entity.embededmodel.Size;
 import io.hypersistence.utils.hibernate.id.Tsid;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
@@ -49,7 +48,7 @@ public class ProductBaseEntity {
 	private Byte model3DCode;
 
 	@OneToMany(mappedBy = "productBase", fetch = FetchType.EAGER)
-	private Set<ProvidedProductBaseEntity> providedModels;
+	private Set<ProductVariantEntity> providedModels;
 
 	@OneToMany(fetch = FetchType.EAGER)
 	@JoinColumn(name = "product_id")

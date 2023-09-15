@@ -1,6 +1,5 @@
 package com.artiexh.model.rest.provider;
 
-import com.artiexh.model.domain.ProvidedProductBase;
 import com.artiexh.model.validation.BusinessCode;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,8 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.Set;
 
 @Getter
 @Setter
