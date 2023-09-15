@@ -25,9 +25,9 @@ public class ProductVariantFilter {
 
 	private String businessCode;
 
-	private String[] optionIds;
+	private Long[] optionIds;
 
-	private String[] optionValueIds;
+	private Long[] optionValueIds;
 
 	private Model3DCode model3DCode;
 
@@ -38,7 +38,7 @@ public class ProductVariantFilter {
 				predicates.add(builder.equal(root.get("providedProductBaseId").get("businessCode"), businessCode));
 			}
 			if (productBaseIds != null && productBaseIds.length > 0) {
-				predicates.add(root.get("id").get("productBaseId").in(Arrays.asList(productBaseIds)));
+				predicates.add(root.get("productBaseId").in(Arrays.asList(productBaseIds)));
 			}
 			if (model3DCode != null) {
 				predicates.add(builder.equal(root.join("productBase").get("model3DCode"), model3DCode.getByteValue()));

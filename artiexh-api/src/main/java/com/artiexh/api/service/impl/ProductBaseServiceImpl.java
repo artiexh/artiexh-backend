@@ -38,7 +38,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 			}
 		}
 
-		product.setId(entity.getId());
+		product = productBaseMapper.entityToDomain(entity);
 		return product;
 	}
 
