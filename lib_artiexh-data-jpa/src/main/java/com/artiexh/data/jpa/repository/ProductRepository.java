@@ -22,4 +22,6 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long>, J
 	Set<ProductEntity> findAllByIdIn(Set<Long> ids);
 
 	int countAllByIdInAndOwnerId(Collection<Long> id, Long owner_id);
+
+	int countAllByIdIn(Collection<Long> id);
 }

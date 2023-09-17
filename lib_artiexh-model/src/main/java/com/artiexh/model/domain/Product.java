@@ -12,7 +12,6 @@ import java.util.Set;
 @AllArgsConstructor
 @SuperBuilder
 public class Product {
-
 	private Long id;
 	private Artist owner;
 	private ProductStatus status;
@@ -31,5 +30,5 @@ public class Product {
 	private Set<ProductAttach> attaches;
 	private Shop shop;
 	private Float weight;
-
+	private Set<Product> bundleItems;
 }

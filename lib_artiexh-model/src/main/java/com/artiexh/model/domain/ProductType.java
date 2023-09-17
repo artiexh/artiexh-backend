@@ -23,4 +23,8 @@ public enum ProductType {
 	public int getValue() {
 		return value;
 	}
+
+	public byte getByteValue() {
+		return (byte) value;
+	}
 }

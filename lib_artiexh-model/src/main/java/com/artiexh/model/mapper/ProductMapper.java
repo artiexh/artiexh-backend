@@ -14,6 +14,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.springframework.data.domain.Page;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
@@ -63,7 +64,19 @@ public interface ProductMapper {
 	ProductDocument entityToDocument(ProductEntity productEntity);
 
 	@Mapping(target = "category.id", source = "categoryId")
+	@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemsToProductSet")
 	Product createProductRequestToProduct(CreateProductRequest createProductRequest);
+
+	@Named("bundleItemsToProductSet")
+	default Set<Product> bundleItemsToProductSet(Set<Long> bundleItems) {
+		if (bundleItems == null) {
+			return null;
+		}
+
+		return bundleItems.stream()
+			.map(id -> Product.builder().id(id).build())
+			.collect(Collectors.toSet());
+	}
 
 	@Mapping(target = "category.id", source = "categoryId")
 	Product updateProductRequestToProduct(UpdateProductRequest updateProductRequest);

@@ -21,7 +21,6 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "product")
-@Inheritance(strategy = InheritanceType.JOINED)
 public class ProductEntity {
 
 	@Id
@@ -79,18 +78,22 @@ public class ProductEntity {
 	private Byte[] paymentMethods;
 
 	@ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-	@JoinTable(name = "product_tag_mapping",
-		joinColumns = @JoinColumn(name = "product_id"),
-		inverseJoinColumns = @JoinColumn(name = "tag_id"))
+	@JoinTable(name = "product_tag_mapping", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
 	private Set<ProductTagEntity> tags;
 
-	@OneToMany(fetch = FetchType.LAZY,
-		cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = "product_id")
 	private Set<ProductAttachEntity> attaches;
 
 	@NotNull
 	@Column(name = "weight", nullable = false)
 	private Float weight;
+
+	@ManyToMany
+	@JoinTable(name = "product_bundle_mapping", joinColumns = @JoinColumn(name = "bundle_id"), inverseJoinColumns = @JoinColumn(name = "product_id"))
+	private Set<ProductEntity> bundles;
+
+	@ManyToMany(mappedBy = "bundles", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	private Set<ProductEntity> bundleItems;
 
 }
