@@ -8,6 +8,7 @@ import com.artiexh.model.domain.VariantCombination;
 import com.artiexh.model.rest.productvariant.ProductVariantDetail;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
@@ -24,6 +25,8 @@ public interface ProductVariantMapper {
 	ProductVariantDetail domainToDetail(ProductVariant domain);
 
 	ProductVariantEntity domainToEntity(ProductVariant domain);
+
+	ProductVariantEntity domainToEntity(ProductVariant domain, @MappingTarget ProductVariantEntity entity);
 
 	@Mapping(source = "id.variantId", target = "variantId")
 	@Mapping(source = "id.optionValueId", target = "optionValueId")

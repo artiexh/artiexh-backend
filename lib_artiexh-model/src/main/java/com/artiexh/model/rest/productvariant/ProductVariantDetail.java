@@ -25,6 +25,7 @@ public class ProductVariantDetail {
 	@JsonSerialize(using = ToStringSerializer.class)
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long id;
+
 	@NotNull
 	private String businessCode;
 

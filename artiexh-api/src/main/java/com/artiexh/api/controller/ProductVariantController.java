@@ -52,26 +52,23 @@ public class ProductVariantController {
 	}
 
 
-//	//TODO: Update product variant
-//	@PutMapping(Endpoint.Provider.ROOT + Endpoint.ProductVariant.DETAIL)
-//	@PreAuthorize("hasAuthority('ADMIN')")
-//	public ProductVariantDetail update(
-//		@PathVariable("providerId") String businessCode,
-//		@PathVariable("productBaseId") Long productBaseId,
-//		@Valid @RequestBody ProductVariantDetail detail) {
-//		ProductVariant providedProduct = productVariantMapper.detailToDomain(detail);
-//		providedProduct.setProductBaseId(productBaseId);
-//		providedProduct.setBusinessCode(businessCode);
-//		try {
-//			providedProduct = productVariantService.update(providedProduct);
-//			return productVariantMapper.domainToDetail(providedProduct);
-//		} catch (EntityNotFoundException exception) {
-//			throw new ResponseStatusException(ErrorCode.PRODUCT_NOT_FOUND.getCode(),
-//				ErrorCode.PRODUCT_NOT_FOUND.getMessage());
-//		}
-//
-//	}
-//	//Remove Provided Product
+	//TODO: Update product variant
+	@PutMapping(Endpoint.Provider.ROOT + Endpoint.ProductVariant.DETAIL)
+	@PreAuthorize("hasAuthority('ADMIN')")
+	public ProductVariantDetail update(
+		@Valid @RequestBody ProductVariantDetail detail) {
+		ProductVariant providedProduct = productVariantMapper.detailToDomain(detail);
+		try {
+			providedProduct = productVariantService.update(providedProduct);
+			return productVariantMapper.domainToDetail(providedProduct);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(ErrorCode.PRODUCT_NOT_FOUND.getCode(),
+				ErrorCode.PRODUCT_NOT_FOUND.getMessage());
+		}
+
+	}
+
+//	//TODO: Remove Provided Product
 //	@DeleteMapping(Endpoint.Provider.ROOT + Endpoint.ProductVariant.DETAIL)
 //	@PreAuthorize("hasAuthority('ADMIN')")
 //	public void delete(

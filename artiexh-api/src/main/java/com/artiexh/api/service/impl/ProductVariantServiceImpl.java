@@ -55,10 +55,30 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 
 	@Override
 	public ProductVariant update(ProductVariant product) {
-		repository.findByProductBaseIdAndBusinessCode(product.getProductBaseId(), product.getBusinessCode())
-			.orElseThrow(EntityNotFoundException::new);
-		ProductVariantEntity entity = mapper.domainToEntity(product);
+		ProductVariantEntity entity = repository.findByProductBaseIdAndBusinessCode(
+			product.getProductBaseId(),
+			product.getBusinessCode()
+		).orElseThrow(() ->
+			 new IllegalArgumentException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + product.getId())
+		);
+
+		entity = mapper.domainToEntity(product, entity);
+
 		repository.save(entity);
+
+		entity.getVariantCombinations().forEach(combination -> {
+			//Validation option id and option value
+			ProductOptionEntity productOption = productOptionRepository.findById(combination.getOptionId()).orElseThrow(
+				() -> new EntityNotFoundException(ErrorCode.OPTION_NOT_FOUND.getMessage() + combination.getOptionId())
+			);
+			boolean isValidOption = productOption.getOptionValues().stream().anyMatch(option -> option.getId().equals(combination.getId().getOptionValueId()));
+			if (!isValidOption) {
+				throw new IllegalArgumentException(ErrorCode.OPTION_VALUE_INVALID.getMessage() + combination.getOptionId());
+			}
+
+			combination.getId().setVariantId(product.getId());
+			variantCombinationRepository.save(combination);
+		});
 		return product;
 	}
 
