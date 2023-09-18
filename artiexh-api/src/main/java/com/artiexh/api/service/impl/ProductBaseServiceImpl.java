@@ -1,5 +1,6 @@
 package com.artiexh.api.service.impl;
 
+import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.ProductBaseService;
 import com.artiexh.data.jpa.entity.OptionValueEntity;
 import com.artiexh.data.jpa.entity.ProductBaseEntity;
@@ -8,7 +9,9 @@ import com.artiexh.data.jpa.repository.OptionValueRepository;
 import com.artiexh.data.jpa.repository.ProductBaseRepository;
 import com.artiexh.data.jpa.repository.ProductOptionRepository;
 import com.artiexh.model.domain.ProductBase;
+import com.artiexh.model.mapper.CycleAvoidingMappingContext;
 import com.artiexh.model.mapper.ProductBaseMapper;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,13 +42,22 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 			}
 		}
 
-		product = productBaseMapper.entityToDomain(entity);
+		product = productBaseMapper.entityToDomain(entity, new CycleAvoidingMappingContext());
 		return product;
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Page<ProductBase> getInPage(Pageable pageable) {
 		Page<ProductBaseEntity> entities = productBaseRepository.findAll(pageable);
-		return entities.map(productBaseMapper::entityToDomain);
+		return entities.map(entity -> productBaseMapper.entityToDomain(entity, new CycleAvoidingMappingContext()));
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public ProductBase getById(Long id) {
+		ProductBaseEntity entity = productBaseRepository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + id));
+		return productBaseMapper.entityToDomain(entity, new CycleAvoidingMappingContext());
 	}
 }

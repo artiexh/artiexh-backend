@@ -31,4 +31,6 @@ public class ProductBase {
 	private Set<ProductVariantEntity> productVariants;
 
 	private Set<ProductOption> productOptions;
+
+	private Set<Provider> providers;
 }

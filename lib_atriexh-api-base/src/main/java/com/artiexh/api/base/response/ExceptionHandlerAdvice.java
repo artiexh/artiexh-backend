@@ -28,7 +28,7 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(ConstraintViolationException.class)
 	public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex, WebRequest request) {
-		var responseException = new ResponseStatusException(HttpStatus.BAD_REQUEST, "constraint violation error", ex);
+		var responseException = new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		return handleExceptionInternal(responseException, null, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}
 

@@ -4,8 +4,12 @@ import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.ProductVariantService;
 import com.artiexh.data.jpa.entity.ProductOptionEntity;
 import com.artiexh.data.jpa.entity.ProductVariantEntity;
+import com.artiexh.data.jpa.entity.ProductVariantProviderEntity;
+import com.artiexh.data.jpa.entity.ProviderEntity;
+import com.artiexh.data.jpa.entity.embededmodel.ProductVariantProviderId;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.ProductVariant;
+import com.artiexh.model.mapper.CycleAvoidingMappingContext;
 import com.artiexh.model.mapper.ProductVariantMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -22,16 +26,17 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 	private final ProductVariantMapper mapper;
 	private final ProductOptionRepository productOptionRepository;
 	private final VariantCombinationRepository variantCombinationRepository;
+	private final ProductVariantProviderRepository productVariantProviderRepository;
 
 	@Override
 	@Transactional
 	public ProductVariant create(ProductVariant product) {
-		repository.findByProductBaseIdAndBusinessCode(
-			product.getProductBaseId(),
-			product.getBusinessCode()
-		).ifPresent(entity -> {
-			throw new IllegalArgumentException(ErrorCode.PRODUCT_EXISTED.getMessage() + entity.getId());
-		});
+//		repository.findByProductBaseIdAndBusinessCode(
+//			product.getProductBaseId(),
+//			product.getBusinessCode()
+//		).ifPresent(entity -> {
+//			throw new IllegalArgumentException(ErrorCode.PRODUCT_EXISTED.getMessage() + entity.getId());
+//		});
 
 		ProductVariantEntity entity = mapper.domainToEntity(product);
 
@@ -50,15 +55,22 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 			combination.getId().setVariantId(entity.getId());
 			variantCombinationRepository.save(combination);
 		});
-		return product;
+
+		entity.getProviderConfigs().forEach(providerConfig -> {
+			providerConfig.getId().setProductVariantId(entity.getId());
+			providerConfig.setProvider(ProviderEntity.builder()
+				.businessCode(providerConfig.getId().getBusinessCode())
+				.build());
+			productVariantProviderRepository.save(providerConfig);
+		});
+		return mapper.entityToDomain(entity, new CycleAvoidingMappingContext());
 	}
 
 	@Override
+	@Transactional
 	public ProductVariant update(ProductVariant product) {
-		ProductVariantEntity entity = repository.findByProductBaseIdAndBusinessCode(
-			product.getProductBaseId(),
-			product.getBusinessCode()
-		).orElseThrow(() ->
+		ProductVariantEntity entity = repository.findById(product.getId())
+			.orElseThrow(() ->
 			 new IllegalArgumentException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + product.getId())
 		);
 
@@ -84,21 +96,23 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 
 	@Override
 	public void delete(String businessCode, Long productBaseId) {
-		ProductVariantEntity product = repository.findByProductBaseIdAndBusinessCode(productBaseId, businessCode)
+		ProductVariantEntity product = repository.findById(productBaseId)
 			.orElseThrow(EntityNotFoundException::new);
 		repository.deleteById(product.getId());
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public ProductVariant getById(Long id) {
 		ProductVariantEntity entity = repository.findById(id)
 			.orElseThrow(EntityNotFoundException::new);
-		return mapper.entityToDomain(entity);
+		return mapper.entityToDomain(entity, new CycleAvoidingMappingContext());
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Page<ProductVariant> getAll(Specification<ProductVariantEntity> specification, Pageable pageable) {
 		Page<ProductVariantEntity> productPage = repository.findAll(specification, pageable);
-		return productPage.map(mapper::entityToDomain);
+		return productPage.map(product -> mapper.entityToDomain(product, new CycleAvoidingMappingContext()));
 	}
 }

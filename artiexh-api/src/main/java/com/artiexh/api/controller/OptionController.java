@@ -30,7 +30,7 @@ public class OptionController {
 		return new PageResponse<>(options.map(optionMapper::domainToDetail));
 	}
 
-	@GetMapping(Endpoint.Option.ROOT + Endpoint.Option.TEMPLATE)
+	@GetMapping(Endpoint.Option.TEMPLATE)
 	public PageResponse<OptionDetail> getAllTemplate(
 		@ParameterObject PaginationAndSortingRequest request
 	) {

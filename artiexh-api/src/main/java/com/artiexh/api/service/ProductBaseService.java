@@ -8,4 +8,6 @@ public interface ProductBaseService {
 	ProductBase create(ProductBase product);
 
 	Page<ProductBase> getInPage(Pageable pageable);
+
+	ProductBase getById(Long id);
 }

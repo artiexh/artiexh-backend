@@ -17,7 +17,7 @@ public class ProductVariant {
 
 	private String businessCode;
 
-	private BigDecimal priceAmount;
+	//private BigDecimal priceAmount;
 
 	private String description;
 
@@ -28,4 +28,6 @@ public class ProductVariant {
 	private ProductBase productBase;
 
 	private Set<VariantCombination> variantCombinations;
+
+	private Set<ProductVariantProvider> providerConfigs;
 }

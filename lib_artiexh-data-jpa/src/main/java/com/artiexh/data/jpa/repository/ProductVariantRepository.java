@@ -11,6 +11,4 @@ import java.util.Optional;
 @Repository
 public interface ProductVariantRepository extends JpaRepository<ProductVariantEntity, Long>,
 	JpaSpecificationExecutor<ProductVariantEntity> {
-
-	Optional<ProductVariantEntity> findByProductBaseIdAndBusinessCode(@NotNull Long productBaseId, @NotNull String businessCode);
 }

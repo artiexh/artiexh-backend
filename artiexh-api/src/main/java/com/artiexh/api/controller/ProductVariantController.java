@@ -53,7 +53,7 @@ public class ProductVariantController {
 
 
 	//TODO: Update product variant
-	@PutMapping(Endpoint.Provider.ROOT + Endpoint.ProductVariant.DETAIL)
+	@PutMapping(Endpoint.ProductVariant.DETAIL)
 	@PreAuthorize("hasAuthority('ADMIN')")
 	public ProductVariantDetail update(
 		@Valid @RequestBody ProductVariantDetail detail) {

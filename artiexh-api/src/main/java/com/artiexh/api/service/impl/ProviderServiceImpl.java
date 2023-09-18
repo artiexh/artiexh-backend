@@ -6,6 +6,7 @@ import com.artiexh.data.jpa.entity.ProviderEntity;
 import com.artiexh.data.jpa.repository.ProductBaseRepository;
 import com.artiexh.data.jpa.repository.ProviderRepository;
 import com.artiexh.model.domain.Provider;
+import com.artiexh.model.mapper.CycleAvoidingMappingContext;
 import com.artiexh.model.mapper.ProviderMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -34,20 +35,23 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Provider getById(String businessCode) {
 		ProviderEntity provider = providerRepository.findById(businessCode).orElseThrow(EntityNotFoundException::new);
-		return providerMapper.entityToDomain(provider);
+		return providerMapper.entityToDomain(provider, new CycleAvoidingMappingContext());
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Page<Provider> getInPage(Pageable pageable) {
 		Page<ProviderEntity> page = providerRepository.findAll(pageable);
-		return page.map(providerMapper::entityToDomain);
+		return page.map(item -> providerMapper.entityToDomain(item, new CycleAvoidingMappingContext()));
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Page<Provider> getInPage(Specification<ProviderEntity> specification, Pageable pageable) {
 		Page<ProviderEntity> page = providerRepository.findAll(specification, pageable);
-		return page.map(providerMapper::entityToDomain);
+		return page.map(item -> providerMapper.entityToDomain(item, new CycleAvoidingMappingContext()));
 	}
 }

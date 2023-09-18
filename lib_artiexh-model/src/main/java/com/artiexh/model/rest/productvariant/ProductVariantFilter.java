@@ -34,9 +34,9 @@ public class ProductVariantFilter {
 	public Specification<ProductVariantEntity> getSpecification() {
 		return (root, cQuery, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
-			if (businessCode != null) {
-				predicates.add(builder.equal(root.get("providedProductBaseId").get("businessCode"), businessCode));
-			}
+//			if (businessCode != null) {
+//				predicates.add(builder.equal(root.get("providedProductBaseId").get("businessCode"), businessCode));
+//			}
 			if (productBaseIds != null && productBaseIds.length > 0) {
 				predicates.add(root.get("productBaseId").in(Arrays.asList(productBaseIds)));
 			}

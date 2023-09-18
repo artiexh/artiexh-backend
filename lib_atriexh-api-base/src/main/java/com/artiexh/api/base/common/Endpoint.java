@@ -104,6 +104,8 @@ public final class Endpoint {
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class ProductBase {
 		public static final String ROOT = PREFIX + "/product-base";
+
+		public static final String DETAIL = "/{id}";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)

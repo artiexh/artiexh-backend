@@ -1,6 +1,8 @@
 package com.artiexh.model.rest.productbase;
 
 import com.artiexh.data.jpa.entity.ProviderEntity;
+import com.artiexh.model.domain.Provider;
+import com.artiexh.model.rest.provider.ProviderDetail;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,5 +20,5 @@ public class ProductBaseDetail extends ProductBaseInfo {
 	private String description;
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	private Set<ProviderEntity> providers;
+	private Set<ProviderDetail> providers;
 }

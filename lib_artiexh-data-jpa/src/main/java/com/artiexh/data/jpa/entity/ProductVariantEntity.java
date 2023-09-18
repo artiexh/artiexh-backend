@@ -23,10 +23,6 @@ public class ProductVariantEntity {
 	private Long id;
 
 	@NotNull
-	@Column(name = "business_code", nullable = false)
-	private String businessCode;
-
-	@NotNull
 	@Column(name = "product_base_id", nullable = false)
 	private Long productBaseId;
 
@@ -34,14 +30,6 @@ public class ProductVariantEntity {
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "product_base_id", insertable = false, updatable = false)
 	private ProductBaseEntity productBase;
-
-	@ManyToOne(fetch = FetchType.EAGER)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JoinColumn(name = "business_code", insertable = false, updatable = false)
-	private ProviderEntity provider;
-
-	@Column(name = "price_amount", nullable = false)
-	private BigDecimal priceAmount;
 
 	@Column(name = "max_limit", nullable = false)
 	private Integer maxLimit;
@@ -55,4 +43,8 @@ public class ProductVariantEntity {
 	@OneToMany(fetch = FetchType.EAGER)
 	@JoinColumn(name = "variant_id")
 	private Set<ProductVariantCombinationEntity> variantCombinations;
+
+	@OneToMany(fetch = FetchType.EAGER)
+	@JoinColumn(name = "variant_id")
+	private Set<ProductVariantProviderEntity> providerConfigs;
 }
