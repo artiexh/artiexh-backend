@@ -24,6 +24,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -185,11 +186,24 @@ public class ProductServiceImpl implements ProductService {
 					.filter(id -> !existedIds.contains(id))
 					.map(String::valueOf)
 					.collect(Collectors.joining(","));
-				throw new IllegalArgumentException("Bundle item not valid: " + notExistedIds);
+				throw new IllegalArgumentException("Bundle item not existed: " + notExistedIds);
 			}
 
 			if (itemEntities.stream().anyMatch(item -> ProductType.BUNDLE.getByteValue() == item.getType())) {
 				throw new IllegalArgumentException("Bundle item must not be bundle product");
+			}
+
+			var totalWeight = itemEntities.stream().mapToDouble(ProductEntity::getWeight).sum();
+			if (product.getWeight() < totalWeight) {
+				throw new IllegalArgumentException("Bundle weight must be greater than or equal total weight of items");
+			}
+
+			var totalPrice = itemEntities.stream()
+				.map(ProductEntity::getPriceAmount)
+				.reduce(BigDecimal::add)
+				.orElse(BigDecimal.ZERO);
+			if (product.getPrice().getAmount().compareTo(totalPrice) > 0) {
+				throw new IllegalArgumentException("Bundle price must be less than or equal total price of items");
 			}
 
 			return itemEntities;
