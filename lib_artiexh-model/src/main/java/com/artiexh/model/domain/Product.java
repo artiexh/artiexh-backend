@@ -30,5 +30,6 @@ public class Product {
 	private Set<ProductAttach> attaches;
 	private Shop shop;
 	private Float weight;
+	private Set<Product> bundles;
 	private Set<Product> bundleItems;
 }

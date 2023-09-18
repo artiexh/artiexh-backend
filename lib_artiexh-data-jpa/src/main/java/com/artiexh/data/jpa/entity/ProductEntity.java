@@ -12,6 +12,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @SuperBuilder(toBuilder = true)
@@ -89,11 +90,16 @@ public class ProductEntity {
 	@Column(name = "weight", nullable = false)
 	private Float weight;
 
-	@ManyToMany
-	@JoinTable(name = "product_bundle_mapping", joinColumns = @JoinColumn(name = "bundle_id"), inverseJoinColumns = @JoinColumn(name = "product_id"))
-	private Set<ProductEntity> bundles;
+	@ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@JoinTable(name = "product_bundle_mapping",
+		joinColumns = @JoinColumn(name = "bundle_id"),
+		inverseJoinColumns = @JoinColumn(name = "product_id"))
+	private Set<ProductEntity> bundleItems = new LinkedHashSet<>();
 
-	@ManyToMany(mappedBy = "bundles", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-	private Set<ProductEntity> bundleItems;
+	@ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@JoinTable(name = "product_bundle_mapping",
+		joinColumns = @JoinColumn(name = "product_id"),
+		inverseJoinColumns = @JoinColumn(name = "bundle_id"))
+	private Set<ProductEntity> bundles = new LinkedHashSet<>();
 
 }
