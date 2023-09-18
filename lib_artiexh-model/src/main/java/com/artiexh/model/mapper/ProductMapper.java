@@ -103,6 +103,7 @@ public interface ProductMapper {
 	}
 
 	@Mapping(target = "category.id", source = "categoryId")
+	@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemsToProductSet")
 	Product updateProductRequestToProduct(UpdateProductRequest updateProductRequest);
 
 	default Integer toValue(ProductStatus status) {
