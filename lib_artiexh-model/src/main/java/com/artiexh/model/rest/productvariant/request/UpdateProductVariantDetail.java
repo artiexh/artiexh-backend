@@ -1,8 +1,8 @@
-package com.artiexh.model.rest.productvariant;
+package com.artiexh.model.rest.productvariant.request;
 
 import com.artiexh.model.domain.VariantCombination;
-import com.artiexh.model.rest.product.response.ProductResponse;
 import com.artiexh.model.rest.productbase.ProductBaseInfo;
+import com.artiexh.model.rest.productvariant.ProductVariantDetail;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -21,17 +21,13 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductVariantDetail {
+public class UpdateProductVariantDetail {
 	@JsonSerialize(using = ToStringSerializer.class)
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long id;
 
-	@JsonSerialize(using = ToStringSerializer.class)
-	@NotNull
-	private Long productBaseId;
-
 	@NotEmpty
-	private Set<ProviderConfig> providerConfigs;
+	private Set<ProductVariantDetail.ProviderConfig> providerConfigs;
 
 	@NotBlank
 	private String description;
@@ -42,10 +38,6 @@ public class ProductVariantDetail {
 
 	@NotBlank
 	private String providedProductFileUrl;
-
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@Schema(allOf = ProductBaseInfo.class)
-	private ProductBaseInfo productBase;
 
 	@NotEmpty
 	private List<VariantCombination> variantCombinations;

@@ -8,6 +8,7 @@ import com.artiexh.model.domain.ProductVariantProvider;
 import com.artiexh.model.domain.ProvidedProductType;
 import com.artiexh.model.domain.VariantCombination;
 import com.artiexh.model.rest.productvariant.ProductVariantDetail;
+import com.artiexh.model.rest.productvariant.request.UpdateProductVariantDetail;
 import org.mapstruct.*;
 
 @Mapper(
@@ -20,11 +21,15 @@ public interface ProductVariantMapper {
 	@Mapping(target = "productBase", ignore = true)
 	ProductVariant detailToDomain(ProductVariantDetail detail);
 
+	ProductVariant updateRequestToDomain(UpdateProductVariantDetail detail);
+
 	@Mapping(target = "productBase", source = "productBase", qualifiedByName = "domainToInfo")
 	ProductVariantDetail domainToDetail(ProductVariant domain);
 
 	ProductVariantEntity domainToEntity(ProductVariant domain);
 
+	@Mapping(target = "productBase", ignore = true)
+	@Mapping(target = "productBaseId", ignore = true)
 	ProductVariantEntity domainToEntity(ProductVariant domain, @MappingTarget ProductVariantEntity entity);
 
 	@Mapping(source = "id.variantId", target = "variantId")

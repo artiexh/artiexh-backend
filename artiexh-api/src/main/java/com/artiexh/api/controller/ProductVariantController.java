@@ -9,6 +9,7 @@ import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.productvariant.ProductVariantDetail;
 import com.artiexh.model.rest.productvariant.ProductVariantFilter;
+import com.artiexh.model.rest.productvariant.request.UpdateProductVariantDetail;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -56,14 +57,16 @@ public class ProductVariantController {
 	@PutMapping(Endpoint.ProductVariant.DETAIL)
 	@PreAuthorize("hasAuthority('ADMIN')")
 	public ProductVariantDetail update(
-		@Valid @RequestBody ProductVariantDetail detail) {
-		ProductVariant providedProduct = productVariantMapper.detailToDomain(detail);
+		@PathVariable("id") Long id,
+		@Valid @RequestBody UpdateProductVariantDetail detail) {
+		ProductVariant productVariant = productVariantMapper.updateRequestToDomain(detail);
+		productVariant.setId(id);
 		try {
-			providedProduct = productVariantService.update(providedProduct);
-			return productVariantMapper.domainToDetail(providedProduct);
+			productVariant = productVariantService.update(productVariant);
+			return productVariantMapper.domainToDetail(productVariant);
 		} catch (EntityNotFoundException exception) {
-			throw new ResponseStatusException(ErrorCode.PRODUCT_NOT_FOUND.getCode(),
-				ErrorCode.PRODUCT_NOT_FOUND.getMessage());
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+				exception.getMessage());
 		}
 
 	}

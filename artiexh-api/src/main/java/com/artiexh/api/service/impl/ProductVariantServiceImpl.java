@@ -71,12 +71,10 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 	public ProductVariant update(ProductVariant product) {
 		ProductVariantEntity entity = repository.findById(product.getId())
 			.orElseThrow(() ->
-			 new IllegalArgumentException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + product.getId())
+			 new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + product.getId())
 		);
 
 		entity = mapper.domainToEntity(product, entity);
-
-		repository.save(entity);
 
 		entity.getVariantCombinations().forEach(combination -> {
 			//Validation option id and option value
@@ -91,6 +89,14 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 			combination.getId().setVariantId(product.getId());
 			variantCombinationRepository.save(combination);
 		});
+		entity.getProviderConfigs().forEach(providerConfig -> {
+			providerConfig.getId().setProductVariantId(product.getId());
+			providerConfig.setProvider(ProviderEntity.builder()
+				.businessCode(providerConfig.getId().getBusinessCode())
+				.build());
+			productVariantProviderRepository.save(providerConfig);
+		});
+		repository.save(entity);
 		return product;
 	}
 
