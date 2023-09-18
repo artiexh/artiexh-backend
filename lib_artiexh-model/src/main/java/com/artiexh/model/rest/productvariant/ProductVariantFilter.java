@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.provider.filter;
+package com.artiexh.model.rest.productvariant;
 
 import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.artiexh.model.domain.Model3DCode;

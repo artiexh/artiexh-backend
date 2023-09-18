@@ -5,7 +5,7 @@ import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.artiexh.model.domain.ProductVariant;
 import com.artiexh.model.domain.ProvidedProductType;
 import com.artiexh.model.domain.VariantCombination;
-import com.artiexh.model.rest.providedproduct.ProductVariantDetail;
+import com.artiexh.model.rest.productvariant.ProductVariantDetail;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;

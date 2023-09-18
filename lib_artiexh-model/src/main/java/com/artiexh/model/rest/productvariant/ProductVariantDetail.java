@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.providedproduct;
+package com.artiexh.model.rest.productvariant;
 
 import com.artiexh.model.domain.VariantCombination;
 import com.artiexh.model.rest.productbase.ProductBaseInfo;
