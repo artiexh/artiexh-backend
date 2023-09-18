@@ -9,6 +9,7 @@ import com.artiexh.data.jpa.entity.ProviderEntity;
 import com.artiexh.data.jpa.entity.embededmodel.ProductVariantProviderId;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.ProductVariant;
+import com.artiexh.model.domain.ProductVariantProvider;
 import com.artiexh.model.mapper.CycleAvoidingMappingContext;
 import com.artiexh.model.mapper.ProductVariantMapper;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,6 +20,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class ProductVariantServiceImpl implements ProductVariantService {
@@ -27,16 +30,19 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 	private final ProductOptionRepository productOptionRepository;
 	private final VariantCombinationRepository variantCombinationRepository;
 	private final ProductVariantProviderRepository productVariantProviderRepository;
+	private final ProviderRepository providerRepository;
 
 	@Override
 	@Transactional
 	public ProductVariant create(ProductVariant product) {
-//		repository.findByProductBaseIdAndBusinessCode(
-//			product.getProductBaseId(),
-//			product.getBusinessCode()
-//		).ifPresent(entity -> {
-//			throw new IllegalArgumentException(ErrorCode.PRODUCT_EXISTED.getMessage() + entity.getId());
-//		});
+
+		int allowedProviders = providerRepository.countProvider(product.getProductBaseId(), product.getProviderConfigs().stream()
+			.map(ProductVariantProvider::getBusinessCode)
+			.collect(Collectors.toList()));
+
+		if (allowedProviders != product.getProviderConfigs().size()) {
+			throw new IllegalArgumentException(ErrorCode.PROVIDER_INVALID.getMessage());
+		}
 
 		ProductVariantEntity entity = mapper.domainToEntity(product);
 
@@ -73,6 +79,14 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 			.orElseThrow(() ->
 			 new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + product.getId())
 		);
+
+				int allowedProviders = providerRepository.countProvider(entity.getProductBaseId(), product.getProviderConfigs().stream()
+			.map(ProductVariantProvider::getBusinessCode)
+			.collect(Collectors.toList()));
+
+		if (allowedProviders != product.getProviderConfigs().size()) {
+			throw new IllegalArgumentException(ErrorCode.PROVIDER_INVALID.getMessage());
+		}
 
 		entity = mapper.domainToEntity(product, entity);
 

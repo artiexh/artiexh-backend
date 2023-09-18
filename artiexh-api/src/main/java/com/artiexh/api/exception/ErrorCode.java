@@ -32,6 +32,7 @@ public enum ErrorCode {
 
 	//Provider
 	PROVIDER_NOT_FOUND(HttpStatus.NOT_FOUND, "Provider is not found"),
+	PROVIDER_INVALID(HttpStatus.BAD_REQUEST, "Some providers are not allowed to access or not found or duplicated"),
 	PROVIDER_EXISTED(HttpStatus.BAD_REQUEST, "Provider is existed with Business Code: "),
 	PROVIDED_PRODUCT_INVALID(HttpStatus.BAD_REQUEST, "Provided product is invalid with Id: "),
 
