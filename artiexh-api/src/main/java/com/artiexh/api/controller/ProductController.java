@@ -2,7 +2,7 @@ package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.exception.ErrorCode;
-import com.artiexh.api.service.ProductService;
+import com.artiexh.api.service.product.ProductService;
 import com.artiexh.model.domain.Product;
 import com.artiexh.model.domain.ProductSuggestion;
 import com.artiexh.model.mapper.ProductMapper;

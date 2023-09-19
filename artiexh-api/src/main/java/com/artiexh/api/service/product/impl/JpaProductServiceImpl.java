@@ -1,12 +1,11 @@
-package com.artiexh.api.service.impl;
+package com.artiexh.api.service.product.impl;
 
-import com.artiexh.api.service.ProductService;
+import com.artiexh.api.service.product.JpaProductService;
 import com.artiexh.data.jpa.entity.ArtistEntity;
 import com.artiexh.data.jpa.entity.ProductCategoryEntity;
 import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.jpa.entity.ProductTagEntity;
 import com.artiexh.data.jpa.repository.*;
-import com.artiexh.data.opensearch.model.ProductDocument;
 import com.artiexh.model.domain.*;
 import com.artiexh.model.mapper.AddressMapper;
 import com.artiexh.model.mapper.ProductMapper;
@@ -14,12 +13,6 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.SearchHitSupport;
-import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.SearchPage;
-import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,34 +26,19 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
-public class ProductServiceImpl implements ProductService {
+public class JpaProductServiceImpl implements JpaProductService {
 	private final ArtistRepository artistRepository;
 	private final ProductCategoryRepository productCategoryRepository;
 	private final ProductAttachRepository productAttachRepository;
 	private final ProductTagRepository productTagRepository;
 	private final ProductMapper productMapper;
 	private final ProductRepository productRepository;
-	private final ElasticsearchOperations openSearchTemplate;
 	private final AddressMapper addressMapper;
 
-	@Override
-	public Page<ProductSuggestion> getSuggestionInPage(Query query, Pageable pageable) {
-		query.setPageable(pageable);
-		SearchHits<ProductDocument> hits = openSearchTemplate.search(query, ProductDocument.class);
-		SearchPage<ProductDocument> hitPage = SearchHitSupport.searchPageFor(hits, pageable);
-		return hitPage.map(searchHit -> ProductSuggestion.builder().name(searchHit.getContent().getName()).build());
-	}
-
-	@Override
-	public Page<Product> getInPage(Query query, Pageable pageable) {
-		query.setPageable(pageable);
-		SearchHits<ProductDocument> hits = openSearchTemplate.search(query, ProductDocument.class);
-		SearchPage<ProductDocument> hitPage = SearchHitSupport.searchPageFor(hits, pageable);
-		var productPage = hitPage.map(searchHit -> productMapper.documentToDomain(searchHit.getContent()));
-
+	public Page<Product> fillProductPage(Page<Product> productPage) {
 		// get missing fields from db: thumbnailUrl, remainingQuantity, owner.avatarUrl, description
-		Set<Long> hitIds = hitPage.getSearchHits().stream()
-			.map(searchHit -> searchHit.getContent().getId())
+		Set<Long> hitIds = productPage.stream()
+			.map(Product::getId)
 			.collect(Collectors.toSet());
 		Map<Long, ProductEntity> entities = productRepository.findAllById(hitIds).stream()
 			.collect(Collectors.toMap(ProductEntity::getId, product -> product));
@@ -117,16 +95,7 @@ public class ProductServiceImpl implements ProductService {
 		productEntity.setTags(tagEntities);
 		productEntity.setBundleItems(bundleItems);
 
-		ProductEntity savedProductEntity;
-		try {
-			savedProductEntity = productRepository.save(productEntity);
-			ProductDocument productDocument = productMapper.entityToDocument(savedProductEntity);
-			openSearchTemplate.save(productDocument);
-		} catch (Exception e) {
-			log.error("Save product fail", e);
-			throw e;
-		}
-
+		ProductEntity savedProductEntity = productRepository.save(productEntity);
 		return productMapper.entityToDomain(savedProductEntity);
 	}
 
@@ -153,16 +122,7 @@ public class ProductServiceImpl implements ProductService {
 			.orElseThrow(() -> new IllegalArgumentException("Category not valid"))
 		);
 
-		ProductEntity savedProductEntity;
-		try {
-			savedProductEntity = productRepository.save(productEntity);
-			ProductDocument productDocument = productMapper.entityToDocument(savedProductEntity);
-			openSearchTemplate.update(productDocument);
-		} catch (Exception e) {
-			log.error("Save product fail", e);
-			throw e;
-		}
-
+		ProductEntity savedProductEntity = productRepository.save(productEntity);
 		return productMapper.entityToDomain(savedProductEntity);
 	}
 
