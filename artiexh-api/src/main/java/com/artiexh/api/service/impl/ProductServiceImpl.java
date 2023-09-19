@@ -156,13 +156,12 @@ public class ProductServiceImpl implements ProductService {
 		ProductEntity savedProductEntity;
 		try {
 			savedProductEntity = productRepository.save(productEntity);
+			ProductDocument productDocument = productMapper.entityToDocument(savedProductEntity);
+			openSearchTemplate.update(productDocument);
 		} catch (Exception e) {
 			log.error("Save product fail", e);
 			throw e;
 		}
-
-		ProductDocument productDocument = productMapper.entityToDocument(savedProductEntity);
-		openSearchTemplate.update(productDocument);
 
 		return productMapper.entityToDomain(savedProductEntity);
 	}
