@@ -1,17 +1,12 @@
 package com.artiexh.data.jpa.entity;
 
-import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
-import com.artiexh.data.jpa.entity.embededmodel.Size;
 import io.hypersistence.utils.hibernate.id.Tsid;
-import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.hibernate.annotations.Type;
 
-import java.math.BigDecimal;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -19,28 +14,21 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "provided_product")
+@Table(name = "product_variant")
 @Builder(toBuilder = true)
-public class ProvidedProductBaseEntity {
+public class ProductVariantEntity {
 	@Id
 	@Tsid
 	private Long id;
 
-	@Embedded
-	private ProvidedProductBaseId providedProductBaseId;
+	@NotNull
+	@Column(name = "product_base_id", nullable = false)
+	private Long productBaseId;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "product_base_id", insertable = false, updatable = false)
 	private ProductBaseEntity productBase;
-
-	@ManyToOne(fetch = FetchType.EAGER)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JoinColumn(name = "business_code", insertable = false, updatable = false)
-	private ProviderEntity provider;
-
-	@Column(name = "price_amount", nullable = false)
-	private BigDecimal priceAmount;
 
 	@Column(name = "max_limit", nullable = false)
 	private Integer maxLimit;
@@ -54,4 +42,8 @@ public class ProvidedProductBaseEntity {
 	@OneToMany(fetch = FetchType.EAGER)
 	@JoinColumn(name = "variant_id")
 	private Set<ProductVariantCombinationEntity> variantCombinations;
+
+	@OneToMany(fetch = FetchType.EAGER)
+	@JoinColumn(name = "variant_id")
+	private Set<ProductVariantProviderEntity> providerConfigs;
 }

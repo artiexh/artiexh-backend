@@ -8,11 +8,14 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {ProvidedProductBaseMapper.class}
+	uses = {ProductVariantMapper.class}
 )
 public interface CollectionMapper {
 	CollectionDetail domainToDetail(Collection collection);
+
 	Collection detailToDomain(CollectionDetail collection);
+
 	Collection entityToDomain(CollectionEntity collection);
+
 	CollectionEntity domainToEntity(Collection collection);
 }

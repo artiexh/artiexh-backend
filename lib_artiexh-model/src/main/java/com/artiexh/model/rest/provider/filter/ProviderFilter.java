@@ -1,6 +1,6 @@
 package com.artiexh.model.rest.provider.filter;
 
-import com.artiexh.data.jpa.entity.ProvidedProductBaseEntity;
+import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.artiexh.data.jpa.entity.ProviderEntity;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.impl.StringArraySerializer;
@@ -33,7 +33,7 @@ public class ProviderFilter {
 				predicates.add(builder.like(root.get("businessName"), "%" + businessName + "%"));
 			}
 			if (productBaseIds != null && productBaseIds.length > 0) {
-				Join<ProviderEntity, ProvidedProductBaseEntity> joinProviderProvidedProduct = root.join("providedProducts");
+				Join<ProviderEntity, ProductVariantEntity> joinProviderProvidedProduct = root.join("providedProducts");
 				predicates.add(joinProviderProvidedProduct.get("providedProductBaseId").get("productBaseId").in(Arrays.asList(productBaseIds)));
 			}
 			return builder.and(predicates.toArray(new Predicate[0]));

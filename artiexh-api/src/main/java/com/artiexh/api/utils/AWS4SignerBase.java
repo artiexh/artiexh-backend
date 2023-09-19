@@ -10,7 +10,9 @@ import java.util.*;
 
 public abstract class AWS4SignerBase {
 
-	/** SHA256 hash of an empty request body **/
+	/**
+	 * SHA256 hash of an empty request body
+	 **/
 	public static final String EMPTY_BODY_SHA256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 	public static final String UNSIGNED_PAYLOAD = "UNSIGNED-PAYLOAD";
 
@@ -18,30 +20,26 @@ public abstract class AWS4SignerBase {
 	public static final String ALGORITHM = "HMAC-SHA256";
 	public static final String TERMINATOR = "aws4_request";
 
-	/** format strings for the date/time and date stamps required during signing **/
+	/**
+	 * format strings for the date/time and date stamps required during signing
+	 **/
 	public static final String ISO8601BasicFormat = "yyyyMMdd'T'HHmmss'Z'";
 	public static final String DateStringFormat = "yyyyMMdd";
-
+	protected final SimpleDateFormat dateTimeFormat;
+	protected final SimpleDateFormat dateStampFormat;
 	protected URL endpointUrl;
 	protected String httpMethod;
 	protected String serviceName;
 	protected String regionName;
 
-	protected final SimpleDateFormat dateTimeFormat;
-	protected final SimpleDateFormat dateStampFormat;
-
 	/**
 	 * Create a new AWS V4 signer.
 	 *
-	 * @param endpointUrl
-	 *            The service endpoint, including the path to any resource.
-	 * @param httpMethod
-	 *            The HTTP verb for the request, e.g. GET.
-	 * @param serviceName
-	 *            The signing name of the service, e.g. 's3'.
-	 * @param regionName
-	 *            The system name of the AWS region associated with the
-	 *            endpoint, e.g. us-east-1.
+	 * @param endpointUrl The service endpoint, including the path to any resource.
+	 * @param httpMethod  The HTTP verb for the request, e.g. GET.
+	 * @param serviceName The signing name of the service, e.g. 's3'.
+	 * @param regionName  The system name of the AWS region associated with the
+	 *                    endpoint, e.g. us-east-1.
 	 */
 	public AWS4SignerBase(URL endpointUrl, String httpMethod,
 						  String serviceName, String regionName) {
@@ -80,7 +78,7 @@ public abstract class AWS4SignerBase {
 	 * headers must be included in the signing process.
 	 */
 	protected static String getCanonicalizedHeaderString(Map<String, String> headers) {
-		if ( headers == null || headers.isEmpty() ) {
+		if (headers == null || headers.isEmpty()) {
 			return "";
 		}
 
@@ -103,7 +101,8 @@ public abstract class AWS4SignerBase {
 
 	/**
 	 * Returns the canonical request string to go into the signer process; this
-	 consists of several canonical sub-parts.
+	 * consists of several canonical sub-parts.
+	 *
 	 * @return
 	 */
 	protected static String getCanonicalRequest(URL endpoint,
@@ -126,11 +125,11 @@ public abstract class AWS4SignerBase {
 	 * Returns the canonicalized resource path for the service endpoint.
 	 */
 	protected static String getCanonicalizedResourcePath(URL endpoint) {
-		if ( endpoint == null ) {
+		if (endpoint == null) {
 			return "/";
 		}
 		String path = endpoint.getPath();
-		if ( path == null || path.isEmpty() ) {
+		if (path == null || path.isEmpty()) {
 			return "/";
 		}
 
@@ -150,13 +149,11 @@ public abstract class AWS4SignerBase {
 	 * string parameters, then URI encoding both the key and value and then
 	 * joining them, in order, separating key value pairs with an '&'.
 	 *
-	 * @param parameters
-	 *            The query string parameters to be canonicalized.
-	 *
+	 * @param parameters The query string parameters to be canonicalized.
 	 * @return A canonicalized form for the specified query string parameters.
 	 */
 	public static String getCanonicalizedQueryString(Map<String, String> parameters) {
-		if ( parameters == null || parameters.isEmpty() ) {
+		if (parameters == null || parameters.isEmpty()) {
 			return "";
 		}
 

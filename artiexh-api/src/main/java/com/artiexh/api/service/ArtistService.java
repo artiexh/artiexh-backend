@@ -19,5 +19,5 @@ public interface ArtistService {
 	PageResponse<ShopOrderResponsePage> getAllOrder(Specification<OrderEntity> specification, Pageable pageable);
 
 	ShopOrderResponse updateShippingOrderStatus(Long artistId, Long orderId,
-		UpdateShippingOrderRequest updateShippingOrderRequest);
+												UpdateShippingOrderRequest updateShippingOrderRequest);
 }

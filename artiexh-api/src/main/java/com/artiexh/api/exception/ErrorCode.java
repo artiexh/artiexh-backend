@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
 	//Product
+	PRODUCT_EXISTED(HttpStatus.BAD_REQUEST, "Product is existed with Id: "),
 	PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "Product is not found"),
 	PREORDER_NOT_FOUND_TIME(HttpStatus.BAD_REQUEST, "Pre-order product must require start time and end time"),
 	PREORDER_INVALID_TIME(HttpStatus.BAD_REQUEST, "End time must be after start time"),
@@ -31,8 +32,13 @@ public enum ErrorCode {
 
 	//Provider
 	PROVIDER_NOT_FOUND(HttpStatus.NOT_FOUND, "Provider is not found"),
-	PRODUCT_EXISTED(HttpStatus.BAD_REQUEST, "Product is existed with Id: "),
+	PROVIDER_INVALID(HttpStatus.BAD_REQUEST, "Some providers are not allowed to access or not found or duplicated"),
+	PROVIDER_EXISTED(HttpStatus.BAD_REQUEST, "Provider is existed with Business Code: "),
 	PROVIDED_PRODUCT_INVALID(HttpStatus.BAD_REQUEST, "Provided product is invalid with Id: "),
+
+	//Option - Option Value
+	OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "Option is not found with Id: "),
+	OPTION_VALUE_INVALID(HttpStatus.BAD_REQUEST, "Option value is not matched with Option Id: "),
 
 	//Media
 	UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Upload file is failed!"),

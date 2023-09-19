@@ -36,11 +36,19 @@ public class ProviderEntity {
 	private String description;
 
 	@OneToMany(mappedBy = "provider", fetch = FetchType.EAGER)
-	private Set<ProvidedProductBaseEntity> providedProducts;
+	private Set<ProductVariantProviderEntity> productVariantConfigs;
 
 	@Column(name = "website")
 	private String website;
 
 	@Column(name = "image_url", nullable = false)
 	private String imageUrl;
+
+	@ManyToMany()
+	@JoinTable(
+		name = "product_base_provider_mapping",
+		joinColumns = {@JoinColumn(name = "business_code")},
+		inverseJoinColumns = {@JoinColumn(name = "product_base_id")}
+	)
+	private Set<ProductBaseEntity> productBases;
 }

@@ -8,10 +8,13 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ProductCategoryMapper {
+	ProductCategory idToDomain(Long id);
 
 	ProductCategory entityToDomain(ProductCategoryEntity productCategoryEntity);
 
 	ProductCategoryResponse entityToResponse(ProductCategoryEntity entity);
+
+	ProductCategoryResponse domainToResponse(ProductCategory entity);
 
 	default ProductCategoryEntity domainToEntity(Long categoryId) {
 		return ProductCategoryEntity.builder().id(categoryId).build();

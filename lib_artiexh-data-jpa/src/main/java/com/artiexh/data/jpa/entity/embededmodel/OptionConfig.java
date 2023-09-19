@@ -13,5 +13,4 @@ public class OptionConfig {
 	private String key;
 	private String label;
 	private String value;
-	private Integer index;
 }

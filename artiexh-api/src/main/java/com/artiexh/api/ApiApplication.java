@@ -1,6 +1,5 @@
 package com.artiexh.api;
 
-import com.artiexh.api.config.S3ConfigurationProperties;
 import com.artiexh.api.config.VnpConfigurationProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -31,8 +31,8 @@ public class CartItemId implements Serializable {
 	@Column(name = "product_id", nullable = false)
 	private Long productId;
 
-    @Override
-    public boolean equals(Object o) {
+	@Override
+	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
 		CartItemId entity = (CartItemId) o;
@@ -40,9 +40,9 @@ public class CartItemId implements Serializable {
 			Objects.equals(this.productId, entity.productId);
 	}
 
-    @Override
-    public int hashCode() {
+	@Override
+	public int hashCode() {
 		return Objects.hash(cartId, productId);
-    }
+	}
 
 }

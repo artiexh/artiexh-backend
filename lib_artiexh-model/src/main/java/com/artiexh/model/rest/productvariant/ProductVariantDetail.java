@@ -1,43 +1,36 @@
-package com.artiexh.model.rest.providedproduct;
+package com.artiexh.model.rest.productvariant;
 
-import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
-import com.artiexh.data.jpa.entity.embededmodel.Size;
-import com.artiexh.model.domain.Money;
-import com.artiexh.model.domain.ProvidedProductType;
 import com.artiexh.model.domain.VariantCombination;
 import com.artiexh.model.rest.productbase.ProductBaseInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProvidedProductBaseDetail {
+public class ProductVariantDetail {
 	@JsonSerialize(using = ToStringSerializer.class)
-	private Long id;
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	private String businessCode;
+	private Long id;
 
 	@JsonSerialize(using = ToStringSerializer.class)
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@NotNull
 	private Long productBaseId;
 
-	@NotNull
-	private BigDecimal priceAmount;
+	@NotEmpty
+	private Set<ProviderConfig> providerConfigs;
 
 	@NotBlank
 	private String description;
@@ -50,8 +43,21 @@ public class ProvidedProductBaseDetail {
 	private String providedProductFileUrl;
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@Schema(allOf = ProductBaseInfo.class)
 	private ProductBaseInfo productBase;
 
 	@NotEmpty
 	private List<VariantCombination> variantCombinations;
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class ProviderConfig {
+
+		@NotNull
+		private String businessCode;
+
+		@NotNull
+		private BigDecimal basePriceAmount;
+	}
 }

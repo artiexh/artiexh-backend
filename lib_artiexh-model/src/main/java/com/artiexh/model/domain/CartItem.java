@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CartItem {
 
-    private Product product;
+	private Product product;
 
-    private Integer quantity;
+	private Integer quantity;
 
 }

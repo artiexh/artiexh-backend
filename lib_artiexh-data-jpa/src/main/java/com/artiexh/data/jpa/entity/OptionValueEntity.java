@@ -26,4 +26,7 @@ public class OptionValueEntity {
 
 	@Column(name = "name", length = 50)
 	private String name;
+
+	@Column(name = "value")
+	private String value;
 }
