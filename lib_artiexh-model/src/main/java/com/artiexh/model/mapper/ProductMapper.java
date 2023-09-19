@@ -7,13 +7,11 @@ import com.artiexh.model.domain.*;
 import com.artiexh.model.rest.product.request.CreateProductRequest;
 import com.artiexh.model.rest.product.request.UpdateProductRequest;
 import com.artiexh.model.rest.product.response.ProductResponse;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 import org.springframework.data.domain.Page;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
@@ -34,13 +32,40 @@ public interface ProductMapper {
 
 	ProductResponse domainToProductResponse(Product product);
 
-
 	@Mapping(target = "price.unit", source = "priceUnit")
 	@Mapping(target = "price.amount", source = "priceAmount")
 	@Mapping(target = "thumbnailUrl", source = "attaches", qualifiedByName = "getProductThumbnailUrl")
 	@Mapping(target = "owner", qualifiedByName = "basicArtistInfo")
 	@Mapping(target = "shop", qualifiedByName = "basicShopInfo")
+	@Mapping(target = "bundles", source = "bundles", qualifiedByName = "bundleEntitiesToDomains")
+	@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemEntitiesToDomains")
 	Product entityToDomain(ProductEntity productEntity);
+
+	@Named("bundleEntitiesToDomains")
+	@IterableMapping(qualifiedByName = "bundleEntityToDomain")
+	Set<Product> bundleEntitiesToDomains(Set<ProductEntity> productEntities);
+
+	@Named("bundleEntityToDomain")
+	@Mapping(target = "price.unit", source = "priceUnit")
+	@Mapping(target = "price.amount", source = "priceAmount")
+	@Mapping(target = "thumbnailUrl", source = "attaches", qualifiedByName = "getProductThumbnailUrl")
+	@Mapping(target = "owner", qualifiedByName = "basicArtistInfo")
+	@Mapping(target = "shop", qualifiedByName = "basicShopInfo")
+	@Mapping(target = "bundleItems", ignore = true)
+	Product bundleEntityToDomain(ProductEntity productEntity);
+
+	@Named("bundleItemEntitiesToDomains")
+	@IterableMapping(qualifiedByName = "bundleItemEntityToDomain")
+	Set<Product> bundleItemEntitiesToDomains(Set<ProductEntity> productEntities);
+
+	@Named("bundleItemEntityToDomain")
+	@Mapping(target = "price.unit", source = "priceUnit")
+	@Mapping(target = "price.amount", source = "priceAmount")
+	@Mapping(target = "thumbnailUrl", source = "attaches", qualifiedByName = "getProductThumbnailUrl")
+	@Mapping(target = "owner", qualifiedByName = "basicArtistInfo")
+	@Mapping(target = "shop", qualifiedByName = "basicShopInfo")
+	@Mapping(target = "bundles", ignore = true)
+	Product bundleItemEntityToDomain(ProductEntity productEntity);
 
 	@Named("getProductThumbnailUrl")
 	default String getThumbnailUrl(Set<ProductAttachEntity> productAttachEntities) {
@@ -63,9 +88,22 @@ public interface ProductMapper {
 	ProductDocument entityToDocument(ProductEntity productEntity);
 
 	@Mapping(target = "category.id", source = "categoryId")
+	@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemsToProductSet")
 	Product createProductRequestToProduct(CreateProductRequest createProductRequest);
 
+	@Named("bundleItemsToProductSet")
+	default Set<Product> bundleItemsToProductSet(Set<Long> bundleItems) {
+		if (bundleItems == null) {
+			return null;
+		}
+
+		return bundleItems.stream()
+			.map(id -> Product.builder().id(id).build())
+			.collect(Collectors.toSet());
+	}
+
 	@Mapping(target = "category.id", source = "categoryId")
+	@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemsToProductSet")
 	Product updateProductRequestToProduct(UpdateProductRequest updateProductRequest);
 
 	default Integer toValue(ProductStatus status) {

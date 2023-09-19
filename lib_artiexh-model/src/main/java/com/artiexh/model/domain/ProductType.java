@@ -2,7 +2,8 @@ package com.artiexh.model.domain;
 
 public enum ProductType {
 	NORMAL(1),
-	MEMBER_ONLY(2);
+	MEMBER_ONLY(2),
+	BUNDLE(3);
 
 	private final int value;
 
@@ -21,5 +22,9 @@ public enum ProductType {
 
 	public int getValue() {
 		return value;
+	}
+
+	public byte getByteValue() {
+		return (byte) value;
 	}
 }

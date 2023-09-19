@@ -24,6 +24,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -95,7 +96,6 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	@Transactional
 	public Product create(long artistId, Product product) {
-
 		ArtistEntity artistEntity = artistRepository.findById(artistId)
 			.orElseThrow(() -> new IllegalArgumentException("Artist not valid"));
 
@@ -108,22 +108,24 @@ public class ProductServiceImpl implements ProductService {
 
 		Set<ProductTagEntity> tagEntities = getTagEntities(product.getTags());
 
+		Set<ProductEntity> bundleItems = getBundleItems(product);
+
 		ProductEntity productEntity = productMapper.domainToEntity(product);
 		productEntity.setOwner(artistEntity);
 		productEntity.setShop(artistEntity);
 		productEntity.setCategory(categoryEntity);
 		productEntity.setTags(tagEntities);
+		productEntity.setBundleItems(bundleItems);
 
 		ProductEntity savedProductEntity;
 		try {
 			savedProductEntity = productRepository.save(productEntity);
+			ProductDocument productDocument = productMapper.entityToDocument(savedProductEntity);
+			openSearchTemplate.save(productDocument);
 		} catch (Exception e) {
 			log.error("Save product fail", e);
 			throw e;
 		}
-
-		ProductDocument productDocument = productMapper.entityToDocument(savedProductEntity);
-		openSearchTemplate.save(productDocument);
 
 		return productMapper.entityToDomain(savedProductEntity);
 	}
@@ -145,7 +147,7 @@ public class ProductServiceImpl implements ProductService {
 		ProductEntity productEntity = productMapper.domainToEntity(product);
 		productEntity.setOwner(ArtistEntity.builder().id(artistId).build());
 		productEntity.setShop(ArtistEntity.builder().id(artistId).build());
-
+		productEntity.setBundleItems(getBundleItems(product));
 		productEntity.setTags(getTagEntities(product.getTags()));
 		productEntity.setCategory(productCategoryRepository.findById(product.getCategory().getId())
 			.orElseThrow(() -> new IllegalArgumentException("Category not valid"))
@@ -154,15 +156,62 @@ public class ProductServiceImpl implements ProductService {
 		ProductEntity savedProductEntity;
 		try {
 			savedProductEntity = productRepository.save(productEntity);
+			ProductDocument productDocument = productMapper.entityToDocument(savedProductEntity);
+			openSearchTemplate.update(productDocument);
 		} catch (Exception e) {
 			log.error("Save product fail", e);
 			throw e;
 		}
 
-		ProductDocument productDocument = productMapper.entityToDocument(savedProductEntity);
-		openSearchTemplate.update(productDocument);
-
 		return productMapper.entityToDomain(savedProductEntity);
+	}
+
+	private Set<ProductEntity> getBundleItems(Product product) {
+		if (ProductType.BUNDLE.equals(product.getType())) {
+			if (product.getBundleItems() == null || product.getBundleItems().isEmpty()) {
+				throw new IllegalArgumentException("Bundle must contain at least one item");
+			}
+
+			var itemEntities = productRepository.findAllByIdIn(
+				product.getBundleItems().stream()
+					.map(Product::getId)
+					.collect(Collectors.toSet())
+			);
+
+			if (itemEntities.size() != product.getBundleItems().size()) {
+				var existedIds = itemEntities.stream().map(ProductEntity::getId).collect(Collectors.toSet());
+				var notExistedIds = product.getBundleItems().stream()
+					.map(Product::getId)
+					.filter(id -> !existedIds.contains(id))
+					.map(String::valueOf)
+					.collect(Collectors.joining(","));
+				throw new IllegalArgumentException("Bundle item not existed: " + notExistedIds);
+			}
+
+			if (itemEntities.stream().anyMatch(item -> ProductType.BUNDLE.getByteValue() == item.getType())) {
+				throw new IllegalArgumentException("Bundle item must not be bundle product");
+			}
+
+			var totalWeight = itemEntities.stream().mapToDouble(ProductEntity::getWeight).sum();
+			if (product.getWeight() < totalWeight) {
+				throw new IllegalArgumentException("Bundle weight must be greater than or equal total weight of items");
+			}
+
+			var totalPrice = itemEntities.stream()
+				.map(ProductEntity::getPriceAmount)
+				.reduce(BigDecimal::add)
+				.orElse(BigDecimal.ZERO);
+			if (product.getPrice().getAmount().compareTo(totalPrice) > 0) {
+				throw new IllegalArgumentException("Bundle price must be less than or equal total price of items");
+			}
+
+			return itemEntities;
+		} else {
+			if (product.getBundleItems() != null && !product.getBundleItems().isEmpty()) {
+				throw new IllegalArgumentException("Only bundle product can contain bundleItems");
+			}
+			return null;
+		}
 	}
 
 	private Set<ProductTagEntity> getTagEntities(Set<ProductTag> tags) {

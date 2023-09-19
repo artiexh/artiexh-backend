@@ -35,6 +35,8 @@ public class ProductResponse {
 	private Set<PaymentMethod> paymentMethods;
 	private Shop shop;
 	private Float weight;
+	private Set<ProductResponse> bundles;
+	private Set<ProductResponse> bundleItems;
 
 	@Data
 	@NoArgsConstructor

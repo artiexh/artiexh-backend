@@ -56,4 +56,6 @@ public class UpdateProductRequest {
 
 	@NotNull
 	private Float weight;
+
+	private Set<Long> bundleItems;
 }
