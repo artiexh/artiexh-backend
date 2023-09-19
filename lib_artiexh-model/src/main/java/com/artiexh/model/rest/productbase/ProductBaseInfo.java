@@ -4,6 +4,7 @@ import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
 import com.artiexh.data.jpa.entity.embededmodel.OptionConfig;
 import com.artiexh.model.domain.Model3DCode;
 import com.artiexh.model.domain.ProductOption;
+import com.artiexh.model.rest.category.ProductCategoryResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -42,4 +43,11 @@ public class ProductBaseInfo {
 	private List<ImageCombination> imageCombinations;
 
 	private Model3DCode model3DCode;
+
+	@JsonSerialize(using = ToStringSerializer.class)
+	@NotNull
+	private Long categoryId;
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private ProductCategoryResponse category;
 }

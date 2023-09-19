@@ -11,13 +11,14 @@ import java.util.Set;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {ProviderMapper.class}
+	uses = {ProviderMapper.class, ProductCategoryMapper.class}
 )
 public interface ProductBaseMapper {
 	ProductBase entityToDomain(ProductBaseEntity entity, @Context CycleAvoidingMappingContext context);
 
 	ProductBaseEntity domainToEntity(ProductBase domain);
 
+	@Mapping(target = "category", source = "categoryId")
 	ProductBase detailToDomain(ProductBaseDetail detail);
 
 	@Mapping(target = "providers", source = "providers", qualifiedByName = "domainSetToDetailSetWithoutProductBases")

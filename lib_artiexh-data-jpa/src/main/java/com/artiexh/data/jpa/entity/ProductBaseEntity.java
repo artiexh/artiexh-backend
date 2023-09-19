@@ -6,6 +6,8 @@ import io.hypersistence.utils.hibernate.id.Tsid;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.Type;
 
 import java.util.List;
@@ -26,9 +28,6 @@ public class ProductBaseEntity {
 
 	@Column(name = "name", nullable = false)
 	private String name;
-
-//	@Column(name = "type", nullable = false)
-//	private String type;
 
 	@Column(name = "product_file_url", nullable = false)
 	private String productFileUrl;
@@ -56,4 +55,9 @@ public class ProductBaseEntity {
 
 	@ManyToMany(mappedBy = "productBases")
 	private Set<ProviderEntity> providers;
+
+	@ManyToOne
+	@OnDelete(action = OnDeleteAction.SET_NULL)
+	@JoinColumn(name = "category_id")
+	private ProductCategoryEntity category;
 }

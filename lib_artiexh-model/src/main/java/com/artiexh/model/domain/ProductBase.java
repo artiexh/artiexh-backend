@@ -33,4 +33,6 @@ public class ProductBase {
 	private Set<ProductOption> productOptions;
 
 	private Set<Provider> providers;
+
+	private ProductCategory category;
 }
