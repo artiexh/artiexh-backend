@@ -20,6 +20,8 @@ public interface ProviderMapper {
 
 	ProviderEntity domainToEntity(Provider domain);
 
+	ProviderEntity domainToEntity(Provider domain, @MappingTarget ProviderEntity entity);
+
 	Provider entityToDomain(ProviderEntity entity, @Context CycleAvoidingMappingContext context);
 
 	@Mapping(target = "productBases", source = "productBases", qualifiedByName = "domainSetToInfoSet")

@@ -64,4 +64,20 @@ public class ProviderController {
 				exception);
 		}
 	}
+
+	@PutMapping(Endpoint.Provider.DETAIL)
+	public ProviderDetail update(
+		@Valid @RequestBody ProviderDetail detail,
+		@PathVariable("id") String businessCode) {
+		try {
+			Provider provider = providerMapper.detailToDomain(detail);
+			provider.setBusinessCode(businessCode);
+			provider = providerService.update(provider);
+			return providerMapper.domainToDetail(provider);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+				ErrorCode.PROVIDER_NOT_FOUND.getMessage(),
+				exception);
+		}
+	}
 }

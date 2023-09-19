@@ -22,8 +22,8 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(EntityNotFoundException.class)
 	public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request) {
-		var responseException = new ResponseStatusException(HttpStatus.OK, ex.getMessage(), ex);
-		return handleExceptionInternal(responseException, null, new HttpHeaders(), HttpStatus.OK, request);
+		var responseException = new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		return handleExceptionInternal(responseException, null, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}
 
 	@ExceptionHandler(ConstraintViolationException.class)

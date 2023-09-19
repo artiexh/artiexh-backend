@@ -9,6 +9,8 @@ import org.springframework.data.jpa.domain.Specification;
 public interface ProviderService {
 	Provider create(Provider provider);
 
+	Provider update(Provider provider);
+
 	Provider getById(String businessCode);
 
 	Page<Provider> getInPage(Pageable pageable);

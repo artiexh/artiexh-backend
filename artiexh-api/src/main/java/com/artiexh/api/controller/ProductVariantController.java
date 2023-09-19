@@ -67,8 +67,11 @@ public class ProductVariantController {
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
 				exception.getMessage());
+		} catch (IllegalArgumentException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+				exception.getMessage(),
+				exception);
 		}
-
 	}
 
 //	//TODO: Remove Provided Product

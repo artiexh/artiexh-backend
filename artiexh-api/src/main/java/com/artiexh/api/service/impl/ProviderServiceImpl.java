@@ -35,6 +35,17 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	@Override
+	@Transactional
+	public Provider update(Provider provider) {
+		ProviderEntity entity = providerRepository.findById(provider.getBusinessCode()).orElseThrow(() -> {
+			throw new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + provider.getBusinessCode());
+		});
+		entity = providerMapper.domainToEntity(provider, entity);
+		providerRepository.save(entity);
+		return provider;
+	}
+
+	@Override
 	@Transactional(readOnly = true)
 	public Provider getById(String businessCode) {
 		ProviderEntity provider = providerRepository.findById(businessCode).orElseThrow(EntityNotFoundException::new);

@@ -49,7 +49,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 				product.getProductBaseId(),
 					combination.getOptionId())
 				.orElseThrow(()
-					-> new EntityNotFoundException(ErrorCode.OPTION_NOT_FOUND.getMessage() + combination.getOptionId())
+					-> new IllegalArgumentException(ErrorCode.OPTION_NOT_FOUND.getMessage() + combination.getOptionId())
 				);
 			boolean isValidOption = productOption.getOptionValues().stream()
 				.anyMatch(option -> option.getId().equals(combination.getOptionValueId()));
@@ -103,7 +103,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 					product.getProductBaseId(),
 					combination.getOptionId())
 				.orElseThrow(()
-					-> new EntityNotFoundException(ErrorCode.OPTION_NOT_FOUND.getMessage() + combination.getOptionId())
+					-> new IllegalArgumentException(ErrorCode.OPTION_NOT_FOUND.getMessage() + combination.getOptionId())
 				);
 			boolean isValidOption = productOption.getOptionValues().stream()
 				.anyMatch(option -> option.getId().equals(combination.getOptionValueId()));
