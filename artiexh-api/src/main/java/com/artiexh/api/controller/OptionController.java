@@ -21,11 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class OptionController {
 	private final OptionService optionService;
 	private final ProductOptionMapper optionMapper;
+
 	@GetMapping
 	public PageResponse<OptionDetail> getAll(
 		@ParameterObject PaginationAndSortingRequest request,
 		@ParameterObject OptionFilter optionFilter
-		) {
+	) {
 		Page<ProductOption> options = optionService.getAll(optionFilter.getSpecification(), request.getPageable());
 		return new PageResponse<>(options.map(optionMapper::domainToDetail));
 	}

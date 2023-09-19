@@ -47,6 +47,7 @@ public interface ProductVariantMapper {
 	@Mapping(target = "id.productVariantId", source = "variantId")
 	@Mapping(target = "id.businessCode", source = "businessCode")
 	ProductVariantProviderEntity domainToEntity(ProductVariantProvider entity);
+
 	default Integer toValue(ProvidedProductType type) {
 		return type.getValue();
 	}

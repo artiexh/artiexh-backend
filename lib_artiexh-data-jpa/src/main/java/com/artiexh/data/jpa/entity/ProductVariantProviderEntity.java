@@ -2,7 +2,6 @@ package com.artiexh.data.jpa.entity;
 
 import com.artiexh.data.jpa.entity.embededmodel.ProductVariantProviderId;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;

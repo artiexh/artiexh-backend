@@ -1,7 +1,6 @@
 package com.artiexh.model.rest.productvariant;
 
 import com.artiexh.model.domain.VariantCombination;
-import com.artiexh.model.rest.product.response.ProductResponse;
 import com.artiexh.model.rest.productbase.ProductBaseInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;

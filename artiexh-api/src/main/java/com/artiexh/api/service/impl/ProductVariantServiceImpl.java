@@ -4,9 +4,7 @@ import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.ProductVariantService;
 import com.artiexh.data.jpa.entity.ProductOptionEntity;
 import com.artiexh.data.jpa.entity.ProductVariantEntity;
-import com.artiexh.data.jpa.entity.ProductVariantProviderEntity;
 import com.artiexh.data.jpa.entity.ProviderEntity;
-import com.artiexh.data.jpa.entity.embededmodel.ProductVariantProviderId;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.ProductVariant;
 import com.artiexh.model.domain.ProductVariantProvider;
@@ -36,6 +34,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 	@Transactional
 	public ProductVariant create(ProductVariant product) {
 
+		//Validate provider
 		int allowedProviders = providerRepository.countProvider(product.getProductBaseId(), product.getProviderConfigs().stream()
 			.map(ProductVariantProvider::getBusinessCode)
 			.collect(Collectors.toList()));
@@ -44,20 +43,26 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 			throw new IllegalArgumentException(ErrorCode.PROVIDER_INVALID.getMessage());
 		}
 
+		//Validation option id and option value
+		product.getVariantCombinations().forEach(combination -> {
+			ProductOptionEntity productOption = productOptionRepository.findProductOptionEntityByProductIdAndId(
+				product.getProductBaseId(),
+					combination.getOptionId())
+				.orElseThrow(()
+					-> new EntityNotFoundException(ErrorCode.OPTION_NOT_FOUND.getMessage() + combination.getOptionId())
+				);
+			boolean isValidOption = productOption.getOptionValues().stream()
+				.anyMatch(option -> option.getId().equals(combination.getOptionValueId()));
+			if (!isValidOption) {
+				throw new IllegalArgumentException(ErrorCode.OPTION_VALUE_INVALID.getMessage() + combination.getOptionId());
+			}
+		});
+
 		ProductVariantEntity entity = mapper.domainToEntity(product);
 
 		repository.save(entity);
 
 		entity.getVariantCombinations().forEach(combination -> {
-			//Validation option id and option value
-			ProductOptionEntity productOption = productOptionRepository.findById(combination.getOptionId()).orElseThrow(
-				() -> new EntityNotFoundException(ErrorCode.OPTION_NOT_FOUND.getMessage() + combination.getOptionId())
-			);
-			boolean isValidOption = productOption.getOptionValues().stream().anyMatch(option -> option.getId().equals(combination.getId().getOptionValueId()));
-			if (!isValidOption) {
-				throw new IllegalArgumentException(ErrorCode.OPTION_VALUE_INVALID.getMessage() + combination.getOptionId());
-			}
-
 			combination.getId().setVariantId(entity.getId());
 			variantCombinationRepository.save(combination);
 		});
@@ -77,28 +82,39 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 	public ProductVariant update(ProductVariant product) {
 		ProductVariantEntity entity = repository.findById(product.getId())
 			.orElseThrow(() ->
-			 new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + product.getId())
-		);
+				new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + product.getId())
+			);
 
-				int allowedProviders = providerRepository.countProvider(entity.getProductBaseId(), product.getProviderConfigs().stream()
-			.map(ProductVariantProvider::getBusinessCode)
-			.collect(Collectors.toList()));
+		//Validate provider
+		int allowedProviders = providerRepository.countProvider(
+			entity.getProductBaseId(),
+			product.getProviderConfigs().stream()
+				.map(ProductVariantProvider::getBusinessCode)
+				.toList()
+		);
 
 		if (allowedProviders != product.getProviderConfigs().size()) {
 			throw new IllegalArgumentException(ErrorCode.PROVIDER_INVALID.getMessage());
 		}
 
-		entity = mapper.domainToEntity(product, entity);
-
-		entity.getVariantCombinations().forEach(combination -> {
-			//Validation option id and option value
-			ProductOptionEntity productOption = productOptionRepository.findById(combination.getOptionId()).orElseThrow(
-				() -> new EntityNotFoundException(ErrorCode.OPTION_NOT_FOUND.getMessage() + combination.getOptionId())
-			);
-			boolean isValidOption = productOption.getOptionValues().stream().anyMatch(option -> option.getId().equals(combination.getId().getOptionValueId()));
+		//Validation option id and option value
+		product.getVariantCombinations().forEach(combination -> {
+			ProductOptionEntity productOption = productOptionRepository.findProductOptionEntityByProductIdAndId(
+					product.getProductBaseId(),
+					combination.getOptionId())
+				.orElseThrow(()
+					-> new EntityNotFoundException(ErrorCode.OPTION_NOT_FOUND.getMessage() + combination.getOptionId())
+				);
+			boolean isValidOption = productOption.getOptionValues().stream()
+				.anyMatch(option -> option.getId().equals(combination.getOptionValueId()));
 			if (!isValidOption) {
 				throw new IllegalArgumentException(ErrorCode.OPTION_VALUE_INVALID.getMessage() + combination.getOptionId());
 			}
+		});
+
+		entity = mapper.domainToEntity(product, entity);
+
+		entity.getVariantCombinations().forEach(combination -> {
 
 			combination.getId().setVariantId(product.getId());
 			variantCombinationRepository.save(combination);

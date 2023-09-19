@@ -1,7 +1,6 @@
 package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
-import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.ProductBaseService;
 import com.artiexh.model.domain.ProductBase;
 import com.artiexh.model.mapper.ProductBaseMapper;

@@ -2,7 +2,6 @@ package com.artiexh.model.domain;
 
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.util.Set;
 
 @Getter

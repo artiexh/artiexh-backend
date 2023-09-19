@@ -7,7 +7,6 @@ import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.math.BigDecimal;
 import java.util.Set;
 
 @Getter
@@ -15,7 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "provided_product")
+@Table(name = "product_variant")
 @Builder(toBuilder = true)
 public class ProductVariantEntity {
 	@Id

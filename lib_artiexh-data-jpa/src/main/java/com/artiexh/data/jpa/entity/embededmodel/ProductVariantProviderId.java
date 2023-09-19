@@ -1,6 +1,5 @@
 package com.artiexh.data.jpa.entity.embededmodel;
 
-import com.artiexh.data.jpa.entity.CartItemId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotNull;

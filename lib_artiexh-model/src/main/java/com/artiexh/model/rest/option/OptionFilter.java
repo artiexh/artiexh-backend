@@ -1,7 +1,6 @@
 package com.artiexh.model.rest.option;
 
 import com.artiexh.data.jpa.entity.ProductOptionEntity;
-import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.persistence.criteria.Predicate;
@@ -12,7 +11,6 @@ import lombok.Setter;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Getter

@@ -1,12 +1,10 @@
 package com.artiexh.model.rest.productvariant.request;
 
 import com.artiexh.model.domain.VariantCombination;
-import com.artiexh.model.rest.productbase.ProductBaseInfo;
 import com.artiexh.model.rest.productvariant.ProductVariantDetail;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
