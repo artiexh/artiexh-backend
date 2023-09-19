@@ -19,6 +19,9 @@ public class OptionValue {
 
 	private String name;
 
+	private String value;
+
 	@JsonSerialize(using = ToStringSerializer.class)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long optionId;
 }

@@ -1,18 +1,13 @@
 package com.artiexh.model.rest.provider.filter;
 
 import com.artiexh.data.jpa.entity.CollectionEntity;
-import com.artiexh.data.jpa.entity.ProvidedProductBaseEntity;
-import com.artiexh.data.jpa.entity.ProviderEntity;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.impl.StringArraySerializer;
-import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import lombok.*;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Getter

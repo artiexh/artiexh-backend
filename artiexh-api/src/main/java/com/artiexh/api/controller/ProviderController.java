@@ -2,14 +2,13 @@ package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.exception.ErrorCode;
-import com.artiexh.api.service.ProvidedProductBaseService;
 import com.artiexh.api.service.ProviderService;
 import com.artiexh.model.domain.Provider;
-import com.artiexh.model.mapper.ProvidedProductBaseMapper;
 import com.artiexh.model.mapper.ProviderMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
-import com.artiexh.model.rest.provider.*;
+import com.artiexh.model.rest.provider.ProviderDetail;
+import com.artiexh.model.rest.provider.ProviderInfo;
 import com.artiexh.model.rest.provider.filter.ProviderFilter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -27,16 +26,23 @@ import org.springframework.web.server.ResponseStatusException;
 public class ProviderController {
 	private final ProviderService providerService;
 	private final ProviderMapper providerMapper;
-	private final ProvidedProductBaseService providedProductBaseService;
-	private final ProvidedProductBaseMapper providedProductBaseMapper;
+
 	//Create Provider
 	@PostMapping
 	@PreAuthorize("hasAuthority('ADMIN')")
 	public ProviderDetail create(@Valid @RequestBody ProviderDetail detail) {
-		Provider provider = providerMapper.detailToDomain(detail);
-		provider = providerService.create(provider);
-		return providerMapper.domainToDetail(provider);
+		try {
+			Provider provider = providerMapper.detailToDomain(detail);
+			provider = providerService.create(provider);
+			return providerMapper.domainToDetail(provider);
+		} catch (IllegalArgumentException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+				exception.getMessage(),
+				exception);
+		}
+
 	}
+
 	//Get Provider Detail
 	@GetMapping
 	public PageResponse<ProviderInfo> getInPage(
@@ -59,5 +65,19 @@ public class ProviderController {
 		}
 	}
 
-
+	@PutMapping(Endpoint.Provider.DETAIL)
+	public ProviderDetail update(
+		@Valid @RequestBody ProviderDetail detail,
+		@PathVariable("id") String businessCode) {
+		try {
+			Provider provider = providerMapper.detailToDomain(detail);
+			provider.setBusinessCode(businessCode);
+			provider = providerService.update(provider);
+			return providerMapper.domainToDetail(provider);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+				ErrorCode.PROVIDER_NOT_FOUND.getMessage(),
+				exception);
+		}
+	}
 }

@@ -11,7 +11,10 @@ import java.util.List;
 
 public interface StorageService {
 	FileResponse upload(MultipartFile multipartFile, Long userId) throws IOException;
+
 	FileResponseList upload(List<MultipartFile> multipartFile, Long userId) throws IOException;
+
 	void updateSharedUsers(Long userId, Long[] sharedIds, Long mediaId);
+
 	S3Object download(String fileName, Long userId, boolean isAdmin) throws MalformedURLException;
 }

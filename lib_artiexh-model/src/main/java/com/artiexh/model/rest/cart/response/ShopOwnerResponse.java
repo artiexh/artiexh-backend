@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ShopOwnerResponse {
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long id;
-    private String username;
-    private String displayName;
-    private String avatarUrl;
-    private String email;
+	@JsonSerialize(using = ToStringSerializer.class)
+	private Long id;
+	private String username;
+	private String displayName;
+	private String avatarUrl;
+	private String email;
 }
