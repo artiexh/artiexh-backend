@@ -3,6 +3,7 @@ package com.artiexh.model.mapper;
 import com.artiexh.data.jpa.entity.ProductOptionEntity;
 import com.artiexh.data.jpa.entity.ProductOptionTemplateEntity;
 import com.artiexh.data.jpa.entity.embededmodel.OptionConfig;
+import com.artiexh.data.opensearch.model.OptionTemplateDocument;
 import com.artiexh.model.domain.OptionValue;
 import com.artiexh.model.domain.ProductOption;
 import com.artiexh.model.rest.option.OptionDetail;
@@ -23,4 +24,6 @@ public interface ProductOptionMapper {
 	OptionDetail domainToDetail(ProductOption productOption);
 
 	OptionValueDetail domainToDetail(OptionValue optionValue);
+
+	ProductOption documentToDomain(OptionTemplateDocument document);
 }

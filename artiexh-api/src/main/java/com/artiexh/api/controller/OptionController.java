@@ -35,7 +35,7 @@ public class OptionController {
 	public PageResponse<OptionDetail> getAllTemplate(
 		@ParameterObject PaginationAndSortingRequest request
 	) {
-		Page<ProductOption> options = optionService.getAllTemplate(null, request.getPageable());
+		Page<ProductOption> options = optionService.getAllTemplate(request.getPageable());
 		return new PageResponse<>(options.map(optionMapper::domainToDetail));
 	}
 }

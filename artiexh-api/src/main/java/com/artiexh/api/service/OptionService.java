@@ -10,5 +10,5 @@ import org.springframework.data.jpa.domain.Specification;
 public interface OptionService {
 	Page<ProductOption> getAll(Specification<ProductOptionEntity> specification, Pageable pageable);
 
-	Page<ProductOption> getAllTemplate(Specification<ProductOptionTemplateEntity> specification, Pageable pageable);
+	Page<ProductOption> getAllTemplate(Pageable pageable);
 }
