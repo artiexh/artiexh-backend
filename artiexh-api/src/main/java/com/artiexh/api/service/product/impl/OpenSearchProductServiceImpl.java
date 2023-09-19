@@ -13,6 +13,7 @@ import org.springframework.data.elasticsearch.core.SearchHitSupport;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.SearchPage;
 import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -37,18 +38,21 @@ public class OpenSearchProductServiceImpl implements OpenSearchProductService {
 		return hitPage.map(searchHit -> productMapper.documentToDomain(searchHit.getContent()));
 	}
 
+	@Async
 	@Override
 	public void save(Product product) {
 		ProductDocument productDocument = productMapper.domainToDocument(product);
 		openSearchTemplate.save(productDocument);
 	}
 
+	@Async
 	@Override
 	public void update(Product product) {
 		ProductDocument productDocument = productMapper.domainToDocument(product);
 		openSearchTemplate.update(productDocument);
 	}
 
+	@Async
 	@Override
 	public void delete(long productId) {
 		openSearchTemplate.delete(String.valueOf(productId), ProductDocument.class);
