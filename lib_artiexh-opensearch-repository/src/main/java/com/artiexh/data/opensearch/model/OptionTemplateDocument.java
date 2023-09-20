@@ -15,7 +15,7 @@ public class OptionTemplateDocument {
 	private Long id;
 	@Field(name = "name", type = FieldType.Keyword)
 	private String name;
-	@Field(name = "optionValues", type = FieldType.Object)
+	@Field(name = "optionValues", type = FieldType.Nested)
 	private Set<OptionValue> optionValues;
 
 	@Data
