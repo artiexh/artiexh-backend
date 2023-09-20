@@ -48,6 +48,11 @@ public interface ProductVariantMapper {
 	@Mapping(target = "id.businessCode", source = "businessCode")
 	ProductVariantProviderEntity domainToEntity(ProductVariantProvider entity);
 
+	@Named("idToDomain")
+	default ProductVariant idToDomain(Long variantId) {
+		return ProductVariant.builder().id(variantId).build();
+	}
+
 	default Integer toValue(ProvidedProductType type) {
 		return type.getValue();
 	}

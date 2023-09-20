@@ -19,5 +19,4 @@ public class ProductVariantCombinationEntity {
 	private ProductVariantCombinationEntityId id;
 	@Column(name = "option_id")
 	private Long optionId;
-	private Integer quantity;
 }
