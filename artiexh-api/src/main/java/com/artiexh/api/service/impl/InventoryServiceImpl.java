@@ -46,7 +46,6 @@ public class InventoryServiceImpl implements InventoryService {
 	public InventoryItemEntity createItem(InventoryItem item) {
 		InventoryItemEntity entity = inventoryMapper.domainToEntity(item);
 
-		//imageSet.setInventoryItem(entity);
 		Set<ImageSetEntity> savedImageSet = new HashSet<>(entity.getImageSet());
 		entity.setImageSet(savedImageSet);
 
