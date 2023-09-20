@@ -83,6 +83,8 @@ public interface ProductMapper {
 
 	Product documentToDomain(ProductDocument productDocument);
 
+	ProductDocument domainToDocument(Product product);
+
 	@Mapping(target = "price.unit", source = "priceUnit")
 	@Mapping(target = "price.amount", source = "priceAmount")
 	ProductDocument entityToDocument(ProductEntity productEntity);

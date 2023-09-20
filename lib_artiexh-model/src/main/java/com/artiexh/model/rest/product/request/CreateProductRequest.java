@@ -2,10 +2,8 @@ package com.artiexh.model.rest.product.request;
 
 import com.artiexh.model.domain.*;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +19,7 @@ public class CreateProductRequest {
 	private ProductStatus status;
 
 	@NotBlank
+	@Size(max = 255)
 	private String name;
 
 	@Valid
@@ -30,6 +29,7 @@ public class CreateProductRequest {
 	private Long categoryId;
 
 	@NotBlank
+	@Size(max = 1000)
 	private String description;
 
 	@NotNull
@@ -39,6 +39,7 @@ public class CreateProductRequest {
 	@Min(0)
 	private Long remainingQuantity;
 
+	@Min(0)
 	private Integer maxItemsPerOrder;
 
 	@NotNull
@@ -55,6 +56,7 @@ public class CreateProductRequest {
 	private Set<ProductAttach> attaches;
 
 	@NotNull
+	@Min(0)
 	private Float weight;
 
 	private Set<Long> bundleItems;
