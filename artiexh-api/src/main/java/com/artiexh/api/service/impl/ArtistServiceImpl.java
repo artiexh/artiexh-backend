@@ -2,7 +2,7 @@ package com.artiexh.api.service.impl;
 
 import com.artiexh.api.service.ArtistService;
 import com.artiexh.api.service.OrderService;
-import com.artiexh.api.service.ProductService;
+import com.artiexh.api.service.product.ProductService;
 import com.artiexh.data.jpa.entity.OrderEntity;
 import com.artiexh.data.jpa.entity.OrderHistoryEntity;
 import com.artiexh.data.jpa.entity.OrderHistoryEntityId;
