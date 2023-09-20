@@ -147,4 +147,10 @@ public final class Endpoint {
 		public static final String TEMPLATE = "/template";
 		public static final String DETAIL = "/{id}";
 	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class InventoryItem {
+		public static final String ROOT = PREFIX + "/inventory-item";
+		public static final String DETAIL = "/{id}";
+	}
 }
