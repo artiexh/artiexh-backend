@@ -35,4 +35,6 @@ public abstract class ArtistMapper {
 
 	abstract ArtistEntity domainToEntity(Artist user);
 
+	@Named("idToDomain")
+	public abstract Artist idToDomain(Long id);
 }
