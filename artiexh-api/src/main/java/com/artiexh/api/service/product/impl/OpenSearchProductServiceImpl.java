@@ -47,6 +47,12 @@ public class OpenSearchProductServiceImpl implements OpenSearchProductService {
 
 	@Async
 	@Override
+	public void save(ProductDocument productDocument) {
+		openSearchTemplate.save(productDocument);
+	}
+
+	@Async
+	@Override
 	public void update(Product product) {
 		ProductDocument productDocument = productMapper.domainToDocument(product);
 		openSearchTemplate.update(productDocument);
