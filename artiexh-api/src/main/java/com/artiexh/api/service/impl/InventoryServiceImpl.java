@@ -6,6 +6,7 @@ import com.artiexh.data.jpa.entity.ImageSetEntity;
 import com.artiexh.data.jpa.entity.InventoryItemEntity;
 import com.artiexh.data.jpa.repository.ImageSetRepository;
 import com.artiexh.data.jpa.repository.InventoryRepository;
+import com.artiexh.data.jpa.repository.ProductVariantRepository;
 import com.artiexh.model.domain.ImageSet;
 import com.artiexh.model.domain.InventoryItem;
 import com.artiexh.model.mapper.CycleAvoidingMappingContext;
@@ -26,7 +27,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class InventoryServiceImpl implements InventoryService {
 	private final InventoryRepository inventoryRepository;
-	private final ImageSetRepository imageSetRepository;
+	private final ProductVariantRepository variantRepository;
 	private final InventoryMapper inventoryMapper;
 	private final MediaMapper mediaMapper;
 	@Override
@@ -48,6 +49,8 @@ public class InventoryServiceImpl implements InventoryService {
 
 		Set<ImageSetEntity> savedImageSet = new HashSet<>(entity.getImageSet());
 		entity.setImageSet(savedImageSet);
+
+		entity.setVariant(variantRepository.getReferenceById(entity.getVariant().getId()));
 
 		return inventoryRepository.save(entity);
 	}

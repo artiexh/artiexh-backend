@@ -43,7 +43,7 @@ public class InventoryItemController {
 			return inventoryMapper.domainToDetail(item);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-				ErrorCode.PRODUCT_NOT_FOUND.getMessage(),
+				exception.getMessage(),
 				exception);
 		} catch (IllegalArgumentException exception) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,

@@ -29,7 +29,7 @@ public class InventoryItemEntity {
 	@JoinColumn(name = "artist_id", nullable = false)
 	private ArtistEntity artist;
 
-	@ManyToOne
+	@ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REMOVE})
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "variant_id", nullable = false)
 	private ProductVariantEntity variant;

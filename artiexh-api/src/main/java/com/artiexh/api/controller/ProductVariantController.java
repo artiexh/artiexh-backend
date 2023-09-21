@@ -3,6 +3,11 @@ package com.artiexh.api.controller;
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.ProductVariantService;
+import com.artiexh.data.jpa.entity.ProductVariantCombinationEntity;
+import com.artiexh.data.jpa.entity.ProductVariantCombinationEntityId;
+import com.artiexh.data.jpa.entity.ProductVariantEntity;
+import com.artiexh.data.jpa.repository.ProductVariantRepository;
+import com.artiexh.data.jpa.repository.VariantCombinationRepository;
 import com.artiexh.model.domain.ProductVariant;
 import com.artiexh.model.mapper.ProductVariantMapper;
 import com.artiexh.model.rest.PageResponse;
@@ -17,8 +22,11 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,6 +34,8 @@ import org.springframework.web.server.ResponseStatusException;
 public class ProductVariantController {
 	private final ProductVariantService productVariantService;
 	private final ProductVariantMapper productVariantMapper;
+	private final ProductVariantRepository productVariantRepository;
+	private final VariantCombinationRepository combinationRepository;
 
 	@GetMapping()
 	public PageResponse<ProductVariantDetail> getAll(
@@ -54,25 +64,25 @@ public class ProductVariantController {
 
 
 	//TODO: Update product variant
-//	@PutMapping(Endpoint.ProductVariant.DETAIL)
-//	@PreAuthorize("hasAuthority('ADMIN')")
-//	public ProductVariantDetail update(
-//		@PathVariable("id") Long id,
-//		@Valid @RequestBody UpdateProductVariantDetail detail) {
-//		ProductVariant productVariant = productVariantMapper.updateRequestToDomain(detail);
-//		productVariant.setId(id);
-//		try {
-//			productVariant = productVariantService.update(productVariant);
-//			return productVariantMapper.domainToDetail(productVariant);
-//		} catch (EntityNotFoundException exception) {
-//			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-//				exception.getMessage());
-//		} catch (IllegalArgumentException exception) {
-//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-//				exception.getMessage(),
-//				exception);
-//		}
-//	}
+	@PutMapping(Endpoint.ProductVariant.DETAIL)
+	@PreAuthorize("hasAuthority('ADMIN')")
+	public ProductVariantDetail update(
+		@PathVariable("id") Long id,
+		@Valid @RequestBody UpdateProductVariantDetail detail) {
+		ProductVariant productVariant = productVariantMapper.updateRequestToDomain(detail);
+		productVariant.setId(id);
+		try {
+			productVariant = productVariantService.update(productVariant);
+			return productVariantMapper.domainToDetail(productVariant);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+				exception.getMessage());
+		} catch (IllegalArgumentException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+				exception.getMessage(),
+				exception);
+		}
+	}
 
 //	//TODO: Remove Provided Product
 //	@DeleteMapping(Endpoint.Provider.ROOT + Endpoint.ProductVariant.DETAIL)
