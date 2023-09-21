@@ -66,6 +66,7 @@ public class ProviderController {
 	}
 
 	@PutMapping(Endpoint.Provider.DETAIL)
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ProviderDetail update(
 		@Valid @RequestBody ProviderDetail detail,
 		@PathVariable("id") String businessCode) {
