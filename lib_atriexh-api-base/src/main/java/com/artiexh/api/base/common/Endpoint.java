@@ -153,4 +153,10 @@ public final class Endpoint {
 		public static final String ROOT = PREFIX + "/inventory-item";
 		public static final String DETAIL = "/{id}";
 	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Config {
+		public static final String ROOT = PREFIX + "/config";
+		public static final String SYNC_PRODUCT_OPEN_SEARCH = "/sync-product-to-open-search";
+	}
 }

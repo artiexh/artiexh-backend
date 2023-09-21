@@ -7,7 +7,6 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 
 @Data
 @Document(indexName = "product")
@@ -16,6 +15,8 @@ public class ProductDocument {
 	private Long id;
 	@Field(name = "owner", type = FieldType.Object)
 	private Owner owner;
+	@Field(name = "shop", type = FieldType.Object)
+	private Shop shop;
 	@Field(name = "status", type = FieldType.Byte)
 	private Byte status;
 	@Field(name = "name", type = FieldType.Text)
@@ -26,8 +27,6 @@ public class ProductDocument {
 	private Category category;
 	@Field(name = "type", type = FieldType.Byte)
 	private Byte type;
-	@Field(name = "publishDatetime", type = FieldType.Date)
-	private Instant publishDatetime;
 	@Field(name = "averageRate", type = FieldType.Float)
 	private Float averageRate;
 	@Field(name = "tags", type = FieldType.Keyword)
@@ -49,16 +48,18 @@ public class ProductDocument {
 		private String username;
 		@Field(name = "displayName", type = FieldType.Text)
 		private String displayName;
-		@Field(name = "ward", type = FieldType.Object)
-		private Ward ward;
-		@Field(name = "district", type = FieldType.Object)
-		private District district;
-		@Field(name = "province", type = FieldType.Object)
-		private Province province;
-		@Field(name = "country", type = FieldType.Object)
-		private Country country;
+	}
+
+	@Data
+	public static class Shop {
+		@Field(name = "id", type = FieldType.Long)
+		private Long id;
 		@Field(name = "shopName", type = FieldType.Text)
 		private String shopName;
+		@Field(name = "shopWard", type = FieldType.Object)
+		private Ward shopWard;
+		@Field(name = "shopAddress", type = FieldType.Keyword)
+		private String shopAddress;
 	}
 
 	@Data
@@ -67,6 +68,10 @@ public class ProductDocument {
 		private Long id;
 		@Field(name = "name", type = FieldType.Keyword)
 		private String name;
+		@Field(name = "fullName", type = FieldType.Keyword)
+		private String fullName;
+		@Field(name = "district", type = FieldType.Object)
+		private District district;
 	}
 
 	@Data
@@ -75,6 +80,10 @@ public class ProductDocument {
 		private Long id;
 		@Field(name = "name", type = FieldType.Keyword)
 		private String name;
+		@Field(name = "fullName", type = FieldType.Keyword)
+		private String fullName;
+		@Field(name = "province", type = FieldType.Object)
+		private Province province;
 	}
 
 	@Data
@@ -83,6 +92,10 @@ public class ProductDocument {
 		private Long id;
 		@Field(name = "name", type = FieldType.Keyword)
 		private String name;
+		@Field(name = "fullName", type = FieldType.Keyword)
+		private String fullName;
+		@Field(name = "country", type = FieldType.Object)
+		private Country country;
 	}
 
 	@Data
