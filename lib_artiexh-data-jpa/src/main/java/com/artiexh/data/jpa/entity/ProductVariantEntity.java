@@ -7,6 +7,7 @@ import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -39,11 +40,13 @@ public class ProductVariantEntity {
 	@Column(name = "provided_product_file_url", nullable = false)
 	private String providedProductFileUrl;
 
-	@OneToMany(fetch = FetchType.EAGER)
-	@JoinColumn(name = "variant_id")
-	private Set<ProductVariantCombinationEntity> variantCombinations;
+	@OneToMany(mappedBy = "productVariant",
+		orphanRemoval = true,
+		cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	private Set<ProductVariantCombinationEntity> variantCombinations = new HashSet<>();
 
-	@OneToMany(fetch = FetchType.EAGER)
-	@JoinColumn(name = "variant_id")
-	private Set<ProductVariantProviderEntity> providerConfigs;
+	@OneToMany(mappedBy = "productVariant",
+		orphanRemoval = true,
+		cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	private Set<ProductVariantProviderEntity> providerConfigs = new HashSet<>();
 }

@@ -3,6 +3,7 @@ package com.artiexh.model.mapper;
 import com.artiexh.data.jpa.entity.ProductVariantCombinationEntity;
 import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.artiexh.data.jpa.entity.ProductVariantProviderEntity;
+import com.artiexh.data.jpa.entity.ProviderEntity;
 import com.artiexh.model.domain.ProductVariant;
 import com.artiexh.model.domain.ProductVariantProvider;
 import com.artiexh.model.domain.ProvidedProductType;
@@ -26,10 +27,14 @@ public interface ProductVariantMapper {
 	@Mapping(target = "productBase", source = "productBase", qualifiedByName = "domainToInfo")
 	ProductVariantDetail domainToDetail(ProductVariant domain);
 
+	@Mapping(target = "providerConfigs", ignore = true)
+	@Mapping(target = "variantCombinations", ignore = true)
 	ProductVariantEntity domainToEntity(ProductVariant domain);
 
 	@Mapping(target = "productBase", ignore = true)
 	@Mapping(target = "productBaseId", ignore = true)
+	@Mapping(target = "variantCombinations", ignore = true)
+	@Mapping(target = "providerConfigs", ignore = true)
 	ProductVariantEntity domainToEntity(ProductVariant domain, @MappingTarget ProductVariantEntity entity);
 
 	@Mapping(source = "id.variantId", target = "variantId")
@@ -46,11 +51,17 @@ public interface ProductVariantMapper {
 
 	@Mapping(target = "id.productVariantId", source = "variantId")
 	@Mapping(target = "id.businessCode", source = "businessCode")
+	@Mapping(target = "provider", source = "businessCode", qualifiedByName = "idToEntity")
 	ProductVariantProviderEntity domainToEntity(ProductVariantProvider entity);
 
 	@Named("idToDomain")
 	default ProductVariant idToDomain(Long variantId) {
 		return ProductVariant.builder().id(variantId).build();
+	}
+
+	@Named("idToEntity")
+	default ProviderEntity idToDomain(String businessCode) {
+		return ProviderEntity.builder().businessCode(businessCode).build();
 	}
 
 	default Integer toValue(ProvidedProductType type) {

@@ -18,9 +18,14 @@ public class ProductVariantProviderEntity {
 	private ProductVariantProviderId id;
 
 	@MapsId("businessCode")
-	@ManyToOne()
-	@JoinColumn(name = "business_code")
+	@ManyToOne(optional = false, cascade = {CascadeType.MERGE})
+	@JoinColumn(name = "business_code", nullable = false)
 	private ProviderEntity provider;
+
+	@ManyToOne(optional=false)
+	@JoinColumn(name = "variant_id", nullable = false)
+	@MapsId("variantId")
+	private ProductVariantEntity productVariant;
 
 	@Column(name = "base_price_amount", nullable = false)
 	private BigDecimal basePriceAmount;
