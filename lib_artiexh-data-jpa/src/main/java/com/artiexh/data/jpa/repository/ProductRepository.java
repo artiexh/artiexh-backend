@@ -1,14 +1,15 @@
 package com.artiexh.data.jpa.repository;
 
 import com.artiexh.data.jpa.entity.ProductEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import jakarta.persistence.QueryHint;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Stream;
+
+import static org.hibernate.jpa.HibernateHints.*;
 
 @Repository
 public interface ProductRepository extends JpaRepository<ProductEntity, Long>, JpaSpecificationExecutor<ProductEntity> {
@@ -21,7 +22,15 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long>, J
 
 	Set<ProductEntity> findAllByIdIn(Set<Long> ids);
 
-	int countAllByIdInAndOwnerId(Collection<Long> id, Long owner_id);
+	int countAllByIdInAndOwnerId(Collection<Long> id, Long ownerId);
 
 	int countAllByIdIn(Collection<Long> id);
+
+	@QueryHints(value = {
+		@QueryHint(name = HINT_FETCH_SIZE, value = "1"),
+		@QueryHint(name = HINT_CACHEABLE, value = "false"),
+		@QueryHint(name = HINT_READ_ONLY, value = "true")
+	})
+	@Query("select p from ProductEntity p where p.status = 2")
+	Stream<ProductEntity> streamAllByAvailableStatus();
 }

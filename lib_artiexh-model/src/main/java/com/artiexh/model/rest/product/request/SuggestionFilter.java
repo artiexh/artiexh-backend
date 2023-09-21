@@ -25,14 +25,19 @@ public class SuggestionFilter {
 	private String keyword;
 
 	public Query getQuery() {
-		var boolQuery = new BoolQueryBuilder().should(new TermsQueryBuilder("status", List.of(ProductStatus.PRE_ORDER.getValue(), ProductStatus.AVAILABLE.getValue()))).minimumShouldMatch(1);
+		var boolQuery = new BoolQueryBuilder()
+			.should(new TermsQueryBuilder(
+				"status",
+				List.of(ProductStatus.PRE_ORDER.getValue(), ProductStatus.AVAILABLE.getValue())
+			))
+			.minimumShouldMatch(1);
 
 		var queryBuilder = new NativeSearchQueryBuilder().withFilter(boolQuery);
 
 		if (StringUtils.hasText(keyword)) {
 			Map<String, Float> fields = new HashMap<>();
 			fields.put("name", 4f);
-			fields.put("owner.shopName", 3f);
+			fields.put("shop.shopName", 3f);
 			fields.put("owner.displayName", 2f);
 			fields.put("owner.username", 1f);
 			new QueryStringQueryBuilder("*" + keyword + "*").fuzziness(Fuzziness.AUTO).fields(fields);

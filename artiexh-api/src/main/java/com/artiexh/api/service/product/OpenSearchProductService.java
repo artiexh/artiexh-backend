@@ -1,5 +1,6 @@
 package com.artiexh.api.service.product;
 
+import com.artiexh.data.opensearch.model.ProductDocument;
 import com.artiexh.model.domain.Product;
 import com.artiexh.model.domain.ProductSuggestion;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,8 @@ public interface OpenSearchProductService {
 	Page<Product> getInPage(Query query, Pageable pageable);
 
 	void save(Product product);
+
+	void save(ProductDocument productDocument);
 
 	void update(Product product);
 

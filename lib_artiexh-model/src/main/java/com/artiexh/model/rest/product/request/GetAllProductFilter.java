@@ -47,8 +47,14 @@ public class GetAllProductFilter {
 		if (categoryId != null) {
 			boolQuery.must(new TermQueryBuilder("category.id", categoryId));
 		}
+		if (wardId != null) {
+			boolQuery.must(new TermQueryBuilder("shop.shopWard.id", wardId));
+		}
+		if (districtId != null) {
+			boolQuery.must(new TermQueryBuilder("shop.shopWard.district.id", districtId));
+		}
 		if (provinceId != null) {
-			boolQuery.must(new TermQueryBuilder("owner.province.id", provinceId));
+			boolQuery.must(new TermQueryBuilder("shop.shopWard.district.province.id", provinceId));
 		}
 		if (tagNames != null && tagNames.length > 0) {
 			var tagQuery = new BoolQueryBuilder();
@@ -63,7 +69,7 @@ public class GetAllProductFilter {
 		if (StringUtils.hasText(keyword)) {
 			Map<String, Float> fields = new HashMap<>();
 			fields.put("name", 4f);
-			fields.put("owner.shopName", 3f);
+			fields.put("shop.shopName", 3f);
 			fields.put("owner.displayName", 2f);
 			fields.put("owner.username", 1f);
 			new QueryStringQueryBuilder("*" + keyword + "*").fuzziness(Fuzziness.AUTO).fields(fields);
