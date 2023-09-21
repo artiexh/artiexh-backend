@@ -54,25 +54,25 @@ public class ProductVariantController {
 
 
 	//TODO: Update product variant
-	@PutMapping(Endpoint.ProductVariant.DETAIL)
-	@PreAuthorize("hasAuthority('ADMIN')")
-	public ProductVariantDetail update(
-		@PathVariable("id") Long id,
-		@Valid @RequestBody UpdateProductVariantDetail detail) {
-		ProductVariant productVariant = productVariantMapper.updateRequestToDomain(detail);
-		productVariant.setId(id);
-		try {
-			productVariant = productVariantService.update(productVariant);
-			return productVariantMapper.domainToDetail(productVariant);
-		} catch (EntityNotFoundException exception) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-				exception.getMessage());
-		} catch (IllegalArgumentException exception) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-				exception.getMessage(),
-				exception);
-		}
-	}
+//	@PutMapping(Endpoint.ProductVariant.DETAIL)
+//	@PreAuthorize("hasAuthority('ADMIN')")
+//	public ProductVariantDetail update(
+//		@PathVariable("id") Long id,
+//		@Valid @RequestBody UpdateProductVariantDetail detail) {
+//		ProductVariant productVariant = productVariantMapper.updateRequestToDomain(detail);
+//		productVariant.setId(id);
+//		try {
+//			productVariant = productVariantService.update(productVariant);
+//			return productVariantMapper.domainToDetail(productVariant);
+//		} catch (EntityNotFoundException exception) {
+//			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+//				exception.getMessage());
+//		} catch (IllegalArgumentException exception) {
+//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+//				exception.getMessage(),
+//				exception);
+//		}
+//	}
 
 //	//TODO: Remove Provided Product
 //	@DeleteMapping(Endpoint.Provider.ROOT + Endpoint.ProductVariant.DETAIL)

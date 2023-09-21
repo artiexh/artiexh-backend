@@ -85,9 +85,11 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 				new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + product.getId())
 			);
 
+		Long productBaseId = entity.getProductBaseId();
+
 		//Validate provider
 		int allowedProviders = providerRepository.countProvider(
-			entity.getProductBaseId(),
+			productBaseId,
 			product.getProviderConfigs().stream()
 				.map(ProductVariantProvider::getBusinessCode)
 				.toList()
@@ -98,9 +100,10 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 		}
 
 		//Validation option id and option value
+
 		product.getVariantCombinations().forEach(combination -> {
 			ProductOptionEntity productOption = productOptionRepository.findProductOptionEntityByProductIdAndId(
-					product.getProductBaseId(),
+					productBaseId,
 					combination.getOptionId())
 				.orElseThrow(()
 					-> new IllegalArgumentException(ErrorCode.OPTION_NOT_FOUND.getMessage() + combination.getOptionId())
