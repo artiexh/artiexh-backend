@@ -11,7 +11,10 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,10 +24,12 @@ public class TagController {
 
 	@GetMapping
 	public PageResponse<ProductTagResponse> getInPage(
-		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest
+			@RequestParam Set<String> names,
+			@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest
 	) {
 		Page<ProductTagResponse> tagPage = tagService.getInPage(
-			paginationAndSortingRequest.getPageable()
+				names,
+				paginationAndSortingRequest.getPageable()
 		);
 		return new PageResponse<>(tagPage);
 	}

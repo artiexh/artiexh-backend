@@ -16,7 +16,7 @@ public class CategoryServiceImpl implements CategoryService {
 	private final ProductCategoryMapper categoryMapper;
 
 	@Override
-	public Page<ProductCategoryResponse> getInPage(Pageable pageable) {
-		return categoryRepository.findAll(pageable).map(categoryMapper::entityToResponse);
+	public Page<ProductCategoryResponse> getInPage(String name, Pageable pageable) {
+		return categoryRepository.findAllByNameLike(name, pageable).map(categoryMapper::entityToResponse);
 	}
 }

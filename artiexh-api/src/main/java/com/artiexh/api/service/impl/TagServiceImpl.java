@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class TagServiceImpl implements TagService {
@@ -16,7 +18,7 @@ public class TagServiceImpl implements TagService {
 	private final ProductTagMapper tagMapper;
 
 	@Override
-	public Page<ProductTagResponse> getInPage(Pageable pageable) {
-		return tagRepository.findAll(pageable).map(tagMapper::entityToResponse);
+	public Page<ProductTagResponse> getInPage(Set<String> names, Pageable pageable) {
+		return tagRepository.findAllByNameIn(names, pageable).map(tagMapper::entityToResponse);
 	}
 }
