@@ -136,4 +136,11 @@ public class InventoryServiceImpl implements InventoryService {
 			.orElseThrow(EntityNotFoundException::new);
 		return inventoryMapper.entityToDomain(item, new CycleAvoidingMappingContext());
 	}
+
+	@Override
+	public void delete(Long userId, Long id) {
+		InventoryItemEntity item = inventoryRepository.findInventoryItemEntityByIdAndArtistId(id, userId)
+			.orElseThrow(EntityNotFoundException::new);
+		inventoryRepository.deleteById(item.getId());
+	}
 }
