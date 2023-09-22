@@ -7,6 +7,7 @@ import com.artiexh.data.jpa.entity.embededmodel.ProductVariantProviderId;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.ProductVariant;
 import com.artiexh.model.domain.ProductVariantProvider;
+import com.artiexh.model.domain.VariantCombination;
 import com.artiexh.model.mapper.CycleAvoidingMappingContext;
 import com.artiexh.model.mapper.ProductVariantMapper;
 import jakarta.persistence.EntityNotFoundException;
@@ -62,29 +63,31 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 		ProductVariantEntity entity = mapper.domainToEntity(product);
 		repository.save(entity);
 
-		ProductVariantEntity savedEntity = entity;
-		product.getVariantCombinations().forEach(combination -> {
+		//ProductVariantEntity savedEntity = entity;
+		for (VariantCombination combination : product.getVariantCombinations()) {
 			ProductVariantCombinationEntity combinationEntity = mapper.domainToEntity(combination);
 			combinationEntity.setId(ProductVariantCombinationEntityId.builder()
 				.optionValueId(combination.getOptionValueId())
-				.variantId(savedEntity.getId())
+				.variantId(entity.getId())
 				.build());
-			combinationEntity.setProductVariant(savedEntity);
+			combinationEntity.setProductVariant(entity);
 			variantCombinationRepository.save(combinationEntity);
-		});
+		};
 
-		product.getProviderConfigs().forEach(providerConfig -> {
+		for (ProductVariantProvider providerConfig : product.getProviderConfigs())  {
 			ProductVariantProviderEntity provider = mapper.domainToEntity(providerConfig);
 			provider.setId(ProductVariantProviderId.builder()
 				.businessCode(providerConfig.getBusinessCode())
-				.productVariantId(savedEntity.getId())
+				.productVariantId(entity.getId())
 				.build());
-			provider.setProductVariant(savedEntity);
+			provider.setProductVariant(entity);
 			provider.setProvider(providerRepository.findById(providerConfig.getBusinessCode())
 				.orElseThrow(EntityNotFoundException::new));
 			productVariantProviderRepository.save(provider);
-		});
-		return mapper.entityToDomain(entity, new CycleAvoidingMappingContext());
+		};
+
+		product.setId(entity.getId());
+		return product;
 	}
 
 	@Override
@@ -127,37 +130,35 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 
 		entity = mapper.domainToEntity(product, entity);
 
-		ProductVariantEntity savedEntity = entity;
-
-		Set<ProductVariantCombinationEntity> combiantions = new HashSet<>();
+		Set<ProductVariantCombinationEntity> combinations = new HashSet<>();
 		entity.getVariantCombinations().clear();
-		product.getVariantCombinations().forEach(combination -> {
+		for (VariantCombination combination : product.getVariantCombinations()) {
 			ProductVariantCombinationEntity combinationEntity = mapper.domainToEntity(combination);
 			combinationEntity.setId(ProductVariantCombinationEntityId.builder()
 				.optionValueId(combination.getOptionValueId())
-				.variantId(savedEntity.getId())
+				.variantId(entity.getId())
 				.build());
-			combinationEntity.setProductVariant(savedEntity);
+			combinationEntity.setProductVariant(entity);
 			variantCombinationRepository.save(combinationEntity);
-			combiantions.add(combinationEntity);
-		});
-		entity.getVariantCombinations().addAll(combiantions);
+			combinations.add(combinationEntity);
+		}
+		entity.getVariantCombinations().addAll(combinations);
 
 
 		Set<ProductVariantProviderEntity> providers = new HashSet<>();
 		entity.getProviderConfigs().clear();
-		product.getProviderConfigs().forEach(providerConfig -> {
+		for (ProductVariantProvider providerConfig : product.getProviderConfigs()) {
 			ProductVariantProviderEntity provider = mapper.domainToEntity(providerConfig);
 			provider.setId(ProductVariantProviderId.builder()
 				.businessCode(providerConfig.getBusinessCode())
-				.productVariantId(savedEntity.getId())
+				.productVariantId(entity.getId())
 				.build());
-			provider.setProductVariant(savedEntity);
+			provider.setProductVariant(entity);
 			provider.setProvider(providerRepository.findById(providerConfig.getBusinessCode())
 				.orElseThrow(EntityNotFoundException::new));
 			productVariantProviderRepository.save(provider);
 			providers.add(provider);
-		});
+		};
 		entity.getProviderConfigs().addAll(providers);
 
 		repository.save(entity);
