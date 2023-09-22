@@ -128,4 +128,12 @@ public class InventoryServiceImpl implements InventoryService {
 		Page<InventoryItemEntity> itemPage = inventoryRepository.findAll(specification, pageable);
 		return itemPage.map(item -> inventoryMapper.entityToDomain(item, new CycleAvoidingMappingContext()));
 	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public InventoryItem getById(Long userId, Long id) {
+		InventoryItemEntity item = inventoryRepository.findInventoryItemEntityByIdAndArtistId(id, userId)
+			.orElseThrow(EntityNotFoundException::new);
+		return inventoryMapper.entityToDomain(item, new CycleAvoidingMappingContext());
+	}
 }

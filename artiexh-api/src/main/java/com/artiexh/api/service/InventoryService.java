@@ -10,4 +10,6 @@ public interface InventoryService {
 	InventoryItem save(InventoryItem item);
 
 	Page<InventoryItem> getAll(Specification<InventoryItemEntity> specification, Pageable pageable);
+
+	InventoryItem getById(Long userId, Long id);
 }

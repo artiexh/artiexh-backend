@@ -2,6 +2,7 @@ package com.artiexh.model.rest.inventory;
 
 import com.artiexh.model.domain.Media;
 import com.artiexh.model.rest.productbase.ProductBaseInfo;
+import com.artiexh.model.rest.productvariant.ProductVariantDetail;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -31,6 +32,10 @@ public class InventoryItemDetail {
 	private Set<ImageSet> imageSet;
 
 	private String combinationCode;
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@Schema(allOf = Media.class)
+	private ProductVariantDetail variant;
 
 	@Data
 	@NoArgsConstructor
