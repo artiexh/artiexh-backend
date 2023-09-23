@@ -1,9 +1,6 @@
 package com.artiexh.data.jpa.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
@@ -17,6 +14,10 @@ public class ProductVariantCombinationEntity {
 
 	@EmbeddedId
 	private ProductVariantCombinationEntityId id;
+	@ManyToOne()
+	@JoinColumn(name = "variant_id", nullable = false)
+	@MapsId("variantId")
+	private ProductVariantEntity productVariant;
 	@Column(name = "option_id")
 	private Long optionId;
 }

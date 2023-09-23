@@ -43,7 +43,7 @@ public class InventoryItemController {
 			return inventoryMapper.domainToDetail(item);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-				ErrorCode.PRODUCT_NOT_FOUND.getMessage(),
+				exception.getMessage(),
 				exception);
 		} catch (IllegalArgumentException exception) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -71,6 +71,38 @@ public class InventoryItemController {
 		} catch (IllegalArgumentException exception) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 				exception.getMessage(),
+				exception);
+		}
+	}
+
+	@GetMapping(Endpoint.InventoryItem.DETAIL)
+	@PreAuthorize("hasAuthority('ARTIST')")
+	public InventoryItemDetail getById(
+		Authentication authentication,
+		@PathVariable("id") Long id) {
+		try {
+			long userId = (long) authentication.getPrincipal();
+			InventoryItem item = inventoryService.getById(userId, id);
+
+			return inventoryMapper.domainToDetail(item);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+				ErrorCode.PRODUCT_NOT_FOUND.getMessage(),
+				exception);
+		}
+	}
+
+	@DeleteMapping(Endpoint.InventoryItem.DETAIL)
+	@PreAuthorize("hasAuthority('ARTIST')")
+	public void delete(
+		Authentication authentication,
+		@PathVariable("id") Long id) {
+		try {
+			long userId = (long) authentication.getPrincipal();
+			inventoryService.delete(userId, id);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+				ErrorCode.PRODUCT_NOT_FOUND.getMessage(),
 				exception);
 		}
 	}

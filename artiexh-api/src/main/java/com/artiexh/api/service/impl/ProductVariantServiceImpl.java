@@ -2,12 +2,12 @@ package com.artiexh.api.service.impl;
 
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.ProductVariantService;
-import com.artiexh.data.jpa.entity.ProductOptionEntity;
-import com.artiexh.data.jpa.entity.ProductVariantEntity;
-import com.artiexh.data.jpa.entity.ProviderEntity;
+import com.artiexh.data.jpa.entity.*;
+import com.artiexh.data.jpa.entity.embededmodel.ProductVariantProviderId;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.ProductVariant;
 import com.artiexh.model.domain.ProductVariantProvider;
+import com.artiexh.model.domain.VariantCombination;
 import com.artiexh.model.mapper.CycleAvoidingMappingContext;
 import com.artiexh.model.mapper.ProductVariantMapper;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,6 +18,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,22 +61,33 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 		});
 
 		ProductVariantEntity entity = mapper.domainToEntity(product);
-
 		repository.save(entity);
 
-		entity.getVariantCombinations().forEach(combination -> {
-			combination.getId().setVariantId(entity.getId());
-			variantCombinationRepository.save(combination);
-		});
-
-		entity.getProviderConfigs().forEach(providerConfig -> {
-			providerConfig.getId().setProductVariantId(entity.getId());
-			providerConfig.setProvider(ProviderEntity.builder()
-				.businessCode(providerConfig.getId().getBusinessCode())
+		//ProductVariantEntity savedEntity = entity;
+		for (VariantCombination combination : product.getVariantCombinations()) {
+			ProductVariantCombinationEntity combinationEntity = mapper.domainToEntity(combination);
+			combinationEntity.setId(ProductVariantCombinationEntityId.builder()
+				.optionValueId(combination.getOptionValueId())
+				.variantId(entity.getId())
 				.build());
-			productVariantProviderRepository.save(providerConfig);
-		});
-		return mapper.entityToDomain(entity, new CycleAvoidingMappingContext());
+			combinationEntity.setProductVariant(entity);
+			variantCombinationRepository.save(combinationEntity);
+		};
+
+		for (ProductVariantProvider providerConfig : product.getProviderConfigs())  {
+			ProductVariantProviderEntity provider = mapper.domainToEntity(providerConfig);
+			provider.setId(ProductVariantProviderId.builder()
+				.businessCode(providerConfig.getBusinessCode())
+				.productVariantId(entity.getId())
+				.build());
+			provider.setProductVariant(entity);
+			provider.setProvider(providerRepository.findById(providerConfig.getBusinessCode())
+				.orElseThrow(EntityNotFoundException::new));
+			productVariantProviderRepository.save(provider);
+		};
+
+		product.setId(entity.getId());
+		return product;
 	}
 
 	@Override
@@ -117,20 +130,39 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 
 		entity = mapper.domainToEntity(product, entity);
 
-		entity.getVariantCombinations().forEach(combination -> {
-
-			combination.getId().setVariantId(product.getId());
-			variantCombinationRepository.save(combination);
-		});
-		entity.getProviderConfigs().forEach(providerConfig -> {
-			providerConfig.getId().setProductVariantId(product.getId());
-			providerConfig.setProvider(ProviderEntity.builder()
-				.businessCode(providerConfig.getId().getBusinessCode())
+		Set<ProductVariantCombinationEntity> combinations = new HashSet<>();
+		entity.getVariantCombinations().clear();
+		for (VariantCombination combination : product.getVariantCombinations()) {
+			ProductVariantCombinationEntity combinationEntity = mapper.domainToEntity(combination);
+			combinationEntity.setId(ProductVariantCombinationEntityId.builder()
+				.optionValueId(combination.getOptionValueId())
+				.variantId(entity.getId())
 				.build());
-			productVariantProviderRepository.save(providerConfig);
-		});
+			combinationEntity.setProductVariant(entity);
+			variantCombinationRepository.save(combinationEntity);
+			combinations.add(combinationEntity);
+		}
+		entity.getVariantCombinations().addAll(combinations);
+
+
+		Set<ProductVariantProviderEntity> providers = new HashSet<>();
+		entity.getProviderConfigs().clear();
+		for (ProductVariantProvider providerConfig : product.getProviderConfigs()) {
+			ProductVariantProviderEntity provider = mapper.domainToEntity(providerConfig);
+			provider.setId(ProductVariantProviderId.builder()
+				.businessCode(providerConfig.getBusinessCode())
+				.productVariantId(entity.getId())
+				.build());
+			provider.setProductVariant(entity);
+			provider.setProvider(providerRepository.findById(providerConfig.getBusinessCode())
+				.orElseThrow(EntityNotFoundException::new));
+			productVariantProviderRepository.save(provider);
+			providers.add(provider);
+		};
+		entity.getProviderConfigs().addAll(providers);
+
 		repository.save(entity);
-		return product;
+		return mapper.entityToDomain(entity, new CycleAvoidingMappingContext());
 	}
 
 	@Override

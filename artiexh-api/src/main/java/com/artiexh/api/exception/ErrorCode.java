@@ -38,6 +38,9 @@ public enum ErrorCode {
 	OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "Option is not found with Id: "),
 	OPTION_VALUE_INVALID(HttpStatus.BAD_REQUEST, "Option value is not matched with Option Id: "),
 
+	//Variant
+	VARIANT_NOT_FOUND(HttpStatus.NOT_FOUND, "Variant is not found "),
+
 	//Media
 	UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Upload file is failed!"),
 	DOWNLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Download file is failed!"),
