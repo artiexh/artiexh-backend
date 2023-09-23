@@ -30,7 +30,6 @@ public class InventoryItemEntity {
 	private ArtistEntity artist;
 
 	@ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REMOVE})
-	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "variant_id", nullable = false)
 	private ProductVariantEntity variant;
 

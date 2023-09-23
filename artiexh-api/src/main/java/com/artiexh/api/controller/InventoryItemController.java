@@ -74,4 +74,36 @@ public class InventoryItemController {
 				exception);
 		}
 	}
+
+	@GetMapping(Endpoint.InventoryItem.DETAIL)
+	@PreAuthorize("hasAuthority('ARTIST')")
+	public InventoryItemDetail getById(
+		Authentication authentication,
+		@PathVariable("id") Long id) {
+		try {
+			long userId = (long) authentication.getPrincipal();
+			InventoryItem item = inventoryService.getById(userId, id);
+
+			return inventoryMapper.domainToDetail(item);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+				ErrorCode.PRODUCT_NOT_FOUND.getMessage(),
+				exception);
+		}
+	}
+
+	@DeleteMapping(Endpoint.InventoryItem.DETAIL)
+	@PreAuthorize("hasAuthority('ARTIST')")
+	public void delete(
+		Authentication authentication,
+		@PathVariable("id") Long id) {
+		try {
+			long userId = (long) authentication.getPrincipal();
+			inventoryService.delete(userId, id);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+				ErrorCode.PRODUCT_NOT_FOUND.getMessage(),
+				exception);
+		}
+	}
 }
