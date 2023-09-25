@@ -31,6 +31,7 @@ public interface ProductVariantMapper {
 	ProductVariant updateRequestToDomain(UpdateProductVariantDetail detail);
 
 	@Mapping(target = "productBase", source = "productBase", qualifiedByName = "domainToInfo")
+	@Named("domainToDetail")
 	ProductVariantDetail domainToDetail(ProductVariant domain);
 
 	@IterableMapping(qualifiedByName = "domainToDetail")

@@ -35,7 +35,7 @@ public enum ErrorCode {
 	PROVIDED_PRODUCT_INVALID(HttpStatus.BAD_REQUEST, "Provided product is invalid with Id: "),
 
 	//Option - Option Value
-	REQUIRED_OPTION_NOT_FOUND(HttpStatus.BAD_REQUEST, "Required option is not enough for this product"),
+	REQUIRED_OPTION_NOT_FOUND(HttpStatus.BAD_REQUEST, "Required option is not found for this product "),
 	OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "Option is not found with Id: "),
 	OPTION_VALUE_INVALID(HttpStatus.BAD_REQUEST, "Option value is not matched with Option Id: "),
 

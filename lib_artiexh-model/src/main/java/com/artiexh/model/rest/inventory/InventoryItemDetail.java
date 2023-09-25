@@ -1,15 +1,12 @@
 package com.artiexh.model.rest.inventory;
 
 import com.artiexh.model.domain.Media;
-import com.artiexh.model.rest.productbase.ProductBaseInfo;
 import com.artiexh.model.rest.productvariant.ProductVariantDetail;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.Set;

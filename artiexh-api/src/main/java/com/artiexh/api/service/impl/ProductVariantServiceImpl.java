@@ -48,11 +48,16 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 		}
 
 		//Validation option id and option value
-		int numOfRequiredOption = productOptionRepository.findProductOptionEntityByOptional(false).size();
+		List<ProductOptionEntity> requiredOption = productOptionRepository.findProductOptionEntityByProductIdAndIsOptional(product.getProductBaseId(),false);
+		int numOfRequiredOption = requiredOption.size();
 		int numOfRequiredOptionInput = 0;
 		for (VariantCombination combination : product.getVariantCombinations()){
 			if (!combination.isOptional()) {
-				numOfRequiredOptionInput++;
+				numOfRequiredOptionInput ++;
+				boolean isValidRequiredOption = requiredOption.stream().anyMatch(option -> option.getId().equals(combination.getOptionId()));
+				if (!isValidRequiredOption) {
+                    throw new IllegalArgumentException(ErrorCode.REQUIRED_OPTION_NOT_FOUND.getMessage() + combination.getOptionId());
+                }
 			}
 			ProductOptionEntity productOption = productOptionRepository.findProductOptionEntityByProductIdAndId(
 				product.getProductBaseId(),

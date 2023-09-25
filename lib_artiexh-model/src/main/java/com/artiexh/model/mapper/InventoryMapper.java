@@ -16,6 +16,7 @@ public interface InventoryMapper {
 	@Mapping(target = "variant", source = "variantId", qualifiedByName = "idToDomain")
 	InventoryItem detailToDomain(InventoryItemDetail detail);
 
+	@Mapping(target = "variant", source = "variant", qualifiedByName = "domainToDetail")
 	InventoryItemDetail domainToDetail(InventoryItem item);
 
 	InventoryItemEntity domainToEntity(InventoryItem item, @MappingTarget InventoryItemEntity entity);
