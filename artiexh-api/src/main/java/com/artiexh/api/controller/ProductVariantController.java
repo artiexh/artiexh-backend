@@ -48,12 +48,12 @@ public class ProductVariantController {
 	//Create Provided Product
 	@PostMapping()
 	@PreAuthorize("hasAuthority('ADMIN')")
-	public ProductVariantDetail create(
-		@Valid @RequestBody ProductVariantDetail detail) {
-		ProductVariant providedProduct = productVariantMapper.detailToDomain(detail);
+	public Set<ProductVariantDetail> create(
+		@Valid @RequestBody Set<ProductVariantDetail> details) {
+		Set<ProductVariant> providedProducts = productVariantMapper.detailSetToDomainSet(details);
 		try {
-			providedProduct = productVariantService.create(providedProduct);
-			return productVariantMapper.domainToDetail(providedProduct);
+			providedProducts = productVariantService.create(providedProducts);
+			return productVariantMapper.domainSetToDetailSet(providedProducts);
 		} catch (IllegalArgumentException exception) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 				exception.getMessage(),

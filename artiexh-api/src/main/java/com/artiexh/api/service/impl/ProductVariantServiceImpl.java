@@ -18,7 +18,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,14 +41,19 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 		//Validate provider
 		int allowedProviders = providerRepository.countProvider(product.getProductBaseId(), product.getProviderConfigs().stream()
 			.map(ProductVariantProvider::getBusinessCode)
-			.collect(Collectors.toList()));
+			.toList());
 
 		if (allowedProviders != product.getProviderConfigs().size()) {
 			throw new IllegalArgumentException(ErrorCode.PROVIDER_INVALID.getMessage());
 		}
 
 		//Validation option id and option value
-		product.getVariantCombinations().forEach(combination -> {
+		int numOfRequiredOption = productOptionRepository.findProductOptionEntityByOptional(false).size();
+		int numOfRequiredOptionInput = 0;
+		for (VariantCombination combination : product.getVariantCombinations()){
+			if (!combination.isOptional()) {
+				numOfRequiredOptionInput++;
+			}
 			ProductOptionEntity productOption = productOptionRepository.findProductOptionEntityByProductIdAndId(
 				product.getProductBaseId(),
 					combination.getOptionId())
@@ -58,12 +65,15 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 			if (!isValidOption) {
 				throw new IllegalArgumentException(ErrorCode.OPTION_VALUE_INVALID.getMessage() + combination.getOptionId());
 			}
-		});
+		};
+
+		if (numOfRequiredOptionInput != numOfRequiredOption) {
+			throw new IllegalArgumentException(ErrorCode.REQUIRED_OPTION_NOT_FOUND.getMessage());
+		}
 
 		ProductVariantEntity entity = mapper.domainToEntity(product);
 		repository.save(entity);
 
-		//ProductVariantEntity savedEntity = entity;
 		for (VariantCombination combination : product.getVariantCombinations()) {
 			ProductVariantCombinationEntity combinationEntity = mapper.domainToEntity(combination);
 			combinationEntity.setId(ProductVariantCombinationEntityId.builder()
@@ -88,6 +98,16 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 
 		product.setId(entity.getId());
 		return product;
+	}
+
+	@Override
+	@Transactional
+	public Set<ProductVariant> create(Set<ProductVariant> products) {
+		Set<ProductVariant> result = new HashSet<>();
+		for (ProductVariant productVariant : products) {
+			result.add(create(productVariant));
+		}
+		return result;
 	}
 
 	@Override
