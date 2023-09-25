@@ -29,6 +29,9 @@ public class ProductOptionEntity {
 	@Column(name = "`index`")
 	private Integer index;
 
+	@Column(name = "is_optional")
+	private boolean isOptional;
+
 	@OneToMany(fetch = FetchType.EAGER)
 	@JoinColumn(name = "option_id")
 	private Set<OptionValueEntity> optionValues;

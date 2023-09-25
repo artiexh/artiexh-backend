@@ -20,5 +20,7 @@ public class OptionDetail {
 
 	private Integer index;
 
+	private boolean isOptional;
+
 	private Set<OptionValueDetail> optionValues;
 }

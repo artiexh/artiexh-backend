@@ -24,4 +24,5 @@ public class ProductOption {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	private Set<OptionValue> optionValues;
+	private boolean isOptional;
 }
