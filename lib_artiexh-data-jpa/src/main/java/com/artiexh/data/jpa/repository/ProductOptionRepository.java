@@ -12,5 +12,5 @@ import java.util.Optional;
 public interface ProductOptionRepository extends JpaRepository<ProductOptionEntity, Long>, JpaSpecificationExecutor<ProductOptionEntity> {
 	Optional<ProductOptionEntity> findProductOptionEntityByProductIdAndId(Long productId, Long id);
 
-	List<ProductOptionEntity> findProductOptionEntityByProductIdAndIsOptional(Long productId, Boolean isOptional);
+	List<ProductOptionEntity> findProductOptionEntityByProductId(Long productId);
 }
