@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.util.Set;
@@ -22,6 +23,10 @@ public class InventoryItemDetail {
 
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
+
+	@NotBlank
+	@Size(max = 50)
+	private String name;
 
 	@JsonIgnore
 	private Long artistId;
