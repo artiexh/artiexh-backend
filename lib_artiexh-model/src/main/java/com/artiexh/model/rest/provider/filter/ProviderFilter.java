@@ -6,6 +6,7 @@ import com.artiexh.data.jpa.entity.ProviderEntity;
 import com.artiexh.model.domain.ProductBase;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.impl.StringArraySerializer;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
@@ -27,6 +28,8 @@ public class ProviderFilter {
 	@JsonSerialize(using = StringArraySerializer.class)
 	private Long[] productBaseIds;
 	private String businessName;
+	@JsonSerialize(using = ToStringSerializer.class)
+	private Long categoryId;
 
 	public Specification<ProviderEntity> getSpecification() {
 		return (root, cQuery, builder) -> {
@@ -37,6 +40,9 @@ public class ProviderFilter {
 			if (productBaseIds != null && productBaseIds.length > 0) {
 				Join<ProviderEntity, ProductBaseEntity> joinProviderProvidedProduct = root.join("productBases");
 				predicates.add(joinProviderProvidedProduct.get("id").in(Arrays.asList(productBaseIds)));
+			}
+			if (categoryId != null) {
+				predicates.add(builder.equal(root.get("category").get("id"), categoryId));
 			}
 			return builder.and(predicates.toArray(new Predicate[0]));
 		};
