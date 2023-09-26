@@ -12,10 +12,12 @@ import com.artiexh.data.jpa.repository.ProductOptionRepository;
 import com.artiexh.model.domain.ProductBase;
 import com.artiexh.model.mapper.CycleAvoidingMappingContext;
 import com.artiexh.model.mapper.ProductBaseMapper;
+import com.artiexh.model.rest.productbase.ProductBaseFilter;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,8 +55,8 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Page<ProductBase> getInPage(Pageable pageable) {
-		Page<ProductBaseEntity> entities = productBaseRepository.findAll(pageable);
+	public Page<ProductBase> getInPage(Specification<ProductBaseEntity> specification, Pageable pageable) {
+		Page<ProductBaseEntity> entities = productBaseRepository.findAll(specification, pageable);
 		return entities.map(entity -> productBaseMapper.entityToDomain(entity, new CycleAvoidingMappingContext()));
 	}
 

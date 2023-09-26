@@ -7,6 +7,7 @@ import com.artiexh.model.mapper.ProductBaseMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.productbase.ProductBaseDetail;
+import com.artiexh.model.rest.productbase.ProductBaseFilter;
 import com.artiexh.model.rest.productbase.ProductBaseInfo;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -42,8 +43,9 @@ public class ProductBaseController {
 
 	@GetMapping
 	public PageResponse<ProductBaseInfo> getInPage(
-		@ParameterObject PaginationAndSortingRequest pagination) {
-		Page<ProductBase> productPage = productBaseService.getInPage(pagination.getPageable());
+		@ParameterObject ProductBaseFilter filter,
+		@Valid @ParameterObject PaginationAndSortingRequest pagination) {
+		Page<ProductBase> productPage = productBaseService.getInPage(filter.getSpecification(), pagination.getPageable());
 		return new PageResponse<>(productPage.map(mapper::domainToInfo));
 	}
 
