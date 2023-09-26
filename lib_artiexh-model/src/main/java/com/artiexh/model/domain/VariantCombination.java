@@ -18,5 +18,5 @@ public class VariantCombination {
 	private Long optionId;
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long optionValueId;
-	private boolean isOptional;
+	private Boolean isOptional;
 }

@@ -52,7 +52,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 		int numOfRequiredOption = requiredOption.size();
 		int numOfRequiredOptionInput = 0;
 		for (VariantCombination combination : product.getVariantCombinations()){
-			if (!combination.isOptional()) {
+			if (!combination.getIsOptional()) {
 				numOfRequiredOptionInput ++;
 				boolean isValidRequiredOption = requiredOption.stream().anyMatch(option -> option.getId().equals(combination.getOptionId()));
 				if (!isValidRequiredOption) {
