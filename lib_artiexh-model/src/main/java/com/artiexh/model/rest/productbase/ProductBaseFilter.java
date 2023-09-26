@@ -29,6 +29,7 @@ public class ProductBaseFilter {
 	public Specification<ProductBaseEntity> getSpecification() {
 		return (root, cQuery, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
+			predicates.add(builder.equal(root.get("hasVariant"), true));
 			if (StringUtils.isNotBlank(name)) {
 				predicates.add(builder.like(root.get("name"), "%" + name + "%"));
 			}

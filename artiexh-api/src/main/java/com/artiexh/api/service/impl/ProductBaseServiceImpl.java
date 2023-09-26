@@ -35,6 +35,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 	public ProductBase create(ProductBase product) {
 		ProductBaseEntity entity = productBaseMapper.domainToEntity(product);
 
+		entity.setHasVariant(false);
 		entity.setModelFile(mediaRepository.getReferenceById(product.getModelFile().getId()));
 
 		entity = productBaseRepository.save(entity);

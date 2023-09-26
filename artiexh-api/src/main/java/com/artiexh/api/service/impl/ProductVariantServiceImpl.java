@@ -33,6 +33,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 	private final VariantCombinationRepository variantCombinationRepository;
 	private final ProductVariantProviderRepository productVariantProviderRepository;
 	private final ProviderRepository providerRepository;
+	private final ProductBaseRepository productBaseRepository;
 
 	@Override
 	@Transactional
@@ -107,11 +108,13 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 
 	@Override
 	@Transactional
-	public Set<ProductVariant> create(Set<ProductVariant> products) {
+	public Set<ProductVariant> create(Set<ProductVariant> products, Long productBaseId) {
 		Set<ProductVariant> result = new HashSet<>();
 		for (ProductVariant productVariant : products) {
+			productVariant.setProductBaseId(productBaseId);
 			result.add(create(productVariant));
 		}
+		productBaseRepository.updateVariant(productBaseId);
 		return result;
 	}
 

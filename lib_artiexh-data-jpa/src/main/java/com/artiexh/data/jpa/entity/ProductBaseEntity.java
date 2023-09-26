@@ -51,6 +51,9 @@ public class ProductBaseEntity {
 	@Column(name = "3D_model_code")
 	private Byte model3DCode;
 
+	@Column(name = "has_variant", nullable = false)
+	private boolean hasVariant;
+
 	@OneToMany(mappedBy = "productBase", fetch = FetchType.EAGER)
 	private Set<ProductVariantEntity> providedModels;
 

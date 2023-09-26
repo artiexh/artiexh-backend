@@ -11,7 +11,7 @@ import java.util.Set;
 public interface ProductVariantService {
 	ProductVariant create(ProductVariant product);
 
-	Set<ProductVariant> create(Set<ProductVariant> product);
+	Set<ProductVariant> create(Set<ProductVariant> product, Long productBaseId);
 
 	ProductVariant update(ProductVariant product);
 

@@ -11,7 +11,9 @@ import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.productvariant.ProductVariantDetail;
 import com.artiexh.model.rest.productvariant.ProductVariantFilter;
+import com.artiexh.model.rest.productvariant.request.CreateProductVariantDetail;
 import com.artiexh.model.rest.productvariant.request.UpdateProductVariantDetail;
+import com.artiexh.model.rest.productvariant.response.ProductVariantCollection;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,12 +46,16 @@ public class ProductVariantController {
 	//Create Provided Product
 	@PostMapping()
 	@PreAuthorize("hasAuthority('ADMIN')")
-	public Set<ProductVariantDetail> create(
-		@Valid @RequestBody Set<ProductVariantDetail> details) {
-		Set<ProductVariant> providedProducts = productVariantMapper.detailSetToDomainSet(details);
+	public ProductVariantCollection create(
+		@Valid @RequestBody CreateProductVariantDetail detail) {
+		Set<ProductVariant> variants = productVariantMapper.detailSetToDomainSet(detail.getVariants());
 		try {
-			providedProducts = productVariantService.create(providedProducts);
-			return productVariantMapper.domainSetToDetailSet(providedProducts);
+			variants = productVariantService.create(variants, detail.getProductBaseId());
+			Set<ProductVariantDetail> variantResponses = productVariantMapper.domainSetToDetailSet(variants);
+			return ProductVariantCollection.builder()
+				.productBaseId(detail.getProductBaseId())
+				.variants(variantResponses)
+				.build();
 		} catch (IllegalArgumentException exception) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 				exception.getMessage(),

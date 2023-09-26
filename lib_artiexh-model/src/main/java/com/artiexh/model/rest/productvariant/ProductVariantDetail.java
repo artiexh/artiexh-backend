@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Column;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -26,10 +25,6 @@ public class ProductVariantDetail {
 	@JsonSerialize(using = ToStringSerializer.class)
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long id;
-
-	@JsonSerialize(using = ToStringSerializer.class)
-	@NotNull
-	private Long productBaseId;
 
 	@NotEmpty
 	@Valid
