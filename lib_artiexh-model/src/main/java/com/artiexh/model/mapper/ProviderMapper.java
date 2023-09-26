@@ -10,11 +10,12 @@ import java.util.Set;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {ProductVariantMapper.class, ProductBaseMapper.class}
+	uses = {ProductVariantMapper.class, ProductBaseMapper.class, ProductCategoryMapper.class}
 )
 public interface ProviderMapper {
 	//Provider entityToDomain(ProviderEntity entity);
 
+	@Mapping(target = "category", source = "categoryId", qualifiedByName = "idToDomain")
 	Provider detailToDomain(ProviderDetail detail);
 
 	ProviderEntity domainToEntity(Provider domain);

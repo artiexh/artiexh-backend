@@ -2,6 +2,8 @@ package com.artiexh.data.jpa.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.Set;
 
@@ -46,4 +48,9 @@ public class ProviderEntity {
 
 	@ManyToMany(mappedBy = "providers")
 	private Set<ProductBaseEntity> productBases;
+
+	@ManyToOne
+	@OnDelete(action = OnDeleteAction.SET_NULL)
+	@JoinColumn(name = "category_id")
+	private ProductCategoryEntity category;
 }
