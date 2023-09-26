@@ -1,5 +1,6 @@
 package com.artiexh.api.controller;
 
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.S3Object;
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.exception.ErrorCode;
@@ -71,7 +72,7 @@ public class MediaController {
 		var userId = (Long) authentication.getPrincipal();
 		try {
 			boolean isStaff = authentication.getAuthorities().stream()
-				.anyMatch(r -> r.getAuthority().equals(Role.STAFF.name()));
+				.anyMatch(r -> r.getAuthority().equals(Role.ADMIN.name()));
 			S3Object s3Object = storageService.download(fileName, userId, isStaff);
 			String contentType = s3Object.getObjectMetadata().getContentType();
 			var bytes = s3Object.getObjectContent().readAllBytes();
@@ -86,6 +87,8 @@ public class MediaController {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
 		} catch (EntityNotFoundException e) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.DOWNLOAD_NOT_ALLOWED.getMessage(), e);
+		} catch (AmazonS3Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
 		}
 	}
 }
