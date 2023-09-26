@@ -18,9 +18,11 @@ public class ProductBase {
 
 	private String name;
 
-	private String productFileUrl;
+	private Media modelFile;
 
 	private List<OptionConfig> sizes;
+
+	private String sizeDescriptionUrl;
 
 	private String description;
 
@@ -35,4 +37,6 @@ public class ProductBase {
 	private Set<Provider> providers;
 
 	private ProductCategory category;
+
+	private Set<ProductAttach> attaches;
 }

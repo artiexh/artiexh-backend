@@ -29,4 +29,10 @@ public class ProductVariantProviderEntity {
 
 	@Column(name = "base_price_amount", nullable = false)
 	private BigDecimal basePriceAmount;
+
+	@Column(name = "manufacturing_time", nullable = false)
+	private String manufacturingTime;
+
+	@Column(name = "min_quantity", nullable = false)
+	private Integer minQuantity;
 }

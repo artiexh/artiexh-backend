@@ -5,6 +5,7 @@ import com.artiexh.api.service.ProductBaseService;
 import com.artiexh.data.jpa.entity.OptionValueEntity;
 import com.artiexh.data.jpa.entity.ProductBaseEntity;
 import com.artiexh.data.jpa.entity.ProductOptionEntity;
+import com.artiexh.data.jpa.repository.MediaRepository;
 import com.artiexh.data.jpa.repository.OptionValueRepository;
 import com.artiexh.data.jpa.repository.ProductBaseRepository;
 import com.artiexh.data.jpa.repository.ProductOptionRepository;
@@ -25,11 +26,15 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 	private final ProductBaseRepository productBaseRepository;
 	private final ProductOptionRepository productOptionRepository;
 	private final OptionValueRepository optionValueRepository;
+	private final MediaRepository mediaRepository;
 
 	@Override
 	@Transactional
 	public ProductBase create(ProductBase product) {
 		ProductBaseEntity entity = productBaseMapper.domainToEntity(product);
+
+		entity.setModelFile(mediaRepository.getReferenceById(product.getModelFile().getId()));
+
 		entity = productBaseRepository.save(entity);
 
 		for (ProductOptionEntity productOption : entity.getProductOptions()) {

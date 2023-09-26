@@ -25,9 +25,5 @@ public class ProviderDetail extends ProviderInfo {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Set<ProductBaseInfo> productBases;
 
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	@JsonSerialize(using = StringArraySerializer.class)
-	private Long[] productBaseIds;
-
 	private String website;
 }

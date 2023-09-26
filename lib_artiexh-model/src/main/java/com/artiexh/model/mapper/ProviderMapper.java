@@ -15,7 +15,6 @@ import java.util.Set;
 public interface ProviderMapper {
 	//Provider entityToDomain(ProviderEntity entity);
 
-	@Mapping(target = "productBases", source = "productBaseIds")
 	Provider detailToDomain(ProviderDetail detail);
 
 	ProviderEntity domainToEntity(Provider domain);
@@ -36,4 +35,8 @@ public interface ProviderMapper {
 	Set<ProviderDetail> domainSetToDetailSetWithoutProductBases(Set<Provider> domain);
 
 	ProviderInfo domainToInfo(Provider domain);
+
+	default Provider businessCodeToDomain(String businessCode) {
+		return Provider.builder().businessCode(businessCode).build();
+	}
 }

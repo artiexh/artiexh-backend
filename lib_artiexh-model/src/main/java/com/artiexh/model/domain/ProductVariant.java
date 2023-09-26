@@ -16,14 +16,6 @@ public class ProductVariant {
 
 	private String businessCode;
 
-	//private BigDecimal priceAmount;
-
-	private String description;
-
-	private Long maxLimit;
-
-	private String providedProductFileUrl;
-
 	private ProductBase productBase;
 
 	private Set<VariantCombination> variantCombinations;

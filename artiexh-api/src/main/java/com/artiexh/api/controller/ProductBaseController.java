@@ -29,9 +29,13 @@ public class ProductBaseController {
 	@PostMapping
 	@PreAuthorize("hasAuthority('ADMIN')")
 	public ProductBaseDetail create(@Valid @RequestBody ProductBaseDetail detail) {
-		ProductBase productBase = mapper.detailToDomain(detail);
-		productBase = productBaseService.create(productBase);
-		return mapper.domainToDetail(productBase);
+		try {
+			ProductBase productBase = mapper.detailToDomain(detail);
+			productBase = productBaseService.create(productBase);
+			return mapper.domainToDetail(productBase);
+		} catch (IllegalArgumentException | EntityNotFoundException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
+		}
 	}
 
 	//Get Product Base Page

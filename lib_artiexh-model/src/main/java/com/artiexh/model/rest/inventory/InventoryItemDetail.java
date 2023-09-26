@@ -31,7 +31,7 @@ public class InventoryItemDetail {
 	private String combinationCode;
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@Schema(allOf = Media.class)
+	@Schema(allOf = ProductVariantDetail.class)
 	private ProductVariantDetail variant;
 
 	@Data
