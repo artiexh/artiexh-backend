@@ -43,7 +43,6 @@ public class ProductVariantController {
 		return new PageResponse<>(productPage.map(productVariantMapper::domainToDetail));
 	}
 
-	//Create Provided Product
 	@PostMapping()
 	@PreAuthorize("hasAuthority('ADMIN')")
 	public ProductVariantCollection create(
@@ -61,7 +60,6 @@ public class ProductVariantController {
 				exception.getMessage(),
 				exception);
 		}
-
 	}
 
 
@@ -86,7 +84,7 @@ public class ProductVariantController {
 		}
 	}
 
-//	//TODO: Remove Provided Product
+//	//TODO: Remove Product Variant
 //	@DeleteMapping(Endpoint.Provider.ROOT + Endpoint.ProductVariant.DETAIL)
 //	@PreAuthorize("hasAuthority('ADMIN')")
 //	public void delete(
