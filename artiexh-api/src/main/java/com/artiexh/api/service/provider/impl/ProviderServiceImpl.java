@@ -1,7 +1,7 @@
-package com.artiexh.api.service.impl;
+package com.artiexh.api.service.provider.impl;
 
 import com.artiexh.api.exception.ErrorCode;
-import com.artiexh.api.service.ProviderService;
+import com.artiexh.api.service.provider.ProviderService;
 import com.artiexh.data.jpa.entity.ProviderEntity;
 import com.artiexh.data.jpa.repository.ProductBaseRepository;
 import com.artiexh.data.jpa.repository.ProviderRepository;
