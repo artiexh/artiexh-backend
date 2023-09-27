@@ -1,8 +1,8 @@
 package com.artiexh.api.authentication;
 
 import com.artiexh.auth.common.CookieUtil;
-import com.artiexh.auth.jwt.JwtConfiguration;
 import com.artiexh.auth.jwt.JwtProcessor;
+import com.artiexh.auth.property.JwtConfiguration;
 import com.artiexh.auth.service.ActiveTokenService;
 import com.artiexh.model.domain.Role;
 import jakarta.servlet.http.HttpServletResponse;
