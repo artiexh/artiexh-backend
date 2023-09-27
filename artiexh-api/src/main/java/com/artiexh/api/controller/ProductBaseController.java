@@ -7,6 +7,7 @@ import com.artiexh.model.mapper.ProductBaseMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.productbase.ProductBaseDetail;
+import com.artiexh.model.rest.productbase.ProductBaseFilter;
 import com.artiexh.model.rest.productbase.ProductBaseInfo;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -29,17 +30,22 @@ public class ProductBaseController {
 	@PostMapping
 	@PreAuthorize("hasAuthority('ADMIN')")
 	public ProductBaseDetail create(@Valid @RequestBody ProductBaseDetail detail) {
-		ProductBase productBase = mapper.detailToDomain(detail);
-		productBase = productBaseService.create(productBase);
-		return mapper.domainToDetail(productBase);
+		try {
+			ProductBase productBase = mapper.detailToDomain(detail);
+			productBase = productBaseService.create(productBase);
+			return mapper.domainToDetail(productBase);
+		} catch (IllegalArgumentException | EntityNotFoundException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
+		}
 	}
 
 	//Get Product Base Page
 
 	@GetMapping
 	public PageResponse<ProductBaseInfo> getInPage(
-		@ParameterObject PaginationAndSortingRequest pagination) {
-		Page<ProductBase> productPage = productBaseService.getInPage(pagination.getPageable());
+		@ParameterObject ProductBaseFilter filter,
+		@Valid @ParameterObject PaginationAndSortingRequest pagination) {
+		Page<ProductBase> productPage = productBaseService.getInPage(filter.getSpecification(), pagination.getPageable());
 		return new PageResponse<>(productPage.map(mapper::domainToInfo));
 	}
 

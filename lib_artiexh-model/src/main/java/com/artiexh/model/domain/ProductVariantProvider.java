@@ -1,5 +1,6 @@
 package com.artiexh.model.domain;
 
+import jakarta.persistence.Column;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -17,4 +18,8 @@ public class ProductVariantProvider {
 	private Provider provider;
 
 	private BigDecimal basePriceAmount;
+
+	private String manufacturingTime;
+
+	private Integer minQuantity;
 }

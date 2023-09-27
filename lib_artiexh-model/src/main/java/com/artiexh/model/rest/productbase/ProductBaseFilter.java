@@ -1,11 +1,9 @@
-package com.artiexh.model.rest.provider.filter;
+package com.artiexh.model.rest.productbase;
 
+import com.artiexh.data.jpa.entity.OrderEntity;
+import com.artiexh.data.jpa.entity.OrderGroupEntity;
 import com.artiexh.data.jpa.entity.ProductBaseEntity;
-import com.artiexh.data.jpa.entity.ProductVariantEntity;
-import com.artiexh.data.jpa.entity.ProviderEntity;
-import com.artiexh.model.domain.ProductBase;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.impl.StringArraySerializer;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
@@ -17,29 +15,23 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class ProviderFilter {
-	@JsonSerialize(using = StringArraySerializer.class)
-	private Long[] productBaseIds;
-	private String businessName;
+@AllArgsConstructor
+public class ProductBaseFilter {
+	private String name;
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long categoryId;
 
-	public Specification<ProviderEntity> getSpecification() {
+	public Specification<ProductBaseEntity> getSpecification() {
 		return (root, cQuery, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
-			if (StringUtils.isNotEmpty(businessName)) {
-				predicates.add(builder.like(root.get("businessName"), "%" + businessName + "%"));
-			}
-			if (productBaseIds != null && productBaseIds.length > 0) {
-				Join<ProviderEntity, ProductBaseEntity> joinProviderProvidedProduct = root.join("productBases");
-				predicates.add(joinProviderProvidedProduct.get("id").in(Arrays.asList(productBaseIds)));
+			predicates.add(builder.equal(root.get("hasVariant"), true));
+			if (StringUtils.isNotBlank(name)) {
+				predicates.add(builder.like(root.get("name"), "%" + name + "%"));
 			}
 			if (categoryId != null) {
 				predicates.add(builder.equal(root.get("category").get("id"), categoryId));

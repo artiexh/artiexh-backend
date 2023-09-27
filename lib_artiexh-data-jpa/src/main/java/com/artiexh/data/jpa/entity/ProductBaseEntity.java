@@ -29,12 +29,17 @@ public class ProductBaseEntity {
 	@Column(name = "name", nullable = false)
 	private String name;
 
-	@Column(name = "product_file_url", nullable = false)
-	private String productFileUrl;
+	@OneToOne(orphanRemoval = true,
+		cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@JoinColumn(name = "product_file_id")
+	private MediaEntity modelFile;
 
 	@Type(JsonType.class)
 	@Column(name = "sizes", columnDefinition = "json", nullable = false)
 	private List<OptionConfig> sizes;
+
+	@Column(name = "size_description_url")
+	private String sizeDescriptionUrl;
 
 	@Column(name = "description", nullable = false)
 	private String description;
@@ -46,6 +51,9 @@ public class ProductBaseEntity {
 	@Column(name = "3D_model_code")
 	private Byte model3DCode;
 
+	@Column(name = "has_variant", nullable = false)
+	private boolean hasVariant;
+
 	@OneToMany(mappedBy = "productBase", fetch = FetchType.EAGER)
 	private Set<ProductVariantEntity> providedModels;
 
@@ -53,8 +61,17 @@ public class ProductBaseEntity {
 	@JoinColumn(name = "product_id")
 	private Set<ProductOptionEntity> productOptions;
 
-	@ManyToMany(mappedBy = "productBases")
+	@ManyToMany()
+	@JoinTable(
+		name = "product_base_provider_mapping",
+		joinColumns = {@JoinColumn(name = "product_base_id")},
+		inverseJoinColumns = {@JoinColumn(name = "business_code")}
+	)
 	private Set<ProviderEntity> providers;
+
+	@OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@JoinColumn(name = "product_base_id")
+	private Set<ProductAttachEntity> attaches;
 
 	@ManyToOne
 	@OnDelete(action = OnDeleteAction.SET_NULL)

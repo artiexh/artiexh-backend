@@ -4,6 +4,7 @@ import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.artiexh.model.domain.Model3DCode;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.impl.StringArraySerializer;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,28 +21,20 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductVariantFilter {
+	@JsonSerialize(using = ToStringSerializer.class)
+	private Long productBaseId;
+
 	@JsonSerialize(using = StringArraySerializer.class)
-	private Long[] productBaseIds;
-
-	private String businessCode;
-
 	private Long[] optionIds;
 
+	@JsonSerialize(using = StringArraySerializer.class)
 	private Long[] optionValueIds;
-
-	private Model3DCode model3DCode;
 
 	public Specification<ProductVariantEntity> getSpecification() {
 		return (root, cQuery, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
-//			if (businessCode != null) {
-//				predicates.add(builder.equal(root.get("providedProductBaseId").get("businessCode"), businessCode));
-//			}
-			if (productBaseIds != null && productBaseIds.length > 0) {
-				predicates.add(root.get("productBaseId").in(Arrays.asList(productBaseIds)));
-			}
-			if (model3DCode != null) {
-				predicates.add(builder.equal(root.join("productBase").get("model3DCode"), model3DCode.getByteValue()));
+			if (productBaseId != null) {
+				predicates.add(builder.equal(root.get("productBaseId"), productBaseId));
 			}
 			if (optionValueIds != null && optionValueIds.length > 0) {
 				predicates.add(root.join("variantCombinations").get("id").get("optionValueId").in(Arrays.asList(optionValueIds)));

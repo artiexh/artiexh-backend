@@ -27,16 +27,6 @@ public class UpdateProductVariantDetail {
 	@NotEmpty
 	private Set<ProductVariantDetail.ProviderConfig> providerConfigs;
 
-	@NotBlank
-	private String description;
-
-	@NotNull
-	@Min(1)
-	private Long maxLimit;
-
-	@NotBlank
-	private String providedProductFileUrl;
-
 	@NotEmpty
 	private List<VariantCombination> variantCombinations;
 

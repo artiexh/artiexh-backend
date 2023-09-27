@@ -13,6 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class InventoryItem {
 	private Long id;
+	private String name;
 	private ProductVariant variant;
 	private Artist artist;
 	private Set<ImageSet> imageSet;

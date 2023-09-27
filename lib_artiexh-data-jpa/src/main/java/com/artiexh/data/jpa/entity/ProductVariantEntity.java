@@ -31,15 +31,6 @@ public class ProductVariantEntity {
 	@JoinColumn(name = "product_base_id", insertable = false, updatable = false)
 	private ProductBaseEntity productBase;
 
-	@Column(name = "max_limit", nullable = false)
-	private Integer maxLimit;
-
-	@Column(name = "description", nullable = false)
-	private String description;
-
-	@Column(name = "provided_product_file_url", nullable = false)
-	private String providedProductFileUrl;
-
 	@OneToMany(mappedBy = "productVariant",
 		orphanRemoval = true,
 		cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})

@@ -3,6 +3,7 @@ package com.artiexh.model.domain;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,4 +25,7 @@ public class ProductOption {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	private Set<OptionValue> optionValues;
+
+	@NotNull
+	private Boolean isOptional;
 }

@@ -5,6 +5,7 @@ import com.artiexh.data.jpa.repository.ProductCategoryRepository;
 import com.artiexh.model.mapper.ProductCategoryMapper;
 import com.artiexh.model.rest.category.ProductCategoryResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,10 @@ public class CategoryServiceImpl implements CategoryService {
 	private final ProductCategoryMapper categoryMapper;
 
 	@Override
-	public Page<ProductCategoryResponse> getInPage(Pageable pageable) {
-		return categoryRepository.findAll(pageable).map(categoryMapper::entityToResponse);
+	public Page<ProductCategoryResponse> getInPage(String name, Pageable pageable) {
+		if (StringUtils.isBlank(name)) {
+			return categoryRepository.findAll(pageable).map(categoryMapper::entityToResponse);
+		}
+		return categoryRepository.findAllByNameContainingIgnoreCase(name, pageable).map(categoryMapper::entityToResponse);
 	}
 }

@@ -3,9 +3,6 @@ package com.artiexh.api.controller;
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.ProductVariantService;
-import com.artiexh.data.jpa.entity.ProductVariantCombinationEntity;
-import com.artiexh.data.jpa.entity.ProductVariantCombinationEntityId;
-import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.artiexh.data.jpa.repository.ProductVariantRepository;
 import com.artiexh.data.jpa.repository.VariantCombinationRepository;
 import com.artiexh.model.domain.ProductVariant;
@@ -14,7 +11,9 @@ import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.productvariant.ProductVariantDetail;
 import com.artiexh.model.rest.productvariant.ProductVariantFilter;
+import com.artiexh.model.rest.productvariant.request.CreateProductVariantDetail;
 import com.artiexh.model.rest.productvariant.request.UpdateProductVariantDetail;
+import com.artiexh.model.rest.productvariant.response.ProductVariantCollection;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,6 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -45,21 +43,23 @@ public class ProductVariantController {
 		return new PageResponse<>(productPage.map(productVariantMapper::domainToDetail));
 	}
 
-	//Create Provided Product
 	@PostMapping()
 	@PreAuthorize("hasAuthority('ADMIN')")
-	public ProductVariantDetail create(
-		@Valid @RequestBody ProductVariantDetail detail) {
-		ProductVariant providedProduct = productVariantMapper.detailToDomain(detail);
+	public ProductVariantCollection create(
+		@Valid @RequestBody CreateProductVariantDetail detail) {
+		Set<ProductVariant> variants = productVariantMapper.detailSetToDomainSet(detail.getVariants());
 		try {
-			providedProduct = productVariantService.create(providedProduct);
-			return productVariantMapper.domainToDetail(providedProduct);
+			variants = productVariantService.create(variants, detail.getProductBaseId());
+			Set<ProductVariantDetail> variantResponses = productVariantMapper.domainSetToDetailSet(variants);
+			return ProductVariantCollection.builder()
+				.productBaseId(detail.getProductBaseId())
+				.variants(variantResponses)
+				.build();
 		} catch (IllegalArgumentException exception) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 				exception.getMessage(),
 				exception);
 		}
-
 	}
 
 
@@ -84,7 +84,7 @@ public class ProductVariantController {
 		}
 	}
 
-//	//TODO: Remove Provided Product
+//	//TODO: Remove Product Variant
 //	@DeleteMapping(Endpoint.Provider.ROOT + Endpoint.ProductVariant.DETAIL)
 //	@PreAuthorize("hasAuthority('ADMIN')")
 //	public void delete(
