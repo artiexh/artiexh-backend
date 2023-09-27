@@ -1,6 +1,8 @@
 package com.artiexh.auth;
 
-import com.artiexh.auth.jwt.JwtConfiguration;
+import com.artiexh.auth.property.ArtiexhCorsConfiguration;
+import com.artiexh.auth.property.JwtConfiguration;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,10 +14,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
-
 @Configuration
-@EnableConfigurationProperties(JwtConfiguration.class)
+@RequiredArgsConstructor
+@EnableConfigurationProperties({ArtiexhCorsConfiguration.class, JwtConfiguration.class})
 public class AuthConfiguration {
 
 	@Bean
@@ -24,18 +25,12 @@ public class AuthConfiguration {
 	}
 
 	@Bean
-	CorsConfigurationSource corsConfigurationSource() {
+	CorsConfigurationSource corsConfigurationSource(ArtiexhCorsConfiguration artiexhCorsConfiguration) {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of(
-			"http://localhost:3000",
-			"http://localhost:8080",
-			"https://artiexh.com",
-			"https://api.artiexh.com",
-			"https://artiexh-marketplace-frontend.vercel.app"
-		));
-		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-		configuration.setAllowedHeaders(List.of("*"));
-		configuration.setAllowCredentials(true);
+		configuration.setAllowedOrigins(artiexhCorsConfiguration.getAllowedOrigins());
+		configuration.setAllowedMethods(artiexhCorsConfiguration.getAllowedMethods());
+		configuration.setAllowedHeaders(artiexhCorsConfiguration.getAllowedHeaders());
+		configuration.setAllowCredentials(artiexhCorsConfiguration.isAllowCredentials());
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;

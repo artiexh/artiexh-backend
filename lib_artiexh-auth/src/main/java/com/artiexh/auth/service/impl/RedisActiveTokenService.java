@@ -1,6 +1,6 @@
 package com.artiexh.auth.service.impl;
 
-import com.artiexh.auth.jwt.JwtConfiguration;
+import com.artiexh.auth.property.JwtConfiguration;
 import com.artiexh.auth.service.ActiveTokenService;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
