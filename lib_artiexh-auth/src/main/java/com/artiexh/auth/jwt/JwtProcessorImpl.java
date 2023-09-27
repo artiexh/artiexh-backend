@@ -1,5 +1,6 @@
 package com.artiexh.auth.jwt;
 
+import com.artiexh.auth.property.JwtConfiguration;
 import com.artiexh.model.domain.Role;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
