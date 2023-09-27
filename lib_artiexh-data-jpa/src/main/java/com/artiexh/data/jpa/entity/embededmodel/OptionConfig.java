@@ -12,5 +12,6 @@ import lombok.Setter;
 public class OptionConfig {
 	private String key;
 	private String label;
-	private String value;
+	private Integer number;
+	private String unit;
 }

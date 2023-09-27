@@ -11,7 +11,7 @@ import java.util.Set;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {ProviderMapper.class, ProductCategoryMapper.class}
+	uses = {ProviderMapper.class, ProductCategoryMapper.class, ProductAttachMapper.class, MediaMapper.class}
 )
 public interface ProductBaseMapper {
 	ProductBase entityToDomain(ProductBaseEntity entity, @Context CycleAvoidingMappingContext context);
@@ -19,6 +19,8 @@ public interface ProductBaseMapper {
 	ProductBaseEntity domainToEntity(ProductBase domain);
 
 	@Mapping(target = "category", source = "categoryId")
+	@Mapping(target = "providers", source = "businessCodes")
+	@Mapping(target = "modelFile", source = "modelFileId", qualifiedByName = "idToDomain")
 	ProductBase detailToDomain(ProductBaseDetail detail);
 
 	@Mapping(target = "providers", source = "providers", qualifiedByName = "domainSetToDetailSetWithoutProductBases")

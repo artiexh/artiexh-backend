@@ -5,5 +5,5 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface CategoryService {
-	Page<ProductCategoryResponse> getInPage(Pageable pageable);
+	Page<ProductCategoryResponse> getInPage(String name, Pageable pageable);
 }

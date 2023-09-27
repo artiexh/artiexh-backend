@@ -1,15 +1,13 @@
 package com.artiexh.model.rest.inventory;
 
 import com.artiexh.model.domain.Media;
-import com.artiexh.model.rest.productbase.ProductBaseInfo;
 import com.artiexh.model.rest.productvariant.ProductVariantDetail;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.util.Set;
@@ -26,6 +24,10 @@ public class InventoryItemDetail {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 
+	@NotBlank
+	@Size(max = 50)
+	private String name;
+
 	@JsonIgnore
 	private Long artistId;
 
@@ -34,7 +36,7 @@ public class InventoryItemDetail {
 	private String combinationCode;
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@Schema(allOf = Media.class)
+	@Schema(allOf = ProductVariantDetail.class)
 	private ProductVariantDetail variant;
 
 	@Data

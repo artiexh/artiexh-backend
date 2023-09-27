@@ -12,6 +12,8 @@ import com.artiexh.model.rest.productvariant.ProductVariantDetail;
 import com.artiexh.model.rest.productvariant.request.UpdateProductVariantDetail;
 import org.mapstruct.*;
 
+import java.util.Set;
+
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
 	uses = {ProductBaseMapper.class, ProviderMapper.class}
@@ -20,12 +22,20 @@ public interface ProductVariantMapper {
 	ProductVariant entityToDomain(ProductVariantEntity entity, @Context CycleAvoidingMappingContext context);
 
 	@Mapping(target = "productBase", ignore = true)
+	@Named("detailToDomain")
 	ProductVariant detailToDomain(ProductVariantDetail detail);
+
+	@IterableMapping(qualifiedByName = "detailToDomain")
+	Set<ProductVariant> detailSetToDomainSet(Set<ProductVariantDetail> detail);
 
 	ProductVariant updateRequestToDomain(UpdateProductVariantDetail detail);
 
 	@Mapping(target = "productBase", source = "productBase", qualifiedByName = "domainToInfo")
+	@Named("domainToDetail")
 	ProductVariantDetail domainToDetail(ProductVariant domain);
+
+	@IterableMapping(qualifiedByName = "domainToDetail")
+	Set<ProductVariantDetail> domainSetToDetailSet(Set<ProductVariant> domain);
 
 	@Mapping(target = "providerConfigs", ignore = true)
 	@Mapping(target = "variantCombinations", ignore = true)

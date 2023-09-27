@@ -31,4 +31,6 @@ public class Provider {
 	private String website;
 
 	private String imageUrl;
+
+	private ProductCategory category;
 }

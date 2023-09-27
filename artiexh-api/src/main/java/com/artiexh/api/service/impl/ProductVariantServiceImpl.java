@@ -5,10 +5,12 @@ import com.artiexh.api.service.ProductVariantService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.entity.embededmodel.ProductVariantProviderId;
 import com.artiexh.data.jpa.repository.*;
+import com.artiexh.model.domain.ProductOption;
 import com.artiexh.model.domain.ProductVariant;
 import com.artiexh.model.domain.ProductVariantProvider;
 import com.artiexh.model.domain.VariantCombination;
 import com.artiexh.model.mapper.CycleAvoidingMappingContext;
+import com.artiexh.model.mapper.ProductOptionMapper;
 import com.artiexh.model.mapper.ProductVariantMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +20,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,10 +28,12 @@ import java.util.stream.Collectors;
 public class ProductVariantServiceImpl implements ProductVariantService {
 	private final ProductVariantRepository repository;
 	private final ProductVariantMapper mapper;
+	private final ProductOptionMapper optionMapper;
 	private final ProductOptionRepository productOptionRepository;
 	private final VariantCombinationRepository variantCombinationRepository;
 	private final ProductVariantProviderRepository productVariantProviderRepository;
 	private final ProviderRepository providerRepository;
+	private final ProductBaseRepository productBaseRepository;
 
 	@Override
 	@Transactional
@@ -39,31 +42,19 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 		//Validate provider
 		int allowedProviders = providerRepository.countProvider(product.getProductBaseId(), product.getProviderConfigs().stream()
 			.map(ProductVariantProvider::getBusinessCode)
-			.collect(Collectors.toList()));
+			.toList());
 
 		if (allowedProviders != product.getProviderConfigs().size()) {
 			throw new IllegalArgumentException(ErrorCode.PROVIDER_INVALID.getMessage());
 		}
 
 		//Validation option id and option value
-		product.getVariantCombinations().forEach(combination -> {
-			ProductOptionEntity productOption = productOptionRepository.findProductOptionEntityByProductIdAndId(
-				product.getProductBaseId(),
-					combination.getOptionId())
-				.orElseThrow(()
-					-> new IllegalArgumentException(ErrorCode.OPTION_NOT_FOUND.getMessage() + combination.getOptionId())
-				);
-			boolean isValidOption = productOption.getOptionValues().stream()
-				.anyMatch(option -> option.getId().equals(combination.getOptionValueId()));
-			if (!isValidOption) {
-				throw new IllegalArgumentException(ErrorCode.OPTION_VALUE_INVALID.getMessage() + combination.getOptionId());
-			}
-		});
+		List<ProductOptionEntity> existedOptions = productOptionRepository.findProductOptionEntityByProductId(product.getProductBaseId());
+		validateOptions(existedOptions, product.getVariantCombinations());
 
 		ProductVariantEntity entity = mapper.domainToEntity(product);
 		repository.save(entity);
 
-		//ProductVariantEntity savedEntity = entity;
 		for (VariantCombination combination : product.getVariantCombinations()) {
 			ProductVariantCombinationEntity combinationEntity = mapper.domainToEntity(combination);
 			combinationEntity.setId(ProductVariantCombinationEntityId.builder()
@@ -88,6 +79,42 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 
 		product.setId(entity.getId());
 		return product;
+	}
+
+	private void validateOptions(List<ProductOptionEntity> options, Set<VariantCombination> combinations) {
+		Set<VariantCombination> existedCombinations = optionMapper.optionsToVariantCombinations(options);
+		Set<ProductOption> existedOptions = optionMapper.entitySetToDomainSet(options);
+
+		for (VariantCombination combination : combinations) {
+			boolean isExisted = existedCombinations.stream().anyMatch(existedCombination ->
+				existedCombination.getOptionValueId().equals(combination.getOptionValueId())
+				&& existedCombination.getOptionId().equals(combination.getOptionId())
+			);
+
+			if (!isExisted) {
+				throw new IllegalArgumentException(ErrorCode.OPTION_VALUE_INVALID.getMessage() + combination.getOptionValueId());
+			}
+
+			 existedOptions.removeIf(existedOption -> existedOption.getId().equals(combination.getOptionId()));
+		}
+
+		boolean isExisted = existedOptions.stream().anyMatch(existedOption -> !existedOption.getIsOptional());
+
+		if (isExisted) {
+			throw new IllegalArgumentException(ErrorCode.REQUIRED_OPTION_NOT_FOUND.getMessage());
+		}
+	}
+
+	@Override
+	@Transactional
+	public Set<ProductVariant> create(Set<ProductVariant> products, Long productBaseId) {
+		Set<ProductVariant> result = new HashSet<>();
+		for (ProductVariant productVariant : products) {
+			productVariant.setProductBaseId(productBaseId);
+			result.add(create(productVariant));
+		}
+		productBaseRepository.updateVariant(productBaseId);
+		return result;
 	}
 
 	@Override

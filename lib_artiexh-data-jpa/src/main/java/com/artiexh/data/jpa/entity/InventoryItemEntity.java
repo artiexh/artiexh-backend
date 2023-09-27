@@ -19,6 +19,9 @@ public class InventoryItemEntity {
 	@Tsid
 	private Long id;
 
+	@Column(name = "name", length = 50 ,nullable = false)
+	private String name;
+
 	@OneToMany(orphanRemoval = true,
 		cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = "inventory_item_id")
@@ -33,5 +36,6 @@ public class InventoryItemEntity {
 	@JoinColumn(name = "variant_id", nullable = false)
 	private ProductVariantEntity variant;
 
+	@Column(name = "combination_code", nullable = false)
 	private String combinationCode;
 }

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -25,28 +26,16 @@ public class ProductVariantDetail {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long id;
 
-	@JsonSerialize(using = ToStringSerializer.class)
-	@NotNull
-	private Long productBaseId;
-
 	@NotEmpty
+	@Valid
 	private Set<ProviderConfig> providerConfigs;
-
-	@NotBlank
-	private String description;
-
-	@NotNull
-	@Min(1)
-	private Long maxLimit;
-
-	@NotBlank
-	private String providedProductFileUrl;
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@Schema(allOf = ProductBaseInfo.class)
 	private ProductBaseInfo productBase;
 
 	@NotEmpty
+	@Valid
 	private List<VariantCombination> variantCombinations;
 
 	@Data
@@ -59,5 +48,12 @@ public class ProductVariantDetail {
 
 		@NotNull
 		private BigDecimal basePriceAmount;
+
+		@NotBlank
+		private String manufacturingTime;
+
+		@NotNull
+		@Min(1)
+		private Integer minQuantity;
 	}
 }
