@@ -40,7 +40,6 @@ public class ProviderController {
 				exception.getMessage(),
 				exception);
 		}
-
 	}
 
 	//Get Provider Detail
