@@ -3,12 +3,10 @@ package com.artiexh.api.controller;
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.InventoryService;
-import com.artiexh.model.domain.Collection;
 import com.artiexh.model.domain.InventoryItem;
 import com.artiexh.model.mapper.InventoryMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
-import com.artiexh.model.rest.collection.CollectionDetail;
 import com.artiexh.model.rest.inventory.InventoryItemDetail;
 import com.artiexh.model.rest.inventory.ItemFilter;
 import jakarta.persistence.EntityNotFoundException;
@@ -28,6 +26,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class InventoryItemController {
 	private final InventoryService inventoryService;
 	private final InventoryMapper inventoryMapper;
+
 	@PostMapping()
 	@PreAuthorize("hasAuthority('ARTIST')")
 	public InventoryItemDetail saveItem(
