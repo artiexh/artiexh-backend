@@ -25,9 +25,6 @@ public class ProductVariantFilter {
 	private Long productBaseId;
 
 	@JsonSerialize(using = StringArraySerializer.class)
-	private Long[] optionIds;
-
-	@JsonSerialize(using = StringArraySerializer.class)
 	private Long[] optionValueIds;
 
 	public Specification<ProductVariantEntity> getSpecification() {
@@ -38,9 +35,6 @@ public class ProductVariantFilter {
 			}
 			if (optionValueIds != null && optionValueIds.length > 0) {
 				predicates.add(root.join("variantCombinations").get("id").get("optionValueId").in(Arrays.asList(optionValueIds)));
-			}
-			if (optionIds != null && optionIds.length > 0) {
-				predicates.add(root.join("variantCombinations").get("optionId").in(Arrays.asList(optionIds)));
 			}
 			return builder.and(predicates.toArray(new Predicate[0]));
 		};
