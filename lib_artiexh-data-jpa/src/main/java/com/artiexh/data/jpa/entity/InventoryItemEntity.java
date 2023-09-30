@@ -1,6 +1,5 @@
 package com.artiexh.data.jpa.entity;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -19,7 +18,7 @@ public class InventoryItemEntity {
 	@Tsid
 	private Long id;
 
-	@Column(name = "name", length = 50 ,nullable = false)
+	@Column(name = "name", length = 50, nullable = false)
 	private String name;
 
 	@OneToMany(orphanRemoval = true,
@@ -38,4 +37,8 @@ public class InventoryItemEntity {
 
 	@Column(name = "combination_code", nullable = false)
 	private String combinationCode;
+
+	@Column(name = "is_lock")
+	private Boolean isLock;
+
 }

@@ -164,4 +164,8 @@ public final class Endpoint {
 	public static class ProviderCategory {
 		public static final String ROOT = PREFIX + "/provider-category";
 	}
+
+	public static class Campaign {
+		public static final String ROOT = PREFIX + "/campaign";
+	}
 }
