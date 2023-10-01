@@ -32,19 +32,4 @@ public class ProductVariantFilter {
 
 	@JsonSerialize(using = StringCollectionSerializer.class)
 	private Set<Long> optionValueIds;
-
-	public Specification<ProductVariantEntity> getSpecification() {
-		return (root, cQuery, builder) -> {
-			List<Predicate> predicates = new ArrayList<>();
-			Join<ProductVariantCombinationEntity, ProductVariantEntity> joinVariantCombination= root.join("variantCombinations");
-
-			if (productBaseId != null) {
-				predicates.add(builder.equal(root.get("productBaseId"), productBaseId));
-			}
-			if (optionValueIds != null) {
-				predicates.add(joinVariantCombination.get("id").get("optionValueId").in(Arrays.asList(optionValueIds)));
-			}
-			return builder.and(predicates.toArray(new Predicate[0]));
-		};
-	}
 }

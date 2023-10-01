@@ -39,6 +39,7 @@ public class ProductVariantController {
 	public PageResponse<ProductVariantDetail> getAll(
 		@ParameterObject PaginationAndSortingRequest paginationAndSortingRequest,
 		@ParameterObject ProductVariantFilter filter) {
+		paginationAndSortingRequest.setSortBy(null);
 		Page<ProductVariant> productPage = productVariantService.getAll(filter.getProductBaseId(), filter.getOptionValueIds(), paginationAndSortingRequest.getPageable());
 		return new PageResponse<>(productPage.map(productVariantMapper::domainToDetail));
 	}
