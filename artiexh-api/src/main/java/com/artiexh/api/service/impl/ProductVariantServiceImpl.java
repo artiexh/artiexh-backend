@@ -49,8 +49,10 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 		}
 
 		//Validation option id and option value
-		List<ProductOptionEntity> existedOptions = productOptionRepository.findProductOptionEntityByProductId(product.getProductBaseId());
-		validateOptions(existedOptions, product.getVariantCombinations());
+		if (!product.getVariantCombinations().isEmpty()) {
+			List<ProductOptionEntity> existedOptions = productOptionRepository.findProductOptionEntityByProductId(product.getProductBaseId());
+			validateOptions(existedOptions, product.getVariantCombinations());
+		}
 
 		ProductVariantEntity entity = mapper.domainToEntity(product);
 		repository.save(entity);

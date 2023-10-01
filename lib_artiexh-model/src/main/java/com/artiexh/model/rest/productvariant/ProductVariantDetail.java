@@ -35,7 +35,7 @@ public class ProductVariantDetail {
 	@Schema(allOf = ProductBaseInfo.class)
 	private ProductBaseInfo productBase;
 
-	@NotEmpty
+	@NotNull
 	@Valid
 	private List<VariantCombination> variantCombinations;
 
