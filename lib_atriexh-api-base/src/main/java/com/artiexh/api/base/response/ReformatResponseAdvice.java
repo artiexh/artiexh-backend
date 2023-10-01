@@ -34,7 +34,7 @@ public class ReformatResponseAdvice implements ResponseBodyAdvice<Object> {
 		Assert.notNull(httpStatus, "Invalid http status");
 		String path = request.getURI().getPath();
 
-		if (path.equals(Endpoint.Media.ROOT + Endpoint.Media.DOWNLOAD) && !selectedContentType.equals(MediaType.APPLICATION_PROBLEM_JSON)) {
+		if (path.contains(Endpoint.Media.ROOT + Endpoint.Media.DOWNLOAD) && !selectedContentType.equals(MediaType.APPLICATION_PROBLEM_JSON)) {
 			return body;
 		}
 
