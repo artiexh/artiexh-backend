@@ -67,13 +67,13 @@ public class MediaController {
 		}
 	}
 
-	@GetMapping("download")
-	public ResponseEntity<byte[]> download(Authentication authentication, @RequestParam String fileName) {
+	@GetMapping("download/{id}")
+	public ResponseEntity<byte[]> download(Authentication authentication, @PathVariable Long id) {
 		var userId = (Long) authentication.getPrincipal();
 		try {
 			boolean isStaff = authentication.getAuthorities().stream()
 				.anyMatch(r -> r.getAuthority().equals(Role.ADMIN.name()));
-			S3Object s3Object = storageService.download(fileName, userId, isStaff);
+			S3Object s3Object = storageService.download(id, userId, isStaff);
 			String contentType = s3Object.getObjectMetadata().getContentType();
 			var bytes = s3Object.getObjectContent().readAllBytes();
 

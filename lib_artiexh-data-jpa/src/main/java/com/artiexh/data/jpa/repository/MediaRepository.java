@@ -20,7 +20,7 @@ public interface MediaRepository extends JpaRepository<MediaEntity, Long> {
 			FROM media m
 			LEFT JOIN account_media_mapping amm on m.id = amm.media_id
 			LEFT JOIN account a on m.owner_id = a.id
-			WHERE m.file_name = :fileName AND (m.owner_id = :userId OR amm.shared_user_id = :userId OR a.role = 0);"""
+			WHERE m.id = :id AND (m.owner_id = :userId OR amm.shared_user_id = :userId OR a.role = 0);"""
 	)
-	Optional<MediaEntity> findByFileNameAndSharedUsersId(@Param("fileName") String fileName, @Param("userId") Long userId);
+	Optional<MediaEntity> findByIdAndSharedUsersId(@Param("id") Long id, @Param("userId") Long userId);
 }

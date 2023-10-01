@@ -16,5 +16,5 @@ public interface StorageService {
 
 	void updateSharedUsers(Long userId, Long[] sharedIds, Long mediaId);
 
-	S3Object download(String fileName, Long userId, boolean isAdmin) throws MalformedURLException;
+	S3Object download(Long id, Long userId, boolean isAdmin) throws MalformedURLException;
 }
