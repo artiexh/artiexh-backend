@@ -2,6 +2,7 @@ package com.artiexh.model.rest.productvariant;
 
 import com.artiexh.model.domain.VariantCombination;
 import com.artiexh.model.rest.productbase.ProductBaseInfo;
+import com.artiexh.model.rest.provider.ProviderInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -34,7 +35,7 @@ public class ProductVariantDetail {
 	@Schema(allOf = ProductBaseInfo.class)
 	private ProductBaseInfo productBase;
 
-	@NotEmpty
+	@NotNull
 	@Valid
 	private List<VariantCombination> variantCombinations;
 
@@ -44,7 +45,12 @@ public class ProductVariantDetail {
 	public static class ProviderConfig {
 
 		@NotNull
+		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 		private String businessCode;
+
+		@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+		@Schema(allOf = ProviderInfo.class)
+		private ProviderInfo provider;
 
 		@NotNull
 		private BigDecimal basePriceAmount;

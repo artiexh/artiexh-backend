@@ -13,7 +13,11 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,5 +41,12 @@ public class OptionController {
 	) {
 		Page<ProductOption> options = optionService.getAllTemplate(null, request.getPageable());
 		return new PageResponse<>(options.map(optionMapper::domainToDetail));
+	}
+
+	@GetMapping(Endpoint.Option.ACTIVE_OPTION)
+	public Map<String, Set<String>> getActiveVariantOption(
+		@RequestParam Long productBaseId
+	) {
+		return optionService.getActiveVariantOption(productBaseId);
 	}
 }

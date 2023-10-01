@@ -12,9 +12,7 @@ import com.artiexh.model.rest.option.OptionValueDetail;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
@@ -31,6 +29,18 @@ public interface ProductOptionMapper {
 	OptionDetail domainToDetail(ProductOption productOption);
 
 	OptionValueDetail domainToDetail(OptionValue optionValue);
+
+	default Map<String, List<String>> domainListToOptionMap(List<ProductOption> productOptions) {
+		Map<String, List<String>> result = new HashMap<>();
+		for (ProductOption option : productOptions) {
+			List<String> activeValues = new ArrayList<>();
+			for (OptionValue optionValue : option.getOptionValues()) {
+				activeValues.add(optionValue.getValue());
+			}
+			result.put(option.getId().toString(), activeValues);
+		}
+		return result;
+	}
 
 	default Set<VariantCombination> optionsToVariantCombinations(List<ProductOptionEntity> options) {
 		Set<VariantCombination> variants = new HashSet<>();
