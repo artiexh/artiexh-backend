@@ -4,8 +4,6 @@ import com.artiexh.api.service.OptionService;
 import com.artiexh.data.jpa.entity.ProductOptionEntity;
 import com.artiexh.data.jpa.entity.ProductOptionTemplateEntity;
 import com.artiexh.data.jpa.entity.ProductVariantCombinationEntity;
-import com.artiexh.data.jpa.entity.ProductVariantCombinationEntityId;
-import com.artiexh.data.jpa.projection.ProductVariantCombinationQuantity;
 import com.artiexh.data.jpa.repository.OptionTemplateRepository;
 import com.artiexh.data.jpa.repository.ProductOptionRepository;
 import com.artiexh.data.jpa.repository.ProductVariantRepository;
