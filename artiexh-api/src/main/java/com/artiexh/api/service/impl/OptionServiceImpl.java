@@ -49,25 +49,8 @@ public class OptionServiceImpl implements OptionService {
 	@Override
 	public Map<String, Set<String>> getActiveVariantOption(Long productBaseId) {
 		Map<String, Set<String>> activeOptions = new HashMap<>();
-		List<ProductVariantCombinationQuantity> variantCombinationQuantities =
-			productVariantRepository.finProductVariantCombinationQuantityByProductBaseId(productBaseId);
-		int maxQuantity = variantCombinationQuantities.get(0).getNumOfCombination();
-
-		List<ProductVariantCombinationEntityId> variantIds = new ArrayList<>();
-		for (ProductVariantCombinationQuantity combinationQuantity : variantCombinationQuantities) {
-			if (combinationQuantity.getNumOfCombination() == maxQuantity) {
-				variantIds.add(
-					ProductVariantCombinationEntityId.builder()
-						.variantId(combinationQuantity.getVariantId())
-						.optionValueId(combinationQuantity.getOptionValueId())
-						.build()
-				);
-			} else {
-				break;
-			}
-		}
-
-		List<ProductVariantCombinationEntity> variantCombinationEntities = variantCombinationRepository.findAllById(variantIds);
+		List<ProductVariantCombinationEntity> variantCombinationEntities =
+			variantCombinationRepository.findAllUniqueCombinationsByProductBaseId(productBaseId);
 
 		for(ProductVariantCombinationEntity variantCombinationEntity : variantCombinationEntities) {
 			if (activeOptions.containsKey(variantCombinationEntity.getOptionId().toString())) {

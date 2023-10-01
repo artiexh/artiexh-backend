@@ -45,7 +45,7 @@ public class OptionController {
 		return new PageResponse<>(options.map(optionMapper::domainToDetail));
 	}
 
-	@GetMapping
+	@GetMapping(Endpoint.Option.ACTIVE_OPTION)
 	public Map<String, Set<String>> getActiveVariantOption(
 		@RequestParam Long productBaseId
 	) {

@@ -20,4 +20,5 @@ public interface ProductVariantService {
 	ProductVariant getById(Long id);
 
 	Page<ProductVariant> getAll(Specification<ProductVariantEntity> specification, Pageable pageable);
+	Page<ProductVariant> getAll(Long productBaseIds, Set<Long> optionValueIds, Pageable pageable);
 }

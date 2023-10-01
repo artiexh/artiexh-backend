@@ -213,4 +213,16 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 		Page<ProductVariantEntity> productPage = repository.findAll(specification, pageable);
 		return productPage.map(product -> mapper.entityToDomain(product, new CycleAvoidingMappingContext()));
 	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Page<ProductVariant> getAll(Long productBaseId, Set<Long> optionValueIds, Pageable pageable) {
+		Page<ProductVariantEntity> productPage;
+		if (optionValueIds == null || optionValueIds.isEmpty()) {
+			productPage = repository.findAllByProductBaseId(productBaseId, pageable);
+		} else {
+			productPage = repository.findAllByOptionAndProductBaseId(pageable, optionValueIds, optionValueIds.size());
+		}
+		return productPage.map(product -> mapper.entityToDomain(product, new CycleAvoidingMappingContext()));
+	}
 }
