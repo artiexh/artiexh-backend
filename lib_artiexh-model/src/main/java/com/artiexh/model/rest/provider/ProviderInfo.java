@@ -1,11 +1,10 @@
 package com.artiexh.model.rest.provider;
 
-import com.artiexh.model.rest.category.ProductCategoryResponse;
+import com.artiexh.model.domain.ProviderCategory;
 import com.artiexh.model.validation.BusinessCode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,6 +13,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -46,9 +47,9 @@ public class ProviderInfo {
 
 	@NotNull
 	@JsonSerialize(using = ToStringSerializer.class)
-	private Long categoryId;
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private Set<Long> categoryIds;
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@Schema(allOf = ProductCategoryResponse.class)
-	private ProductCategoryResponse category;
+	private Set<ProviderCategory> categories;
 }

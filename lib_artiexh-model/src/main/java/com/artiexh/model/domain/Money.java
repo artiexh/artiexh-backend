@@ -14,9 +14,12 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 public class Money {
+
 	@NotNull
 	private BigDecimal amount;
+
 	@CurrencyType
 	@NotNull
 	private String unit;
+
 }

@@ -2,9 +2,8 @@ package com.artiexh.data.jpa.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Getter
@@ -49,8 +48,10 @@ public class ProviderEntity {
 	@ManyToMany(mappedBy = "providers")
 	private Set<ProductBaseEntity> productBases;
 
-	@ManyToOne
-	@OnDelete(action = OnDeleteAction.SET_NULL)
-	@JoinColumn(name = "category_id")
-	private ProductCategoryEntity category;
+	@ManyToMany
+	@JoinTable(name = "provider_category_mapping",
+		joinColumns = @JoinColumn(name = "provider_id"),
+		inverseJoinColumns = @JoinColumn(name = "provider_category_id"))
+	private Set<ProviderCategoryEntity> categories = new LinkedHashSet<>();
+
 }

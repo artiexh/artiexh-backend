@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface InventoryRepository extends JpaRepository<InventoryItemEntity, Long>, JpaSpecificationExecutor<InventoryItemEntity> {
+public interface InventoryItemRepository extends JpaRepository<InventoryItemEntity, Long>, JpaSpecificationExecutor<InventoryItemEntity> {
 	Optional<InventoryItemEntity> findInventoryItemEntityByIdAndArtistId(Long id, Long artistId);
 
 	@Modifying
