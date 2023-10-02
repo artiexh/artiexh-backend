@@ -1,4 +1,4 @@
-package com.artiexh.api.service;
+package com.artiexh.api.service.provider;
 
 import com.artiexh.data.jpa.entity.ProviderEntity;
 import com.artiexh.model.domain.Provider;

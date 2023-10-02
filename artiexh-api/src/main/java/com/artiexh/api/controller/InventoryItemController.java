@@ -2,13 +2,11 @@ package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.exception.ErrorCode;
-import com.artiexh.api.service.InventoryService;
-import com.artiexh.model.domain.Collection;
+import com.artiexh.api.service.InventoryItemService;
 import com.artiexh.model.domain.InventoryItem;
 import com.artiexh.model.mapper.InventoryMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
-import com.artiexh.model.rest.collection.CollectionDetail;
 import com.artiexh.model.rest.inventory.InventoryItemDetail;
 import com.artiexh.model.rest.inventory.ItemFilter;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,8 +24,9 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 @RequestMapping(path = Endpoint.InventoryItem.ROOT)
 public class InventoryItemController {
-	private final InventoryService inventoryService;
+	private final InventoryItemService inventoryItemService;
 	private final InventoryMapper inventoryMapper;
+
 	@PostMapping()
 	@PreAuthorize("hasAuthority('ARTIST')")
 	public InventoryItemDetail saveItem(
@@ -38,7 +37,7 @@ public class InventoryItemController {
 			detail.setArtistId(userId);
 
 			InventoryItem item = inventoryMapper.detailToDomain(detail);
-			item = inventoryService.save(item);
+			item = inventoryItemService.save(item);
 
 			return inventoryMapper.domainToDetail(item);
 		} catch (EntityNotFoundException exception) {
@@ -61,7 +60,7 @@ public class InventoryItemController {
 		try {
 			long userId = (long) authentication.getPrincipal();
 			filter.setArtistId(userId);
-			Page<InventoryItem> itemPage = inventoryService.getAll(filter.getSpecification(), paginationAndSortingRequest.getPageable());
+			Page<InventoryItem> itemPage = inventoryItemService.getAll(filter.getSpecification(), paginationAndSortingRequest.getPageable());
 
 			return new PageResponse<>(itemPage.map(inventoryMapper::domainToDetail));
 		} catch (EntityNotFoundException exception) {
@@ -82,7 +81,7 @@ public class InventoryItemController {
 		@PathVariable("id") Long id) {
 		try {
 			long userId = (long) authentication.getPrincipal();
-			InventoryItem item = inventoryService.getById(userId, id);
+			InventoryItem item = inventoryItemService.getById(userId, id);
 
 			return inventoryMapper.domainToDetail(item);
 		} catch (EntityNotFoundException exception) {
@@ -99,7 +98,7 @@ public class InventoryItemController {
 		@PathVariable("id") Long id) {
 		try {
 			long userId = (long) authentication.getPrincipal();
-			inventoryService.delete(userId, id);
+			inventoryItemService.delete(userId, id);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
 				ErrorCode.PRODUCT_NOT_FOUND.getMessage(),

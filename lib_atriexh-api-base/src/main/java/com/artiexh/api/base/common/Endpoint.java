@@ -160,4 +160,13 @@ public final class Endpoint {
 		public static final String ROOT = PREFIX + "/config";
 		public static final String SYNC_PRODUCT_OPEN_SEARCH = "/sync-product-to-open-search";
 	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class ProviderCategory {
+		public static final String ROOT = PREFIX + "/provider-category";
+	}
+
+	public static class Campaign {
+		public static final String ROOT = PREFIX + "/campaign";
+	}
 }

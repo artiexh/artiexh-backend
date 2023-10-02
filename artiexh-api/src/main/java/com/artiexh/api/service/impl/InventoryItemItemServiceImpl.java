@@ -1,12 +1,12 @@
 package com.artiexh.api.service.impl;
 
 import com.artiexh.api.exception.ErrorCode;
-import com.artiexh.api.service.InventoryService;
+import com.artiexh.api.service.InventoryItemService;
 import com.artiexh.data.jpa.entity.ImageSetEntity;
 import com.artiexh.data.jpa.entity.InventoryItemEntity;
 import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
-import com.artiexh.data.jpa.repository.InventoryRepository;
+import com.artiexh.data.jpa.repository.InventoryItemRepository;
 import com.artiexh.data.jpa.repository.ProductVariantRepository;
 import com.artiexh.model.domain.ImageSet;
 import com.artiexh.model.domain.InventoryItem;
@@ -28,11 +28,12 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class InventoryServiceImpl implements InventoryService {
-	private final InventoryRepository inventoryRepository;
+public class InventoryItemItemServiceImpl implements InventoryItemService {
+	private final InventoryItemRepository inventoryItemRepository;
 	private final ProductVariantRepository variantRepository;
 	private final InventoryMapper inventoryMapper;
 	private final MediaMapper mediaMapper;
+
 	@Override
 	@Transactional
 	public InventoryItem save(InventoryItem item) {
@@ -73,12 +74,12 @@ public class InventoryServiceImpl implements InventoryService {
 
 		entity.setVariant(variant);
 
-		return inventoryRepository.save(entity);
+		return inventoryItemRepository.save(entity);
 	}
 
 	@Transactional
 	public InventoryItemEntity updateItem(InventoryItem item) {
-		InventoryItemEntity entity = inventoryRepository.findById(item.getId())
+		InventoryItemEntity entity = inventoryItemRepository.findById(item.getId())
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + item.getId()));
 
 		if (item.getImageSet() != null && !item.getImageSet().isEmpty()) {
@@ -93,17 +94,17 @@ public class InventoryServiceImpl implements InventoryService {
 
 			entity.getImageSet().clear();
 			Set<ImageSetEntity> savedImageSet = new HashSet<>();
-			for (ImageSet imageSet: item.getImageSet()) {
+			for (ImageSet imageSet : item.getImageSet()) {
 				ImageSetEntity imageSetEntity = mediaMapper.domainToEntity(imageSet);
 				savedImageSet.add(imageSetEntity);
 			}
 			entity.getImageSet().addAll(savedImageSet);
 		} else {
 			entity.getImageSet().clear();
-            entity.setCombinationCode(null);
+			entity.setCombinationCode(null);
 		}
 
-		return inventoryRepository.save(entity);
+		return inventoryItemRepository.save(entity);
 	}
 
 	private boolean validateImagePosition(ProductVariantEntity variant, String combinationCode, List<String> positionCode) {
@@ -125,22 +126,22 @@ public class InventoryServiceImpl implements InventoryService {
 	@Override
 	@Transactional(readOnly = true)
 	public Page<InventoryItem> getAll(Specification<InventoryItemEntity> specification, Pageable pageable) {
-		Page<InventoryItemEntity> itemPage = inventoryRepository.findAll(specification, pageable);
+		Page<InventoryItemEntity> itemPage = inventoryItemRepository.findAll(specification, pageable);
 		return itemPage.map(item -> inventoryMapper.entityToDomain(item, new CycleAvoidingMappingContext()));
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public InventoryItem getById(Long userId, Long id) {
-		InventoryItemEntity item = inventoryRepository.findInventoryItemEntityByIdAndArtistId(id, userId)
+		InventoryItemEntity item = inventoryItemRepository.findInventoryItemEntityByIdAndArtistId(id, userId)
 			.orElseThrow(EntityNotFoundException::new);
 		return inventoryMapper.entityToDomain(item, new CycleAvoidingMappingContext());
 	}
 
 	@Override
 	public void delete(Long userId, Long id) {
-		InventoryItemEntity item = inventoryRepository.findInventoryItemEntityByIdAndArtistId(id, userId)
+		InventoryItemEntity item = inventoryItemRepository.findInventoryItemEntityByIdAndArtistId(id, userId)
 			.orElseThrow(EntityNotFoundException::new);
-		inventoryRepository.deleteById(item.getId());
+		inventoryItemRepository.deleteById(item.getId());
 	}
 }

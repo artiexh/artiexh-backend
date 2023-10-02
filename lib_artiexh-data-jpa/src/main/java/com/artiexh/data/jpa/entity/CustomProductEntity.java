@@ -6,8 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+
+import java.math.BigDecimal;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -18,10 +20,45 @@ import org.hibernate.annotations.OnDeleteAction;
 public class CustomProductEntity {
 	@Id
 	@Tsid
+	@JoinColumn(name = "id", nullable = false)
 	private Long id;
 
-	@ManyToOne(optional = true)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JoinColumn(name = "collection_id")
-	private CollectionEntity collections;
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "inventory_item_id", nullable = false)
+	private InventoryItemEntity inventoryItem;
+
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "campaign_id", nullable = false)
+	private CampaignEntity campaign;
+
+	@Column(name = "name", nullable = false)
+	private String name;
+
+	@Column(name = "quantity", nullable = false)
+	private Integer quantity;
+
+	@Column(name = "price_unit", nullable = false, length = 3)
+	private String priceUnit;
+
+	@Column(name = "price_amount", nullable = false, precision = 38, scale = 2)
+	private BigDecimal priceAmount;
+
+	@Column(name = "limit_per_order")
+	private Integer limitPerOrder;
+
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "category_id", nullable = false)
+	private ProductCategoryEntity category;
+
+	@Column(name = "description", length = 1000)
+	private String description;
+
+	@OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@JoinColumn(name = "custom_product_id")
+	private Set<ProductAttachEntity> attaches;
+
+	@OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.REFRESH})
+	@JoinColumn(name = "custom_product_id")
+	private Set<CustomProductTagEntity> tags = new LinkedHashSet<>();
+
 }
