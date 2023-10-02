@@ -110,9 +110,14 @@ public class StorageServiceImpl implements StorageService {
 	}
 
 	@Override
-	public S3Object download(String fileName, Long userId, boolean isStaff) throws MalformedURLException {
+	public S3Object download(Long id, Long userId, boolean isStaff) throws MalformedURLException {
+		String fileName;
 		if (!isStaff) {
-			mediaRepository.findByFileNameAndSharedUsersId(fileName, userId).orElseThrow(EntityNotFoundException::new);
+			MediaEntity media = mediaRepository.findByIdAndSharedUsersId(id, userId).orElseThrow(EntityNotFoundException::new);
+			fileName = media.getFileName();
+		} else {
+			MediaEntity media = mediaRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+            fileName = media.getFileName();
 		}
 
 		URL url = new URL(S3Util.getPresignedString(s3Config.getRegion(), s3Config.getPrivateBucketName(), s3Config.getAccessKey(), s3Config.getSecretKey(), fileName, false));
