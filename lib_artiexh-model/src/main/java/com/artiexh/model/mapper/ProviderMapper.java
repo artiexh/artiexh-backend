@@ -2,6 +2,7 @@ package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.ProviderEntity;
 import com.artiexh.model.domain.Provider;
+import com.artiexh.model.rest.productvariant.ProductVariantDetail;
 import com.artiexh.model.rest.provider.ProviderDetail;
 import com.artiexh.model.rest.provider.ProviderInfo;
 import org.mapstruct.*;
@@ -35,6 +36,7 @@ public interface ProviderMapper {
 	@Named("domainSetToDetailSetWithoutProductBases")
 	Set<ProviderDetail> domainSetToDetailSetWithoutProductBases(Set<Provider> domain);
 
+	@Named("domainToInfo")
 	ProviderInfo domainToInfo(Provider domain);
 
 	default Provider businessCodeToDomain(String businessCode) {

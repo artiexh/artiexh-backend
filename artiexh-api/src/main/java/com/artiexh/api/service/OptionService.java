@@ -7,8 +7,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 public interface OptionService {
 	Page<ProductOption> getAll(Specification<ProductOptionEntity> specification, Pageable pageable);
 
 	Page<ProductOption> getAllTemplate(Specification<ProductOptionTemplateEntity> specification, Pageable pageable);
+
+	Map<String, Set<String>> getActiveVariantOption(Long productBaseId);
 }

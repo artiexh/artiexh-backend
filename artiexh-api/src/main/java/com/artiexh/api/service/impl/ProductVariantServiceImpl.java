@@ -49,8 +49,10 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 		}
 
 		//Validation option id and option value
-		List<ProductOptionEntity> existedOptions = productOptionRepository.findProductOptionEntityByProductId(product.getProductBaseId());
-		validateOptions(existedOptions, product.getVariantCombinations());
+		if (!product.getVariantCombinations().isEmpty()) {
+			List<ProductOptionEntity> existedOptions = productOptionRepository.findProductOptionEntityByProductId(product.getProductBaseId());
+			validateOptions(existedOptions, product.getVariantCombinations());
+		}
 
 		ProductVariantEntity entity = mapper.domainToEntity(product);
 		repository.save(entity);
@@ -211,6 +213,18 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 	@Transactional(readOnly = true)
 	public Page<ProductVariant> getAll(Specification<ProductVariantEntity> specification, Pageable pageable) {
 		Page<ProductVariantEntity> productPage = repository.findAll(specification, pageable);
+		return productPage.map(product -> mapper.entityToDomain(product, new CycleAvoidingMappingContext()));
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Page<ProductVariant> getAll(Long productBaseId, Set<Long> optionValueIds, Pageable pageable) {
+		Page<ProductVariantEntity> productPage;
+		if (optionValueIds == null || optionValueIds.isEmpty()) {
+			productPage = repository.findAllByProductBaseId(productBaseId, pageable);
+		} else {
+			productPage = repository.findAllByOptionAndProductBaseId(pageable, optionValueIds, optionValueIds.size());
+		}
 		return productPage.map(product -> mapper.entityToDomain(product, new CycleAvoidingMappingContext()));
 	}
 }

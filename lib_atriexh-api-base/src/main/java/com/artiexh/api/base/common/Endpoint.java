@@ -145,6 +145,7 @@ public final class Endpoint {
 	public static class Option {
 		public static final String ROOT = PREFIX + "/option";
 		public static final String TEMPLATE = "/template";
+		public static final String ACTIVE_OPTION = "/active-option";
 		public static final String DETAIL = "/{id}";
 	}
 
