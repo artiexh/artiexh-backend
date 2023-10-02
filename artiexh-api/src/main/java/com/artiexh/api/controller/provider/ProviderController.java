@@ -7,8 +7,10 @@ import com.artiexh.model.domain.Provider;
 import com.artiexh.model.mapper.ProviderMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
+import com.artiexh.model.rest.provider.ProviderConfigResponse;
 import com.artiexh.model.rest.provider.ProviderDetail;
 import com.artiexh.model.rest.provider.ProviderInfo;
+import com.artiexh.model.rest.provider.filter.ProviderConfigFilter;
 import com.artiexh.model.rest.provider.filter.ProviderFilter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -79,5 +81,17 @@ public class ProviderController {
 				ErrorCode.PROVIDER_NOT_FOUND.getMessage(),
 				exception);
 		}
+	}
+
+	@GetMapping(Endpoint.Provider.CONFIG)
+	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF','ARTIST')")
+	public PageResponse<ProviderConfigResponse> getProviderConfigInPage(@PathVariable("id") String businessCode,
+																		@ParameterObject PaginationAndSortingRequest paginationAndSortingRequest,
+																		@ParameterObject ProviderConfigFilter filter) {
+		filter.setBusinessCode(businessCode);
+		return new PageResponse<>(providerService.getAllConfig(
+			filter.getSpecification(),
+			paginationAndSortingRequest.getPageable())
+		);
 	}
 }

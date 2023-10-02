@@ -65,7 +65,7 @@ public interface ProductVariantMapper {
 	ProductVariantProviderEntity domainToEntity(ProductVariantProvider entity);
 
 	@Mapping(target = "provider", qualifiedByName = "domainToInfo")
-	ProductVariantDetail.ProviderConfig domainToDetail (ProductVariantProvider domain);
+	ProductVariantDetail.ProviderConfig domainToDetail(ProductVariantProvider domain);
 
 	@Named("idToDomain")
 	default ProductVariant idToDomain(Long variantId) {

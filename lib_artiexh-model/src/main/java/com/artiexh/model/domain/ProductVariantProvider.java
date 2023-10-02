@@ -1,6 +1,5 @@
 package com.artiexh.model.domain;
 
-import jakarta.persistence.Column;
 import lombok.*;
 
 import java.math.BigDecimal;
