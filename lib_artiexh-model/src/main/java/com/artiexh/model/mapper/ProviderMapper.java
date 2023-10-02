@@ -3,7 +3,7 @@ package com.artiexh.model.mapper;
 import com.artiexh.data.jpa.entity.ProductVariantProviderEntity;
 import com.artiexh.data.jpa.entity.ProviderEntity;
 import com.artiexh.model.domain.Provider;
-import com.artiexh.model.rest.provider.ProviderConfigResponse;
+import com.artiexh.model.rest.campaign.response.CampaignProviderResponse;
 import com.artiexh.model.rest.provider.ProviderDetail;
 import com.artiexh.model.rest.provider.ProviderInfo;
 import org.mapstruct.*;
@@ -44,7 +44,8 @@ public interface ProviderMapper {
 		return Provider.builder().businessCode(businessCode).build();
 	}
 
-	@Mapping(target = "variantId", source = "id.productVariantId")
-	ProviderConfigResponse productVariantProviderEntityToProviderConfigResponse(ProductVariantProviderEntity entity);
+	@Mapping(target = "designItems", ignore = true)
+	CampaignProviderResponse entityToCampaignProviderResponse(ProviderEntity entity);
 
+	CampaignProviderResponse.ProviderConfig entityToCampaignProviderConfig(ProductVariantProviderEntity entity);
 }

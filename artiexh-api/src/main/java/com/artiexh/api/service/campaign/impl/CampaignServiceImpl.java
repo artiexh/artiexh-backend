@@ -40,7 +40,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 		var campaignEntity = campaignRepository.save(
 			CampaignEntity.builder()
-				.status(CampaignStatus.WAITING.getByteValue())
+				.status(CampaignStatus.DRAFT.getByteValue())
 				.owner(ArtistEntity.builder().id(ownerId).build())
 				.providerId(request.getProviderId())
 				.build()

@@ -2,11 +2,13 @@ package com.artiexh.api.controller.campaign;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.campaign.CampaignService;
+import com.artiexh.api.service.provider.ProviderService;
 import com.artiexh.model.domain.Role;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.campaign.request.CampaignRequestFilter;
 import com.artiexh.model.rest.campaign.request.CreateCampaignRequest;
+import com.artiexh.model.rest.campaign.response.CampaignProviderResponse;
 import com.artiexh.model.rest.campaign.response.CreateCampaignResponse;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -18,11 +20,14 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Set;
+
 @RestController
 @RequestMapping(Endpoint.Campaign.ROOT)
 @RequiredArgsConstructor
 public class CampaignController {
 	private final CampaignService campaignService;
+	private final ProviderService providerService;
 
 	@PostMapping
 	@PreAuthorize("hasAuthority('ARTIST')")
@@ -35,6 +40,26 @@ public class CampaignController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		}
 	}
+
+	@GetMapping("/provider")
+	@PreAuthorize("hasAuthority('ARTIST')")
+	public Set<CampaignProviderResponse> getProviderSupportInventoryItems(Authentication authentication,
+																		  @ParameterObject @RequestParam Set<Long> inventoryItemIds) {
+		long artistId = (long) authentication.getPrincipal();
+		try {
+			return providerService.getAllSupportedInventoryItems(artistId, inventoryItemIds);
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
+	}
+
+	/*@PutMapping("/{id}")
+	@PreAuthorize("hasAuthority('ARTIST')")
+	public CreateCampaignResponse updateCampaign(Authentication authentication,
+												 @RequestBody @Validated CreateCampaignRequest request) {
+		long artistId = (long) authentication.getPrincipal();
+
+	}*/
 
 	@GetMapping
 	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN','STAFF')")
