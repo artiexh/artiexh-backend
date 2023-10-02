@@ -1,25 +1,40 @@
 package com.artiexh.data.jpa.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import io.hypersistence.utils.hibernate.id.Tsid;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "campaign")
 public class CampaignEntity {
 
 	@Id
+	@Tsid
 	@Column(name = "id", nullable = false)
 	private Long id;
 
 	@NotNull
 	@Column(name = "status", nullable = false)
 	private Byte status;
+
+	@NotNull
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "owner_id", nullable = false)
+	private ArtistEntity owner;
+
+	@OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<CustomProductEntity> customProducts = new LinkedHashSet<>();
+
+	@Column(name = "provider_id", nullable = false, length = 13)
+	private String providerId;
 
 }

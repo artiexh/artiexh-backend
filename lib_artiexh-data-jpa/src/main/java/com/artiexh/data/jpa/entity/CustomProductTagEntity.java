@@ -1,10 +1,6 @@
 package com.artiexh.data.jpa.entity;
 
-import io.hypersistence.utils.hibernate.id.Tsid;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,13 +9,14 @@ import lombok.Setter;
 @Entity
 @IdClass(CustomProductTagId.class)
 @Table(name = "custom_product_tag")
-public class CustomProductTag {
+public class CustomProductTagEntity {
 
 	@Id
-	@Tsid
+	@Column(name = "custom_product_id", nullable = false)
 	private Long customProductId;
 
 	@Id
+	@Column(name = "name", nullable = false)
 	private String name;
 
 }
