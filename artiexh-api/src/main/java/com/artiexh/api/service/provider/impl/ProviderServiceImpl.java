@@ -2,12 +2,15 @@ package com.artiexh.api.service.provider.impl;
 
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.provider.ProviderService;
+import com.artiexh.data.jpa.entity.ProductVariantProviderEntity;
 import com.artiexh.data.jpa.entity.ProviderEntity;
 import com.artiexh.data.jpa.repository.ProductBaseRepository;
+import com.artiexh.data.jpa.repository.ProductVariantProviderRepository;
 import com.artiexh.data.jpa.repository.ProviderRepository;
 import com.artiexh.model.domain.Provider;
 import com.artiexh.model.mapper.CycleAvoidingMappingContext;
 import com.artiexh.model.mapper.ProviderMapper;
+import com.artiexh.model.rest.provider.ProviderConfigResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +25,7 @@ public class ProviderServiceImpl implements ProviderService {
 	private final ProviderMapper providerMapper;
 	private final ProviderRepository providerRepository;
 	private final ProductBaseRepository productBaseRepository;
+	private final ProductVariantProviderRepository providerConfigRepository;
 
 	@Override
 	@Transactional
@@ -63,5 +67,12 @@ public class ProviderServiceImpl implements ProviderService {
 	public Page<Provider> getInPage(Specification<ProviderEntity> specification, Pageable pageable) {
 		Page<ProviderEntity> page = providerRepository.findAll(specification, pageable);
 		return page.map(item -> providerMapper.entityToDomain(item, new CycleAvoidingMappingContext()));
+	}
+
+	@Override
+	public Page<ProviderConfigResponse> getAllConfig(Specification<ProductVariantProviderEntity> specification,
+													 Pageable pageable) {
+		return providerConfigRepository.findAll(specification, pageable)
+			.map(providerMapper::productVariantProviderEntityToProviderConfigResponse);
 	}
 }

@@ -112,6 +112,7 @@ public final class Endpoint {
 	public static class Provider {
 		public static final String ROOT = PREFIX + "/provider";
 		public static final String DETAIL = "/{id}";
+		public static final String CONFIG = "/{id}/config";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)

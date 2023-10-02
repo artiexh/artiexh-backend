@@ -1,8 +1,9 @@
 package com.artiexh.model.mapper;
 
+import com.artiexh.data.jpa.entity.ProductVariantProviderEntity;
 import com.artiexh.data.jpa.entity.ProviderEntity;
 import com.artiexh.model.domain.Provider;
-import com.artiexh.model.rest.productvariant.ProductVariantDetail;
+import com.artiexh.model.rest.provider.ProviderConfigResponse;
 import com.artiexh.model.rest.provider.ProviderDetail;
 import com.artiexh.model.rest.provider.ProviderInfo;
 import org.mapstruct.*;
@@ -42,4 +43,8 @@ public interface ProviderMapper {
 	default Provider businessCodeToDomain(String businessCode) {
 		return Provider.builder().businessCode(businessCode).build();
 	}
+
+	@Mapping(target = "variantId", source = "id.productVariantId")
+	ProviderConfigResponse productVariantProviderEntityToProviderConfigResponse(ProductVariantProviderEntity entity);
+
 }
