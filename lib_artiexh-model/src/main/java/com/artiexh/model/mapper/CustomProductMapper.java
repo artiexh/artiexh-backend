@@ -2,7 +2,7 @@ package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.CustomProductEntity;
 import com.artiexh.data.jpa.entity.CustomProductTagEntity;
-import com.artiexh.model.rest.campaign.request.CreateCustomProductRequest;
+import com.artiexh.model.rest.campaign.request.CustomProductRequest;
 import com.artiexh.model.rest.campaign.response.CustomProductResponse;
 import org.mapstruct.*;
 
@@ -18,7 +18,7 @@ public interface CustomProductMapper {
 	@Mapping(target = "inventoryItem.id", source = "inventoryItemId")
 	@Mapping(target = "category.id", source = "productCategoryId")
 	@Mapping(target = "tags", ignore = true)
-	CustomProductEntity createRequestToEntity(CreateCustomProductRequest request);
+	CustomProductEntity createRequestToEntity(CustomProductRequest request);
 
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "campaign", ignore = true)
@@ -27,7 +27,7 @@ public interface CustomProductMapper {
 	@Mapping(target = "inventoryItem.id", source = "inventoryItemId")
 	@Mapping(target = "category.id", source = "productCategoryId")
 	@Mapping(target = "tags", ignore = true)
-	void createRequestToEntity(CreateCustomProductRequest request, @MappingTarget CustomProductEntity entity);
+	void createRequestToEntity(CustomProductRequest request, @MappingTarget CustomProductEntity entity);
 
 	default String customProductTagEntityToName(CustomProductTagEntity tagEntity) {
 		if (tagEntity == null) {

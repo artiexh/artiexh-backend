@@ -1,19 +1,22 @@
 package com.artiexh.api.service.campaign;
 
 import com.artiexh.data.jpa.entity.CampaignEntity;
-import com.artiexh.model.rest.campaign.request.CreateCampaignRequest;
-import com.artiexh.model.rest.campaign.request.UpdateCampaignRequest;
-import com.artiexh.model.rest.campaign.response.CreateCampaignResponse;
+import com.artiexh.model.rest.campaign.request.CampaignRequest;
+import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
+import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 public interface CampaignService {
 
-	CreateCampaignResponse createCampaign(Long ownerId, CreateCampaignRequest request);
+	CampaignResponse createCampaign(Long ownerId, CampaignRequest request);
 
-	CreateCampaignResponse updateCampaign(Long ownerId, UpdateCampaignRequest request);
+	CampaignResponse updateCampaign(Long ownerId, CampaignRequest request);
 
-	Page<CreateCampaignResponse> getAllCampaigns(Specification<CampaignEntity> specification, Pageable pageable);
+	Page<CampaignResponse> getAllCampaigns(Specification<CampaignEntity> specification, Pageable pageable);
 
+	CampaignResponse submitCampaign(Long artistId, UpdateCampaignStatusRequest request);
+
+	CampaignResponse reviewCampaign(Long staffId, UpdateCampaignStatusRequest request);
 }

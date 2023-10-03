@@ -2,7 +2,7 @@ package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.CampaignEntity;
 import com.artiexh.model.domain.CampaignStatus;
-import com.artiexh.model.rest.campaign.response.CreateCampaignResponse;
+import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
@@ -12,7 +12,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 )
 public interface CampaignMapper {
 
-	CreateCampaignResponse entityToResponse(CampaignEntity entity);
+	CampaignResponse entityToResponse(CampaignEntity entity);
 
 	default CampaignStatus campaignStatusFrom(byte value) {
 		return CampaignStatus.fromValue(value);
