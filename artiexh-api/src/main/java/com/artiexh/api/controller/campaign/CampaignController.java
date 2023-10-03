@@ -9,6 +9,7 @@ import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.campaign.request.CampaignRequest;
 import com.artiexh.model.rest.campaign.request.CampaignRequestFilter;
 import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
+import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignProviderResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -33,8 +35,8 @@ public class CampaignController {
 
 	@PostMapping
 	@PreAuthorize("hasAuthority('ARTIST')")
-	public CampaignResponse createCampaign(Authentication authentication,
-										   @RequestBody @Validated CampaignRequest request) {
+	public CampaignDetailResponse createCampaign(Authentication authentication,
+												 @RequestBody @Validated CampaignRequest request) {
 		long artistId = (long) authentication.getPrincipal();
 		try {
 			return campaignService.createCampaign(artistId, request);
@@ -45,9 +47,9 @@ public class CampaignController {
 
 	@PutMapping("/{id}")
 	@PreAuthorize("hasAuthority('ARTIST')")
-	public CampaignResponse updateCampaign(Authentication authentication,
-										   @PathVariable Long id,
-										   @RequestBody @Validated CampaignRequest request) {
+	public CampaignDetailResponse updateCampaign(Authentication authentication,
+												 @PathVariable Long id,
+												 @RequestBody @Validated CampaignRequest request) {
 		long artistId = (long) authentication.getPrincipal();
 		request.setId(id);
 		try {
@@ -61,9 +63,9 @@ public class CampaignController {
 
 	@PatchMapping("/{id}/status")
 	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN','STAFF')")
-	public CampaignResponse updateStatus(Authentication authentication,
-										 @PathVariable Long id,
-										 @RequestBody @Validated UpdateCampaignStatusRequest request) {
+	public CampaignDetailResponse updateStatus(Authentication authentication,
+											   @PathVariable Long id,
+											   @RequestBody @Validated UpdateCampaignStatusRequest request) {
 		request.setId(id);
 
 		var role = authentication.getAuthorities().stream()
@@ -76,7 +78,7 @@ public class CampaignController {
 
 		try {
 			return switch (role) {
-				case ARTIST -> campaignService.submitCampaign(userId, request);
+				case ARTIST -> campaignService.artistUpdateStatus(userId, request);
 				case ADMIN, STAFF -> campaignService.reviewCampaign(userId, request);
 				default -> throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has no role");
 			};
@@ -125,6 +127,23 @@ public class CampaignController {
 
 		var response = campaignService.getAllCampaigns(filter.getSpecification(), paginationAndSortingRequest.getPageable());
 		return new PageResponse<>(response);
+	}
+
+	@GetMapping("/{id}")
+	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN','STAFF')")
+	public CampaignDetailResponse getCampaign(Authentication authentication,
+											  @PathVariable Long id) {
+		Long userId = (Long) authentication.getPrincipal();
+
+		try {
+			return campaignService.getCampaignDetail(userId, id);
+		} catch (UsernameNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ex.getMessage(), ex);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, ex.getMessage(), ex);
+		}
 	}
 
 }

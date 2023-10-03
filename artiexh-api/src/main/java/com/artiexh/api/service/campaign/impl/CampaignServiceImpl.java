@@ -1,23 +1,24 @@
 package com.artiexh.api.service.campaign.impl;
 
 import com.artiexh.api.service.campaign.CampaignService;
-import com.artiexh.data.jpa.entity.ArtistEntity;
-import com.artiexh.data.jpa.entity.CampaignEntity;
-import com.artiexh.data.jpa.entity.CustomProductEntity;
-import com.artiexh.data.jpa.entity.CustomProductTagEntity;
+import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.*;
+import com.artiexh.model.domain.CampaignHistoryAction;
 import com.artiexh.model.domain.CampaignStatus;
+import com.artiexh.model.domain.Role;
 import com.artiexh.model.mapper.CampaignMapper;
 import com.artiexh.model.mapper.CustomProductMapper;
 import com.artiexh.model.rest.campaign.request.CampaignRequest;
 import com.artiexh.model.rest.campaign.request.CustomProductRequest;
 import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
+import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,13 +37,15 @@ public class CampaignServiceImpl implements CampaignService {
 	private final ProviderRepository providerRepository;
 	private final ProductCategoryRepository productCategoryRepository;
 	private final CustomProductTagRepository customProductTagRepository;
+	private final CampaignHistoryRepository campaignHistoryRepository;
+	private final AccountRepository accountRepository;
 	private final CustomProductMapper customProductMapper;
 	private final CampaignMapper campaignMapper;
 
 	@Override
 	@Transactional
-	public CampaignResponse createCampaign(Long ownerId, CampaignRequest request) {
-		validateCreateCustomProductRequest(ownerId, request.getProviderId(), CampaignStatus.DRAFT, request.getCustomProducts());
+	public CampaignDetailResponse createCampaign(Long ownerId, CampaignRequest request) {
+		validateCreateCustomProductRequest(ownerId, request.getProviderId(), null, request.getCustomProducts());
 
 		var campaignEntity = campaignRepository.save(
 			CampaignEntity.builder()
@@ -54,7 +57,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 		var saveCustomProducts = request.getCustomProducts().stream().map(customProductRequest -> {
 			var inventoryItemEntity = inventoryItemRepository.getReferenceById(customProductRequest.getInventoryItemId());
-			inventoryItemEntity.setIsLock(true);
+			inventoryItemEntity.setCampaignLock(campaignEntity.getId());
 			inventoryItemRepository.save(inventoryItemEntity);
 
 			var customProductEntity = customProductMapper.createRequestToEntity(customProductRequest);
@@ -67,16 +70,22 @@ public class CampaignServiceImpl implements CampaignService {
 			return savedCustomProductEntity;
 		}).collect(Collectors.toSet());
 
+		var createCampaignHistoryEntity = campaignHistoryRepository.save(CampaignHistoryEntity.builder()
+			.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())
+			.action(CampaignHistoryAction.CREATE.getByteValue())
+			.build()
+		);
 
 		campaignEntity.setCustomProducts(saveCustomProducts);
-		return campaignMapper.entityToResponse(campaignEntity);
+		campaignEntity.setCampaignHistories(Set.of(createCampaignHistoryEntity));
+		return campaignMapper.entityToDetailResponse(campaignEntity);
 	}
 
 	@Override
 	@Transactional
-	public CampaignResponse updateCampaign(Long ownerId, CampaignRequest request) {
+	public CampaignDetailResponse updateCampaign(Long ownerId, CampaignRequest request) {
 		var oldCampaignEntity = campaignRepository.findById(request.getId())
-			.orElseThrow(() -> new EntityNotFoundException("campaignId " + request.getId() + " not valid"));
+			.orElseThrow(() -> new EntityNotFoundException("campaign " + request.getId() + " not valid"));
 
 		if (!oldCampaignEntity.getOwner().getId().equals(ownerId)) {
 			throw new IllegalArgumentException("You not own campaign " + request.getId());
@@ -87,11 +96,7 @@ public class CampaignServiceImpl implements CampaignService {
 			throw new IllegalArgumentException("You can only update campaign with status DRAFT or REQUEST_CHANGE");
 		}
 
-		validateCreateCustomProductRequest(ownerId,
-			request.getProviderId(),
-			CampaignStatus.fromValue(oldCampaignEntity.getStatus()),
-			request.getCustomProducts()
-		);
+		validateCreateCustomProductRequest(ownerId, request.getProviderId(), oldCampaignEntity.getId(), request.getCustomProducts());
 
 		var inventoryItemToCustomProductMap = oldCampaignEntity.getCustomProducts().stream()
 			.collect(Collectors.toMap(
@@ -106,7 +111,7 @@ public class CampaignServiceImpl implements CampaignService {
 					customProductMapper.createRequestToEntity(customProductRequest, customProductEntity);
 				} else {
 					var inventoryItemEntity = inventoryItemRepository.getReferenceById(customProductRequest.getInventoryItemId());
-					inventoryItemEntity.setIsLock(true);
+					inventoryItemEntity.setCampaignLock(oldCampaignEntity.getId());
 					inventoryItemRepository.save(inventoryItemEntity);
 
 					customProductEntity = customProductMapper.createRequestToEntity(customProductRequest);
@@ -127,7 +132,7 @@ public class CampaignServiceImpl implements CampaignService {
 		oldCampaignEntity.getCustomProducts().clear();
 		oldCampaignEntity.getCustomProducts().addAll(saveCustomProducts);
 		var savedCampaignEntity = campaignRepository.save(oldCampaignEntity);
-		return campaignMapper.entityToResponse(savedCampaignEntity);
+		return campaignMapper.entityToDetailResponse(savedCampaignEntity);
 	}
 
 	private List<CustomProductTagEntity> saveCustomProductTag(Long customProductId, Set<String> tags) {
@@ -142,7 +147,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 	private void validateCreateCustomProductRequest(Long ownerId,
 													String providerId,
-													CampaignStatus status,
+													Long campaignId,
 													Set<CustomProductRequest> requests) {
 		if (!providerRepository.existsById(providerId)) {
 			throw new IllegalArgumentException("providerId " + providerId + " not valid");
@@ -160,10 +165,8 @@ public class CampaignServiceImpl implements CampaignService {
 				throw new IllegalArgumentException("you not own inventoryItem " + customProductRequest.getInventoryItemId());
 			}
 
-			if (Boolean.TRUE.equals(inventoryItemEntity.getIsLock())) {
-				if (status != CampaignStatus.DRAFT && status != CampaignStatus.REQUEST_CHANGE) {
-					throw new IllegalArgumentException("inventoryItem " + customProductRequest.getInventoryItemId() + " is locked");
-				}
+			if (inventoryItemEntity.getCampaignLock() != null && !inventoryItemEntity.getCampaignLock().equals(campaignId)) {
+				throw new IllegalArgumentException("inventoryItem " + customProductRequest.getInventoryItemId() + " is locked by another campaign " + campaignId);
 			}
 
 			var providerConfig = inventoryItemEntity.getVariant().getProviderConfigs().stream()
@@ -187,12 +190,23 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
-	@Transactional
-	public CampaignResponse submitCampaign(Long artistId, UpdateCampaignStatusRequest request) {
-		if (request.getStatus() != CampaignStatus.WAITING) {
-			throw new IllegalArgumentException("You can only submit campaign to status WAITING");
+	public CampaignDetailResponse getCampaignDetail(Long userId, Long campaignId) {
+		var userEntity = accountRepository.findById(userId)
+			.orElseThrow(() -> new UsernameNotFoundException("user " + userId + " not found"));
+
+		var campaignEntity = campaignRepository.findById(campaignId)
+			.orElseThrow(() -> new EntityNotFoundException("campaignId " + campaignId + " not valid"));
+
+		if (userEntity.getRole() == Role.ARTIST.getByteValue() && campaignEntity.getOwner().getId() != userId) {
+			throw new IllegalArgumentException("You not own campaign " + campaignId);
 		}
 
+		return campaignMapper.entityToDetailResponse(campaignEntity);
+	}
+
+	@Override
+	@Transactional
+	public CampaignDetailResponse artistUpdateStatus(Long artistId, UpdateCampaignStatusRequest request) {
 		var campaignEntity = campaignRepository.findById(request.getId())
 			.orElseThrow(() -> new EntityNotFoundException("campaignId " + request.getId() + " not valid"));
 
@@ -200,17 +214,131 @@ public class CampaignServiceImpl implements CampaignService {
 			throw new IllegalArgumentException("You not own campaign " + request.getId());
 		}
 
+		return switch (request.getStatus()) {
+			case CANCELED -> artistCancelCampaign(campaignEntity, request.getMessage());
+			case WAITING -> artistSubmitCampaign(campaignEntity, request.getMessage());
+			default -> throw new IllegalArgumentException("You can only update campaign to status WAITING or CANCELED");
+		};
+	}
+
+	private CampaignDetailResponse artistCancelCampaign(CampaignEntity campaignEntity, String message) {
+		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue() &&
+			campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
+			throw new IllegalArgumentException("You can only update campaign from DRAFT or WAITING to CANCELED");
+		}
+
+		campaignEntity.getCustomProducts().stream()
+			.map(CustomProductEntity::getInventoryItem)
+			.forEach(inventoryItemEntity -> {
+				inventoryItemEntity.setCampaignLock(null);
+				inventoryItemRepository.save(inventoryItemEntity);
+			});
+
+		campaignEntity.setStatus(CampaignStatus.CANCELED.getByteValue());
+		campaignEntity.getCampaignHistories().add(
+			CampaignHistoryEntity.builder()
+				.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())
+				.action(CampaignHistoryAction.CANCEL.getByteValue())
+				.message(message)
+				.build()
+		);
+
+		return campaignMapper.entityToDetailResponse(campaignRepository.save(campaignEntity));
+	}
+
+	private CampaignDetailResponse artistSubmitCampaign(CampaignEntity campaignEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue()) {
-			throw new IllegalArgumentException("You can only submit campaign from status DRAFT");
+			throw new IllegalArgumentException("You can only update campaign from DRAFT to WAITING");
 		}
 
 		campaignEntity.setStatus(CampaignStatus.WAITING.getByteValue());
-		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
+		campaignEntity.getCampaignHistories().add(
+			CampaignHistoryEntity.builder()
+				.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())
+				.action(CampaignHistoryAction.SUMMIT.getByteValue())
+				.message(message)
+				.build()
+		);
+
+		return campaignMapper.entityToDetailResponse(campaignRepository.save(campaignEntity));
 	}
+
 
 	@Override
 	@Transactional
-	public CampaignResponse reviewCampaign(Long staffId, UpdateCampaignStatusRequest request) {
-		throw new UnsupportedOperationException();
+	public CampaignDetailResponse reviewCampaign(Long staffId, UpdateCampaignStatusRequest request) {
+		var campaignEntity = campaignRepository.findById(request.getId())
+			.orElseThrow(() -> new EntityNotFoundException("campaignId " + request.getId() + " not valid"));
+
+		return switch (request.getStatus()) {
+			case REQUEST_CHANGE -> staffRequestChangeCampaign(campaignEntity, request.getMessage());
+			case APPROVED -> staffApproveCampaign(campaignEntity, request.getMessage());
+			case REJECTED -> staffRejectCampaign(campaignEntity, request.getMessage());
+			default -> throw new IllegalArgumentException("You can only update campaign to status WAITING or CANCELED");
+		};
 	}
+
+	private CampaignDetailResponse staffRequestChangeCampaign(CampaignEntity campaignEntity, String message) {
+		if (campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
+			throw new IllegalArgumentException("You can only update campaign from WAITING to REQUEST_CHANGE");
+		}
+
+		campaignEntity.setStatus(CampaignStatus.REQUEST_CHANGE.getByteValue());
+		campaignEntity.getCampaignHistories().add(
+			CampaignHistoryEntity.builder()
+				.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())
+				.action(CampaignHistoryAction.REQUEST_CHANGE.getByteValue())
+				.message(message)
+				.build()
+		);
+
+		return campaignMapper.entityToDetailResponse(campaignRepository.save(campaignEntity));
+	}
+
+	private CampaignDetailResponse staffApproveCampaign(CampaignEntity campaignEntity, String message) {
+		if (campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
+			throw new IllegalArgumentException("You can only update campaign from WAITING to APPROVED");
+		}
+
+		campaignEntity.getCustomProducts().stream()
+			.map(CustomProductEntity::getInventoryItem)
+			.forEach(inventoryItemEntity -> {
+				inventoryItemEntity.setCampaignLock(null);
+				inventoryItemRepository.save(inventoryItemEntity);
+			});
+		campaignEntity.setStatus(CampaignStatus.APPROVED.getByteValue());
+		campaignEntity.getCampaignHistories().add(
+			CampaignHistoryEntity.builder()
+				.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())
+				.action(CampaignHistoryAction.APPROVE.getByteValue())
+				.message(message)
+				.build()
+		);
+
+		return campaignMapper.entityToDetailResponse(campaignRepository.save(campaignEntity));
+	}
+
+	private CampaignDetailResponse staffRejectCampaign(CampaignEntity campaignEntity, String message) {
+		if (campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
+			throw new IllegalArgumentException("You can only update campaign from WAITING to REJECTED");
+		}
+
+		campaignEntity.getCustomProducts().stream()
+			.map(CustomProductEntity::getInventoryItem)
+			.forEach(inventoryItemEntity -> {
+				inventoryItemEntity.setCampaignLock(null);
+				inventoryItemRepository.save(inventoryItemEntity);
+			});
+		campaignEntity.setStatus(CampaignStatus.REJECTED.getByteValue());
+		campaignEntity.getCampaignHistories().add(
+			CampaignHistoryEntity.builder()
+				.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())
+				.action(CampaignHistoryAction.REJECT.getByteValue())
+				.message(message)
+				.build()
+		);
+
+		return campaignMapper.entityToDetailResponse(campaignRepository.save(campaignEntity));
+	}
+
 }
