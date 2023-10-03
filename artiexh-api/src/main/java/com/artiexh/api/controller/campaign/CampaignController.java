@@ -6,11 +6,12 @@ import com.artiexh.api.service.provider.ProviderService;
 import com.artiexh.model.domain.Role;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
+import com.artiexh.model.rest.campaign.request.CampaignRequest;
 import com.artiexh.model.rest.campaign.request.CampaignRequestFilter;
-import com.artiexh.model.rest.campaign.request.CreateCampaignRequest;
-import com.artiexh.model.rest.campaign.request.UpdateCampaignRequest;
+import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
 import com.artiexh.model.rest.campaign.response.CampaignProviderResponse;
-import com.artiexh.model.rest.campaign.response.CreateCampaignResponse;
+import com.artiexh.model.rest.campaign.response.CampaignResponse;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
@@ -32,8 +33,8 @@ public class CampaignController {
 
 	@PostMapping
 	@PreAuthorize("hasAuthority('ARTIST')")
-	public CreateCampaignResponse createCampaign(Authentication authentication,
-												 @RequestBody @Validated CreateCampaignRequest request) {
+	public CampaignResponse createCampaign(Authentication authentication,
+										   @RequestBody @Validated CampaignRequest request) {
 		long artistId = (long) authentication.getPrincipal();
 		try {
 			return campaignService.createCampaign(artistId, request);
@@ -44,16 +45,49 @@ public class CampaignController {
 
 	@PutMapping("/{id}")
 	@PreAuthorize("hasAuthority('ARTIST')")
-	public CreateCampaignResponse updateCampaign(Authentication authentication,
-												 @PathVariable Long id,
-												 @RequestBody @Validated UpdateCampaignRequest request) {
+	public CampaignResponse updateCampaign(Authentication authentication,
+										   @PathVariable Long id,
+										   @RequestBody @Validated CampaignRequest request) {
 		long artistId = (long) authentication.getPrincipal();
 		request.setId(id);
 		try {
 			return campaignService.updateCampaign(artistId, request);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
 		}
+	}
+
+	@PatchMapping("/{id}/status")
+	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN','STAFF')")
+	public CampaignResponse updateStatus(Authentication authentication,
+										 @PathVariable Long id,
+										 @RequestBody @Validated UpdateCampaignStatusRequest request) {
+		request.setId(id);
+
+		var role = authentication.getAuthorities().stream()
+			.map(GrantedAuthority::getAuthority)
+			.findFirst()
+			.map(Role::valueOf)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has no role"));
+
+		Long userId = (Long) authentication.getPrincipal();
+
+		try {
+			return switch (role) {
+				case ARTIST -> campaignService.submitCampaign(userId, request);
+				case ADMIN, STAFF -> campaignService.reviewCampaign(userId, request);
+				default -> throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has no role");
+			};
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+		} catch (UnsupportedOperationException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+		}
+
 	}
 
 	@GetMapping("/provider")
@@ -70,9 +104,9 @@ public class CampaignController {
 
 	@GetMapping
 	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN','STAFF')")
-	public PageResponse<CreateCampaignResponse> getAllCampaigns(Authentication authentication,
-																@ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
-																@ParameterObject CampaignRequestFilter filter) {
+	public PageResponse<CampaignResponse> getAllCampaigns(Authentication authentication,
+														  @ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
+														  @ParameterObject CampaignRequestFilter filter) {
 		var role = authentication.getAuthorities().stream()
 			.map(GrantedAuthority::getAuthority)
 			.findFirst()

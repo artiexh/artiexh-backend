@@ -13,7 +13,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateCampaignResponse {
+public class CampaignResponse {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	private CampaignStatus status;
