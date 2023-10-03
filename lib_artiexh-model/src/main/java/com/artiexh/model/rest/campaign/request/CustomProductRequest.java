@@ -14,7 +14,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateCustomProductRequest {
+public class CustomProductRequest {
 	@NotNull
 	private Long inventoryItemId;
 

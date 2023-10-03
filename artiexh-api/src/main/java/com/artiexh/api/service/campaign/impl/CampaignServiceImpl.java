@@ -9,10 +9,10 @@ import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.CampaignStatus;
 import com.artiexh.model.mapper.CampaignMapper;
 import com.artiexh.model.mapper.CustomProductMapper;
-import com.artiexh.model.rest.campaign.request.CreateCampaignRequest;
-import com.artiexh.model.rest.campaign.request.CreateCustomProductRequest;
-import com.artiexh.model.rest.campaign.request.UpdateCampaignRequest;
-import com.artiexh.model.rest.campaign.response.CreateCampaignResponse;
+import com.artiexh.model.rest.campaign.request.CampaignRequest;
+import com.artiexh.model.rest.campaign.request.CustomProductRequest;
+import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
+import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -41,7 +41,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Override
 	@Transactional
-	public CreateCampaignResponse createCampaign(Long ownerId, CreateCampaignRequest request) {
+	public CampaignResponse createCampaign(Long ownerId, CampaignRequest request) {
 		validateCreateCustomProductRequest(ownerId, request.getProviderId(), CampaignStatus.DRAFT, request.getCustomProducts());
 
 		var campaignEntity = campaignRepository.save(
@@ -74,7 +74,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Override
 	@Transactional
-	public CreateCampaignResponse updateCampaign(Long ownerId, UpdateCampaignRequest request) {
+	public CampaignResponse updateCampaign(Long ownerId, CampaignRequest request) {
 		var oldCampaignEntity = campaignRepository.findById(request.getId())
 			.orElseThrow(() -> new EntityNotFoundException("campaignId " + request.getId() + " not valid"));
 
@@ -123,6 +123,7 @@ public class CampaignServiceImpl implements CampaignService {
 			})
 			.collect(Collectors.toSet());
 
+		oldCampaignEntity.setStatus(CampaignStatus.DRAFT.getByteValue());
 		oldCampaignEntity.getCustomProducts().clear();
 		oldCampaignEntity.getCustomProducts().addAll(saveCustomProducts);
 		var savedCampaignEntity = campaignRepository.save(oldCampaignEntity);
@@ -142,7 +143,7 @@ public class CampaignServiceImpl implements CampaignService {
 	private void validateCreateCustomProductRequest(Long ownerId,
 													String providerId,
 													CampaignStatus status,
-													Set<? extends CreateCustomProductRequest> requests) {
+													Set<CustomProductRequest> requests) {
 		if (!providerRepository.existsById(providerId)) {
 			throw new IllegalArgumentException("providerId " + providerId + " not valid");
 		}
@@ -181,7 +182,35 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
-	public Page<CreateCampaignResponse> getAllCampaigns(Specification<CampaignEntity> specification, Pageable pageable) {
+	public Page<CampaignResponse> getAllCampaigns(Specification<CampaignEntity> specification, Pageable pageable) {
 		return campaignRepository.findAll(specification, pageable).map(campaignMapper::entityToResponse);
+	}
+
+	@Override
+	@Transactional
+	public CampaignResponse submitCampaign(Long artistId, UpdateCampaignStatusRequest request) {
+		if (request.getStatus() != CampaignStatus.WAITING) {
+			throw new IllegalArgumentException("You can only submit campaign to status WAITING");
+		}
+
+		var campaignEntity = campaignRepository.findById(request.getId())
+			.orElseThrow(() -> new EntityNotFoundException("campaignId " + request.getId() + " not valid"));
+
+		if (!campaignEntity.getOwner().getId().equals(artistId)) {
+			throw new IllegalArgumentException("You not own campaign " + request.getId());
+		}
+
+		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue()) {
+			throw new IllegalArgumentException("You can only submit campaign from status DRAFT");
+		}
+
+		campaignEntity.setStatus(CampaignStatus.WAITING.getByteValue());
+		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
+	}
+
+	@Override
+	@Transactional
+	public CampaignResponse reviewCampaign(Long staffId, UpdateCampaignStatusRequest request) {
+		throw new UnsupportedOperationException();
 	}
 }
