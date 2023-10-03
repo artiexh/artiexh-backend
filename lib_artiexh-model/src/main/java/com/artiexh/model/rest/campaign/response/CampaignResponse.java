@@ -1,6 +1,5 @@
 package com.artiexh.model.rest.campaign.response;
 
-import com.artiexh.model.domain.CampaignHistory;
 import com.artiexh.model.domain.CampaignStatus;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -8,8 +7,6 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -19,8 +16,6 @@ public class CampaignResponse {
 	private Long id;
 	private CampaignStatus status;
 	private Owner owner;
-	private Set<CustomProductResponse> customProducts;
-	private Set<CampaignHistory> campaignHistories;
 
 	@Data
 	@NoArgsConstructor

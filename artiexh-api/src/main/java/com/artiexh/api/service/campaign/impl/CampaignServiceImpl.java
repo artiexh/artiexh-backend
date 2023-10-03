@@ -5,17 +5,20 @@ import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.CampaignHistoryAction;
 import com.artiexh.model.domain.CampaignStatus;
+import com.artiexh.model.domain.Role;
 import com.artiexh.model.mapper.CampaignMapper;
 import com.artiexh.model.mapper.CustomProductMapper;
 import com.artiexh.model.rest.campaign.request.CampaignRequest;
 import com.artiexh.model.rest.campaign.request.CustomProductRequest;
 import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
+import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,12 +38,13 @@ public class CampaignServiceImpl implements CampaignService {
 	private final ProductCategoryRepository productCategoryRepository;
 	private final CustomProductTagRepository customProductTagRepository;
 	private final CampaignHistoryRepository campaignHistoryRepository;
+	private final AccountRepository accountRepository;
 	private final CustomProductMapper customProductMapper;
 	private final CampaignMapper campaignMapper;
 
 	@Override
 	@Transactional
-	public CampaignResponse createCampaign(Long ownerId, CampaignRequest request) {
+	public CampaignDetailResponse createCampaign(Long ownerId, CampaignRequest request) {
 		validateCreateCustomProductRequest(ownerId, request.getProviderId(), null, request.getCustomProducts());
 
 		var campaignEntity = campaignRepository.save(
@@ -74,14 +78,14 @@ public class CampaignServiceImpl implements CampaignService {
 
 		campaignEntity.setCustomProducts(saveCustomProducts);
 		campaignEntity.setCampaignHistories(Set.of(createCampaignHistoryEntity));
-		return campaignMapper.entityToResponse(campaignEntity);
+		return campaignMapper.entityToDetailResponse(campaignEntity);
 	}
 
 	@Override
 	@Transactional
-	public CampaignResponse updateCampaign(Long ownerId, CampaignRequest request) {
+	public CampaignDetailResponse updateCampaign(Long ownerId, CampaignRequest request) {
 		var oldCampaignEntity = campaignRepository.findById(request.getId())
-			.orElseThrow(() -> new EntityNotFoundException("campaignId " + request.getId() + " not valid"));
+			.orElseThrow(() -> new EntityNotFoundException("campaign " + request.getId() + " not valid"));
 
 		if (!oldCampaignEntity.getOwner().getId().equals(ownerId)) {
 			throw new IllegalArgumentException("You not own campaign " + request.getId());
@@ -128,7 +132,7 @@ public class CampaignServiceImpl implements CampaignService {
 		oldCampaignEntity.getCustomProducts().clear();
 		oldCampaignEntity.getCustomProducts().addAll(saveCustomProducts);
 		var savedCampaignEntity = campaignRepository.save(oldCampaignEntity);
-		return campaignMapper.entityToResponse(savedCampaignEntity);
+		return campaignMapper.entityToDetailResponse(savedCampaignEntity);
 	}
 
 	private List<CustomProductTagEntity> saveCustomProductTag(Long customProductId, Set<String> tags) {
@@ -186,8 +190,23 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
+	public CampaignDetailResponse getCampaignDetail(Long userId, Long campaignId) {
+		var userEntity = accountRepository.findById(userId)
+			.orElseThrow(() -> new UsernameNotFoundException("user " + userId + " not found"));
+
+		var campaignEntity = campaignRepository.findById(campaignId)
+			.orElseThrow(() -> new EntityNotFoundException("campaignId " + campaignId + " not valid"));
+
+		if (userEntity.getRole() == Role.ARTIST.getByteValue() && campaignEntity.getOwner().getId() != userId) {
+			throw new IllegalArgumentException("You not own campaign " + campaignId);
+		}
+
+		return campaignMapper.entityToDetailResponse(campaignEntity);
+	}
+
+	@Override
 	@Transactional
-	public CampaignResponse artistUpdateStatus(Long artistId, UpdateCampaignStatusRequest request) {
+	public CampaignDetailResponse artistUpdateStatus(Long artistId, UpdateCampaignStatusRequest request) {
 		var campaignEntity = campaignRepository.findById(request.getId())
 			.orElseThrow(() -> new EntityNotFoundException("campaignId " + request.getId() + " not valid"));
 
@@ -202,7 +221,7 @@ public class CampaignServiceImpl implements CampaignService {
 		};
 	}
 
-	private CampaignResponse artistCancelCampaign(CampaignEntity campaignEntity, String message) {
+	private CampaignDetailResponse artistCancelCampaign(CampaignEntity campaignEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue() &&
 			campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
 			throw new IllegalArgumentException("You can only update campaign from DRAFT or WAITING to CANCELED");
@@ -224,10 +243,10 @@ public class CampaignServiceImpl implements CampaignService {
 				.build()
 		);
 
-		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
+		return campaignMapper.entityToDetailResponse(campaignRepository.save(campaignEntity));
 	}
 
-	private CampaignResponse artistSubmitCampaign(CampaignEntity campaignEntity, String message) {
+	private CampaignDetailResponse artistSubmitCampaign(CampaignEntity campaignEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue()) {
 			throw new IllegalArgumentException("You can only update campaign from DRAFT to WAITING");
 		}
@@ -241,13 +260,13 @@ public class CampaignServiceImpl implements CampaignService {
 				.build()
 		);
 
-		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
+		return campaignMapper.entityToDetailResponse(campaignRepository.save(campaignEntity));
 	}
 
 
 	@Override
 	@Transactional
-	public CampaignResponse reviewCampaign(Long staffId, UpdateCampaignStatusRequest request) {
+	public CampaignDetailResponse reviewCampaign(Long staffId, UpdateCampaignStatusRequest request) {
 		var campaignEntity = campaignRepository.findById(request.getId())
 			.orElseThrow(() -> new EntityNotFoundException("campaignId " + request.getId() + " not valid"));
 
@@ -259,7 +278,7 @@ public class CampaignServiceImpl implements CampaignService {
 		};
 	}
 
-	private CampaignResponse staffRequestChangeCampaign(CampaignEntity campaignEntity, String message) {
+	private CampaignDetailResponse staffRequestChangeCampaign(CampaignEntity campaignEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
 			throw new IllegalArgumentException("You can only update campaign from WAITING to REQUEST_CHANGE");
 		}
@@ -273,10 +292,10 @@ public class CampaignServiceImpl implements CampaignService {
 				.build()
 		);
 
-		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
+		return campaignMapper.entityToDetailResponse(campaignRepository.save(campaignEntity));
 	}
 
-	private CampaignResponse staffApproveCampaign(CampaignEntity campaignEntity, String message) {
+	private CampaignDetailResponse staffApproveCampaign(CampaignEntity campaignEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
 			throw new IllegalArgumentException("You can only update campaign from WAITING to APPROVED");
 		}
@@ -296,10 +315,10 @@ public class CampaignServiceImpl implements CampaignService {
 				.build()
 		);
 
-		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
+		return campaignMapper.entityToDetailResponse(campaignRepository.save(campaignEntity));
 	}
 
-	private CampaignResponse staffRejectCampaign(CampaignEntity campaignEntity, String message) {
+	private CampaignDetailResponse staffRejectCampaign(CampaignEntity campaignEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
 			throw new IllegalArgumentException("You can only update campaign from WAITING to REJECTED");
 		}
@@ -319,7 +338,7 @@ public class CampaignServiceImpl implements CampaignService {
 				.build()
 		);
 
-		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
+		return campaignMapper.entityToDetailResponse(campaignRepository.save(campaignEntity));
 	}
 
 }

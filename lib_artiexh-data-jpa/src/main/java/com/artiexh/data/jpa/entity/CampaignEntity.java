@@ -37,7 +37,7 @@ public class CampaignEntity {
 	@Column(name = "provider_id", nullable = false, length = 13)
 	private String providerId;
 
-	@OneToMany(fetch = FetchType.EAGER,
+	@OneToMany(fetch = FetchType.LAZY,
 		cascade = CascadeType.ALL,
 		orphanRemoval = true)
 	@JoinColumn(name = "campaign_id")

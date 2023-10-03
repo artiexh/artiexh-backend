@@ -5,6 +5,7 @@ import com.artiexh.data.jpa.entity.CampaignHistoryEntity;
 import com.artiexh.model.domain.CampaignHistory;
 import com.artiexh.model.domain.CampaignHistoryAction;
 import com.artiexh.model.domain.CampaignStatus;
+import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,6 +18,8 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface CampaignMapper {
 
 	CampaignResponse entityToResponse(CampaignEntity entity);
+
+	CampaignDetailResponse entityToDetailResponse(CampaignEntity entity);
 
 	@Mapping(target = "eventTime", source = "id.eventTime")
 	@Mapping(target = "campaignId", source = "id.campaignId")

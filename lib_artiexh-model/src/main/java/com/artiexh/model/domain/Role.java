@@ -1,5 +1,8 @@
 package com.artiexh.model.domain;
 
+import lombok.Getter;
+
+@Getter
 public enum Role {
 	ADMIN(0),
 	USER(1),
@@ -21,7 +24,7 @@ public enum Role {
 		throw new IllegalArgumentException("No such value for Role: " + value);
 	}
 
-	public int getValue() {
-		return value;
+	public byte getByteValue() {
+		return (byte) value;
 	}
 }
