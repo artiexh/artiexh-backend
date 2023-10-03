@@ -1,11 +1,15 @@
 package com.artiexh.model.domain;
 
+import lombok.Getter;
+
+@Getter
 public enum CampaignStatus {
-	DRAFT(-1),
-	WAITING(0),
-	APPROVED(1),
-	REQUEST_CHANGE(2),
-	REJECTED(3);
+	CANCELED(-1),
+	DRAFT(0),
+	WAITING(1),
+	APPROVED(2),
+	REQUEST_CHANGE(3),
+	REJECTED(4);
 
 	private final int value;
 
@@ -20,10 +24,6 @@ public enum CampaignStatus {
 			}
 		}
 		throw new IllegalArgumentException("Unknown CampaignStatus value: " + value);
-	}
-
-	public int getValue() {
-		return value;
 	}
 
 	public byte getByteValue() {

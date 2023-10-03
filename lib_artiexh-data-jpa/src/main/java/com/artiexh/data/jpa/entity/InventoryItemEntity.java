@@ -37,7 +37,7 @@ public class InventoryItemEntity {
 	@Column(name = "combination_code", nullable = false)
 	private String combinationCode;
 
-	@Column(name = "is_lock")
-	private Boolean isLock;
+	@Column(name = "campaign_lock")
+	private Long campaignLock;
 
 }

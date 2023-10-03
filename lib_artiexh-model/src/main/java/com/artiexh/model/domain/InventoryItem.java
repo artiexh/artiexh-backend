@@ -18,5 +18,5 @@ public class InventoryItem {
 	private Artist artist;
 	private Set<ImageSet> imageSet;
 	private String combinationCode;
-	private Boolean isLock;
+	private Long campaignLock;
 }
