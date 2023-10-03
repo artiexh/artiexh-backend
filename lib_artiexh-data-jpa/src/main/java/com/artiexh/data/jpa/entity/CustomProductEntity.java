@@ -53,11 +53,17 @@ public class CustomProductEntity {
 	@Column(name = "description", length = 1000)
 	private String description;
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@OneToMany(
+		fetch = FetchType.LAZY,
+		orphanRemoval = true,
+		cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = "custom_product_id")
 	private Set<ProductAttachEntity> attaches;
 
-	@OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.REFRESH})
+	@OneToMany(
+		fetch = FetchType.EAGER,
+		orphanRemoval = true,
+		cascade = {CascadeType.DETACH, CascadeType.REFRESH})
 	@JoinColumn(name = "custom_product_id")
 	private Set<CustomProductTagEntity> tags = new LinkedHashSet<>();
 

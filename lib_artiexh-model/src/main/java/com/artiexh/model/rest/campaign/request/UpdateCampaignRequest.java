@@ -1,5 +1,6 @@
 package com.artiexh.model.rest.campaign.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -11,12 +12,15 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateCampaignRequest {
+public class UpdateCampaignRequest {
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private Long id;
 
 	@NotNull
 	private String providerId;
 
 	@Valid
-	private Set<CreateCustomProductRequest> customProducts;
+	private Set<UpdateCustomProductRequest> customProducts;
 
 }
