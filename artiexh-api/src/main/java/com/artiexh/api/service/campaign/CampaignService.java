@@ -16,7 +16,7 @@ public interface CampaignService {
 
 	Page<CampaignResponse> getAllCampaigns(Specification<CampaignEntity> specification, Pageable pageable);
 
-	CampaignResponse submitCampaign(Long artistId, UpdateCampaignStatusRequest request);
+	CampaignResponse artistUpdateStatus(Long artistId, UpdateCampaignStatusRequest request);
 
 	CampaignResponse reviewCampaign(Long staffId, UpdateCampaignStatusRequest request);
 }

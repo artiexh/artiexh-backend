@@ -76,7 +76,7 @@ public class CampaignController {
 
 		try {
 			return switch (role) {
-				case ARTIST -> campaignService.submitCampaign(userId, request);
+				case ARTIST -> campaignService.artistUpdateStatus(userId, request);
 				case ADMIN, STAFF -> campaignService.reviewCampaign(userId, request);
 				default -> throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has no role");
 			};

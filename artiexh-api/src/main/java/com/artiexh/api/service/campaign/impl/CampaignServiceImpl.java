@@ -182,11 +182,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Override
 	@Transactional
-	public CampaignResponse submitCampaign(Long artistId, UpdateCampaignStatusRequest request) {
-		if (request.getStatus() != CampaignStatus.WAITING) {
-			throw new IllegalArgumentException("You can only submit campaign to status WAITING");
-		}
-
+	public CampaignResponse artistUpdateStatus(Long artistId, UpdateCampaignStatusRequest request) {
 		var campaignEntity = campaignRepository.findById(request.getId())
 			.orElseThrow(() -> new EntityNotFoundException("campaignId " + request.getId() + " not valid"));
 
@@ -194,17 +190,78 @@ public class CampaignServiceImpl implements CampaignService {
 			throw new IllegalArgumentException("You not own campaign " + request.getId());
 		}
 
+		return switch (request.getStatus()) {
+			case CANCELED -> artistCancelCampaign(campaignEntity);
+			case WAITING -> artistSubmitCampaign(campaignEntity);
+			default -> throw new IllegalArgumentException("You can only update campaign to status WAITING or CANCELED");
+		};
+	}
+
+	private CampaignResponse artistCancelCampaign(CampaignEntity campaignEntity) {
+		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue() &&
+			campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
+			throw new IllegalArgumentException("You can only update campaign from DRAFT or WAITING to CANCELED");
+		}
+
+		campaignEntity.getCustomProducts().stream()
+			.map(CustomProductEntity::getInventoryItem)
+			.forEach(inventoryItemEntity -> {
+				inventoryItemEntity.setCampaignLock(null);
+				inventoryItemRepository.save(inventoryItemEntity);
+			});
+		campaignEntity.setStatus(CampaignStatus.CANCELED.getByteValue());
+		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
+	}
+
+	private CampaignResponse artistSubmitCampaign(CampaignEntity campaignEntity) {
 		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue()) {
-			throw new IllegalArgumentException("You can only submit campaign from status DRAFT");
+			throw new IllegalArgumentException("You can only update campaign from DRAFT to WAITING");
 		}
 
 		campaignEntity.setStatus(CampaignStatus.WAITING.getByteValue());
 		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
 	}
 
+
 	@Override
 	@Transactional
 	public CampaignResponse reviewCampaign(Long staffId, UpdateCampaignStatusRequest request) {
-		throw new UnsupportedOperationException();
+		var campaignEntity = campaignRepository.findById(request.getId())
+			.orElseThrow(() -> new EntityNotFoundException("campaignId " + request.getId() + " not valid"));
+
+		return switch (request.getStatus()) {
+			case REQUEST_CHANGE -> staffRequestChangeCampaign(campaignEntity);
+			case APPROVED -> staffApproveCampaign(campaignEntity);
+			case REJECTED -> staffRejectCampaign(campaignEntity);
+			default -> throw new IllegalArgumentException("You can only update campaign to status WAITING or CANCELED");
+		};
 	}
+
+	private CampaignResponse staffRequestChangeCampaign(CampaignEntity campaignEntity) {
+		if (campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
+			throw new IllegalArgumentException("You can only update campaign from WAITING to REQUEST_CHANGE");
+		}
+
+		campaignEntity.setStatus(CampaignStatus.REQUEST_CHANGE.getByteValue());
+		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
+	}
+
+	private CampaignResponse staffApproveCampaign(CampaignEntity campaignEntity) {
+		if (campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
+			throw new IllegalArgumentException("You can only update campaign from WAITING to APPROVED");
+		}
+
+		campaignEntity.setStatus(CampaignStatus.APPROVED.getByteValue());
+		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
+	}
+
+	private CampaignResponse staffRejectCampaign(CampaignEntity campaignEntity) {
+		if (campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
+			throw new IllegalArgumentException("You can only update campaign from WAITING to REJECTED");
+		}
+
+		campaignEntity.setStatus(CampaignStatus.REJECTED.getByteValue());
+		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
+	}
+	
 }
