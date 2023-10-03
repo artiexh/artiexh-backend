@@ -25,7 +25,6 @@ public class CreateCampaignResponse {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class Owner {
-
 		@JsonSerialize(using = ToStringSerializer.class)
 		private String id;
 		private String username;

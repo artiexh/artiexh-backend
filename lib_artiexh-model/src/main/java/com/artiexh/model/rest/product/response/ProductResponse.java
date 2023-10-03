@@ -42,7 +42,6 @@ public class ProductResponse {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class Owner {
-
 		@JsonSerialize(using = ToStringSerializer.class)
 		private String id;
 		private String username;
@@ -55,7 +54,6 @@ public class ProductResponse {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class Province {
-
 		@JsonSerialize(using = ToStringSerializer.class)
 		private Short id;
 		private String name;
@@ -66,7 +64,6 @@ public class ProductResponse {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class Country {
-
 		@JsonSerialize(using = ToStringSerializer.class)
 		private Short id;
 		private String name;
@@ -76,7 +73,6 @@ public class ProductResponse {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class Category {
-
 		@JsonSerialize(using = ToStringSerializer.class)
 		private String id;
 		private String name;

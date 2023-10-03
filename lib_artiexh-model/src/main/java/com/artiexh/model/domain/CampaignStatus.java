@@ -1,6 +1,7 @@
 package com.artiexh.model.domain;
 
 public enum CampaignStatus {
+	DRAFT(-1),
 	WAITING(0),
 	APPROVED(1),
 	REQUEST_CHANGE(2),
