@@ -1,11 +1,9 @@
 package com.artiexh.api.service.campaign.impl;
 
 import com.artiexh.api.service.campaign.CampaignService;
-import com.artiexh.data.jpa.entity.ArtistEntity;
-import com.artiexh.data.jpa.entity.CampaignEntity;
-import com.artiexh.data.jpa.entity.CustomProductEntity;
-import com.artiexh.data.jpa.entity.CustomProductTagEntity;
+import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.*;
+import com.artiexh.model.domain.CampaignHistoryAction;
 import com.artiexh.model.domain.CampaignStatus;
 import com.artiexh.model.mapper.CampaignMapper;
 import com.artiexh.model.mapper.CustomProductMapper;
@@ -36,6 +34,7 @@ public class CampaignServiceImpl implements CampaignService {
 	private final ProviderRepository providerRepository;
 	private final ProductCategoryRepository productCategoryRepository;
 	private final CustomProductTagRepository customProductTagRepository;
+	private final CampaignHistoryRepository campaignHistoryRepository;
 	private final CustomProductMapper customProductMapper;
 	private final CampaignMapper campaignMapper;
 
@@ -67,8 +66,14 @@ public class CampaignServiceImpl implements CampaignService {
 			return savedCustomProductEntity;
 		}).collect(Collectors.toSet());
 
+		var createCampaignHistoryEntity = campaignHistoryRepository.save(CampaignHistoryEntity.builder()
+			.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())
+			.action(CampaignHistoryAction.CREATE.getByteValue())
+			.build()
+		);
 
 		campaignEntity.setCustomProducts(saveCustomProducts);
+		campaignEntity.setCampaignHistories(Set.of(createCampaignHistoryEntity));
 		return campaignMapper.entityToResponse(campaignEntity);
 	}
 
@@ -191,13 +196,13 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 
 		return switch (request.getStatus()) {
-			case CANCELED -> artistCancelCampaign(campaignEntity);
-			case WAITING -> artistSubmitCampaign(campaignEntity);
+			case CANCELED -> artistCancelCampaign(campaignEntity, request.getMessage());
+			case WAITING -> artistSubmitCampaign(campaignEntity, request.getMessage());
 			default -> throw new IllegalArgumentException("You can only update campaign to status WAITING or CANCELED");
 		};
 	}
 
-	private CampaignResponse artistCancelCampaign(CampaignEntity campaignEntity) {
+	private CampaignResponse artistCancelCampaign(CampaignEntity campaignEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue() &&
 			campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
 			throw new IllegalArgumentException("You can only update campaign from DRAFT or WAITING to CANCELED");
@@ -209,16 +214,33 @@ public class CampaignServiceImpl implements CampaignService {
 				inventoryItemEntity.setCampaignLock(null);
 				inventoryItemRepository.save(inventoryItemEntity);
 			});
+
 		campaignEntity.setStatus(CampaignStatus.CANCELED.getByteValue());
+		campaignEntity.getCampaignHistories().add(
+			CampaignHistoryEntity.builder()
+				.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())
+				.action(CampaignHistoryAction.CANCEL.getByteValue())
+				.message(message)
+				.build()
+		);
+
 		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
 	}
 
-	private CampaignResponse artistSubmitCampaign(CampaignEntity campaignEntity) {
+	private CampaignResponse artistSubmitCampaign(CampaignEntity campaignEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue()) {
 			throw new IllegalArgumentException("You can only update campaign from DRAFT to WAITING");
 		}
 
 		campaignEntity.setStatus(CampaignStatus.WAITING.getByteValue());
+		campaignEntity.getCampaignHistories().add(
+			CampaignHistoryEntity.builder()
+				.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())
+				.action(CampaignHistoryAction.SUMMIT.getByteValue())
+				.message(message)
+				.build()
+		);
+
 		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
 	}
 
@@ -230,38 +252,74 @@ public class CampaignServiceImpl implements CampaignService {
 			.orElseThrow(() -> new EntityNotFoundException("campaignId " + request.getId() + " not valid"));
 
 		return switch (request.getStatus()) {
-			case REQUEST_CHANGE -> staffRequestChangeCampaign(campaignEntity);
-			case APPROVED -> staffApproveCampaign(campaignEntity);
-			case REJECTED -> staffRejectCampaign(campaignEntity);
+			case REQUEST_CHANGE -> staffRequestChangeCampaign(campaignEntity, request.getMessage());
+			case APPROVED -> staffApproveCampaign(campaignEntity, request.getMessage());
+			case REJECTED -> staffRejectCampaign(campaignEntity, request.getMessage());
 			default -> throw new IllegalArgumentException("You can only update campaign to status WAITING or CANCELED");
 		};
 	}
 
-	private CampaignResponse staffRequestChangeCampaign(CampaignEntity campaignEntity) {
+	private CampaignResponse staffRequestChangeCampaign(CampaignEntity campaignEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
 			throw new IllegalArgumentException("You can only update campaign from WAITING to REQUEST_CHANGE");
 		}
 
 		campaignEntity.setStatus(CampaignStatus.REQUEST_CHANGE.getByteValue());
+		campaignEntity.getCampaignHistories().add(
+			CampaignHistoryEntity.builder()
+				.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())
+				.action(CampaignHistoryAction.REQUEST_CHANGE.getByteValue())
+				.message(message)
+				.build()
+		);
+
 		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
 	}
 
-	private CampaignResponse staffApproveCampaign(CampaignEntity campaignEntity) {
+	private CampaignResponse staffApproveCampaign(CampaignEntity campaignEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
 			throw new IllegalArgumentException("You can only update campaign from WAITING to APPROVED");
 		}
 
+		campaignEntity.getCustomProducts().stream()
+			.map(CustomProductEntity::getInventoryItem)
+			.forEach(inventoryItemEntity -> {
+				inventoryItemEntity.setCampaignLock(null);
+				inventoryItemRepository.save(inventoryItemEntity);
+			});
 		campaignEntity.setStatus(CampaignStatus.APPROVED.getByteValue());
+		campaignEntity.getCampaignHistories().add(
+			CampaignHistoryEntity.builder()
+				.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())
+				.action(CampaignHistoryAction.APPROVE.getByteValue())
+				.message(message)
+				.build()
+		);
+
 		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
 	}
 
-	private CampaignResponse staffRejectCampaign(CampaignEntity campaignEntity) {
+	private CampaignResponse staffRejectCampaign(CampaignEntity campaignEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
 			throw new IllegalArgumentException("You can only update campaign from WAITING to REJECTED");
 		}
 
+		campaignEntity.getCustomProducts().stream()
+			.map(CustomProductEntity::getInventoryItem)
+			.forEach(inventoryItemEntity -> {
+				inventoryItemEntity.setCampaignLock(null);
+				inventoryItemRepository.save(inventoryItemEntity);
+			});
 		campaignEntity.setStatus(CampaignStatus.REJECTED.getByteValue());
+		campaignEntity.getCampaignHistories().add(
+			CampaignHistoryEntity.builder()
+				.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())
+				.action(CampaignHistoryAction.REJECT.getByteValue())
+				.message(message)
+				.build()
+		);
+
 		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
 	}
-	
+
 }

@@ -1,5 +1,6 @@
 package com.artiexh.model.rest.campaign.response;
 
+import com.artiexh.model.domain.CampaignHistory;
 import com.artiexh.model.domain.CampaignStatus;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -19,7 +20,7 @@ public class CampaignResponse {
 	private CampaignStatus status;
 	private Owner owner;
 	private Set<CustomProductResponse> customProducts;
-
+	private Set<CampaignHistory> campaignHistories;
 
 	@Data
 	@NoArgsConstructor
