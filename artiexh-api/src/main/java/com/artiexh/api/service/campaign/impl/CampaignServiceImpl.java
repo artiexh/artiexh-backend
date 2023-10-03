@@ -42,7 +42,7 @@ public class CampaignServiceImpl implements CampaignService {
 	@Override
 	@Transactional
 	public CampaignResponse createCampaign(Long ownerId, CampaignRequest request) {
-		validateCreateCustomProductRequest(ownerId, request.getProviderId(), CampaignStatus.DRAFT, request.getCustomProducts());
+		validateCreateCustomProductRequest(ownerId, request.getProviderId(), null, request.getCustomProducts());
 
 		var campaignEntity = campaignRepository.save(
 			CampaignEntity.builder()
@@ -54,7 +54,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 		var saveCustomProducts = request.getCustomProducts().stream().map(customProductRequest -> {
 			var inventoryItemEntity = inventoryItemRepository.getReferenceById(customProductRequest.getInventoryItemId());
-			inventoryItemEntity.setIsLock(true);
+			inventoryItemEntity.setCampaignLock(campaignEntity.getId());
 			inventoryItemRepository.save(inventoryItemEntity);
 
 			var customProductEntity = customProductMapper.createRequestToEntity(customProductRequest);
@@ -87,11 +87,7 @@ public class CampaignServiceImpl implements CampaignService {
 			throw new IllegalArgumentException("You can only update campaign with status DRAFT or REQUEST_CHANGE");
 		}
 
-		validateCreateCustomProductRequest(ownerId,
-			request.getProviderId(),
-			CampaignStatus.fromValue(oldCampaignEntity.getStatus()),
-			request.getCustomProducts()
-		);
+		validateCreateCustomProductRequest(ownerId, request.getProviderId(), oldCampaignEntity.getId(), request.getCustomProducts());
 
 		var inventoryItemToCustomProductMap = oldCampaignEntity.getCustomProducts().stream()
 			.collect(Collectors.toMap(
@@ -106,7 +102,7 @@ public class CampaignServiceImpl implements CampaignService {
 					customProductMapper.createRequestToEntity(customProductRequest, customProductEntity);
 				} else {
 					var inventoryItemEntity = inventoryItemRepository.getReferenceById(customProductRequest.getInventoryItemId());
-					inventoryItemEntity.setIsLock(true);
+					inventoryItemEntity.setCampaignLock(oldCampaignEntity.getId());
 					inventoryItemRepository.save(inventoryItemEntity);
 
 					customProductEntity = customProductMapper.createRequestToEntity(customProductRequest);
@@ -142,7 +138,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 	private void validateCreateCustomProductRequest(Long ownerId,
 													String providerId,
-													CampaignStatus status,
+													Long campaignId,
 													Set<CustomProductRequest> requests) {
 		if (!providerRepository.existsById(providerId)) {
 			throw new IllegalArgumentException("providerId " + providerId + " not valid");
@@ -160,10 +156,8 @@ public class CampaignServiceImpl implements CampaignService {
 				throw new IllegalArgumentException("you not own inventoryItem " + customProductRequest.getInventoryItemId());
 			}
 
-			if (Boolean.TRUE.equals(inventoryItemEntity.getIsLock())) {
-				if (status != CampaignStatus.DRAFT && status != CampaignStatus.REQUEST_CHANGE) {
-					throw new IllegalArgumentException("inventoryItem " + customProductRequest.getInventoryItemId() + " is locked");
-				}
+			if (inventoryItemEntity.getCampaignLock() != null && !inventoryItemEntity.getCampaignLock().equals(campaignId)) {
+				throw new IllegalArgumentException("inventoryItem " + customProductRequest.getInventoryItemId() + " is locked by another campaign " + campaignId);
 			}
 
 			var providerConfig = inventoryItemEntity.getVariant().getProviderConfigs().stream()
