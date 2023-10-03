@@ -8,6 +8,7 @@ import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.campaign.request.CampaignRequestFilter;
 import com.artiexh.model.rest.campaign.request.CreateCampaignRequest;
+import com.artiexh.model.rest.campaign.request.UpdateCampaignRequest;
 import com.artiexh.model.rest.campaign.response.CampaignProviderResponse;
 import com.artiexh.model.rest.campaign.response.CreateCampaignResponse;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,20 @@ public class CampaignController {
 		}
 	}
 
+	@PutMapping("/{id}")
+	@PreAuthorize("hasAuthority('ARTIST')")
+	public CreateCampaignResponse updateCampaign(Authentication authentication,
+												 @PathVariable Long id,
+												 @RequestBody @Validated UpdateCampaignRequest request) {
+		long artistId = (long) authentication.getPrincipal();
+		request.setId(id);
+		try {
+			return campaignService.updateCampaign(artistId, request);
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
+	}
+
 	@GetMapping("/provider")
 	@PreAuthorize("hasAuthority('ARTIST')")
 	public Set<CampaignProviderResponse> getProviderSupportInventoryItems(Authentication authentication,
@@ -52,14 +67,6 @@ public class CampaignController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		}
 	}
-
-	/*@PutMapping("/{id}")
-	@PreAuthorize("hasAuthority('ARTIST')")
-	public CreateCampaignResponse updateCampaign(Authentication authentication,
-												 @RequestBody @Validated CreateCampaignRequest request) {
-		long artistId = (long) authentication.getPrincipal();
-
-	}*/
 
 	@GetMapping
 	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN','STAFF')")
