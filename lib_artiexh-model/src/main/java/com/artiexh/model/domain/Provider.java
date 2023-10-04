@@ -32,5 +32,5 @@ public class Provider {
 
 	private String imageUrl;
 
-	private ProductCategory category;
+	private Set<ProviderCategory> categories;
 }

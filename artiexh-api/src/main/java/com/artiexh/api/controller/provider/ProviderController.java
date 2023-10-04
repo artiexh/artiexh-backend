@@ -1,8 +1,8 @@
-package com.artiexh.api.controller;
+package com.artiexh.api.controller.provider;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.exception.ErrorCode;
-import com.artiexh.api.service.ProviderService;
+import com.artiexh.api.service.provider.ProviderService;
 import com.artiexh.model.domain.Provider;
 import com.artiexh.model.mapper.ProviderMapper;
 import com.artiexh.model.rest.PageResponse;
@@ -40,7 +40,6 @@ public class ProviderController {
 				exception.getMessage(),
 				exception);
 		}
-
 	}
 
 	//Get Provider Detail
@@ -81,4 +80,5 @@ public class ProviderController {
 				exception);
 		}
 	}
+
 }

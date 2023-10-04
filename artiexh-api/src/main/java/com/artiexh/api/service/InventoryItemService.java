@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
-public interface InventoryService {
+public interface InventoryItemService {
 	InventoryItem save(InventoryItem item);
 
 	Page<InventoryItem> getAll(Specification<InventoryItemEntity> specification, Pageable pageable);

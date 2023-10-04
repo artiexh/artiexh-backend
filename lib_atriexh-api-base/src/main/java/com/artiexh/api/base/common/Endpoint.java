@@ -112,6 +112,7 @@ public final class Endpoint {
 	public static class Provider {
 		public static final String ROOT = PREFIX + "/provider";
 		public static final String DETAIL = "/{id}";
+		public static final String CONFIG = "/{id}/config";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -159,5 +160,14 @@ public final class Endpoint {
 	public static class Config {
 		public static final String ROOT = PREFIX + "/config";
 		public static final String SYNC_PRODUCT_OPEN_SEARCH = "/sync-product-to-open-search";
+	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class ProviderCategory {
+		public static final String ROOT = PREFIX + "/provider-category";
+	}
+
+	public static class Campaign {
+		public static final String ROOT = PREFIX + "/campaign";
 	}
 }

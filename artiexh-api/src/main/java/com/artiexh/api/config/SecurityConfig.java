@@ -64,6 +64,7 @@ public class SecurityConfig {
 					Endpoint.Product.ROOT + Endpoint.Product.PRODUCT_DETAIL,
 					Endpoint.Product.ROOT + Endpoint.Product.SUGGESTION).permitAll()
 				.requestMatchers(HttpMethod.GET, Endpoint.Shop.ROOT + "/**").permitAll()
+				.requestMatchers(HttpMethod.GET, Endpoint.ProviderCategory.ROOT + "/**").permitAll()
 				.anyRequest().authenticated()
 			)
 			.oauth2Login(oauth2 -> oauth2

@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -46,6 +47,9 @@ public class ArtistEntity extends UserEntity {
 	@Size(max = 15)
 	@Column(name = "shop_phone", length = 15)
 	private String shopPhone;
+
+	@OneToMany(mappedBy = "owner")
+	private Set<CampaignEntity> campaigns = new LinkedHashSet<>();
 
 	@Override
 	public final boolean equals(Object o) {
