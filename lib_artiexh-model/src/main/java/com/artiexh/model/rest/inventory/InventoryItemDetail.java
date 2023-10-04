@@ -7,7 +7,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.Set;
@@ -38,6 +39,13 @@ public class InventoryItemDetail {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@Schema(allOf = ProductVariantDetail.class)
 	private ProductVariantDetail variant;
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private Long campaignLock;
+
+	private String description;
+
+	private Set<String> tags = Set.of();
 
 	@Data
 	@NoArgsConstructor

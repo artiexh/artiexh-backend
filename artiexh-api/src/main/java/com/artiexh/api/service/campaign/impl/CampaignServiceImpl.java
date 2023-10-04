@@ -22,7 +22,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -66,7 +65,7 @@ public class CampaignServiceImpl implements CampaignService {
 			var savedCustomProductEntity = customProductRepository.save(customProductEntity);
 
 			var savedCustomProductTag = saveCustomProductTag(savedCustomProductEntity.getId(), customProductRequest.getTags());
-			savedCustomProductEntity.setTags(new HashSet<>(savedCustomProductTag));
+			savedCustomProductEntity.getTags().addAll(savedCustomProductTag);
 			return savedCustomProductEntity;
 		}).collect(Collectors.toSet());
 
@@ -137,12 +136,10 @@ public class CampaignServiceImpl implements CampaignService {
 
 	private List<CustomProductTagEntity> saveCustomProductTag(Long customProductId, Set<String> tags) {
 		return customProductTagRepository.saveAll(
-			tags.stream().map(tag -> {
-				var customProductTagEntity = new CustomProductTagEntity();
-				customProductTagEntity.setCustomProductId(customProductId);
-				customProductTagEntity.setName(tag);
-				return customProductTagEntity;
-			}).collect(Collectors.toSet()));
+			tags.stream()
+				.map(tag -> new CustomProductTagEntity(customProductId, tag))
+				.collect(Collectors.toSet())
+		);
 	}
 
 	private void validateCreateCustomProductRequest(Long ownerId,
