@@ -54,7 +54,7 @@ order by count(pvm.option_id) desc;
 select pv.*
 from product_variant pv
          inner join product_variant_combination pvm on id = pvm.variant_id
-         where product_base_id = 489843396377819914
+         where product_base_id = :productBaseId
          group by pvm.variant_id
 order by count(pvm.option_id)
 """,
@@ -62,11 +62,11 @@ order by count(pvm.option_id)
 select count(pv.id)
 from product_variant pv
          inner join product_variant_combination pvm on id = pvm.variant_id
-         where product_base_id = 489843396377819914
+         where product_base_id = :productBaseId
          group by pvm.variant_id
 order by count(pvm.option_id)
 """)
-	Page<ProductVariantEntity> findAllByProductBaseId(@NotNull Long productBaseId, Pageable pageable);
+	Page<ProductVariantEntity> findAllByProductBaseId(@Param("productBaseId") @NotNull Long productBaseId, Pageable pageable);
 
 	List<ProductVariantEntity> findAllByProductBaseId(@NotNull Long productBaseId);
 }
