@@ -38,9 +38,9 @@ from product_variant pv
          inner join (
     select variant_id, count(option_value_id) as num_of_option
     from product_variant_combination
-    where option_value_id in (489843397023741554)
+    where option_value_id in :optionValueIds
     group by variant_id
-    having count(option_value_id) = 1) temp on temp.variant_id = pv.id
+    having count(option_value_id) = :numOfOptionValue) temp on temp.variant_id = pv.id
 group by pvm.variant_id
 order by count(pvm.option_id) desc;
 """)
@@ -49,6 +49,19 @@ order by count(pvm.option_id) desc;
 		@Param("optionValueIds")Set<Long> optionValueIds,
 		@Param("numOfOptionValue") Integer numOfOptionValue);
 
+	@Query(nativeQuery = true,
+	value = """
+select pv.*
+from product_variant pv
+         inner join product_variant_combination pvm on id = pvm.variant_id
+order by count(pvm.option_id) desc;
+""",
+	countQuery = """
+select count(pv.id)
+from product_variant pv
+         inner join product_variant_combination pvm on id = pvm.variant_id
+order by count(pvm.option_id) desc;
+""")
 	Page<ProductVariantEntity> findAllByProductBaseId(@NotNull Long productBaseId, Pageable pageable);
 
 	List<ProductVariantEntity> findAllByProductBaseId(@NotNull Long productBaseId);
