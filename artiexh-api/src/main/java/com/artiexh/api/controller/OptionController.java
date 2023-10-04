@@ -45,8 +45,9 @@ public class OptionController {
 
 	@GetMapping(Endpoint.Option.ACTIVE_OPTION)
 	public Map<String, Set<String>> getActiveVariantOption(
-		@RequestParam Long productBaseId
+		@RequestParam Long productBaseId,
+		@RequestParam(required = false) Long[] optionValueIds
 	) {
-		return optionService.getActiveVariantOption(productBaseId);
+		return optionService.getActiveVariantOption(productBaseId, optionValueIds);
 	}
 }

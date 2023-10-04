@@ -16,5 +16,5 @@ public interface OptionService {
 
 	Page<ProductOption> getAllTemplate(Specification<ProductOptionTemplateEntity> specification, Pageable pageable);
 
-	Map<String, Set<String>> getActiveVariantOption(Long productBaseId);
+	Map<String, Set<String>> getActiveVariantOption(Long productBaseId, Long[] optionValueIds);
 }
