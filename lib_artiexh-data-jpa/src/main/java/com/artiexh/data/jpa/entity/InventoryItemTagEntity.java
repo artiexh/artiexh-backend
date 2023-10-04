@@ -11,13 +11,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@IdClass(CustomProductTagId.class)
-@Table(name = "custom_product_tag")
-public class CustomProductTagEntity {
+@IdClass(InventoryItemTagId.class)
+@Table(name = "inventory_item_tag")
+public class InventoryItemTagEntity {
 
 	@Id
-	@Column(name = "custom_product_id", nullable = false)
-	private Long customProductId;
+	@Column(name = "inventory_item_id", nullable = false)
+	private Long inventoryItemId;
 
 	@Id
 	@Column(name = "name", nullable = false)

@@ -19,4 +19,6 @@ public class InventoryItem {
 	private Set<ImageSet> imageSet;
 	private String combinationCode;
 	private Long campaignLock;
+	private String description;
+	private Set<String> tags;
 }

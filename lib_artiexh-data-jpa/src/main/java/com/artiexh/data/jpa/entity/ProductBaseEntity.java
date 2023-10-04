@@ -46,7 +46,7 @@ public class ProductBaseEntity {
 
 	@Type(JsonType.class)
 	@Column(name = "image_combinations", columnDefinition = "json", nullable = false)
-	private List<ImageCombination> imageCombinations;
+	private Set<ImageCombination> imageCombinations;
 
 	@Column(name = "3D_model_code")
 	private Byte model3DCode;

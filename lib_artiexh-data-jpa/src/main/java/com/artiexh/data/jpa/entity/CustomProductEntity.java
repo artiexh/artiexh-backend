@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.util.LinkedHashSet;
@@ -13,11 +15,13 @@ import java.util.Set;
 
 @Getter
 @Setter
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "custom_product")
-public class CustomProductEntity {
+@EntityListeners(AuditingEntityListener.class)
+public class CustomProductEntity extends BaseAuditEntity {
 	@Id
 	@Tsid
 	@JoinColumn(name = "id", nullable = false)
@@ -60,11 +64,8 @@ public class CustomProductEntity {
 	@JoinColumn(name = "custom_product_id")
 	private Set<ProductAttachEntity> attaches;
 
-	@OneToMany(
-		fetch = FetchType.EAGER,
-		orphanRemoval = true,
-		cascade = {CascadeType.DETACH, CascadeType.REFRESH})
-	@JoinColumn(name = "custom_product_id")
+	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+	@JoinColumn(name = "custom_product_id", updatable = false)
 	private Set<CustomProductTagEntity> tags = new LinkedHashSet<>();
 
 }
