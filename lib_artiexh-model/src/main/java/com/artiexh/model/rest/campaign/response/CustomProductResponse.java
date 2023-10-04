@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
@@ -21,4 +22,6 @@ public class CustomProductResponse {
 	private String description;
 	private Set<ProductAttach> attaches;
 	private Set<String> tags;
+	private LocalDateTime createdDate;
+	private LocalDateTime modifiedDate;
 }

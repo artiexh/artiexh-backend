@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Getter
@@ -39,5 +40,12 @@ public class InventoryItemEntity {
 
 	@Column(name = "campaign_lock")
 	private Long campaignLock;
+
+	@Column(name = "description", length = 1000)
+	private String description;
+
+	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+	@JoinColumn(name = "inventory_item_id", updatable = false)
+	private Set<InventoryItemTagEntity> tags = new LinkedHashSet<>();
 
 }

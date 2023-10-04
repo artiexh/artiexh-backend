@@ -4,9 +4,11 @@ import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.InventoryItemService;
 import com.artiexh.data.jpa.entity.ImageSetEntity;
 import com.artiexh.data.jpa.entity.InventoryItemEntity;
+import com.artiexh.data.jpa.entity.InventoryItemTagEntity;
 import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
 import com.artiexh.data.jpa.repository.InventoryItemRepository;
+import com.artiexh.data.jpa.repository.InventoryItemTagRepository;
 import com.artiexh.data.jpa.repository.ProductVariantRepository;
 import com.artiexh.model.domain.ImageSet;
 import com.artiexh.model.domain.InventoryItem;
@@ -25,12 +27,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class InventoryItemItemServiceImpl implements InventoryItemService {
 	private final InventoryItemRepository inventoryItemRepository;
 	private final ProductVariantRepository variantRepository;
+	private final InventoryItemTagRepository inventoryItemTagRepository;
 	private final InventoryMapper inventoryMapper;
 	private final MediaMapper mediaMapper;
 
@@ -73,8 +77,11 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 		}
 
 		entity.setVariant(variant);
+		var savedEntity = inventoryItemRepository.save(entity);
+		var savedTagEntities = saveInventoryItemTag(savedEntity.getId(), item.getTags());
+		savedEntity.getTags().addAll(savedTagEntities);
 
-		return inventoryItemRepository.save(entity);
+		return savedEntity;
 	}
 
 	@Transactional
@@ -104,7 +111,20 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 			entity.setCombinationCode(null);
 		}
 
-		return inventoryItemRepository.save(entity);
+		entity.getTags().clear();
+		var savedEntity = inventoryItemRepository.save(entity);
+		var savedTagEntities = saveInventoryItemTag(savedEntity.getId(), item.getTags());
+		savedEntity.getTags().addAll(savedTagEntities);
+
+		return savedEntity;
+	}
+
+	private List<InventoryItemTagEntity> saveInventoryItemTag(Long inventoryItemId, Set<String> tags) {
+		return inventoryItemTagRepository.saveAll(
+			tags.stream()
+				.map(tag -> new InventoryItemTagEntity(inventoryItemId, tag))
+				.collect(Collectors.toSet())
+		);
 	}
 
 	private boolean validateImagePosition(ProductVariantEntity variant, String combinationCode, List<String> positionCode) {

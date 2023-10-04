@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
@@ -22,4 +23,6 @@ public class CustomProduct {
 	private String description;
 	private Set<ProductAttachEntity> attaches;
 	private Set<String> tags;
+	private LocalDateTime createdDate;
+	private LocalDateTime modifiedDate;
 }
