@@ -22,7 +22,7 @@ public class InventoryItemEntity {
 	@Column(name = "name", length = 50, nullable = false)
 	private String name;
 
-	@OneToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@OneToMany(orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = "inventory_item_id")
 	private Set<ImageSetEntity> imageSet;
 

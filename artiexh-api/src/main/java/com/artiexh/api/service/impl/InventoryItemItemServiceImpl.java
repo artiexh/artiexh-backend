@@ -2,11 +2,11 @@ package com.artiexh.api.service.impl;
 
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.InventoryItemService;
-import com.artiexh.data.jpa.entity.ImageSetEntity;
 import com.artiexh.data.jpa.entity.InventoryItemEntity;
 import com.artiexh.data.jpa.entity.InventoryItemTagEntity;
 import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
+import com.artiexh.data.jpa.entity.embededmodel.ImageConfig;
 import com.artiexh.data.jpa.repository.InventoryItemRepository;
 import com.artiexh.data.jpa.repository.InventoryItemTagRepository;
 import com.artiexh.data.jpa.repository.ProductVariantRepository;
@@ -17,14 +17,12 @@ import com.artiexh.model.mapper.InventoryMapper;
 import com.artiexh.model.mapper.MediaMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -62,22 +60,22 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 
 		InventoryItemEntity entity = inventoryMapper.domainToEntity(item);
 
-		if (entity.getImageSet() != null && !entity.getImageSet().isEmpty()) {
-			List<String> positionCode = item.getImageSet().stream().map(ImageSet::getPositionCode).toList();
-			if (validateImagePosition(variant, item.getCombinationCode(), positionCode)) {
+		if (entity.getCombinationCode() != null) {
+			var combinationConfig = variant.getProductBase().getImageCombinations().stream()
+				.filter(combination -> combination.getCode().equals(entity.getCombinationCode()))
+				.findAny()
+				.orElseThrow(() -> new IllegalArgumentException("combinationCode is not valid"));
+
+			if (isNotValidateImagePosition(combinationConfig, item.getImageSet())) {
 				throw new IllegalArgumentException("Image position is not valid");
 			}
-
-			Set<ImageSetEntity> savedImageSet = new HashSet<>(entity.getImageSet());
-			entity.setImageSet(savedImageSet);
-
-		} else {
-			entity.setImageSet(null);
-			entity.setCombinationCode(null);
+		} else if (entity.getImageSet() != null && !entity.getImageSet().isEmpty()) {
+			throw new IllegalArgumentException("Cannot set imageSet without combinationCode");
 		}
 
 		entity.setVariant(variant);
 		var savedEntity = inventoryItemRepository.save(entity);
+
 		var savedTagEntities = saveInventoryItemTag(savedEntity.getId(), item.getTags());
 		savedEntity.getTags().addAll(savedTagEntities);
 
@@ -89,26 +87,32 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 		InventoryItemEntity entity = inventoryItemRepository.findById(item.getId())
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + item.getId()));
 
-		if (item.getImageSet() != null && !item.getImageSet().isEmpty()) {
-			ProductVariantEntity variant = variantRepository.findById(entity.getVariant().getId())
-				.orElseThrow(() -> new IllegalArgumentException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + entity.getVariant().getId()));
-			List<String> positionCode = item.getImageSet().stream().map(ImageSet::getPositionCode).toList();
-			if (validateImagePosition(variant, item.getCombinationCode(), positionCode)) {
+		if (!entity.getVariant().getId().equals(item.getVariant().getId())) {
+			throw new IllegalArgumentException("Cannot change variant");
+		}
+
+		if (item.getCombinationCode() != null) {
+			var combinationConfig = entity.getVariant().getProductBase().getImageCombinations().stream()
+				.filter(combination -> combination.getCode().equals(item.getCombinationCode()))
+				.findAny()
+				.orElseThrow(() -> new IllegalArgumentException("combinationCode is not valid"));
+
+			if (isNotValidateImagePosition(combinationConfig, item.getImageSet())) {
 				throw new IllegalArgumentException("Image position is not valid");
 			}
+		} else if (item.getImageSet() != null && !item.getImageSet().isEmpty()) {
+			throw new IllegalArgumentException("Cannot set imageSet without combinationCode");
+		}
 
-			entity.setCombinationCode(item.getCombinationCode());
+		entity.setName(item.getName());
+		entity.setCombinationCode(item.getCombinationCode());
 
-			entity.getImageSet().clear();
-			Set<ImageSetEntity> savedImageSet = new HashSet<>();
-			for (ImageSet imageSet : item.getImageSet()) {
-				ImageSetEntity imageSetEntity = mediaMapper.domainToEntity(imageSet);
-				savedImageSet.add(imageSetEntity);
-			}
-			entity.getImageSet().addAll(savedImageSet);
-		} else {
-			entity.getImageSet().clear();
-			entity.setCombinationCode(null);
+		entity.getImageSet().clear();
+		if (item.getImageSet() != null) {
+			entity.getImageSet().addAll(item.getImageSet().stream()
+				.map(mediaMapper::domainToEntity)
+				.collect(Collectors.toSet())
+			);
 		}
 
 		entity.getTags().clear();
@@ -127,20 +131,14 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 		);
 	}
 
-	private boolean validateImagePosition(ProductVariantEntity variant, String combinationCode, List<String> positionCode) {
-		if (StringUtils.isBlank(combinationCode)) {
-			return true;
+	private boolean isNotValidateImagePosition(ImageCombination combinationConfig, Set<ImageSet> imageSet) {
+		if (imageSet == null) {
+			return false;
 		}
-		for (ImageCombination variantCombination : variant.getProductBase().getImageCombinations()) {
-			if (variantCombination.getCode().equals(combinationCode)) {
-				for (String code : positionCode) {
-					if (variantCombination.getImages().stream().anyMatch(imageConfig -> imageConfig.getCode().equals(code))) {
-						return false;
-					}
-				}
-			}
-		}
-		return true;
+		var configCodes = combinationConfig.getImages().stream().map(ImageConfig::getCode).collect(Collectors.toSet());
+		var positionCodes = imageSet.stream().map(ImageSet::getPositionCode).collect(Collectors.toSet());
+		positionCodes.removeAll(configCodes);
+		return !positionCodes.isEmpty();
 	}
 
 	@Override
