@@ -16,9 +16,25 @@ public interface VariantCombinationRepository extends JpaRepository<ProductVaria
 		value = """
 select pvm.*
 from product_variant_combination pvm
-         inner join product_variant pv on pv.id = pvm.variant_id
+    inner join product_variant pv on pv.id = pvm.variant_id
+where product_base_id = :productBaseId
+  and option_value_id in :optionValueIds
+group by variant_id
+having count(option_value_id) = :numOfOptionValue
+""")
+	List<ProductVariantCombinationEntity> findAllUniqueCombinationsByProductBaseId(
+		@Param("productBaseId") Long productBaseId,
+		@Param("optionValueIds") Long[] optionValueIds,
+		@Param("numOfOptionValue") Integer numOfOptionValue);
+
+	@Query(nativeQuery = true,
+		value = """
+select pvm.*
+from product_variant_combination pvm
+    inner join product_variant pv on pv.id = pvm.variant_id
 where product_base_id = :productBaseId
 group by option_value_id
 """)
-	List<ProductVariantCombinationEntity> findAllUniqueCombinationsByProductBaseId(@Param("productBaseId") Long productBaseId);
+	List<ProductVariantCombinationEntity> findAllUniqueCombinationsByProductBaseId(
+		@Param("productBaseId") Long productBaseId);
 }

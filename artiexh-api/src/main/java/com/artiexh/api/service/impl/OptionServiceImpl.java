@@ -45,12 +45,24 @@ public class OptionServiceImpl implements OptionService {
 	}
 
 	@Override
-	public Map<String, Set<String>> getActiveVariantOption(Long productBaseId) {
+	@Transactional(readOnly = true)
+	public Map<String, Set<String>> getActiveVariantOption(Long productBaseId, Long[]optionValueIds) {
 		Map<String, Set<String>> activeOptions = new HashMap<>();
-		List<ProductVariantCombinationEntity> variantCombinationEntities =
-			variantCombinationRepository.findAllUniqueCombinationsByProductBaseId(productBaseId);
+		Set<ProductVariantCombinationEntity> matchedCombination = new HashSet<>();
 
-		for(ProductVariantCombinationEntity variantCombinationEntity : variantCombinationEntities) {
+		if (optionValueIds != null) {
+			List<ProductVariantCombinationEntity> variantCombinationEntities =
+				variantCombinationRepository.findAllUniqueCombinationsByProductBaseId(productBaseId, optionValueIds, optionValueIds.length);
+
+			for (ProductVariantCombinationEntity variantCombination : variantCombinationEntities) {
+				matchedCombination.addAll(variantCombination.getProductVariant().getVariantCombinations());
+			}
+		} else {
+			matchedCombination.addAll(variantCombinationRepository.findAllUniqueCombinationsByProductBaseId(productBaseId));
+		}
+
+
+		for(ProductVariantCombinationEntity variantCombinationEntity : matchedCombination) {
 			if (activeOptions.containsKey(variantCombinationEntity.getOptionId().toString())) {
 				activeOptions.get(variantCombinationEntity.getOptionId().toString())
 					.add(variantCombinationEntity.getId().getOptionValueId().toString());
