@@ -29,7 +29,7 @@ from product_variant pv
         group by variant_id
         having count(option_value_id) = :numOfOptionValue) temp on temp.variant_id = pv.id
 group by pvm.variant_id
-order by count(pvm.option_id) desc
+order by count(pvm.option_id)
 """,
 	countQuery = """
 select count(pv.id)
@@ -42,7 +42,7 @@ from product_variant pv
     group by variant_id
     having count(option_value_id) = :numOfOptionValue) temp on temp.variant_id = pv.id
 group by pvm.variant_id
-order by count(pvm.option_id) desc;
+order by count(pvm.option_id)
 """)
 	Page<ProductVariantEntity> findAllByOptionAndProductBaseId(
 		Pageable pageable,
