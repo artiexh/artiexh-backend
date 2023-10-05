@@ -17,14 +17,15 @@ RUN jlink --add-modules $(cat deps.info) \
     --output artiexh-jre
 RUN java -Djarmode=layertools -jar application.jar extract
 
-FROM bellsoft/alpaquita-linux-base:stream-musl
-RUN apk del --no-cache apk-tools
-ENV JAVA_HOME /user/java/jre
-COPY --from=layers /home/app/artiexh-jre $JAVA_HOME
+FROM bellsoft/alpaquita-linux-base:stream-musl-231003
+RUN apk add --no-cache zlib && del --no-cache apk-tools
 WORKDIR /home/app
 COPY --from=layers /home/app/dependencies/ ./
 COPY --from=layers /home/app/spring-boot-loader/ ./
 COPY --from=layers /home/app/snapshot-dependencies/ ./
 COPY --from=layers /home/app/application/ ./
+ENV JAVA_HOME /usr/lib/jvm/artiexh-jre
+ENV PATH $JAVA_HOME/bin:$PATH
+COPY --from=layers /home/app/artiexh-jre $JAVA_HOME
 ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]
 EXPOSE 8080
