@@ -1,4 +1,4 @@
-FROM bellsoft/liberica-runtime-container:jdk-17-slim-musl AS layers
+FROM bellsoft/liberica-runtime-container:jdk-all-17-slim-musl AS layers
 ARG SOURCE_DIR
 WORKDIR /home/app
 COPY ./${SOURCE_DIR}/target/*.jar ./application.jar
@@ -8,7 +8,7 @@ RUN jdeps --ignore-missing-deps -q \
     --multi-release 17 \
     --print-module-deps  \
     --class-path 'BOOT-INF/lib/*' \
-    application.jar > deps.info \
+    application.jar > deps.info
 RUN jlink --add-modules $(cat deps.info) \
     --strip-debug \
     --compress 2 \
@@ -18,7 +18,7 @@ RUN jlink --add-modules $(cat deps.info) \
 RUN java -Djarmode=layertools -jar application.jar extract
 
 FROM bellsoft/alpaquita-linux-base:stream-musl
-RUN /bin/sh -c apk del --no-cache apk-tools
+RUN apk del --no-cache apk-tools
 ENV JAVA_HOME /user/java/jre
 COPY --from=layers /home/app/artiexh-jre $JAVA_HOME
 WORKDIR /home/app
