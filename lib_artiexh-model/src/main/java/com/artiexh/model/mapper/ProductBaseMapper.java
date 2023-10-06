@@ -5,6 +5,7 @@ import com.artiexh.model.domain.Model3DCode;
 import com.artiexh.model.domain.ProductBase;
 import com.artiexh.model.rest.productbase.ProductBaseDetail;
 import com.artiexh.model.rest.productbase.ProductBaseInfo;
+import com.artiexh.model.rest.productbase.request.UpdateProductBaseDetail;
 import org.mapstruct.*;
 
 import java.util.Set;
@@ -18,10 +19,17 @@ public interface ProductBaseMapper {
 
 	ProductBaseEntity domainToEntity(ProductBase domain);
 
+	@Mapping(target = "providers", ignore = true)
+	ProductBaseEntity domainToEntity(ProductBase domain, @MappingTarget ProductBaseEntity entity);
+
 	@Mapping(target = "category", source = "categoryId")
 	@Mapping(target = "providers", source = "businessCodes")
 	@Mapping(target = "modelFile", source = "modelFileId", qualifiedByName = "idToDomain")
 	ProductBase detailToDomain(ProductBaseDetail detail);
+
+	@Mapping(target = "category", source = "categoryId")
+	@Mapping(target = "modelFile", source = "modelFileId", qualifiedByName = "idToDomain")
+	ProductBase detailToDomain(UpdateProductBaseDetail detail);
 
 	@Mapping(target = "providers", source = "providers", qualifiedByName = "domainSetToDetailSetWithoutProductBases")
 	ProductBaseDetail domainToDetail(ProductBase domain);

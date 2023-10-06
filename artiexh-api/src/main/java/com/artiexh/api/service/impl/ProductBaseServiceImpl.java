@@ -55,6 +55,28 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 	}
 
 	@Override
+	public ProductBase update(ProductBase product) {
+		ProductBaseEntity entity = productBaseRepository.findById(product.getId())
+			.orElseThrow(EntityNotFoundException::new);
+
+		entity = productBaseMapper.domainToEntity(product, entity);
+
+		for (ProductOptionEntity productOption : entity.getProductOptions()) {
+			if (productOption.getId() == null) {
+				productOption.setProductId(entity.getId());
+			}
+			productOption = productOptionRepository.save(productOption);
+
+			for (OptionValueEntity optionValue : productOption.getOptionValues()) {
+				if (optionValue.getId() == null) {
+					optionValue.setOptionId(productOption.getId());
+				}
+				optionValueRepository.save(optionValue);
+			}
+		}
+	}
+
+	@Override
 	@Transactional(readOnly = true)
 	public Page<ProductBase> getInPage(Specification<ProductBaseEntity> specification, Pageable pageable) {
 		Page<ProductBaseEntity> entities = productBaseRepository.findAll(specification, pageable);

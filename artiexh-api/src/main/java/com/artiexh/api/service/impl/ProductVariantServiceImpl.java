@@ -142,20 +142,10 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 		}
 
 		//Validation option id and option value
-
-		product.getVariantCombinations().forEach(combination -> {
-			ProductOptionEntity productOption = productOptionRepository.findProductOptionEntityByProductIdAndId(
-					productBaseId,
-					combination.getOptionId())
-				.orElseThrow(()
-					-> new IllegalArgumentException(ErrorCode.OPTION_NOT_FOUND.getMessage() + combination.getOptionId())
-				);
-			boolean isValidOption = productOption.getOptionValues().stream()
-				.anyMatch(option -> option.getId().equals(combination.getOptionValueId()));
-			if (!isValidOption) {
-				throw new IllegalArgumentException(ErrorCode.OPTION_VALUE_INVALID.getMessage() + combination.getOptionId());
-			}
-		});
+		if (!product.getVariantCombinations().isEmpty()) {
+			List<ProductOptionEntity> existedOptions = productOptionRepository.findProductOptionEntityByProductId(product.getProductBaseId());
+			validateOptions(existedOptions, product.getVariantCombinations());
+		}
 
 		entity = mapper.domainToEntity(product, entity);
 

@@ -48,9 +48,6 @@ public class ProductBaseEntity {
 	@Column(name = "image_combinations", columnDefinition = "json", nullable = false)
 	private Set<ImageCombination> imageCombinations;
 
-	@Column(name = "3D_model_code")
-	private Byte model3DCode;
-
 	@Column(name = "has_variant", nullable = false)
 	private boolean hasVariant;
 

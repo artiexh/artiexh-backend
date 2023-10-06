@@ -39,6 +39,18 @@ public class ProductBaseController {
 		}
 	}
 
+	@PutMapping(Endpoint.ProductBase.DETAIL)
+	@PreAuthorize("hasAuthority('ADMIN')")
+	public ProductBaseDetail update(@Valid @RequestBody ProductBaseDetail detail) {
+		try {
+			ProductBase productBase = mapper.detailToDomain(detail);
+			productBase = productBaseService.update(productBase);
+			return mapper.domainToDetail(productBase);
+		} catch (IllegalArgumentException | EntityNotFoundException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
+		}
+	}
+
 	//Get Product Base Page
 
 	@GetMapping

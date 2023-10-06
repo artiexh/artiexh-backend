@@ -29,16 +29,4 @@ public class UpdateProductVariantDetail {
 
 	@NotEmpty
 	private List<VariantCombination> variantCombinations;
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class ProviderConfig {
-
-		@NotNull
-		private String businessCode;
-
-		@NotNull
-		private BigDecimal basePriceAmount;
-	}
 }
