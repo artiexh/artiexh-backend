@@ -11,9 +11,11 @@ import java.util.Set;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {ProviderMapper.class, ProductCategoryMapper.class, ProductAttachMapper.class, MediaMapper.class}
+	uses = {ProviderMapper.class, ProductCategoryMapper.class, ProductAttachMapper.class, MediaMapper.class, DateTimeMapper.class}
 )
 public interface ProductBaseMapper {
+	@Mapping(target = "createdDate", qualifiedByName = "fromUTCToLocal")
+	@Mapping(target = "modifiedDate", qualifiedByName = "fromUTCToLocal")
 	ProductBase entityToDomain(ProductBaseEntity entity, @Context CycleAvoidingMappingContext context);
 
 	ProductBaseEntity domainToEntity(ProductBase domain);
