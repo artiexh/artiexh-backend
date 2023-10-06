@@ -35,23 +35,23 @@ public class CustomProductEntity extends BaseAuditEntity {
 	@JoinColumn(name = "campaign_id", nullable = false)
 	private CampaignEntity campaign;
 
-	@Column(name = "name", nullable = false)
+	@Column(name = "name")
 	private String name;
 
-	@Column(name = "quantity", nullable = false)
+	@Column(name = "quantity")
 	private Integer quantity;
 
-	@Column(name = "price_unit", nullable = false, length = 3)
+	@Column(name = "price_unit", length = 3)
 	private String priceUnit;
 
-	@Column(name = "price_amount", nullable = false, precision = 38, scale = 2)
+	@Column(name = "price_amount", precision = 38, scale = 2)
 	private BigDecimal priceAmount;
 
 	@Column(name = "limit_per_order")
 	private Integer limitPerOrder;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "category_id", nullable = false)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "category_id")
 	private ProductCategoryEntity category;
 
 	@Column(name = "description", length = 1000)

@@ -2,6 +2,7 @@ package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.CustomProductEntity;
 import com.artiexh.data.jpa.entity.CustomProductTagEntity;
+import com.artiexh.data.jpa.entity.ProductCategoryEntity;
 import com.artiexh.model.rest.campaign.request.CustomProductRequest;
 import com.artiexh.model.rest.campaign.response.CustomProductResponse;
 import org.mapstruct.*;
@@ -16,16 +17,23 @@ public interface CustomProductMapper {
 	@Mapping(target = "priceUnit", source = "price.unit")
 	@Mapping(target = "priceAmount", source = "price.amount")
 	@Mapping(target = "inventoryItem.id", source = "inventoryItemId")
-	@Mapping(target = "category.id", source = "productCategoryId")
+	@Mapping(target = "category", source = "productCategoryId")
 	@Mapping(target = "tags", ignore = true)
 	CustomProductEntity createRequestToEntity(CustomProductRequest request);
+
+	default ProductCategoryEntity productCategoryIdToCategoryEntity(Long productCategoryId) {
+		if (productCategoryId == null) {
+			return null;
+		}
+		return ProductCategoryEntity.builder().id(productCategoryId).build();
+	}
 
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "campaign", ignore = true)
 	@Mapping(target = "priceUnit", source = "price.unit")
 	@Mapping(target = "priceAmount", source = "price.amount")
 	@Mapping(target = "inventoryItem.id", source = "inventoryItemId")
-	@Mapping(target = "category.id", source = "productCategoryId")
+	@Mapping(target = "category", source = "productCategoryId")
 	@Mapping(target = "tags", ignore = true)
 	void createRequestToEntity(CustomProductRequest request, @MappingTarget CustomProductEntity entity);
 

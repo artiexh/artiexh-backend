@@ -60,6 +60,7 @@ public class StorageServiceImpl implements StorageService {
 				entity = MediaEntity.builder()
 					.owner(owner)
 					.fileName(fileName)
+					.name(multipartFile.getOriginalFilename().replace(" ", "_"))
 					.sharedUsers(Collections.emptySet())
 					.build();
 				mediaRepository.save(entity);
@@ -74,6 +75,7 @@ public class StorageServiceImpl implements StorageService {
 		return FileResponse.builder()
 			.id(entity == null ? null : entity.getId())
 			.presignedUrl(fileUrl)
+			.name(entity == null ? "" : entity.getName())
 			.fileName(fileName)
 			.build();
 	}

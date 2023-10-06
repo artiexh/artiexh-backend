@@ -15,4 +15,5 @@ public class Media {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	private String fileName;
+	private String name;
 }

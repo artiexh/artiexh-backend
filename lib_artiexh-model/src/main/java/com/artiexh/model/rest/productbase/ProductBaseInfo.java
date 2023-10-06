@@ -2,6 +2,7 @@ package com.artiexh.model.rest.productbase;
 
 import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
 import com.artiexh.data.jpa.entity.embededmodel.OptionConfig;
+import com.artiexh.model.domain.Media;
 import com.artiexh.model.domain.Model3DCode;
 import com.artiexh.model.domain.ProductAttach;
 import com.artiexh.model.domain.ProductOption;
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -18,7 +20,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -31,12 +36,22 @@ public class ProductBaseInfo {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long id;
 
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private LocalDateTime createdDate;
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private LocalDateTime modifiedDate;
+
 	@NotBlank
 	private String name;
 
 	@JsonSerialize(using = ToStringSerializer.class)
 	@NotNull
 	private Long modelFileId;
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@Schema(allOf = Media.class)
+	private Media modelFile;
 
 	@NotNull
 	@Valid

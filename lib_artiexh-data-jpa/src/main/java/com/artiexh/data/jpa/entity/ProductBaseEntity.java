@@ -6,9 +6,11 @@ import io.hypersistence.utils.hibernate.id.Tsid;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.Type;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.List;
 import java.util.Set;
@@ -18,9 +20,10 @@ import java.util.Set;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder(toBuilder = true)
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "product_base")
-public class ProductBaseEntity {
+public class ProductBaseEntity extends BaseAuditEntity{
 	@Id
 	@Tsid
 	@Column(name = "id", nullable = false)
