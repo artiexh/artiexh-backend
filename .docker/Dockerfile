@@ -1,5 +1,6 @@
 FROM bellsoft/liberica-runtime-container:jdk-all-17-slim-musl AS layers
 ARG SOURCE_DIR
+ARG JAVA_OPTS
 WORKDIR /home/app
 COPY ./${SOURCE_DIR}/target/*.jar ./application.jar
 RUN jar xf application.jar
@@ -10,6 +11,7 @@ RUN jdeps --ignore-missing-deps -q \
     --class-path 'BOOT-INF/lib/*' \
     application.jar > deps.info
 RUN jlink --add-modules $(cat deps.info) \
+    --add-options "${JAVA_OPTS}" \
     --strip-debug \
     --compress 2 \
     --no-header-files \
@@ -18,7 +20,7 @@ RUN jlink --add-modules $(cat deps.info) \
 RUN java -Djarmode=layertools -jar application.jar extract
 
 FROM bellsoft/alpaquita-linux-base:stream-musl-231003
-RUN apk add --no-cache zlib && del --no-cache apk-tools
+RUN apk add --no-cache zlib && apk del --no-cache apk-tools
 WORKDIR /home/app
 COPY --from=layers /home/app/dependencies/ ./
 COPY --from=layers /home/app/spring-boot-loader/ ./
