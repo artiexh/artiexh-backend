@@ -17,7 +17,7 @@ jobs:
       - name: Build maven
         run: mvn -B install
       - name: Build docker image
-        run: docker build . --file .docker/Dockerfile --build-arg SOURCE_DIR=artiexh-api -e JAVA_OPTS='-XX:+UseZGC' --tag public.ecr.aws/n8l9j6q1/artiexh-api:${{github.sha}}
+        run: docker build . --file .docker/Dockerfile --build-arg SOURCE_DIR=artiexh-api --build-arg JAVA_OPTS='-XX:+UseZGC -Xmx256m' --tag public.ecr.aws/n8l9j6q1/artiexh-api:${{github.sha}}
       - name: Setup AWS credential
         uses: aws-actions/configure-aws-credentials@v2
         with:
