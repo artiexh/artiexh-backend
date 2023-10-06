@@ -23,6 +23,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -77,7 +78,7 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 		var savedEntity = inventoryItemRepository.save(entity);
 
 		var savedTagEntities = saveInventoryItemTag(savedEntity.getId(), item.getTags());
-		savedEntity.getTags().addAll(savedTagEntities);
+		savedEntity.setTags(new HashSet<>(savedTagEntities));
 
 		return savedEntity;
 	}
