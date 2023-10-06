@@ -14,4 +14,5 @@ public class FileResponse {
 	private Long id;
 	private String presignedUrl;
 	private String fileName;
+	private String name;
 }

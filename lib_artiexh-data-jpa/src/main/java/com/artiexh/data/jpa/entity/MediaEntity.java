@@ -22,6 +22,9 @@ public class MediaEntity {
 	@Column(name = "file_name", nullable = false, unique = true)
 	private String fileName;
 
+	@Column(name = "name")
+	private String name;
+
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(name = "owner_id", nullable = true)
 	private AccountEntity owner;

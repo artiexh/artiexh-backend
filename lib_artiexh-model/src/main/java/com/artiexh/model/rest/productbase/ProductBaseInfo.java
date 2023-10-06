@@ -2,6 +2,7 @@ package com.artiexh.model.rest.productbase;
 
 import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
 import com.artiexh.data.jpa.entity.embededmodel.OptionConfig;
+import com.artiexh.model.domain.Media;
 import com.artiexh.model.domain.Model3DCode;
 import com.artiexh.model.domain.ProductAttach;
 import com.artiexh.model.domain.ProductOption;
@@ -37,6 +38,10 @@ public class ProductBaseInfo {
 	@JsonSerialize(using = ToStringSerializer.class)
 	@NotNull
 	private Long modelFileId;
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@Schema(allOf = Media.class)
+	private Media modelFile;
 
 	@NotNull
 	@Valid
