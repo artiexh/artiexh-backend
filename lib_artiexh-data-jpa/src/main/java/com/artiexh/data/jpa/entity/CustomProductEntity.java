@@ -50,7 +50,7 @@ public class CustomProductEntity extends BaseAuditEntity {
 	@Column(name = "limit_per_order")
 	private Integer limitPerOrder;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "category_id")
 	private ProductCategoryEntity category;
 
@@ -65,7 +65,7 @@ public class CustomProductEntity extends BaseAuditEntity {
 	private Set<ProductAttachEntity> attaches;
 
 	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
-	@JoinColumn(name = "custom_product_id")
+	@JoinColumn(name = "custom_product_id", updatable = false)
 	private Set<CustomProductTagEntity> tags = new LinkedHashSet<>();
 
 }

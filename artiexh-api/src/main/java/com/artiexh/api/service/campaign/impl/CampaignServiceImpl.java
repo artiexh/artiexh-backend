@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -67,7 +68,7 @@ public class CampaignServiceImpl implements CampaignService {
 			var savedCustomProductEntity = customProductRepository.save(customProductEntity);
 
 			var savedCustomProductTag = saveCustomProductTag(savedCustomProductEntity.getId(), customProductRequest.getTags());
-			savedCustomProductEntity.getTags().addAll(savedCustomProductTag);
+			savedCustomProductEntity.setTags(new HashSet<>(savedCustomProductTag));
 			return savedCustomProductEntity;
 		}).collect(Collectors.toSet());
 
