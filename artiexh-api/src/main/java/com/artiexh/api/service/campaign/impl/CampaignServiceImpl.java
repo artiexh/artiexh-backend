@@ -65,10 +65,26 @@ public class CampaignServiceImpl implements CampaignService {
 			var customProductEntity = customProductMapper.createRequestToEntity(customProductRequest);
 			customProductEntity.setInventoryItem(inventoryItemEntity);
 			customProductEntity.setCampaign(campaignEntity);
+			if (!StringUtils.hasText(customProductEntity.getName())) {
+				customProductEntity.setName(inventoryItemEntity.getName());
+			}
+			if (!StringUtils.hasText(customProductEntity.getDescription())) {
+				customProductEntity.setDescription(inventoryItemEntity.getDescription());
+			}
+			if (customProductEntity.getCategory() == null) {
+				customProductEntity.setCategory(inventoryItemEntity.getVariant().getProductBase().getCategory());
+			}
 			var savedCustomProductEntity = customProductRepository.save(customProductEntity);
 
 			var savedCustomProductTag = saveCustomProductTag(savedCustomProductEntity.getId(), customProductRequest.getTags());
-			savedCustomProductEntity.setTags(new HashSet<>(savedCustomProductTag));
+			if (savedCustomProductTag.isEmpty()) {
+				var inventoryItemTags = inventoryItemEntity.getTags().stream()
+					.map(inventoryItemTagEntity -> new CustomProductTagEntity(savedCustomProductEntity.getId(), inventoryItemTagEntity.getName()))
+					.collect(Collectors.toSet());
+				savedCustomProductEntity.setTags(new HashSet<>(customProductTagRepository.saveAll(inventoryItemTags)));
+			} else {
+				savedCustomProductEntity.setTags(new HashSet<>(savedCustomProductTag));
+			}
 			return savedCustomProductEntity;
 		}).collect(Collectors.toSet());
 
