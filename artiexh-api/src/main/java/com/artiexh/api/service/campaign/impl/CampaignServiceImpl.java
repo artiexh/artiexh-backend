@@ -21,7 +21,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -135,6 +137,9 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	private List<CustomProductTagEntity> saveCustomProductTag(Long customProductId, Set<String> tags) {
+		if (tags == null || tags.isEmpty()) {
+			return Collections.emptyList();
+		}
 		return customProductTagRepository.saveAll(
 			tags.stream()
 				.map(tag -> new CustomProductTagEntity(customProductId, tag))
@@ -151,7 +156,8 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 
 		for (var customProductRequest : requests) {
-			if (!productCategoryRepository.existsById(customProductRequest.getProductCategoryId())) {
+			if (customProductRequest.getProductCategoryId() != null
+				&& !productCategoryRepository.existsById(customProductRequest.getProductCategoryId())) {
 				throw new IllegalArgumentException("productCategory " + customProductRequest.getProductCategoryId() + " not valid");
 			}
 
@@ -171,11 +177,14 @@ public class CampaignServiceImpl implements CampaignService {
 				.findAny()
 				.orElseThrow(() -> new IllegalArgumentException("inventoryItem " + customProductRequest.getInventoryItemId() + " is not supported by provider " + providerId));
 
-			if (providerConfig.getMinQuantity() > customProductRequest.getQuantity()) {
+			if (customProductRequest.getQuantity() != null
+				&& providerConfig.getMinQuantity() > customProductRequest.getQuantity()) {
 				throw new IllegalArgumentException("customProduct quantity must greater than " + providerConfig.getMinQuantity());
 			}
 
-			if (providerConfig.getBasePriceAmount().compareTo(customProductRequest.getPrice().getAmount()) > 0) {
+			if (customProductRequest.getPrice() != null
+				&& customProductRequest.getPrice().getAmount() != null
+				&& providerConfig.getBasePriceAmount().compareTo(customProductRequest.getPrice().getAmount()) > 0) {
 				throw new IllegalArgumentException("customProduct price amount must greater than " + providerConfig.getBasePriceAmount());
 			}
 		}
@@ -246,6 +255,24 @@ public class CampaignServiceImpl implements CampaignService {
 	private CampaignDetailResponse artistSubmitCampaign(CampaignEntity campaignEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue()) {
 			throw new IllegalArgumentException("You can only update campaign from DRAFT to WAITING");
+		}
+
+		for (var customProductEntity : campaignEntity.getCustomProducts()) {
+			if (!StringUtils.hasText(customProductEntity.getName())) {
+				throw new IllegalArgumentException("customProduct " + customProductEntity.getId() + " name must not empty");
+			}
+			if (customProductEntity.getQuantity() != null) {
+				throw new IllegalArgumentException("customProduct " + customProductEntity.getId() + " quantity must not null");
+			}
+			if (customProductEntity.getPriceUnit() != null) {
+				throw new IllegalArgumentException("customProduct " + customProductEntity.getId() + " price.Unit must not null");
+			}
+			if (customProductEntity.getPriceAmount() != null) {
+				throw new IllegalArgumentException("customProduct " + customProductEntity.getId() + " price.Amount must not null");
+			}
+			if (customProductEntity.getCategory() != null) {
+				throw new IllegalArgumentException("customProduct " + customProductEntity.getId() + " categoryId must not null");
+			}
 		}
 
 		campaignEntity.setStatus(CampaignStatus.WAITING.getByteValue());
