@@ -9,6 +9,7 @@ import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.productbase.ProductBaseDetail;
 import com.artiexh.model.rest.productbase.ProductBaseFilter;
 import com.artiexh.model.rest.productbase.ProductBaseInfo;
+import com.artiexh.model.rest.productbase.request.UpdateProductBaseDetail;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,7 @@ public class ProductBaseController {
 
 	@PutMapping(Endpoint.ProductBase.DETAIL)
 	@PreAuthorize("hasAuthority('ADMIN')")
-	public ProductBaseDetail update(@Valid @RequestBody ProductBaseDetail detail) {
+	public ProductBaseDetail update(@Valid @RequestBody UpdateProductBaseDetail detail) {
 		try {
 			ProductBase productBase = mapper.detailToDomain(detail);
 			productBase = productBaseService.update(productBase);

@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class OptionValue {
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 

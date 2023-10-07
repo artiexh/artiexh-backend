@@ -9,9 +9,12 @@ import com.artiexh.data.jpa.repository.MediaRepository;
 import com.artiexh.data.jpa.repository.OptionValueRepository;
 import com.artiexh.data.jpa.repository.ProductBaseRepository;
 import com.artiexh.data.jpa.repository.ProductOptionRepository;
+import com.artiexh.model.domain.OptionValue;
 import com.artiexh.model.domain.ProductBase;
+import com.artiexh.model.domain.ProductOption;
 import com.artiexh.model.mapper.CycleAvoidingMappingContext;
 import com.artiexh.model.mapper.ProductBaseMapper;
+import com.artiexh.model.mapper.ProductOptionMapper;
 import com.artiexh.model.rest.productbase.ProductBaseFilter;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +32,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 	private final ProductOptionRepository productOptionRepository;
 	private final OptionValueRepository optionValueRepository;
 	private final MediaRepository mediaRepository;
+	private final ProductOptionMapper optionMapper;
 
 	@Override
 	@Transactional
@@ -55,25 +59,27 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 	}
 
 	@Override
+	@Transactional
 	public ProductBase update(ProductBase product) {
 		ProductBaseEntity entity = productBaseRepository.findById(product.getId())
 			.orElseThrow(EntityNotFoundException::new);
 
 		entity = productBaseMapper.domainToEntity(product, entity);
 
-		for (ProductOptionEntity productOption : entity.getProductOptions()) {
-			if (productOption.getId() == null) {
-				productOption.setProductId(entity.getId());
-			}
-			productOption = productOptionRepository.save(productOption);
+		entity = productBaseRepository.save(entity);
 
-			for (OptionValueEntity optionValue : productOption.getOptionValues()) {
-				if (optionValue.getId() == null) {
-					optionValue.setOptionId(productOption.getId());
-				}
-				optionValueRepository.save(optionValue);
+		for (ProductOption productOption : product.getProductOptions()) {
+			ProductOptionEntity option = optionMapper.domainToEntity(productOption);
+			option.setProductId(entity.getId());
+			productOptionRepository.save(option);
+
+			for (OptionValue optionValue : productOption.getOptionValues()) {
+				OptionValueEntity optionValueEntity = optionMapper.domainToEntity(optionValue);
+				optionValueEntity.setOptionId(productOption.getId());
+				optionValueRepository.save(optionValueEntity);
 			}
 		}
+		return product;
 	}
 
 	@Override
