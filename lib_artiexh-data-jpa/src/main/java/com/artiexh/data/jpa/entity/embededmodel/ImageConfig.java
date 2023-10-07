@@ -14,8 +14,8 @@ import java.util.UUID;
 public class ImageConfig {
 	private String code = UUID.randomUUID().toString();
 	private String name;
-	private Integer[] position;
-	private Integer[] rotate;
-	private Integer[] scale;
+	private Double[] position;
+	private Double[] rotate;
+	private Double[] scale;
 	private Size size;
 }
