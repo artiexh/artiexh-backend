@@ -185,6 +185,33 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 	}
 
 	@Override
+	public ProductVariant updateProviderConfig(Long id, Set<ProductVariantProvider> providerConfigs) {
+		ProductVariantEntity entity = repository.findById(id)
+			.orElseThrow(() ->
+				new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + id)
+			);
+
+		Set<ProductVariantProviderEntity> providers = new HashSet<>();
+		entity.getProviderConfigs().clear();
+		for (ProductVariantProvider providerConfig : providerConfigs) {
+			ProductVariantProviderEntity provider = mapper.domainToEntity(providerConfig);
+			provider.setId(ProductVariantProviderId.builder()
+				.businessCode(providerConfig.getBusinessCode())
+				.productVariantId(entity.getId())
+				.build());
+			provider.setProductVariant(entity);
+			provider.setProvider(providerRepository.findById(providerConfig.getBusinessCode())
+				.orElseThrow(EntityNotFoundException::new));
+			productVariantProviderRepository.save(provider);
+			providers.add(provider);
+		};
+		entity.getProviderConfigs().addAll(providers);
+
+		repository.save(entity);
+		return mapper.entityToDomain(entity, new CycleAvoidingMappingContext());
+	}
+
+	@Override
 	public void delete(String businessCode, Long productBaseId) {
 		ProductVariantEntity product = repository.findById(productBaseId)
 			.orElseThrow(EntityNotFoundException::new);

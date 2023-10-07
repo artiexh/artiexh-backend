@@ -1,14 +1,18 @@
 package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.ProductBaseEntity;
-import com.artiexh.model.domain.Model3DCode;
-import com.artiexh.model.domain.ProductBase;
+import com.artiexh.model.domain.*;
 import com.artiexh.model.rest.productbase.ProductBaseDetail;
 import com.artiexh.model.rest.productbase.ProductBaseInfo;
 import com.artiexh.model.rest.productbase.request.UpdateProductBaseDetail;
+import com.artiexh.model.rest.productbase.request.UpdateProviderConfig;
+import com.artiexh.model.rest.productvariant.ProductVariantDetail;
 import org.mapstruct.*;
 
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
@@ -22,6 +26,7 @@ public interface ProductBaseMapper {
 	ProductBaseEntity domainToEntity(ProductBase domain);
 
 	@Mapping(target = "providers", ignore = true)
+	@Mapping(target = "category", ignore = true)
 	ProductBaseEntity domainToEntity(ProductBase domain, @MappingTarget ProductBaseEntity entity);
 
 	@Mapping(target = "category", source = "categoryId")
@@ -53,5 +58,37 @@ public interface ProductBaseMapper {
 
 	default ProductBase idToDomain(Long productId) {
 		return ProductBase.builder().id(productId).build();
+	}
+
+	default ProductBase detailToDomain(UpdateProviderConfig detail) {
+		ProductBase productBase = new ProductBase();
+		productBase.setProviders(
+			detail.getProviders().stream()
+				.map(businessCode -> Provider.builder().businessCode(businessCode).build())
+				.collect(Collectors.toSet())
+		);
+
+		Set<ProductVariant> variants = new HashSet<>();
+		for (Map.Entry<String, Set<ProductVariantDetail.ProviderConfig>> entry : detail.getProviderConfigs().entrySet()) {
+			ProductVariant variant = ProductVariant.builder()
+				.id(Long.parseLong(entry.getKey()))
+				.providerConfigs(
+					entry.getValue().stream()
+						.map(providerConfig -> ProductVariantProvider.builder()
+							.variantId(Long.parseLong(entry.getKey()))
+							.basePriceAmount(providerConfig.getBasePriceAmount())
+							.businessCode(providerConfig.getBusinessCode())
+							.manufacturingTime(providerConfig.getManufacturingTime())
+							.minQuantity(providerConfig.getMinQuantity())
+							.build())
+						.collect(Collectors.toSet())
+				)
+				.build();
+
+			variants.add(variant);
+		}
+
+		productBase.setProductVariants(variants);
+		return productBase;
 	}
 }

@@ -2,6 +2,7 @@ package com.artiexh.model.rest.productbase;
 
 import com.artiexh.model.rest.provider.ProviderDetail;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class ProductBaseDetail extends ProductBaseInfo {
 
+	@Size(max = 1000)
 	private String description;
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)

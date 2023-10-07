@@ -2,9 +2,8 @@ package com.artiexh.api.service.impl;
 
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.ProductBaseService;
-import com.artiexh.data.jpa.entity.OptionValueEntity;
-import com.artiexh.data.jpa.entity.ProductBaseEntity;
-import com.artiexh.data.jpa.entity.ProductOptionEntity;
+import com.artiexh.api.service.ProductVariantService;
+import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.MediaRepository;
 import com.artiexh.data.jpa.repository.OptionValueRepository;
 import com.artiexh.data.jpa.repository.ProductBaseRepository;
@@ -12,9 +11,11 @@ import com.artiexh.data.jpa.repository.ProductOptionRepository;
 import com.artiexh.model.domain.OptionValue;
 import com.artiexh.model.domain.ProductBase;
 import com.artiexh.model.domain.ProductOption;
+import com.artiexh.model.domain.ProductVariant;
 import com.artiexh.model.mapper.CycleAvoidingMappingContext;
 import com.artiexh.model.mapper.ProductBaseMapper;
 import com.artiexh.model.mapper.ProductOptionMapper;
+import com.artiexh.model.mapper.ProviderMapper;
 import com.artiexh.model.rest.productbase.ProductBaseFilter;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZoneId;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +36,8 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 	private final ProductOptionRepository productOptionRepository;
 	private final OptionValueRepository optionValueRepository;
 	private final MediaRepository mediaRepository;
-	private final ProductOptionMapper optionMapper;
+	private final ProviderMapper providerMapper;
+	private final ProductVariantService variantService;
 
 	@Override
 	@Transactional
@@ -68,19 +71,22 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 
 		entity = productBaseMapper.domainToEntity(product, entity);
 
-		entity = productBaseRepository.save(entity);
+		entity.setModelFile(MediaEntity.builder().id(product.getModelFile().getId()).build());
+		entity.setCategory(ProductCategoryEntity.builder().id(product.getCategory().getId()).build());
 
-		for (ProductOption productOption : product.getProductOptions()) {
-			ProductOptionEntity option = optionMapper.domainToEntity(productOption);
+		for (ProductOptionEntity option : entity.getProductOptions()) {
 			option.setProductId(entity.getId());
 			productOptionRepository.save(option);
 
-			for (OptionValue optionValue : productOption.getOptionValues()) {
-				OptionValueEntity optionValueEntity = optionMapper.domainToEntity(optionValue);
-				optionValueEntity.setOptionId(productOption.getId());
-				optionValueRepository.save(optionValueEntity);
+			for (OptionValueEntity optionValue : option.getOptionValues()) {
+				optionValue.setOptionId(option.getId());
+				optionValueRepository.save(optionValue);
 			}
 		}
+
+		productBaseRepository.save(entity);
+
+		product = productBaseMapper.entityToDomain(entity, new CycleAvoidingMappingContext());
 		return product;
 	}
 
@@ -96,6 +102,27 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 	public ProductBase getById(Long id) {
 		ProductBaseEntity entity = productBaseRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + id));
+		return productBaseMapper.entityToDomain(entity, new CycleAvoidingMappingContext());
+	}
+
+	@Override
+	@Transactional
+	public ProductBase updateProductBaseConfig(ProductBase product) {
+		ProductBaseEntity entity = productBaseRepository.findById(product.getId())
+			.orElseThrow(EntityNotFoundException::new);
+
+		entity.setProviders(
+			product.getProviders().stream()
+				.map(providerMapper::domainToEntity)
+				.collect(Collectors.toSet())
+		);
+
+		productBaseRepository.save(entity);
+
+		for (ProductVariant variant : product.getProductVariants()) {
+			variantService.updateProviderConfig(product.getId(), variant.getProviderConfigs());
+		}
+
 		return productBaseMapper.entityToDomain(entity, new CycleAvoidingMappingContext());
 	}
 }

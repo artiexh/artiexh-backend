@@ -2,6 +2,7 @@ package com.artiexh.api.service;
 
 import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.artiexh.model.domain.ProductVariant;
+import com.artiexh.model.domain.ProductVariantProvider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -14,6 +15,8 @@ public interface ProductVariantService {
 	Set<ProductVariant> create(Set<ProductVariant> product, Long productBaseId);
 
 	ProductVariant update(ProductVariant product);
+
+	ProductVariant updateProviderConfig(Long id, Set<ProductVariantProvider> providerConfigs);
 
 	void delete(String businessCode, Long productBaseId);
 

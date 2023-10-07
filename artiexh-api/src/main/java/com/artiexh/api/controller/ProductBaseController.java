@@ -10,6 +10,7 @@ import com.artiexh.model.rest.productbase.ProductBaseDetail;
 import com.artiexh.model.rest.productbase.ProductBaseFilter;
 import com.artiexh.model.rest.productbase.ProductBaseInfo;
 import com.artiexh.model.rest.productbase.request.UpdateProductBaseDetail;
+import com.artiexh.model.rest.productbase.request.UpdateProviderConfig;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,13 +43,35 @@ public class ProductBaseController {
 
 	@PutMapping(Endpoint.ProductBase.DETAIL)
 	@PreAuthorize("hasAuthority('ADMIN')")
-	public ProductBaseDetail update(@Valid @RequestBody UpdateProductBaseDetail detail) {
+	public ProductBaseDetail update(
+		@PathVariable Long id,
+		@Valid @RequestBody UpdateProductBaseDetail detail) {
 		try {
 			ProductBase productBase = mapper.detailToDomain(detail);
+			productBase.setId(id);
 			productBase = productBaseService.update(productBase);
 			return mapper.domainToDetail(productBase);
-		} catch (IllegalArgumentException | EntityNotFoundException exception) {
+		} catch (IllegalArgumentException exception) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, exception.getMessage(), exception);
+		}
+	}
+
+	@PutMapping(Endpoint.ProductBase.DETAIL + "/provider")
+	@PreAuthorize("hasAuthority('ADMIN')")
+	public ProductBaseDetail updateProviderConfig(
+		@PathVariable Long id,
+		@Valid @RequestBody UpdateProviderConfig detail) {
+		try {
+			ProductBase productBase = mapper.detailToDomain(detail);
+			productBase.setId(id);
+			productBase = productBaseService.updateProductBaseConfig(productBase);
+			return mapper.domainToDetail(productBase);
+		} catch (IllegalArgumentException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, exception.getMessage(), exception);
 		}
 	}
 

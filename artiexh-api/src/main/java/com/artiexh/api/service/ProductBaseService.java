@@ -15,4 +15,6 @@ public interface ProductBaseService {
 	Page<ProductBase> getInPage(Specification<ProductBaseEntity> specification, Pageable pageable);
 
 	ProductBase getById(Long id);
+
+	ProductBase updateProductBaseConfig(ProductBase product);
 }

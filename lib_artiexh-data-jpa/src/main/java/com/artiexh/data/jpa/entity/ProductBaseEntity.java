@@ -51,13 +51,16 @@ public class ProductBaseEntity extends BaseAuditEntity{
 	@Column(name = "image_combinations", columnDefinition = "json", nullable = false)
 	private Set<ImageCombination> imageCombinations;
 
+	@Column(name = "3D_model_code")
+	private Byte model3DCode;
+
 	@Column(name = "has_variant", nullable = false)
 	private boolean hasVariant;
 
-	@OneToMany(mappedBy = "productBase", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "productBase", fetch = FetchType.LAZY)
 	private Set<ProductVariantEntity> providedModels;
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
 	@JoinColumn(name = "product_id")
 	private Set<ProductOptionEntity> productOptions;
 
@@ -74,7 +77,6 @@ public class ProductBaseEntity extends BaseAuditEntity{
 	private Set<ProductAttachEntity> attaches;
 
 	@ManyToOne
-	@OnDelete(action = OnDeleteAction.SET_NULL)
 	@JoinColumn(name = "category_id")
 	private ProductCategoryEntity category;
 }

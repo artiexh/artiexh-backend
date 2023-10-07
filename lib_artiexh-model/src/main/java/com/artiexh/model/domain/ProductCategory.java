@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class ProductCategory {
-	private long id;
+	private Long id;
 	private String name;
 	private String imageUrl;
 }
