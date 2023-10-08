@@ -10,7 +10,11 @@ import org.springframework.data.jpa.domain.Specification;
 public interface ProductBaseService {
 	ProductBase create(ProductBase product);
 
+	ProductBase update(ProductBase product);
+
 	Page<ProductBase> getInPage(Specification<ProductBaseEntity> specification, Pageable pageable);
 
 	ProductBase getById(Long id);
+
+	ProductBase updateProductBaseConfig(ProductBase product);
 }

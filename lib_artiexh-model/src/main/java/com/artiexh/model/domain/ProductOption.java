@@ -21,7 +21,6 @@ public class ProductOption {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long productId;
 	private Integer index;
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	private Set<OptionValue> optionValues;

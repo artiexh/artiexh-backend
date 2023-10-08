@@ -32,7 +32,7 @@ public class ProductOptionEntity {
 	@Column(name = "is_optional")
 	private Boolean isOptional;
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
 	@JoinColumn(name = "option_id")
 	private Set<OptionValueEntity> optionValues;
 }

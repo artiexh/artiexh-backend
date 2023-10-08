@@ -142,20 +142,10 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 		}
 
 		//Validation option id and option value
-
-		product.getVariantCombinations().forEach(combination -> {
-			ProductOptionEntity productOption = productOptionRepository.findProductOptionEntityByProductIdAndId(
-					productBaseId,
-					combination.getOptionId())
-				.orElseThrow(()
-					-> new IllegalArgumentException(ErrorCode.OPTION_NOT_FOUND.getMessage() + combination.getOptionId())
-				);
-			boolean isValidOption = productOption.getOptionValues().stream()
-				.anyMatch(option -> option.getId().equals(combination.getOptionValueId()));
-			if (!isValidOption) {
-				throw new IllegalArgumentException(ErrorCode.OPTION_VALUE_INVALID.getMessage() + combination.getOptionId());
-			}
-		});
+		if (!product.getVariantCombinations().isEmpty()) {
+			List<ProductOptionEntity> existedOptions = productOptionRepository.findProductOptionEntityByProductId(productBaseId);
+			validateOptions(existedOptions, product.getVariantCombinations());
+		}
 
 		entity = mapper.domainToEntity(product, entity);
 
@@ -177,6 +167,33 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 		Set<ProductVariantProviderEntity> providers = new HashSet<>();
 		entity.getProviderConfigs().clear();
 		for (ProductVariantProvider providerConfig : product.getProviderConfigs()) {
+			ProductVariantProviderEntity provider = mapper.domainToEntity(providerConfig);
+			provider.setId(ProductVariantProviderId.builder()
+				.businessCode(providerConfig.getBusinessCode())
+				.productVariantId(entity.getId())
+				.build());
+			provider.setProductVariant(entity);
+			provider.setProvider(providerRepository.findById(providerConfig.getBusinessCode())
+				.orElseThrow(EntityNotFoundException::new));
+			productVariantProviderRepository.save(provider);
+			providers.add(provider);
+		};
+		entity.getProviderConfigs().addAll(providers);
+
+		repository.save(entity);
+		return mapper.entityToDomain(entity, new CycleAvoidingMappingContext());
+	}
+
+	@Override
+	public ProductVariant updateProviderConfig(Long id, Set<ProductVariantProvider> providerConfigs) {
+		ProductVariantEntity entity = repository.findById(id)
+			.orElseThrow(() ->
+				new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + id)
+			);
+
+		Set<ProductVariantProviderEntity> providers = new HashSet<>();
+		entity.getProviderConfigs().clear();
+		for (ProductVariantProvider providerConfig : providerConfigs) {
 			ProductVariantProviderEntity provider = mapper.domainToEntity(providerConfig);
 			provider.setId(ProductVariantProviderId.builder()
 				.businessCode(providerConfig.getBusinessCode())

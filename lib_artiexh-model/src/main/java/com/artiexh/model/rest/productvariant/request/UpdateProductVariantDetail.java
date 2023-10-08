@@ -5,6 +5,7 @@ import com.artiexh.model.rest.productvariant.ProductVariantDetail;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -25,20 +26,10 @@ public class UpdateProductVariantDetail {
 	private Long id;
 
 	@NotEmpty
+	@Valid
 	private Set<ProductVariantDetail.ProviderConfig> providerConfigs;
 
 	@NotEmpty
+	@Valid
 	private List<VariantCombination> variantCombinations;
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class ProviderConfig {
-
-		@NotNull
-		private String businessCode;
-
-		@NotNull
-		private BigDecimal basePriceAmount;
-	}
 }
