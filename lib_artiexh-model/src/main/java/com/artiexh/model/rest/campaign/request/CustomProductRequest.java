@@ -25,8 +25,6 @@ public class CustomProductRequest {
 
 	private Integer limitPerOrder;
 
-	private Long productCategoryId;
-
 	private String description;
 
 	@Valid

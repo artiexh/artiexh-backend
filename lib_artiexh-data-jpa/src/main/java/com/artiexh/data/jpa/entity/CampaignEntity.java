@@ -37,6 +37,12 @@ public class CampaignEntity {
 	@Column(name = "provider_id", nullable = false, length = 13)
 	private String providerId;
 
+	@Column(name = "name", nullable = false)
+	private String name;
+
+	@Column(name = "description", length = 1000)
+	private String description;
+
 	@OneToMany(fetch = FetchType.LAZY,
 		cascade = CascadeType.ALL,
 		orphanRemoval = true)
