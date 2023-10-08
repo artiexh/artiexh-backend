@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,12 +54,10 @@ public class UpdateProductBaseDetail {
 	@NotNull
 	private List<ImageCombination> imageCombinations;
 
-	@NotNull
-	private Model3DCode model3DCode;
-
 	@JsonSerialize(using = ToStringSerializer.class)
 	@NotNull
 	private Long categoryId;
 
+	@Size(max = 1000)
 	private String description;
 }
