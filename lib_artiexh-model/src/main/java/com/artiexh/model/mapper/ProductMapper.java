@@ -22,7 +22,10 @@ import java.util.stream.Collectors;
 		ProductTagMapper.class,
 		ArtistMapper.class,
 		ProductAttachMapper.class,
-		ShopMapper.class
+		ShopMapper.class,
+		CustomProductMapper.class,
+		InventoryMapper.class,
+		CampaignMapper.class
 	}
 )
 public interface ProductMapper {
@@ -40,6 +43,7 @@ public interface ProductMapper {
 	@Mapping(target = "shop", qualifiedByName = "basicShopInfo")
 	@Mapping(target = "bundles", source = "bundles", qualifiedByName = "bundleEntitiesToDomains")
 	@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemEntitiesToDomains")
+	@Mapping(target = "customProduct", qualifiedByName = "entityToDomain")
 	Product entityToDomain(ProductEntity productEntity);
 
 	@Named("bundleEntitiesToDomains")
@@ -53,6 +57,7 @@ public interface ProductMapper {
 	@Mapping(target = "owner", qualifiedByName = "basicArtistInfo")
 	@Mapping(target = "shop", qualifiedByName = "basicShopInfo")
 	@Mapping(target = "bundleItems", ignore = true)
+	@Mapping(target = "customProduct", qualifiedByName = "entityToDomain")
 	Product bundleEntityToDomain(ProductEntity productEntity);
 
 	@Named("bundleItemEntitiesToDomains")
@@ -66,6 +71,7 @@ public interface ProductMapper {
 	@Mapping(target = "owner", qualifiedByName = "basicArtistInfo")
 	@Mapping(target = "shop", qualifiedByName = "basicShopInfo")
 	@Mapping(target = "bundles", ignore = true)
+	@Mapping(target = "customProduct", qualifiedByName = "entityToDomain")
 	Product bundleItemEntityToDomain(ProductEntity productEntity);
 
 	@Named("getProductThumbnailUrl")
@@ -80,6 +86,7 @@ public interface ProductMapper {
 	@Mapping(target = "priceUnit", source = "price.unit")
 	@Mapping(target = "priceAmount", source = "price.amount")
 	@Mapping(target = "averageRate", constant = "0f")
+	@Mapping(target = "customProduct", source = "customProduct", qualifiedByName = "domainToEntity")
 	ProductEntity domainToEntity(Product product);
 
 	Product documentToDomain(ProductDocument productDocument);

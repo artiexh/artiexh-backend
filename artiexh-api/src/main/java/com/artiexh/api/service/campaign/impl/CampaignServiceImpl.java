@@ -327,6 +327,7 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
+	@Transactional
 	public ProductResponse publishProduct(PublishProductRequest request) {
 		Product product = productMapper.publishProductRequestToProduct(request);
 

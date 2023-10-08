@@ -26,6 +26,10 @@ public interface InventoryMapper {
 
 	InventoryItem entityToDomain(InventoryItemEntity entity, @Context CycleAvoidingMappingContext context);
 
+	@Named("entityToDomainWithoutVariant")
+	@Mapping(target = "variant", ignore = true)
+	@Mapping(target = "artist", qualifiedByName = "basicArtistInfo")
+	InventoryItem entityToDomainWithoutVariant(InventoryItemEntity entity);
 	default String inventoryItemTagToTag(InventoryItemTagEntity tag) {
 		if (tag == null) {
 			return null;

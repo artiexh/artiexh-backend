@@ -3,13 +3,16 @@ package com.artiexh.model.mapper;
 import com.artiexh.data.jpa.entity.CustomProductEntity;
 import com.artiexh.data.jpa.entity.CustomProductTagEntity;
 import com.artiexh.data.jpa.entity.ProductCategoryEntity;
+import com.artiexh.model.domain.CustomProduct;
 import com.artiexh.model.rest.campaign.request.CustomProductRequest;
 import com.artiexh.model.rest.campaign.response.CustomProductResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
 
 import java.util.Set;
 
-@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, uses = {ProductAttachMapper.class})
+@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+	uses = {ProductAttachMapper.class, InventoryMapper.class, ArtistMapper.class, CampaignMapper.class})
 public interface CustomProductMapper {
 
 	@Mapping(target = "id", ignore = true)
@@ -45,6 +48,15 @@ public interface CustomProductMapper {
 		return tagEntity.getName();
 	}
 
+	default CustomProductTagEntity tagNameToTagEntity(String tagName) {
+		CustomProductTagEntity tagEntity = new CustomProductTagEntity();
+		if (StringUtils.isNotBlank(tagName)) {
+			tagEntity.setName(tagName);
+		}
+
+		return tagEntity;
+	}
+
 	@Named("entityToResponse")
 	@Mapping(target = "price.amount", source = "priceAmount")
 	@Mapping(target = "price.unit", source = "priceUnit")
@@ -52,4 +64,15 @@ public interface CustomProductMapper {
 
 	@IterableMapping(qualifiedByName = "entityToResponse")
 	Set<CustomProductResponse> entityToResponse(Set<CustomProductEntity> product);
+
+	@Named("entityToDomain")
+	@Mapping(target = "price.amount", source = "priceAmount")
+	@Mapping(target = "price.unit", source = "priceUnit")
+	@Mapping(target = "inventoryItem", qualifiedByName = "entityToDomainWithoutVariant")
+	CustomProduct entityToDomain(CustomProductEntity product);
+
+	@Named("domainToEntity")
+	@Mapping(target = "priceUnit", source = "price.unit")
+	@Mapping(target = "priceAmount", source = "price.amount")
+	CustomProductEntity domainToEntity(CustomProduct customProduct);
 }
