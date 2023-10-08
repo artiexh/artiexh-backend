@@ -54,6 +54,8 @@ public class CampaignServiceImpl implements CampaignService {
 				.status(CampaignStatus.DRAFT.getByteValue())
 				.owner(ArtistEntity.builder().id(ownerId).build())
 				.providerId(request.getProviderId())
+				.name(request.getName())
+				.description(request.getDescription())
 				.build()
 		);
 
@@ -147,6 +149,8 @@ public class CampaignServiceImpl implements CampaignService {
 			.collect(Collectors.toSet());
 
 		oldCampaignEntity.setStatus(CampaignStatus.DRAFT.getByteValue());
+		oldCampaignEntity.setName(request.getName());
+		oldCampaignEntity.setDescription(request.getDescription());
 		oldCampaignEntity.getCustomProducts().clear();
 		oldCampaignEntity.getCustomProducts().addAll(saveCustomProducts);
 		var savedCampaignEntity = campaignRepository.save(oldCampaignEntity);
@@ -220,7 +224,7 @@ public class CampaignServiceImpl implements CampaignService {
 		var campaignEntity = campaignRepository.findById(campaignId)
 			.orElseThrow(() -> new EntityNotFoundException("campaignId " + campaignId + " not valid"));
 
-		if (userEntity.getRole() == Role.ARTIST.getByteValue() && campaignEntity.getOwner().getId() != userId) {
+		if (userEntity.getRole() == Role.ARTIST.getByteValue() && !campaignEntity.getOwner().getId().equals(userId)) {
 			throw new IllegalArgumentException("You not own campaign " + campaignId);
 		}
 
