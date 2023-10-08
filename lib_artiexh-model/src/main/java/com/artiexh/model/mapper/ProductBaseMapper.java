@@ -70,12 +70,19 @@ public interface ProductBaseMapper {
 
 		Set<ProductVariant> variants = new HashSet<>();
 		for (Map.Entry<String, Set<ProductVariantDetail.ProviderConfig>> entry : detail.getProviderConfigs().entrySet()) {
+			Long variantId = Long.parseLong(entry.getKey());
+			if (!entry.getValue().stream()
+				.map(ProductVariantDetail.ProviderConfig::getBusinessCode)
+				.collect(Collectors.toSet())
+				.equals(detail.getProviders())) {
+				throw new IllegalArgumentException("All providers must be supported in variant " + variantId);
+			}
 			ProductVariant variant = ProductVariant.builder()
-				.id(Long.parseLong(entry.getKey()))
+				.id(variantId)
 				.providerConfigs(
 					entry.getValue().stream()
 						.map(providerConfig -> ProductVariantProvider.builder()
-							.variantId(Long.parseLong(entry.getKey()))
+							.variantId(variantId)
 							.basePriceAmount(providerConfig.getBasePriceAmount())
 							.businessCode(providerConfig.getBusinessCode())
 							.manufacturingTime(providerConfig.getManufacturingTime())

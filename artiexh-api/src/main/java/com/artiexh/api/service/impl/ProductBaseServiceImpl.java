@@ -111,6 +111,13 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 		ProductBaseEntity entity = productBaseRepository.findById(product.getId())
 			.orElseThrow(EntityNotFoundException::new);
 
+		for (ProductVariantEntity variant : entity.getProvidedModels()) {
+			boolean isMatchedAllVariant = product.getProductVariants().stream().anyMatch(existedVariant -> existedVariant.getId().equals(variant.getId()));
+			if (!isMatchedAllVariant) {
+				throw new IllegalArgumentException(ErrorCode.VARIANT_NOT_FOUND.getMessage() + variant.getId());
+			}
+		}
+
 		entity.setProviders(
 			product.getProviders().stream()
 				.map(providerMapper::domainToEntity)
@@ -120,7 +127,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 		productBaseRepository.save(entity);
 
 		for (ProductVariant variant : product.getProductVariants()) {
-			variantService.updateProviderConfig(product.getId(), variant.getProviderConfigs());
+			variantService.updateProviderConfig(variant.getId(), variant.getProviderConfigs());
 		}
 
 		return productBaseMapper.entityToDomain(entity, new CycleAvoidingMappingContext());

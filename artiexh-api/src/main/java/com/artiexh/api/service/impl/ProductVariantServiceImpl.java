@@ -143,7 +143,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 
 		//Validation option id and option value
 		if (!product.getVariantCombinations().isEmpty()) {
-			List<ProductOptionEntity> existedOptions = productOptionRepository.findProductOptionEntityByProductId(product.getProductBaseId());
+			List<ProductOptionEntity> existedOptions = productOptionRepository.findProductOptionEntityByProductId(productBaseId);
 			validateOptions(existedOptions, product.getVariantCombinations());
 		}
 
