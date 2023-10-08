@@ -35,7 +35,7 @@ public class ProductBase {
 
 	private Byte model3DCode;
 
-	private Set<ProductVariantEntity> productVariants;
+	private Set<ProductVariant> productVariants;
 
 	private Set<ProductOption> productOptions;
 

@@ -2,8 +2,10 @@ package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.ProductVariantProviderEntity;
 import com.artiexh.data.jpa.entity.ProviderEntity;
+import com.artiexh.model.domain.ProductVariantProvider;
 import com.artiexh.model.domain.Provider;
 import com.artiexh.model.rest.campaign.response.CampaignProviderResponse;
+import com.artiexh.model.rest.productvariant.ProductVariantDetail;
 import com.artiexh.model.rest.provider.ProviderDetail;
 import com.artiexh.model.rest.provider.ProviderInfo;
 import org.mapstruct.*;
@@ -22,6 +24,7 @@ public interface ProviderMapper {
 
 	ProviderEntity domainToEntity(Provider domain);
 
+	@Mapping(target = "productBases", ignore = true)
 	ProviderEntity domainToEntity(Provider domain, @MappingTarget ProviderEntity entity);
 
 	Provider entityToDomain(ProviderEntity entity, @Context CycleAvoidingMappingContext context);
