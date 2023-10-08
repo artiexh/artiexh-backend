@@ -102,4 +102,7 @@ public class ProductEntity {
 		inverseJoinColumns = @JoinColumn(name = "bundle_id"))
 	private Set<ProductEntity> bundles = new LinkedHashSet<>();
 
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "custom_product_id")
+	private CustomProductEntity customProduct;
 }

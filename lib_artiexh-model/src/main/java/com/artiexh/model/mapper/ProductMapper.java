@@ -4,6 +4,7 @@ import com.artiexh.data.jpa.entity.ProductAttachEntity;
 import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.opensearch.model.ProductDocument;
 import com.artiexh.model.domain.*;
+import com.artiexh.model.rest.campaign.request.PublishProductRequest;
 import com.artiexh.model.rest.product.request.CreateProductRequest;
 import com.artiexh.model.rest.product.request.UpdateProductRequest;
 import com.artiexh.model.rest.product.response.ProductResponse;
@@ -92,6 +93,11 @@ public interface ProductMapper {
 	@Mapping(target = "category.id", source = "categoryId")
 	@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemsToProductSet")
 	Product createProductRequestToProduct(CreateProductRequest createProductRequest);
+
+	@Mapping(target = "category.id", source = "categoryId")
+	@Mapping(target = "customProduct.id", source = "customProductId")
+	@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemsToProductSet")
+	Product publishProductRequestToProduct(PublishProductRequest publishProductRequest);
 
 	@Named("bundleItemsToProductSet")
 	default Set<Product> bundleItemsToProductSet(Set<Long> bundleItems) {

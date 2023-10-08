@@ -1,18 +1,23 @@
 package com.artiexh.api.service.campaign.impl;
 
 import com.artiexh.api.service.campaign.CampaignService;
+import com.artiexh.api.service.product.ProductService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.CampaignHistoryAction;
 import com.artiexh.model.domain.CampaignStatus;
+import com.artiexh.model.domain.Product;
 import com.artiexh.model.domain.Role;
 import com.artiexh.model.mapper.CampaignMapper;
 import com.artiexh.model.mapper.CustomProductMapper;
+import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.rest.campaign.request.CampaignRequest;
 import com.artiexh.model.rest.campaign.request.CustomProductRequest;
+import com.artiexh.model.rest.campaign.request.PublishProductRequest;
 import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
 import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
+import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -43,6 +48,8 @@ public class CampaignServiceImpl implements CampaignService {
 	private final AccountRepository accountRepository;
 	private final CustomProductMapper customProductMapper;
 	private final CampaignMapper campaignMapper;
+	private final ProductService productService;
+	private final ProductMapper productMapper;
 
 	@Override
 	@Transactional
@@ -317,6 +324,22 @@ public class CampaignServiceImpl implements CampaignService {
 			case REJECTED -> staffRejectCampaign(campaignEntity, request.getMessage());
 			default -> throw new IllegalArgumentException("You can only update campaign to status WAITING or CANCELED");
 		};
+	}
+
+	@Override
+	public ProductResponse publishProduct(PublishProductRequest request) {
+		Product product = productMapper.publishProductRequestToProduct(request);
+
+		CustomProductEntity customProduct = customProductRepository.findById(request.getCustomProductId()).orElseThrow(EntityNotFoundException::new);
+
+		CampaignEntity campaign = customProduct.getCampaign();
+
+		if (!campaign.getStatus().equals(CampaignStatus.APPROVED.getByteValue())) {
+			throw new IllegalArgumentException("You can only publish product before campaign's status is APPROVED");
+		}
+
+		product = productService.create(campaign.getOwner().getId(), product);
+		return productMapper.domainToProductResponse(product);
 	}
 
 	private CampaignDetailResponse staffRequestChangeCampaign(CampaignEntity campaignEntity, String message) {
