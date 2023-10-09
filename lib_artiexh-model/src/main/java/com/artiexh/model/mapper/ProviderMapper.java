@@ -2,10 +2,9 @@ package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.ProductVariantProviderEntity;
 import com.artiexh.data.jpa.entity.ProviderEntity;
-import com.artiexh.model.domain.ProductVariantProvider;
 import com.artiexh.model.domain.Provider;
 import com.artiexh.model.rest.campaign.response.CampaignProviderResponse;
-import com.artiexh.model.rest.productvariant.ProductVariantDetail;
+import com.artiexh.model.rest.campaign.response.ProviderConfigResponse;
 import com.artiexh.model.rest.provider.ProviderDetail;
 import com.artiexh.model.rest.provider.ProviderInfo;
 import org.mapstruct.*;
@@ -43,6 +42,9 @@ public interface ProviderMapper {
 	@Named("domainToInfo")
 	ProviderInfo domainToInfo(Provider domain);
 
+	@Mapping(target = "categoryIds", ignore = true)
+	ProviderInfo entityToInfo(ProviderEntity domain);
+
 	default Provider businessCodeToDomain(String businessCode) {
 		return Provider.builder().businessCode(businessCode).build();
 	}
@@ -50,5 +52,5 @@ public interface ProviderMapper {
 	@Mapping(target = "designItems", ignore = true)
 	CampaignProviderResponse entityToCampaignProviderResponse(ProviderEntity entity);
 
-	CampaignProviderResponse.ProviderConfig entityToCampaignProviderConfig(ProductVariantProviderEntity entity);
+	ProviderConfigResponse entityToCampaignProviderConfig(ProductVariantProviderEntity entity);
 }

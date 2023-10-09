@@ -5,15 +5,16 @@ import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.CampaignHistoryAction;
 import com.artiexh.model.domain.CampaignStatus;
-import com.artiexh.model.domain.ProductVariantProvider;
 import com.artiexh.model.domain.Role;
 import com.artiexh.model.mapper.CampaignMapper;
 import com.artiexh.model.mapper.CustomProductMapper;
+import com.artiexh.model.mapper.ProviderMapper;
 import com.artiexh.model.rest.campaign.request.CampaignRequest;
 import com.artiexh.model.rest.campaign.request.CustomProductRequest;
 import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
 import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
+import com.artiexh.model.rest.campaign.response.ProviderConfigResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -40,6 +41,7 @@ public class CampaignServiceImpl implements CampaignService {
 	private final AccountRepository accountRepository;
 	private final CustomProductMapper customProductMapper;
 	private final CampaignMapper campaignMapper;
+	private final ProviderMapper providerMapper;
 
 	@Override
 	@Transactional
@@ -56,7 +58,7 @@ public class CampaignServiceImpl implements CampaignService {
 				.build()
 		);
 
-		Map<Long, ProductVariantProvider> providerConfigsByCustomProductId = new HashMap<>();
+		Map<Long, ProviderConfigResponse> providerConfigsByCustomProductId = new HashMap<>();
 		var saveCustomProducts = request.getCustomProducts().stream().map(customProductRequest -> {
 			var inventoryItemEntity = inventoryItemRepository.getReferenceById(customProductRequest.getInventoryItemId());
 
@@ -88,12 +90,11 @@ public class CampaignServiceImpl implements CampaignService {
 				.ifPresent(providerConfigEntity ->
 					providerConfigsByCustomProductId.put(
 						savedCustomProductEntity.getId(),
-						ProductVariantProvider.builder()
-							.basePriceAmount(providerConfigEntity.getBasePriceAmount())
-							.manufacturingTime(providerConfigEntity.getManufacturingTime())
-							.minQuantity(providerConfigEntity.getMinQuantity())
-							.build()
-					));
+						new ProviderConfigResponse(
+							providerConfigEntity.getManufacturingTime(),
+							providerConfigEntity.getMinQuantity(),
+							providerConfigEntity.getBasePriceAmount()
+						)));
 			return savedCustomProductEntity;
 		}).collect(Collectors.toSet());
 
@@ -106,6 +107,10 @@ public class CampaignServiceImpl implements CampaignService {
 		campaignEntity.setCustomProducts(saveCustomProducts);
 		campaignEntity.setCampaignHistories(Set.of(createCampaignHistoryEntity));
 		var result = campaignMapper.entityToDetailResponse(campaignEntity);
+
+		var provider = providerRepository.getReferenceById(request.getProviderId());
+		result.setProvider(providerMapper.entityToInfo(provider));
+
 		for (var customProductResponse : result.getCustomProducts()) {
 			customProductResponse.setProviderConfig(providerConfigsByCustomProductId.get(customProductResponse.getId()));
 		}
@@ -134,7 +139,7 @@ public class CampaignServiceImpl implements CampaignService {
 				customProductEntity -> customProductEntity)
 			);
 
-		Map<Long, ProductVariantProvider> providerConfigsByCustomProductId = new HashMap<>();
+		Map<Long, ProviderConfigResponse> providerConfigsByCustomProductId = new HashMap<>();
 		var saveCustomProducts = request.getCustomProducts().stream()
 			.map(customProductRequest -> {
 				CustomProductEntity customProductEntity = inventoryItemToCustomProductMap.get(customProductRequest.getInventoryItemId());
@@ -160,12 +165,11 @@ public class CampaignServiceImpl implements CampaignService {
 					.ifPresent(providerConfigEntity ->
 						providerConfigsByCustomProductId.put(
 							savedCustomProductEntity.getId(),
-							ProductVariantProvider.builder()
-								.basePriceAmount(providerConfigEntity.getBasePriceAmount())
-								.manufacturingTime(providerConfigEntity.getManufacturingTime())
-								.minQuantity(providerConfigEntity.getMinQuantity())
-								.build()
-						));
+							new ProviderConfigResponse(
+								providerConfigEntity.getManufacturingTime(),
+								providerConfigEntity.getMinQuantity(),
+								providerConfigEntity.getBasePriceAmount()
+							)));
 				return savedCustomProductEntity;
 			})
 			.collect(Collectors.toSet());
@@ -176,7 +180,11 @@ public class CampaignServiceImpl implements CampaignService {
 		oldCampaignEntity.getCustomProducts().clear();
 		oldCampaignEntity.getCustomProducts().addAll(saveCustomProducts);
 		var savedCampaignEntity = campaignRepository.save(oldCampaignEntity);
+
 		var result = campaignMapper.entityToDetailResponse(savedCampaignEntity);
+
+		var provider = providerRepository.getReferenceById(request.getProviderId());
+		result.setProvider(providerMapper.entityToInfo(provider));
 		for (var customProductResponse : result.getCustomProducts()) {
 			customProductResponse.setProviderConfig(providerConfigsByCustomProductId.get(customProductResponse.getId()));
 		}
@@ -244,7 +252,7 @@ public class CampaignServiceImpl implements CampaignService {
 			throw new IllegalArgumentException("You not own campaign " + campaignId);
 		}
 
-		Map<Long, ProductVariantProvider> providerConfigsByCustomProductId = new HashMap<>();
+		Map<Long, ProviderConfigResponse> providerConfigsByCustomProductId = new HashMap<>();
 		for (var customProductEntity : campaignEntity.getCustomProducts()) {
 			customProductEntity.getInventoryItem().getVariant().getProviderConfigs().stream()
 				.filter(config -> config.getId().getBusinessCode().equals(campaignEntity.getProviderId()))
@@ -252,15 +260,17 @@ public class CampaignServiceImpl implements CampaignService {
 				.ifPresent(providerConfigEntity ->
 					providerConfigsByCustomProductId.put(
 						customProductEntity.getId(),
-						ProductVariantProvider.builder()
-							.basePriceAmount(providerConfigEntity.getBasePriceAmount())
-							.manufacturingTime(providerConfigEntity.getManufacturingTime())
-							.minQuantity(providerConfigEntity.getMinQuantity())
-							.build()
-					));
+						new ProviderConfigResponse(
+							providerConfigEntity.getManufacturingTime(),
+							providerConfigEntity.getMinQuantity(),
+							providerConfigEntity.getBasePriceAmount()
+						)));
 		}
 
 		var result = campaignMapper.entityToDetailResponse(campaignEntity);
+
+		var provider = providerRepository.getReferenceById(campaignEntity.getProviderId());
+		result.setProvider(providerMapper.entityToInfo(provider));
 		for (var customProductResponse : result.getCustomProducts()) {
 			customProductResponse.setProviderConfig(providerConfigsByCustomProductId.get(customProductResponse.getId()));
 		}
