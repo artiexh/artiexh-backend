@@ -32,15 +32,7 @@ public class CampaignProviderResponse {
 		@JsonSerialize(using = ToStringSerializer.class)
 		private Long id;
 		private String name;
-		private ProviderConfig config;
+		private ProviderConfigResponse config;
 	}
 
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class ProviderConfig {
-		private String manufacturingTime;
-		private Integer minQuantity;
-		private String basePriceAmount;
-	}
 }

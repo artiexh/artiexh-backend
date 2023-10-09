@@ -19,6 +19,7 @@ public interface CampaignMapper {
 
 	CampaignResponse entityToResponse(CampaignEntity entity);
 
+	@Mapping(target = "provider", ignore = true)
 	CampaignDetailResponse entityToDetailResponse(CampaignEntity entity);
 
 	@Mapping(target = "eventTime", source = "id.eventTime")
