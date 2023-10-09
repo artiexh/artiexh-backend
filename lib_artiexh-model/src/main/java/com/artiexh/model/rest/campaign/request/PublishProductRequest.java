@@ -2,6 +2,8 @@ package com.artiexh.model.rest.campaign.request;
 
 import com.artiexh.model.domain.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import jakarta.validation.constraints.Size;
@@ -17,6 +19,10 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PublishProductRequest {
+	@NotNull
+	@JsonSerialize(using = ToStringSerializer.class)
+	private Long customProductId;
+
 	@NotNull
 	private ProductStatus status;
 
@@ -62,7 +68,4 @@ public class PublishProductRequest {
 	private Float weight;
 
 	private Set<Long> bundleItems;
-
-	@JsonIgnore
-	private Long customProductId;
 }

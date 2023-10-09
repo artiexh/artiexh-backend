@@ -16,6 +16,7 @@ import com.artiexh.model.rest.campaign.response.CampaignProviderResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
@@ -150,13 +151,12 @@ public class CampaignController {
 		}
 	}
 
-	@PostMapping("/product/{id}")
+	@PostMapping("/{id}/product")
 	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
-	public ProductResponse publishProduct(@PathVariable("id") Long customProductId,
-										  @RequestBody @Validated PublishProductRequest request) {
+	public Set<ProductResponse> publishProduct(@PathVariable("id") Long campaignId,
+										  @RequestBody @Valid Set<PublishProductRequest> request) {
 		try {
-			request.setCustomProductId(customProductId);
-			return campaignService.publishProduct(request);
+			return campaignService.publishProduct(campaignId, request);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		}

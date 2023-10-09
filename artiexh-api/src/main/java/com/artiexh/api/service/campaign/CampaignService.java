@@ -11,6 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
+import java.util.Set;
+
 public interface CampaignService {
 
 	CampaignDetailResponse createCampaign(Long ownerId, CampaignRequest request);
@@ -25,5 +28,5 @@ public interface CampaignService {
 
 	CampaignDetailResponse reviewCampaign(Long staffId, UpdateCampaignStatusRequest request);
 
-	ProductResponse publishProduct(PublishProductRequest request);
+	Set<ProductResponse> publishProduct(Long campaignId, Set<PublishProductRequest> request);
 }
