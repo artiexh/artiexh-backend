@@ -63,9 +63,9 @@ public class CampaignController {
 
 	@PatchMapping("/{id}/status")
 	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN','STAFF')")
-	public CampaignDetailResponse updateStatus(Authentication authentication,
-											   @PathVariable Long id,
-											   @RequestBody @Validated UpdateCampaignStatusRequest request) {
+	public CampaignResponse updateStatus(Authentication authentication,
+										 @PathVariable Long id,
+										 @RequestBody @Validated UpdateCampaignStatusRequest request) {
 		request.setId(id);
 
 		var role = authentication.getAuthorities().stream()
