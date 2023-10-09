@@ -24,6 +24,7 @@ public interface PostCommentMapper {
 	@Mapping(target = "post", ignore = true)
 	PostComment entityToDomain(PostCommentEntity entity);
 
+	@Mapping(target = "owner", source = "owner", qualifiedByName = "domainToAccountProfile")
 	PostCommentDetail domainToDetail(PostComment post);
 
 	PostComment detailToDomain(PostCommentDetail postDetail);

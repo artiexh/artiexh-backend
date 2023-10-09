@@ -13,6 +13,7 @@ import com.artiexh.model.rest.post.PostDetail;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -40,7 +41,7 @@ public class PostController {
 	}
 
 	@GetMapping
-	public PageResponse<PostDetail> getAll(Authentication authentication, @Valid @RequestBody PaginationAndSortingRequest pagination) {
+	public PageResponse<PostDetail> getAll(Authentication authentication, @Valid @ParameterObject PaginationAndSortingRequest pagination) {
 		long userId = (long) authentication.getPrincipal();
 		try {
 			Page<Post> post = postService.getAllPost(userId, pagination.getPageable());
@@ -68,7 +69,7 @@ public class PostController {
 	@GetMapping(Endpoint.Post.DETAIL + Endpoint.Post.COMMENT)
 	public PageResponse<PostCommentDetail> getAll(
 		@PathVariable("id") Long postId,
-		@Valid @RequestBody PaginationAndSortingRequest pagination) {
+		@Valid @ParameterObject PaginationAndSortingRequest pagination) {
 		try {
 			Page<PostComment> post = postService.getAllPostComment(postId, pagination.getPageable());
 			return new PageResponse<>(post.map(postCommentMapper::domainToDetail));

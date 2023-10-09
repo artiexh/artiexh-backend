@@ -19,9 +19,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PostServiceImpl implements PostService {
 	private final PostRepository postRepository;
 	private final PostCommentRepository postCommentRepository;
@@ -30,6 +32,7 @@ public class PostServiceImpl implements PostService {
 	private final PostMapper postMapper;
 	private final PostCommentMapper postCommentMapper;
 	@Override
+	@Transactional
 	public Post create(Long userId, Post post) {
 		ArtistEntity artist = artistRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
 		PostEntity postEntity = postMapper.domainToEntity(post);
@@ -47,6 +50,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	@Transactional
 	public PostComment create(Long userId, Long postId, PostComment postComment) {
 		UserEntity user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
 		PostEntity post = postRepository.findById(postId).orElseThrow(EntityNotFoundException::new);
@@ -57,6 +61,8 @@ public class PostServiceImpl implements PostService {
 		postCommentEntity.setPost(post);
 
 		postCommentRepository.save(postCommentEntity);
+
+		postRepository.updateNumOfComments(postId);
 		return postCommentMapper.entityToDomain(postCommentEntity);
 	}
 

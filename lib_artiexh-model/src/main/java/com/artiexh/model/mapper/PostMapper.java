@@ -15,6 +15,8 @@ public interface PostMapper {
 	@Mapping(target = "owner", source = "owner", qualifiedByName = "basicArtistInfo")
 	Post entityToDomain(PostEntity entity);
 
+	@Mapping(target = "createdDate", qualifiedByName = "fromUTCToLocal")
+	@Mapping(target = "modifiedDate", qualifiedByName = "fromUTCToLocal")
 	PostDetail domainToDetail(Post post);
 
 	Post detailToDomain(PostDetail postDetail);
