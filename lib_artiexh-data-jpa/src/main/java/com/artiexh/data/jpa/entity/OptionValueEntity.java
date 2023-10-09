@@ -1,14 +1,13 @@
 package com.artiexh.data.jpa.entity;
 
 import io.hypersistence.utils.hibernate.id.Tsid;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @NoArgsConstructor
 @Getter
@@ -21,8 +20,10 @@ public class OptionValueEntity {
 	@Tsid
 	private Long id;
 
-	@Column(name = "option_id")
-	private Long optionId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@JoinColumn(name = "option_id")
+	private ProductOptionEntity option;
 
 	@Column(name = "name", length = 50)
 	private String name;

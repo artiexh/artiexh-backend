@@ -8,15 +8,11 @@ import com.artiexh.data.jpa.repository.MediaRepository;
 import com.artiexh.data.jpa.repository.OptionValueRepository;
 import com.artiexh.data.jpa.repository.ProductBaseRepository;
 import com.artiexh.data.jpa.repository.ProductOptionRepository;
-import com.artiexh.model.domain.OptionValue;
 import com.artiexh.model.domain.ProductBase;
-import com.artiexh.model.domain.ProductOption;
 import com.artiexh.model.domain.ProductVariant;
 import com.artiexh.model.mapper.CycleAvoidingMappingContext;
 import com.artiexh.model.mapper.ProductBaseMapper;
-import com.artiexh.model.mapper.ProductOptionMapper;
 import com.artiexh.model.mapper.ProviderMapper;
-import com.artiexh.model.rest.productbase.ProductBaseFilter;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,7 +21,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZoneId;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,7 +49,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 			productOption = productOptionRepository.save(productOption);
 
 			for (OptionValueEntity optionValue : productOption.getOptionValues()) {
-				optionValue.setOptionId(productOption.getId());
+				optionValue.setOption(ProductOptionEntity.builder().id(productOption.getId()).build());
 				optionValueRepository.save(optionValue);
 			}
 		}
@@ -79,7 +74,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 			productOptionRepository.save(option);
 
 			for (OptionValueEntity optionValue : option.getOptionValues()) {
-				optionValue.setOptionId(option.getId());
+				optionValue.setOption(ProductOptionEntity.builder().id(option.getId()).build());
 				optionValueRepository.save(optionValue);
 			}
 		}
