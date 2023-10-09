@@ -1,5 +1,6 @@
 package com.artiexh.model.domain;
 
+import com.artiexh.model.rest.account.AccountProfile;
 import lombok.*;
 
 @Builder
@@ -13,4 +14,6 @@ public class PostComment {
 	private String content;
 
 	private Post post;
+
+	private User owner;
 }

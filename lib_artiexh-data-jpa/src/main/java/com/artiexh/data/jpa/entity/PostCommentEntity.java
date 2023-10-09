@@ -4,6 +4,8 @@ import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Builder
 @AllArgsConstructor
@@ -22,4 +24,9 @@ public class PostCommentEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	private PostEntity post;
+
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@JoinColumn(name = "owner_id", nullable = false)
+	private UserEntity owner;
 }

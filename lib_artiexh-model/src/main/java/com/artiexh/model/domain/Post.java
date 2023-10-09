@@ -24,9 +24,9 @@ public class Post {
 
 	private String description;
 
-	private ArtistEntity owner;
+	private Artist owner;
 
-	private Set<ProductAttachEntity> attaches;
+	private Set<ProductAttach> attaches;
 
 	private int likes;
 
