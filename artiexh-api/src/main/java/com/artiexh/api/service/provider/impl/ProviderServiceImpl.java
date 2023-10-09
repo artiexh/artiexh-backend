@@ -88,7 +88,7 @@ public class ProviderServiceImpl implements ProviderService {
 			.map(ProductVariantEntity::getId)
 			.collect(Collectors.toSet());
 
-		var providerEntities = providerRepository.findAllByProductVariantIds(variantIds, variantIds.size());
+		var providerEntities = providerRepository.findAllByProductVariantIds(variantIds);
 
 		return providerEntities.stream()
 			.map(providerEntity -> {
@@ -100,6 +100,7 @@ public class ProviderServiceImpl implements ProviderService {
 					));
 				var response = providerMapper.entityToCampaignProviderResponse(providerEntity);
 				response.setDesignItems(inventoryItemEntities.stream()
+					.filter(designItemEntity -> providerConfigs.containsKey(designItemEntity.getVariant().getId()))
 					.map(designItemEntity -> CampaignProviderResponse.InventoryItem.builder()
 						.id(designItemEntity.getId())
 						.name(designItemEntity.getName())

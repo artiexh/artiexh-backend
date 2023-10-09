@@ -5,6 +5,7 @@ import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.CampaignHistoryAction;
 import com.artiexh.model.domain.CampaignStatus;
+import com.artiexh.model.domain.ProductVariantProvider;
 import com.artiexh.model.domain.Role;
 import com.artiexh.model.mapper.CampaignMapper;
 import com.artiexh.model.mapper.CustomProductMapper;
@@ -23,10 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,6 +56,7 @@ public class CampaignServiceImpl implements CampaignService {
 				.build()
 		);
 
+		Map<Long, ProductVariantProvider> providerConfigsByCustomProductId = new HashMap<>();
 		var saveCustomProducts = request.getCustomProducts().stream().map(customProductRequest -> {
 			var inventoryItemEntity = inventoryItemRepository.getReferenceById(customProductRequest.getInventoryItemId());
 
@@ -82,6 +81,19 @@ public class CampaignServiceImpl implements CampaignService {
 			} else {
 				savedCustomProductEntity.setTags(new HashSet<>(savedCustomProductTag));
 			}
+
+			inventoryItemEntity.getVariant().getProviderConfigs().stream()
+				.filter(config -> config.getId().getBusinessCode().equals(request.getProviderId()))
+				.findAny()
+				.ifPresent(providerConfigEntity ->
+					providerConfigsByCustomProductId.put(
+						savedCustomProductEntity.getId(),
+						ProductVariantProvider.builder()
+							.basePriceAmount(providerConfigEntity.getBasePriceAmount())
+							.manufacturingTime(providerConfigEntity.getManufacturingTime())
+							.minQuantity(providerConfigEntity.getMinQuantity())
+							.build()
+					));
 			return savedCustomProductEntity;
 		}).collect(Collectors.toSet());
 
@@ -93,7 +105,11 @@ public class CampaignServiceImpl implements CampaignService {
 
 		campaignEntity.setCustomProducts(saveCustomProducts);
 		campaignEntity.setCampaignHistories(Set.of(createCampaignHistoryEntity));
-		return campaignMapper.entityToDetailResponse(campaignEntity);
+		var result = campaignMapper.entityToDetailResponse(campaignEntity);
+		for (var customProductResponse : result.getCustomProducts()) {
+			customProductResponse.setProviderConfig(providerConfigsByCustomProductId.get(customProductResponse.getId()));
+		}
+		return result;
 	}
 
 	@Override
@@ -118,6 +134,7 @@ public class CampaignServiceImpl implements CampaignService {
 				customProductEntity -> customProductEntity)
 			);
 
+		Map<Long, ProductVariantProvider> providerConfigsByCustomProductId = new HashMap<>();
 		var saveCustomProducts = request.getCustomProducts().stream()
 			.map(customProductRequest -> {
 				CustomProductEntity customProductEntity = inventoryItemToCustomProductMap.get(customProductRequest.getInventoryItemId());
@@ -136,6 +153,19 @@ public class CampaignServiceImpl implements CampaignService {
 
 				var savedCustomProductTag = saveCustomProductTag(savedCustomProductEntity.getId(), customProductRequest.getTags());
 				savedCustomProductEntity.getTags().addAll(savedCustomProductTag);
+
+				savedCustomProductEntity.getInventoryItem().getVariant().getProviderConfigs().stream()
+					.filter(config -> config.getId().getBusinessCode().equals(request.getProviderId()))
+					.findAny()
+					.ifPresent(providerConfigEntity ->
+						providerConfigsByCustomProductId.put(
+							savedCustomProductEntity.getId(),
+							ProductVariantProvider.builder()
+								.basePriceAmount(providerConfigEntity.getBasePriceAmount())
+								.manufacturingTime(providerConfigEntity.getManufacturingTime())
+								.minQuantity(providerConfigEntity.getMinQuantity())
+								.build()
+						));
 				return savedCustomProductEntity;
 			})
 			.collect(Collectors.toSet());
@@ -146,7 +176,11 @@ public class CampaignServiceImpl implements CampaignService {
 		oldCampaignEntity.getCustomProducts().clear();
 		oldCampaignEntity.getCustomProducts().addAll(saveCustomProducts);
 		var savedCampaignEntity = campaignRepository.save(oldCampaignEntity);
-		return campaignMapper.entityToDetailResponse(savedCampaignEntity);
+		var result = campaignMapper.entityToDetailResponse(savedCampaignEntity);
+		for (var customProductResponse : result.getCustomProducts()) {
+			customProductResponse.setProviderConfig(providerConfigsByCustomProductId.get(customProductResponse.getId()));
+		}
+		return result;
 	}
 
 	private List<CustomProductTagEntity> saveCustomProductTag(Long customProductId, Set<String> tags) {
@@ -210,12 +244,32 @@ public class CampaignServiceImpl implements CampaignService {
 			throw new IllegalArgumentException("You not own campaign " + campaignId);
 		}
 
-		return campaignMapper.entityToDetailResponse(campaignEntity);
+		Map<Long, ProductVariantProvider> providerConfigsByCustomProductId = new HashMap<>();
+		for (var customProductEntity : campaignEntity.getCustomProducts()) {
+			customProductEntity.getInventoryItem().getVariant().getProviderConfigs().stream()
+				.filter(config -> config.getId().getBusinessCode().equals(campaignEntity.getProviderId()))
+				.findAny()
+				.ifPresent(providerConfigEntity ->
+					providerConfigsByCustomProductId.put(
+						customProductEntity.getId(),
+						ProductVariantProvider.builder()
+							.basePriceAmount(providerConfigEntity.getBasePriceAmount())
+							.manufacturingTime(providerConfigEntity.getManufacturingTime())
+							.minQuantity(providerConfigEntity.getMinQuantity())
+							.build()
+					));
+		}
+
+		var result = campaignMapper.entityToDetailResponse(campaignEntity);
+		for (var customProductResponse : result.getCustomProducts()) {
+			customProductResponse.setProviderConfig(providerConfigsByCustomProductId.get(customProductResponse.getId()));
+		}
+		return result;
 	}
 
 	@Override
 	@Transactional
-	public CampaignDetailResponse artistUpdateStatus(Long artistId, UpdateCampaignStatusRequest request) {
+	public CampaignResponse artistUpdateStatus(Long artistId, UpdateCampaignStatusRequest request) {
 		var campaignEntity = campaignRepository.findById(request.getId())
 			.orElseThrow(() -> new EntityNotFoundException("campaignId " + request.getId() + " not valid"));
 
@@ -230,7 +284,7 @@ public class CampaignServiceImpl implements CampaignService {
 		};
 	}
 
-	private CampaignDetailResponse artistCancelCampaign(CampaignEntity campaignEntity, String message) {
+	private CampaignResponse artistCancelCampaign(CampaignEntity campaignEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue() &&
 			campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
 			throw new IllegalArgumentException("You can only update campaign from DRAFT or WAITING to CANCELED");
@@ -254,10 +308,10 @@ public class CampaignServiceImpl implements CampaignService {
 				.build()
 		);
 
-		return campaignMapper.entityToDetailResponse(campaignRepository.save(campaignEntity));
+		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
 	}
 
-	private CampaignDetailResponse artistSubmitCampaign(CampaignEntity campaignEntity, String message) {
+	private CampaignResponse artistSubmitCampaign(CampaignEntity campaignEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue()) {
 			throw new IllegalArgumentException("You can only update campaign from DRAFT to WAITING");
 		}
@@ -266,13 +320,13 @@ public class CampaignServiceImpl implements CampaignService {
 			if (!StringUtils.hasText(customProductEntity.getName())) {
 				throw new IllegalArgumentException("customProduct " + customProductEntity.getId() + " name must not empty");
 			}
-			if (customProductEntity.getQuantity() != null) {
+			if (customProductEntity.getQuantity() == null) {
 				throw new IllegalArgumentException("customProduct " + customProductEntity.getId() + " quantity must not null");
 			}
-			if (customProductEntity.getPriceUnit() != null) {
+			if (customProductEntity.getPriceUnit() == null) {
 				throw new IllegalArgumentException("customProduct " + customProductEntity.getId() + " price.Unit must not null");
 			}
-			if (customProductEntity.getPriceAmount() != null) {
+			if (customProductEntity.getPriceAmount() == null) {
 				throw new IllegalArgumentException("customProduct " + customProductEntity.getId() + " price.Amount must not null");
 			}
 		}
@@ -296,13 +350,13 @@ public class CampaignServiceImpl implements CampaignService {
 				.build()
 		);
 
-		return campaignMapper.entityToDetailResponse(campaignRepository.save(campaignEntity));
+		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
 	}
 
 
 	@Override
 	@Transactional
-	public CampaignDetailResponse reviewCampaign(Long staffId, UpdateCampaignStatusRequest request) {
+	public CampaignResponse reviewCampaign(Long staffId, UpdateCampaignStatusRequest request) {
 		var campaignEntity = campaignRepository.findById(request.getId())
 			.orElseThrow(() -> new EntityNotFoundException("campaignId " + request.getId() + " not valid"));
 
@@ -314,7 +368,7 @@ public class CampaignServiceImpl implements CampaignService {
 		};
 	}
 
-	private CampaignDetailResponse staffRequestChangeCampaign(CampaignEntity campaignEntity, String message) {
+	private CampaignResponse staffRequestChangeCampaign(CampaignEntity campaignEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
 			throw new IllegalArgumentException("You can only update campaign from WAITING to REQUEST_CHANGE");
 		}
@@ -335,10 +389,10 @@ public class CampaignServiceImpl implements CampaignService {
 				.build()
 		);
 
-		return campaignMapper.entityToDetailResponse(campaignRepository.save(campaignEntity));
+		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
 	}
 
-	private CampaignDetailResponse staffApproveCampaign(CampaignEntity campaignEntity, String message) {
+	private CampaignResponse staffApproveCampaign(CampaignEntity campaignEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
 			throw new IllegalArgumentException("You can only update campaign from WAITING to APPROVED");
 		}
@@ -359,10 +413,10 @@ public class CampaignServiceImpl implements CampaignService {
 				.build()
 		);
 
-		return campaignMapper.entityToDetailResponse(campaignRepository.save(campaignEntity));
+		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
 	}
 
-	private CampaignDetailResponse staffRejectCampaign(CampaignEntity campaignEntity, String message) {
+	private CampaignResponse staffRejectCampaign(CampaignEntity campaignEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
 			throw new IllegalArgumentException("You can only update campaign from WAITING to REJECTED");
 		}
@@ -383,7 +437,7 @@ public class CampaignServiceImpl implements CampaignService {
 				.build()
 		);
 
-		return campaignMapper.entityToDetailResponse(campaignRepository.save(campaignEntity));
+		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
 	}
 
 }
