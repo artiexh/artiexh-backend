@@ -98,7 +98,7 @@ public class JpaProductServiceImpl implements JpaProductService {
 				.orElseThrow(() -> new IllegalArgumentException("Custom product is not found"));
 
 			productEntity.setShop(adminShop);
-			productEntity.setCustomProduct(customProduct);
+			productEntity.setCustomProductId(customProduct.getId());
 		}
 
 		ProductEntity savedProductEntity = productRepository.save(productEntity);

@@ -303,7 +303,7 @@ public class CampaignServiceImpl implements CampaignService {
 		campaignEntity.getCampaignHistories().add(
 			CampaignHistoryEntity.builder()
 				.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())
-				.action(CampaignHistoryAction.SUMMIT.getByteValue())
+				.action(CampaignHistoryAction.SUBMIT.getByteValue())
 				.message(message)
 				.build()
 		);
