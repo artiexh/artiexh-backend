@@ -22,6 +22,8 @@ public class CustomProductResponse {
 	private String description;
 	private Set<ProductAttach> attaches;
 	private Set<String> tags;
+	private InventoryItemResponse inventoryItem;
 	private LocalDateTime createdDate;
 	private LocalDateTime modifiedDate;
+	private ProviderConfigResponse providerConfig;
 }

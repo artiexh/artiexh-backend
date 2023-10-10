@@ -15,6 +15,10 @@ public class Campaign {
 
 	private CampaignStatus status;
 
+	private String name;
+
+	private String description;
+
 	private Set<CampaignHistory> campaignHistories;
 
 }

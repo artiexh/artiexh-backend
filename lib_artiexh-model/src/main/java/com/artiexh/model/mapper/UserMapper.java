@@ -23,6 +23,9 @@ public interface UserMapper {
 
 	AccountProfile entityToAccountProfile(UserEntity userEntity);
 
+	@Named("domainToAccountProfile")
+	AccountProfile domainToAccountProfile(User userEntity);
+
 	UserEntity domainToEntity(User user);
 
 	@Mapping(target = "role", constant = "USER")

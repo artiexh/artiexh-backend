@@ -2,10 +2,7 @@ package com.artiexh.data.jpa.entity;
 
 import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Set;
 
@@ -13,6 +10,7 @@ import java.util.Set;
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "product_option")
 public class ProductOptionEntity {
@@ -32,7 +30,7 @@ public class ProductOptionEntity {
 	@Column(name = "is_optional")
 	private Boolean isOptional;
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
 	@JoinColumn(name = "option_id")
 	private Set<OptionValueEntity> optionValues;
 }

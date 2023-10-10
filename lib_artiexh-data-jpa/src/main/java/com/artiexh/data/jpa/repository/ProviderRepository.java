@@ -23,8 +23,6 @@ public interface ProviderRepository extends JpaRepository<ProviderEntity, String
 		select provider
 		from ProviderEntity provider
 		left join ProductVariantProviderEntity config on provider.businessCode = config.id.businessCode
-		where config.id.productVariantId in :variantIds
-		group by provider
-		having count(config.id.productVariantId) = :numOfVariant""")
-	Set<ProviderEntity> findAllByProductVariantIds(@Param("variantIds") Set<Long> variantIds, @Param("numOfVariant") Integer numOfVariant);
+		where config.id.productVariantId in :variantIds""")
+	Set<ProviderEntity> findAllByProductVariantIds(Set<Long> variantIds);
 }

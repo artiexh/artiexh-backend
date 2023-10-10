@@ -24,9 +24,9 @@ public interface CampaignService {
 
 	CampaignDetailResponse getCampaignDetail(Long userId, Long campaignId);
 
-	CampaignDetailResponse artistUpdateStatus(Long artistId, UpdateCampaignStatusRequest request);
+	CampaignResponse artistUpdateStatus(Long artistId, UpdateCampaignStatusRequest request);
 
-	CampaignDetailResponse reviewCampaign(Long staffId, UpdateCampaignStatusRequest request);
+	CampaignResponse reviewCampaign(Long staffId, UpdateCampaignStatusRequest request);
 
 	Set<ProductResponse> publishProduct(Long campaignId, Set<PublishProductRequest> request);
 }

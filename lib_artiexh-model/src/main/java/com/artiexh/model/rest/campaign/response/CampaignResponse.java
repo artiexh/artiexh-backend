@@ -16,6 +16,9 @@ public class CampaignResponse {
 	private Long id;
 	private CampaignStatus status;
 	private Owner owner;
+	private String name;
+	private String description;
+
 
 	@Data
 	@NoArgsConstructor

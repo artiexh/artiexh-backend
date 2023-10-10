@@ -26,6 +26,7 @@ public enum CampaignHistoryAction {
 			case 4 -> APPROVE;
 			case 5 -> REJECT;
 			case 7 -> PUBLISHED;
+			case 6 -> CANCEL;
 			default -> throw new IllegalArgumentException("Unknown CampaignHistoryAction value: " + value);
 		};
 	}
