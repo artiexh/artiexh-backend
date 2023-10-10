@@ -170,4 +170,11 @@ public final class Endpoint {
 	public static class Campaign {
 		public static final String ROOT = PREFIX + "/campaign";
 	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Post {
+		public static final String ROOT = PREFIX + "/post";
+		public static final String DETAIL = "/{id}";
+		public static final String COMMENT = "/comment";
+	}
 }
