@@ -1,10 +1,7 @@
 package com.artiexh.api.service.product.impl;
 
 import com.artiexh.api.service.product.JpaProductService;
-import com.artiexh.data.jpa.entity.ArtistEntity;
-import com.artiexh.data.jpa.entity.ProductCategoryEntity;
-import com.artiexh.data.jpa.entity.ProductEntity;
-import com.artiexh.data.jpa.entity.ProductTagEntity;
+import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.*;
 import com.artiexh.model.mapper.AddressMapper;
@@ -12,6 +9,7 @@ import com.artiexh.model.mapper.ProductMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -31,9 +29,12 @@ public class JpaProductServiceImpl implements JpaProductService {
 	private final ProductCategoryRepository productCategoryRepository;
 	private final ProductAttachRepository productAttachRepository;
 	private final ProductTagRepository productTagRepository;
+	private final CustomProductRepository customProductRepository;
 	private final ProductMapper productMapper;
 	private final ProductRepository productRepository;
 	private final AddressMapper addressMapper;
+	@Value("${artiexh.security.admin.id}")
+	private Long rootAdminId;
 
 	public Page<Product> fillProductPage(Page<Product> productPage) {
 		// get missing fields from db: thumbnailUrl, remainingQuantity, owner.avatarUrl, description
@@ -83,10 +84,22 @@ public class JpaProductServiceImpl implements JpaProductService {
 
 		ProductEntity productEntity = productMapper.domainToEntity(product);
 		productEntity.setOwner(artistEntity);
-		productEntity.setShop(artistEntity);
 		productEntity.setCategory(categoryEntity);
 		productEntity.setTags(tagEntities);
 		productEntity.setBundleItems(bundleItems);
+
+		if (product.getCustomProduct() == null) {
+			productEntity.setShop(artistEntity);
+		} else {
+			ArtistEntity adminShop = artistRepository.findById(rootAdminId)
+				.orElseThrow(() -> new IllegalArgumentException("Admin shop is not configured"));
+
+			CustomProductEntity customProduct = customProductRepository.findById(product.getCustomProduct().getId())
+				.orElseThrow(() -> new IllegalArgumentException("Custom product is not found"));
+
+			productEntity.setShop(adminShop);
+			productEntity.setCustomProductId(customProduct.getId());
+		}
 
 		ProductEntity savedProductEntity = productRepository.save(productEntity);
 		return productMapper.entityToDomain(savedProductEntity);

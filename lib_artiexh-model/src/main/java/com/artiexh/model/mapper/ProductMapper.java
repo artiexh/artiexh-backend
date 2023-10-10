@@ -4,6 +4,7 @@ import com.artiexh.data.jpa.entity.ProductAttachEntity;
 import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.opensearch.model.ProductDocument;
 import com.artiexh.model.domain.*;
+import com.artiexh.model.rest.campaign.request.PublishProductRequest;
 import com.artiexh.model.rest.product.request.CreateProductRequest;
 import com.artiexh.model.rest.product.request.UpdateProductRequest;
 import com.artiexh.model.rest.product.response.ProductResponse;
@@ -21,7 +22,10 @@ import java.util.stream.Collectors;
 		ProductTagMapper.class,
 		ArtistMapper.class,
 		ProductAttachMapper.class,
-		ShopMapper.class
+		ShopMapper.class,
+		CustomProductMapper.class,
+		InventoryMapper.class,
+		CampaignMapper.class
 	}
 )
 public interface ProductMapper {
@@ -39,6 +43,7 @@ public interface ProductMapper {
 	@Mapping(target = "shop", qualifiedByName = "basicShopInfo")
 	@Mapping(target = "bundles", source = "bundles", qualifiedByName = "bundleEntitiesToDomains")
 	@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemEntitiesToDomains")
+	@Mapping(target = "customProduct.id", source = "customProductId")
 	Product entityToDomain(ProductEntity productEntity);
 
 	@Named("bundleEntitiesToDomains")
@@ -52,6 +57,7 @@ public interface ProductMapper {
 	@Mapping(target = "owner", qualifiedByName = "basicArtistInfo")
 	@Mapping(target = "shop", qualifiedByName = "basicShopInfo")
 	@Mapping(target = "bundleItems", ignore = true)
+	@Mapping(target = "customProduct.id", source = "customProductId")
 	Product bundleEntityToDomain(ProductEntity productEntity);
 
 	@Named("bundleItemEntitiesToDomains")
@@ -65,6 +71,7 @@ public interface ProductMapper {
 	@Mapping(target = "owner", qualifiedByName = "basicArtistInfo")
 	@Mapping(target = "shop", qualifiedByName = "basicShopInfo")
 	@Mapping(target = "bundles", ignore = true)
+	@Mapping(target = "customProduct.id", source = "customProductId")
 	Product bundleItemEntityToDomain(ProductEntity productEntity);
 
 	@Named("getProductThumbnailUrl")
@@ -79,6 +86,7 @@ public interface ProductMapper {
 	@Mapping(target = "priceUnit", source = "price.unit")
 	@Mapping(target = "priceAmount", source = "price.amount")
 	@Mapping(target = "averageRate", constant = "0f")
+	@Mapping(target = "customProductId", source = "customProduct.id")
 	ProductEntity domainToEntity(Product product);
 
 	Product documentToDomain(ProductDocument productDocument);
@@ -92,6 +100,11 @@ public interface ProductMapper {
 	@Mapping(target = "category.id", source = "categoryId")
 	@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemsToProductSet")
 	Product createProductRequestToProduct(CreateProductRequest createProductRequest);
+
+	@Mapping(target = "category.id", source = "categoryId")
+	@Mapping(target = "customProduct.id", source = "customProductId")
+	@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemsToProductSet")
+	Product publishProductRequestToProduct(PublishProductRequest publishProductRequest);
 
 	@Named("bundleItemsToProductSet")
 	default Set<Product> bundleItemsToProductSet(Set<Long> bundleItems) {
