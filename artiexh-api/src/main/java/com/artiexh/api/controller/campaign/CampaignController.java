@@ -2,17 +2,21 @@ package com.artiexh.api.controller.campaign;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.campaign.CampaignService;
+import com.artiexh.api.service.product.ProductService;
 import com.artiexh.api.service.provider.ProviderService;
 import com.artiexh.model.domain.Role;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.campaign.request.CampaignRequest;
 import com.artiexh.model.rest.campaign.request.CampaignRequestFilter;
+import com.artiexh.model.rest.campaign.request.PublishProductRequest;
 import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
 import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignProviderResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
+import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
@@ -32,6 +36,7 @@ import java.util.Set;
 public class CampaignController {
 	private final CampaignService campaignService;
 	private final ProviderService providerService;
+	private final ProductService productService;
 
 	@PostMapping
 	@PreAuthorize("hasAuthority('ARTIST')")
@@ -146,4 +151,14 @@ public class CampaignController {
 		}
 	}
 
+	@PostMapping("/{id}/product")
+	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
+	public Set<ProductResponse> publishProduct(@PathVariable("id") Long campaignId,
+										  @RequestBody @Valid Set<PublishProductRequest> request) {
+		try {
+			return campaignService.publishProduct(campaignId, request);
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
+	}
 }

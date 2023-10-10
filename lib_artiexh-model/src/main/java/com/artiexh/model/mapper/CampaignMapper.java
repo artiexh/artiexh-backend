@@ -2,6 +2,7 @@ package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.CampaignEntity;
 import com.artiexh.data.jpa.entity.CampaignHistoryEntity;
+import com.artiexh.model.domain.Campaign;
 import com.artiexh.model.domain.CampaignHistory;
 import com.artiexh.model.domain.CampaignHistoryAction;
 import com.artiexh.model.domain.CampaignStatus;
@@ -18,6 +19,8 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface CampaignMapper {
 
 	CampaignResponse entityToResponse(CampaignEntity entity);
+
+	Campaign entityToDomain(CampaignEntity entity);
 
 	@Mapping(target = "provider", ignore = true)
 	CampaignDetailResponse entityToDetailResponse(CampaignEntity entity);

@@ -8,7 +8,9 @@ public enum CampaignStatus {
 	DRAFT(0),
 	WAITING(1),
 	APPROVED(2),
-	REJECTED(3);
+	REQUEST_CHANGE(3),
+	REJECTED(4),
+	PUBLISHED(5);
 
 	private final int value;
 
