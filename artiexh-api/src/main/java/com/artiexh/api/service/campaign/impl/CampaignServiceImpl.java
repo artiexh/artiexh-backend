@@ -484,10 +484,10 @@ public class CampaignServiceImpl implements CampaignService {
 				.build()
 		);
 
-		return campaignMapper.entityToDetailResponse(campaignRepository.save(campaignEntity));
+		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
 	}
 
-	private CampaignResponse staffPublishProductCampaign(CampaignEntity campaignEntity, String message) {
+	private void staffPublishProductCampaign(CampaignEntity campaignEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.APPROVED.getByteValue()) {
 			throw new IllegalArgumentException("You can only update campaign from APPROVED to PUBLISHED");
 		}
@@ -501,7 +501,7 @@ public class CampaignServiceImpl implements CampaignService {
 				.build()
 		);
 
-		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
+		campaignRepository.save(campaignEntity);
 	}
 
 }
