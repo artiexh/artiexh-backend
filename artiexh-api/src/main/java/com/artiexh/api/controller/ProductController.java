@@ -67,7 +67,7 @@ public class ProductController {
 	}
 
 	@PostMapping
-	@PreAuthorize("hasAuthority('ARTIST')")
+	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
 	public ProductResponse create(Authentication authentication, @RequestBody @Valid CreateProductRequest productRequest) {
 		long userId = (long) authentication.getPrincipal();
 		try {
@@ -79,7 +79,7 @@ public class ProductController {
 	}
 
 	@PutMapping(path = Endpoint.Product.PRODUCT_DETAIL)
-	@PreAuthorize("hasAuthority('ARTIST')")
+	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
 	public ProductResponse update(Authentication authentication, @PathVariable("id") long id, @RequestBody @Valid UpdateProductRequest request) {
 		long userId = (long) authentication.getPrincipal();
 

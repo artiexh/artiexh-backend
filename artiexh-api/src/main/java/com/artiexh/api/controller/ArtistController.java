@@ -31,7 +31,7 @@ public class ArtistController {
 	private final AccountService accountService;
 
 	@GetMapping(Endpoint.Artist.ARTIST_PRODUCT)
-	@PreAuthorize("hasAuthority('ARTIST')")
+	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
 	public PageResponse<ProductResponse> getAllProduct(
 		Authentication authentication,
 		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
@@ -43,7 +43,7 @@ public class ArtistController {
 	}
 
 	@GetMapping(Endpoint.Artist.ARTIST_ORDER)
-	@PreAuthorize("hasAuthority('ARTIST')")
+	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
 	public PageResponse<ShopOrderResponsePage> getAllOrder(
 		Authentication authentication,
 		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
@@ -54,7 +54,7 @@ public class ArtistController {
 	}
 
 	@GetMapping(Endpoint.Artist.ARTIST_ORDER + "/{id}")
-	@PreAuthorize("hasAuthority('ARTIST')")
+	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
 	public ShopOrderResponse getOrderById(
 		@PathVariable Long id,
 		Authentication authentication
@@ -68,7 +68,7 @@ public class ArtistController {
 	}
 
 	@PutMapping(Endpoint.Artist.ARTIST_ORDER + "/{id}/shipping")
-	@PreAuthorize("hasAuthority('ARTIST')")
+	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
 	public ShopOrderResponse updateOrderToShippingStatus(
 		@PathVariable Long id,
 		@RequestBody @Valid UpdateShippingOrderRequest updateShippingOrderRequest,
