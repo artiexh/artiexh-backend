@@ -33,6 +33,8 @@ import org.springframework.util.StringUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.artiexh.model.domain.CampaignStatus.ALLOWED_ADMIN_VIEW_STATUS;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -135,8 +137,9 @@ public class CampaignServiceImpl implements CampaignService {
 			throw new IllegalArgumentException("You not own campaign " + request.getId());
 		}
 
-		if (!oldCampaignEntity.getStatus().equals(CampaignStatus.DRAFT.getByteValue())) {
-			throw new IllegalArgumentException("You can only update campaign with status DRAFT");
+		if (!oldCampaignEntity.getStatus().equals(CampaignStatus.DRAFT.getByteValue())
+			&& !oldCampaignEntity.getStatus().equals(CampaignStatus.REQUEST_CHANGE.getByteValue())) {
+			throw new IllegalArgumentException("You can only update campaign with status DRAFT or REQUEST_CHANGE");
 		}
 
 		validateCreateCustomProductRequest(ownerId, request.getProviderId(), request.getCustomProducts());
@@ -182,7 +185,6 @@ public class CampaignServiceImpl implements CampaignService {
 			})
 			.collect(Collectors.toSet());
 
-		oldCampaignEntity.setStatus(CampaignStatus.DRAFT.getByteValue());
 		oldCampaignEntity.setName(request.getName());
 		oldCampaignEntity.setDescription(request.getDescription());
 		oldCampaignEntity.getCustomProducts().clear();
@@ -260,6 +262,11 @@ public class CampaignServiceImpl implements CampaignService {
 			throw new IllegalArgumentException("You not own campaign " + campaignId);
 		}
 
+		if ((userEntity.getRole() == Role.ADMIN.getByteValue() || userEntity.getRole() == Role.STAFF.getByteValue())
+			&& !ALLOWED_ADMIN_VIEW_STATUS.contains(CampaignStatus.fromValue(campaignEntity.getStatus()))) {
+			throw new IllegalArgumentException("You can only get campaigns after submitted");
+		}
+
 		Map<Long, ProviderConfigResponse> providerConfigsByCustomProductId = new HashMap<>();
 		for (var customProductEntity : campaignEntity.getCustomProducts()) {
 			customProductEntity.getInventoryItem().getVariant().getProviderConfigs().stream()
@@ -303,9 +310,10 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	private CampaignResponse artistCancelCampaign(CampaignEntity campaignEntity, String message) {
-		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue() &&
-			campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
-			throw new IllegalArgumentException("You can only update campaign from DRAFT or WAITING to CANCELED");
+		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue()
+			&& campaignEntity.getStatus() != CampaignStatus.REQUEST_CHANGE.getByteValue()
+			&& campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
+			throw new IllegalArgumentException("You can only update campaign from DRAFT, REQUEST_CHANGE or WAITING to CANCELED");
 		}
 
 		if (campaignEntity.getStatus() == CampaignStatus.WAITING.getByteValue()) {
@@ -330,8 +338,9 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	private CampaignResponse artistSubmitCampaign(CampaignEntity campaignEntity, String message) {
-		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue()) {
-			throw new IllegalArgumentException("You can only update campaign from DRAFT to WAITING");
+		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue()
+			&& campaignEntity.getStatus() != CampaignStatus.REQUEST_CHANGE.getByteValue()) {
+			throw new IllegalArgumentException("You can only update campaign from DRAFT, REQUEST_CHANGE to WAITING");
 		}
 
 		for (var customProductEntity : campaignEntity.getCustomProducts()) {
@@ -379,10 +388,11 @@ public class CampaignServiceImpl implements CampaignService {
 			.orElseThrow(() -> new EntityNotFoundException("campaignId " + request.getId() + " not valid"));
 
 		return switch (request.getStatus()) {
-			case DRAFT -> staffRequestChangeCampaign(campaignEntity, request.getMessage());
+			case REQUEST_CHANGE -> staffRequestChangeCampaign(campaignEntity, request.getMessage());
 			case APPROVED -> staffApproveCampaign(campaignEntity, request.getMessage());
 			case REJECTED -> staffRejectCampaign(campaignEntity, request.getMessage());
-			default -> throw new IllegalArgumentException("You can only update campaign to status WAITING or CANCELED");
+			default ->
+				throw new IllegalArgumentException("You can only update campaign to status REQUEST_CHANGE, APPROVED or REJECTED");
 		};
 	}
 
@@ -427,7 +437,7 @@ public class CampaignServiceImpl implements CampaignService {
 				inventoryItemRepository.save(inventoryItemEntity);
 			});
 
-		campaignEntity.setStatus(CampaignStatus.DRAFT.getByteValue());
+		campaignEntity.setStatus(CampaignStatus.REQUEST_CHANGE.getByteValue());
 		campaignEntity.getCampaignHistories().add(
 			CampaignHistoryEntity.builder()
 				.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())
