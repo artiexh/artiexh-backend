@@ -11,6 +11,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -25,7 +26,9 @@ public class CampaignRequestFilter {
 			List<Predicate> predicates = new ArrayList<>();
 
 			if (status != null && !status.isEmpty()) {
-				predicates.add(root.get("status").in(status));
+				predicates.add(root.get("status").in(
+					status.stream().map(CampaignStatus::getByteValue).collect(Collectors.toSet()))
+				);
 			}
 
 			if (ownerId != null) {
