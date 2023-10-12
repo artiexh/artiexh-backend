@@ -135,8 +135,9 @@ public class CampaignServiceImpl implements CampaignService {
 			throw new IllegalArgumentException("You not own campaign " + request.getId());
 		}
 
-		if (!oldCampaignEntity.getStatus().equals(CampaignStatus.DRAFT.getByteValue())) {
-			throw new IllegalArgumentException("You can only update campaign with status DRAFT");
+		if (!oldCampaignEntity.getStatus().equals(CampaignStatus.DRAFT.getByteValue())
+			&& !oldCampaignEntity.getStatus().equals(CampaignStatus.REQUEST_CHANGE.getByteValue())) {
+			throw new IllegalArgumentException("You can only update campaign with status DRAFT or REQUEST_CHANGE");
 		}
 
 		validateCreateCustomProductRequest(ownerId, request.getProviderId(), request.getCustomProducts());
@@ -182,7 +183,6 @@ public class CampaignServiceImpl implements CampaignService {
 			})
 			.collect(Collectors.toSet());
 
-		oldCampaignEntity.setStatus(CampaignStatus.DRAFT.getByteValue());
 		oldCampaignEntity.setName(request.getName());
 		oldCampaignEntity.setDescription(request.getDescription());
 		oldCampaignEntity.getCustomProducts().clear();
@@ -379,10 +379,11 @@ public class CampaignServiceImpl implements CampaignService {
 			.orElseThrow(() -> new EntityNotFoundException("campaignId " + request.getId() + " not valid"));
 
 		return switch (request.getStatus()) {
-			case DRAFT -> staffRequestChangeCampaign(campaignEntity, request.getMessage());
+			case REQUEST_CHANGE -> staffRequestChangeCampaign(campaignEntity, request.getMessage());
 			case APPROVED -> staffApproveCampaign(campaignEntity, request.getMessage());
 			case REJECTED -> staffRejectCampaign(campaignEntity, request.getMessage());
-			default -> throw new IllegalArgumentException("You can only update campaign to status WAITING or CANCELED");
+			default ->
+				throw new IllegalArgumentException("You can only update campaign to status REQUEST_CHANGE, APPROVED or REJECTED");
 		};
 	}
 
@@ -427,7 +428,7 @@ public class CampaignServiceImpl implements CampaignService {
 				inventoryItemRepository.save(inventoryItemEntity);
 			});
 
-		campaignEntity.setStatus(CampaignStatus.DRAFT.getByteValue());
+		campaignEntity.setStatus(CampaignStatus.REQUEST_CHANGE.getByteValue());
 		campaignEntity.getCampaignHistories().add(
 			CampaignHistoryEntity.builder()
 				.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())

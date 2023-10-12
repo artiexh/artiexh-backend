@@ -30,6 +30,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Set;
 
+import static com.artiexh.model.domain.CampaignStatus.ALLOWED_ADMIN_VIEW_STATUS;
+
 @RestController
 @RequestMapping(Endpoint.Campaign.ROOT)
 @RequiredArgsConstructor
@@ -128,6 +130,10 @@ public class CampaignController {
 			} else {
 				filter.setOwnerId(userId.toString());
 			}
+		} else { // ADMIN and STAFF
+			if (!ALLOWED_ADMIN_VIEW_STATUS.contains(filter.getStatus())) {
+				throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only get campaigns after submitted");
+			}
 		}
 
 		var response = campaignService.getAllCampaigns(filter.getSpecification(), paginationAndSortingRequest.getPageable());
@@ -154,7 +160,7 @@ public class CampaignController {
 	@PostMapping("/{id}/product")
 	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
 	public Set<ProductResponse> publishProduct(@PathVariable("id") Long campaignId,
-										  @RequestBody @Valid Set<PublishProductRequest> request) {
+											   @RequestBody @Valid Set<PublishProductRequest> request) {
 		try {
 			return campaignService.publishProduct(campaignId, request);
 		} catch (IllegalArgumentException ex) {

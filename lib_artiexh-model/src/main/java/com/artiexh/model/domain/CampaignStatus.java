@@ -2,6 +2,8 @@ package com.artiexh.model.domain;
 
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 public enum CampaignStatus {
 	CANCELED(-1),
@@ -12,6 +14,13 @@ public enum CampaignStatus {
 	REJECTED(4),
 	PUBLISHED(5);
 
+	public static final List<CampaignStatus> ALLOWED_ADMIN_VIEW_STATUS = List.of(
+		CampaignStatus.WAITING,
+		CampaignStatus.APPROVED,
+		CampaignStatus.REQUEST_CHANGE,
+		CampaignStatus.REJECTED,
+		CampaignStatus.PUBLISHED
+	);
 	private final int value;
 
 	CampaignStatus(int value) {
