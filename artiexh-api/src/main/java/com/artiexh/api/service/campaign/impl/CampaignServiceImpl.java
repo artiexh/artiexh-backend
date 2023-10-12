@@ -303,9 +303,10 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	private CampaignResponse artistCancelCampaign(CampaignEntity campaignEntity, String message) {
-		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue() &&
-			campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
-			throw new IllegalArgumentException("You can only update campaign from DRAFT or WAITING to CANCELED");
+		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue()
+			&& campaignEntity.getStatus() != CampaignStatus.REQUEST_CHANGE.getByteValue()
+			&& campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
+			throw new IllegalArgumentException("You can only update campaign from DRAFT, REQUEST_CHANGE or WAITING to CANCELED");
 		}
 
 		if (campaignEntity.getStatus() == CampaignStatus.WAITING.getByteValue()) {
@@ -330,8 +331,9 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	private CampaignResponse artistSubmitCampaign(CampaignEntity campaignEntity, String message) {
-		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue()) {
-			throw new IllegalArgumentException("You can only update campaign from DRAFT to WAITING");
+		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue()
+			&& campaignEntity.getStatus() != CampaignStatus.REQUEST_CHANGE.getByteValue()) {
+			throw new IllegalArgumentException("You can only update campaign from DRAFT, REQUEST_CHANGE to WAITING");
 		}
 
 		for (var customProductEntity : campaignEntity.getCustomProducts()) {
