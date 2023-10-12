@@ -2,7 +2,7 @@ package com.artiexh.model.domain;
 
 import lombok.Getter;
 
-import java.util.List;
+import java.util.Set;
 
 @Getter
 public enum CampaignStatus {
@@ -14,7 +14,7 @@ public enum CampaignStatus {
 	REJECTED(4),
 	PUBLISHED(5);
 
-	public static final List<CampaignStatus> ALLOWED_ADMIN_VIEW_STATUS = List.of(
+	public static final Set<CampaignStatus> ALLOWED_ADMIN_VIEW_STATUS = Set.of(
 		CampaignStatus.WAITING,
 		CampaignStatus.APPROVED,
 		CampaignStatus.REQUEST_CHANGE,

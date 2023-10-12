@@ -131,7 +131,9 @@ public class CampaignController {
 				filter.setOwnerId(userId.toString());
 			}
 		} else { // ADMIN and STAFF
-			if (!ALLOWED_ADMIN_VIEW_STATUS.contains(filter.getStatus())) {
+			if (filter.getStatus() == null || filter.getStatus().isEmpty()) {
+				filter.setStatus(ALLOWED_ADMIN_VIEW_STATUS);
+			} else if (!ALLOWED_ADMIN_VIEW_STATUS.containsAll(filter.getStatus())) {
 				throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only get campaigns after submitted");
 			}
 		}

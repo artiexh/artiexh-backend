@@ -33,6 +33,8 @@ import org.springframework.util.StringUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.artiexh.model.domain.CampaignStatus.ALLOWED_ADMIN_VIEW_STATUS;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -258,6 +260,11 @@ public class CampaignServiceImpl implements CampaignService {
 
 		if (userEntity.getRole() == Role.ARTIST.getByteValue() && !campaignEntity.getOwner().getId().equals(userId)) {
 			throw new IllegalArgumentException("You not own campaign " + campaignId);
+		}
+
+		if ((userEntity.getRole() == Role.ADMIN.getByteValue() || userEntity.getRole() == Role.STAFF.getByteValue())
+			&& !ALLOWED_ADMIN_VIEW_STATUS.contains(CampaignStatus.fromValue(campaignEntity.getStatus()))) {
+			throw new IllegalArgumentException("You can only get campaigns after submitted");
 		}
 
 		Map<Long, ProviderConfigResponse> providerConfigsByCustomProductId = new HashMap<>();
