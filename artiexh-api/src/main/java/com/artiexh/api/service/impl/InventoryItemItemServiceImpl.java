@@ -4,6 +4,7 @@ import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.InventoryItemService;
 import com.artiexh.data.jpa.entity.InventoryItemEntity;
 import com.artiexh.data.jpa.entity.InventoryItemTagEntity;
+import com.artiexh.data.jpa.entity.MediaEntity;
 import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
 import com.artiexh.data.jpa.entity.embededmodel.ImageConfig;
@@ -115,6 +116,8 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 				.collect(Collectors.toSet())
 			);
 		}
+
+		entity.setThumbnail(MediaEntity.builder().id(item.getThumbnail().getId()).build());
 
 		entity.setDescription(item.getDescription());
 

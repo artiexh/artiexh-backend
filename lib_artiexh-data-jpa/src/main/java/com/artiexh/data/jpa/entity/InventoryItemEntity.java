@@ -2,8 +2,8 @@ package com.artiexh.data.jpa.entity;
 
 import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -14,7 +14,10 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "inventory_item")
-public class InventoryItemEntity {
+@AllArgsConstructor
+@NoArgsConstructor
+@SuperBuilder(toBuilder = true)
+public class InventoryItemEntity extends BaseAuditEntity{
 	@Id
 	@Tsid
 	private Long id;
@@ -48,4 +51,8 @@ public class InventoryItemEntity {
 	@JoinColumn(name = "inventory_item_id", updatable = false)
 	private Set<InventoryItemTagEntity> tags = new LinkedHashSet<>();
 
+	@OneToOne(orphanRemoval = true,
+		cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@JoinColumn(name = "thumbnail_id")
+	private MediaEntity thumbnail;
 }

@@ -1,10 +1,12 @@
 package com.artiexh.model.domain;
 
+import com.artiexh.data.jpa.entity.MediaEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Setter
@@ -21,4 +23,7 @@ public class InventoryItem {
 	private Long campaignLock;
 	private String description;
 	private Set<String> tags;
+	private Media thumbnail;
+	private LocalDateTime createdDate;
+	private LocalDateTime modifiedDate;
 }
