@@ -10,6 +10,7 @@ import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
 import com.artiexh.data.jpa.entity.embededmodel.ImageConfig;
 import com.artiexh.data.jpa.repository.InventoryItemRepository;
 import com.artiexh.data.jpa.repository.InventoryItemTagRepository;
+import com.artiexh.data.jpa.repository.MediaRepository;
 import com.artiexh.data.jpa.repository.ProductVariantRepository;
 import com.artiexh.model.domain.ImageSet;
 import com.artiexh.model.domain.InventoryItem;
@@ -37,6 +38,7 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 	private final InventoryItemTagRepository inventoryItemTagRepository;
 	private final InventoryMapper inventoryMapper;
 	private final MediaMapper mediaMapper;
+	private final MediaRepository mediaRepository;
 
 	@Override
 	@Transactional
@@ -117,7 +119,9 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 			);
 		}
 
-		entity.setThumbnail(MediaEntity.builder().id(item.getThumbnail().getId()).build());
+		if (item.getThumbnail() != null) {
+			entity.setThumbnail(mediaRepository.getReferenceById(item.getThumbnail().getId()));
+		}
 
 		entity.setDescription(item.getDescription());
 

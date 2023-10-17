@@ -60,7 +60,7 @@ public class InventoryItemDetail {
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@Schema(allOf = Media.class)
-	private Media modelFile;
+	private Media thumbnail;
 
 	@Data
 	@NoArgsConstructor
