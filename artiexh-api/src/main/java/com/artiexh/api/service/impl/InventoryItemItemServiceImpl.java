@@ -54,7 +54,7 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 			entity = createItem(item);
 		}
 
-		return inventoryMapper.entityToDomain(entity, new CycleAvoidingMappingContext());
+		return inventoryMapper.entityToDomain(entity);
 	}
 
 	@Transactional
@@ -155,7 +155,7 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 	@Transactional(readOnly = true)
 	public Page<InventoryItem> getAll(Specification<InventoryItemEntity> specification, Pageable pageable) {
 		Page<InventoryItemEntity> itemPage = inventoryItemRepository.findAll(specification, pageable);
-		return itemPage.map(item -> inventoryMapper.entityToDomain(item, new CycleAvoidingMappingContext()));
+		return itemPage.map(inventoryMapper::entityToDomain);
 	}
 
 	@Override
@@ -163,7 +163,7 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 	public InventoryItem getById(Long userId, Long id) {
 		InventoryItemEntity item = inventoryItemRepository.findInventoryItemEntityByIdAndArtistId(id, userId)
 			.orElseThrow(EntityNotFoundException::new);
-		return inventoryMapper.entityToDomain(item, new CycleAvoidingMappingContext());
+		return inventoryMapper.entityToDomain(item);
 	}
 
 	@Override

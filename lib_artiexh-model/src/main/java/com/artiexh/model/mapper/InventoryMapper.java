@@ -29,9 +29,16 @@ public interface InventoryMapper {
 	@Mapping(target = "modifiedDate", qualifiedByName = "fromUTCToLocal")
 	InventoryItem entityToDomain(InventoryItemEntity entity, @Context CycleAvoidingMappingContext context);
 
+	@Mapping(target = "createdDate", qualifiedByName = "fromUTCToLocal")
+	@Mapping(target = "modifiedDate", qualifiedByName = "fromUTCToLocal")
+	@Mapping(target = "variant", qualifiedByName = "entityToBasicDomain")
+	InventoryItem entityToDomain(InventoryItemEntity entity);
+
 	@Named("entityToDomainWithoutVariant")
 	@Mapping(target = "variant", ignore = true)
 	@Mapping(target = "artist", qualifiedByName = "basicArtistInfo")
+	@Mapping(target = "createdDate", qualifiedByName = "fromUTCToLocal")
+	@Mapping(target = "modifiedDate", qualifiedByName = "fromUTCToLocal")
 	InventoryItem entityToDomainWithoutVariant(InventoryItemEntity entity);
 	default String inventoryItemTagToTag(InventoryItemTagEntity tag) {
 		if (tag == null) {
