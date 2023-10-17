@@ -1,6 +1,7 @@
 package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.ProductBaseEntity;
+import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.artiexh.model.domain.*;
 import com.artiexh.model.rest.productbase.ProductBaseDetail;
 import com.artiexh.model.rest.productbase.ProductBaseInfo;
@@ -22,6 +23,11 @@ public interface ProductBaseMapper {
 	@Mapping(target = "createdDate", qualifiedByName = "fromUTCToLocal")
 	@Mapping(target = "modifiedDate", qualifiedByName = "fromUTCToLocal")
 	ProductBase entityToDomain(ProductBaseEntity entity, @Context CycleAvoidingMappingContext context);
+
+	@Named("entityToBasicDomain")
+	@Mapping(target = "providers", ignore = true)
+	@Mapping(target = "productVariants", ignore = true)
+	ProductBase entityToBasicDomain(ProductBaseEntity entity);
 
 	ProductBaseEntity domainToEntity(ProductBase domain);
 

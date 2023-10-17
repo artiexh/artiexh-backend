@@ -21,6 +21,11 @@ import java.util.Set;
 public interface ProductVariantMapper {
 	ProductVariant entityToDomain(ProductVariantEntity entity, @Context CycleAvoidingMappingContext context);
 
+	@Named("entityToBasicDomain")
+	@Mapping(target = "productBase", qualifiedByName = "entityToBasicDomain")
+	@Mapping(target = "providerConfigs", qualifiedByName = "entitySetToBasicDomainSet")
+	ProductVariant entityToBasicDomain(ProductVariantEntity entity);
+
 	@Mapping(target = "productBase", ignore = true)
 	@Named("detailToDomain")
 	ProductVariant detailToDomain(ProductVariantDetail detail);
@@ -58,6 +63,16 @@ public interface ProductVariantMapper {
 	@Mapping(source = "id.productVariantId", target = "variantId")
 	@Mapping(source = "id.businessCode", target = "businessCode")
 	ProductVariantProvider entityToDomain(ProductVariantProviderEntity productVariantProviderEntity, @Context CycleAvoidingMappingContext context);
+
+	@Named("entityToBasicDomain")
+	@Mapping(source = "id.productVariantId", target = "variantId")
+	@Mapping(source = "id.businessCode", target = "businessCode")
+	@Mapping(target = "provider", qualifiedByName = "entityToBasicDomain")
+	ProductVariantProvider entityToBasicDomain(ProductVariantProviderEntity productVariantProviderEntity);
+
+	@IterableMapping(qualifiedByName = "entityToBasicDomain")
+	@Named("entitySetToBasicDomainSet")
+	Set<ProductVariantProvider> entitySetToBasicDomainSet(Set<ProductVariantProviderEntity> entity);
 
 	@Mapping(target = "id.productVariantId", source = "variantId")
 	@Mapping(target = "id.businessCode", source = "businessCode")
