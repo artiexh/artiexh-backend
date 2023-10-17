@@ -4,11 +4,13 @@ import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.InventoryItemService;
 import com.artiexh.data.jpa.entity.InventoryItemEntity;
 import com.artiexh.data.jpa.entity.InventoryItemTagEntity;
+import com.artiexh.data.jpa.entity.MediaEntity;
 import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
 import com.artiexh.data.jpa.entity.embededmodel.ImageConfig;
 import com.artiexh.data.jpa.repository.InventoryItemRepository;
 import com.artiexh.data.jpa.repository.InventoryItemTagRepository;
+import com.artiexh.data.jpa.repository.MediaRepository;
 import com.artiexh.data.jpa.repository.ProductVariantRepository;
 import com.artiexh.model.domain.ImageSet;
 import com.artiexh.model.domain.InventoryItem;
@@ -36,6 +38,7 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 	private final InventoryItemTagRepository inventoryItemTagRepository;
 	private final InventoryMapper inventoryMapper;
 	private final MediaMapper mediaMapper;
+	private final MediaRepository mediaRepository;
 
 	@Override
 	@Transactional
@@ -51,7 +54,7 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 			entity = createItem(item);
 		}
 
-		return inventoryMapper.entityToDomain(entity, new CycleAvoidingMappingContext());
+		return inventoryMapper.entityToDomain(entity);
 	}
 
 	@Transactional
@@ -116,10 +119,14 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 			);
 		}
 
+		if (item.getThumbnail() != null) {
+			entity.setThumbnail(mediaRepository.getReferenceById(item.getThumbnail().getId()));
+		}
+
 		entity.setDescription(item.getDescription());
 
 		entity.getTags().clear();
-		var savedEntity = inventoryItemRepository.save(entity);
+		var savedEntity = inventoryItemRepository.saveAndFlush(entity);
 		var savedTagEntities = saveInventoryItemTag(savedEntity.getId(), item.getTags());
 		savedEntity.getTags().addAll(savedTagEntities);
 
@@ -148,7 +155,7 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 	@Transactional(readOnly = true)
 	public Page<InventoryItem> getAll(Specification<InventoryItemEntity> specification, Pageable pageable) {
 		Page<InventoryItemEntity> itemPage = inventoryItemRepository.findAll(specification, pageable);
-		return itemPage.map(item -> inventoryMapper.entityToDomain(item, new CycleAvoidingMappingContext()));
+		return itemPage.map(inventoryMapper::entityToDomain);
 	}
 
 	@Override
@@ -156,7 +163,7 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 	public InventoryItem getById(Long userId, Long id) {
 		InventoryItemEntity item = inventoryItemRepository.findInventoryItemEntityByIdAndArtistId(id, userId)
 			.orElseThrow(EntityNotFoundException::new);
-		return inventoryMapper.entityToDomain(item, new CycleAvoidingMappingContext());
+		return inventoryMapper.entityToDomain(item);
 	}
 
 	@Override

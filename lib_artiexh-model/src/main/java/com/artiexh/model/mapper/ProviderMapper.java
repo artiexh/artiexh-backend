@@ -28,6 +28,11 @@ public interface ProviderMapper {
 
 	Provider entityToDomain(ProviderEntity entity, @Context CycleAvoidingMappingContext context);
 
+	@Named("entityToBasicDomain")
+	@Mapping(target = "productVariants", ignore = true)
+	@Mapping(target = "productBases", ignore = true)
+	Provider entityToBasicDomain(ProviderEntity entity);
+
 	@Mapping(target = "productBases", source = "productBases", qualifiedByName = "domainSetToInfoSet")
 	ProviderDetail domainToDetail(Provider domain);
 

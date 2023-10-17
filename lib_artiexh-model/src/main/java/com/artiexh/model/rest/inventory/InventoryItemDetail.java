@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Getter
@@ -46,6 +47,20 @@ public class InventoryItemDetail {
 	private String description;
 
 	private Set<String> tags = Set.of();
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private LocalDateTime createdDate;
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private LocalDateTime modifiedDate;
+
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@JsonSerialize(using = ToStringSerializer.class)
+	private Long thumbnailId;
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@Schema(allOf = Media.class)
+	private Media thumbnail;
 
 	@Data
 	@NoArgsConstructor
