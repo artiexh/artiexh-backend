@@ -126,7 +126,7 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 		entity.setDescription(item.getDescription());
 
 		entity.getTags().clear();
-		var savedEntity = inventoryItemRepository.save(entity);
+		var savedEntity = inventoryItemRepository.saveAndFlush(entity);
 		var savedTagEntities = saveInventoryItemTag(savedEntity.getId(), item.getTags());
 		savedEntity.getTags().addAll(savedTagEntities);
 

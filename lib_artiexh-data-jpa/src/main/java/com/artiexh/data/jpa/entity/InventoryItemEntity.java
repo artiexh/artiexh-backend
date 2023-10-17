@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -17,6 +18,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
+@EntityListeners(AuditingEntityListener.class)
 public class InventoryItemEntity extends BaseAuditEntity{
 	@Id
 	@Tsid
@@ -51,8 +53,7 @@ public class InventoryItemEntity extends BaseAuditEntity{
 	@JoinColumn(name = "inventory_item_id", updatable = false)
 	private Set<InventoryItemTagEntity> tags = new LinkedHashSet<>();
 
-	@OneToOne(orphanRemoval = true,
-		cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@OneToOne()
 	@JoinColumn(name = "thumbnail_id")
 	private MediaEntity thumbnail;
 }
