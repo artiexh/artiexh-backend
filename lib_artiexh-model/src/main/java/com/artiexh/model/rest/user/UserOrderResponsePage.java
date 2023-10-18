@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Getter
@@ -28,9 +29,9 @@ public class UserOrderResponsePage {
 
 	private OrderStatus status;
 
-	private LocalDateTime modifiedDate;
+	private Instant modifiedDate;
 
-	private LocalDateTime createdDate;
+	private Instant createdDate;
 
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long orderId;

@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -40,8 +41,8 @@ public class PostDetail {
 	private int numOfComments;
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	private LocalDateTime createdDate;
+	private Instant createdDate;
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	private LocalDateTime modifiedDate;
+	private Instant modifiedDate;
 }

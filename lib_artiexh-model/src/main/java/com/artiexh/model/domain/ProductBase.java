@@ -5,6 +5,7 @@ import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
 import com.artiexh.data.jpa.entity.embededmodel.OptionConfig;
 import lombok.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -17,9 +18,9 @@ import java.util.Set;
 public class ProductBase {
 	private Long id;
 
-	private LocalDateTime createdDate;
+	private Instant createdDate;
 
-	private LocalDateTime modifiedDate;
+	private Instant modifiedDate;
 
 	private String name;
 

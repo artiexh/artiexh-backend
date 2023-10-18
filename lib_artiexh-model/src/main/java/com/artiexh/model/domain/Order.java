@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -24,8 +25,8 @@ public class Order {
 	private PaymentMethod paymentMethod;
 	private OrderStatus status;
 	private Set<OrderDetail> orderDetails;
-	private LocalDateTime modifiedDate;
-	private LocalDateTime createdDate;
+	private Instant modifiedDate;
+	private Instant createdDate;
 	private List<OrderHistory> orderHistories;
 	private String shippingLabel;
 	private Long orderId;

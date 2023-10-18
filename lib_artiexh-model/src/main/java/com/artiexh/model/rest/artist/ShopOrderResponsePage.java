@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Getter
@@ -32,9 +33,9 @@ public class ShopOrderResponsePage {
 
 	private OrderStatus status;
 
-	private LocalDateTime modifiedDate;
+	private Instant modifiedDate;
 
-	private LocalDateTime createdDate;
+	private Instant createdDate;
 
 	private BigDecimal shippingFee;
 }
