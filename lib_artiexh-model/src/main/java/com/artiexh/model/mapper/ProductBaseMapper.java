@@ -27,12 +27,18 @@ public interface ProductBaseMapper {
 	@Named("entityToBasicDomain")
 	@Mapping(target = "providers", ignore = true)
 	@Mapping(target = "productVariants", ignore = true)
+	@Mapping(target = "createdDate", qualifiedByName = "fromUTCToLocal")
+	@Mapping(target = "modifiedDate", qualifiedByName = "fromUTCToLocal")
 	ProductBase entityToBasicDomain(ProductBaseEntity entity);
 
+	@Mapping(target = "createdDate", ignore = true)
+	@Mapping(target = "modifiedDate", ignore = true)
 	ProductBaseEntity domainToEntity(ProductBase domain);
 
 	@Mapping(target = "providers", ignore = true)
 	@Mapping(target = "category", ignore = true)
+	@Mapping(target = "createdDate", ignore = true)
+	@Mapping(target = "modifiedDate", ignore = true)
 	ProductBaseEntity domainToEntity(ProductBase domain, @MappingTarget ProductBaseEntity entity);
 
 	@Mapping(target = "category", source = "categoryId")

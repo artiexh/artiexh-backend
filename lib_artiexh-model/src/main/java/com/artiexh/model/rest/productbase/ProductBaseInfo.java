@@ -23,6 +23,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -37,10 +38,10 @@ public class ProductBaseInfo {
 	private Long id;
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	private LocalDateTime createdDate;
+	private Instant createdDate;
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	private LocalDateTime modifiedDate;
+	private Instant modifiedDate;
 
 	@NotBlank
 	private String name;

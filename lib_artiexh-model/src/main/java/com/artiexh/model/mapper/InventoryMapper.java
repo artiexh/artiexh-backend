@@ -20,9 +20,13 @@ public interface InventoryMapper {
 	InventoryItemDetail domainToDetail(InventoryItem item);
 
 	@Mapping(target = "tags", ignore = true)
+	@Mapping(target = "createdDate", ignore = true)
+	@Mapping(target = "modifiedDate", ignore = true)
 	InventoryItemEntity domainToEntity(InventoryItem item, @MappingTarget InventoryItemEntity entity);
 
 	@Mapping(target = "tags", ignore = true)
+	@Mapping(target = "createdDate", ignore = true)
+	@Mapping(target = "modifiedDate", ignore = true)
 	InventoryItemEntity domainToEntity(InventoryItem item);
 
 	@Mapping(target = "createdDate", qualifiedByName = "fromUTCToLocal")

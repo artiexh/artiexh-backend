@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -24,6 +25,6 @@ public class InventoryItem {
 	private String description;
 	private Set<String> tags;
 	private Media thumbnail;
-	private LocalDateTime createdDate;
-	private LocalDateTime modifiedDate;
+	private Instant createdDate;
+	private Instant modifiedDate;
 }
