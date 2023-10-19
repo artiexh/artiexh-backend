@@ -2,10 +2,7 @@ package com.artiexh.data.jpa.entity;
 
 import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -52,6 +49,7 @@ public class InventoryItemEntity extends BaseAuditEntity {
 	@Column(name = "description", length = 1000)
 	private String description;
 
+	@Builder.Default
 	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
 	@JoinColumn(name = "inventory_item_id", updatable = false)
 	private Set<InventoryItemTagEntity> tags = new LinkedHashSet<>();
