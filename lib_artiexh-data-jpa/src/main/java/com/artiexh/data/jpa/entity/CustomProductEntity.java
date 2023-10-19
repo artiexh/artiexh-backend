@@ -2,10 +2,7 @@ package com.artiexh.data.jpa.entity;
 
 import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -64,6 +61,7 @@ public class CustomProductEntity extends BaseAuditEntity {
 	@JoinColumn(name = "custom_product_id")
 	private Set<ProductAttachEntity> attaches;
 
+	@Builder.Default
 	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
 	@JoinColumn(name = "custom_product_id", updatable = false)
 	private Set<CustomProductTagEntity> tags = new LinkedHashSet<>();

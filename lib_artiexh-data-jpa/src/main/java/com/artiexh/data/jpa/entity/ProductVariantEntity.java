@@ -31,11 +31,13 @@ public class ProductVariantEntity {
 	@JoinColumn(name = "product_base_id", insertable = false, updatable = false)
 	private ProductBaseEntity productBase;
 
+	@Builder.Default
 	@OneToMany(mappedBy = "productVariant",
 		orphanRemoval = true,
 		cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	private Set<ProductVariantCombinationEntity> variantCombinations = new HashSet<>();
 
+	@Builder.Default
 	@OneToMany(mappedBy = "productVariant",
 		orphanRemoval = true,
 		cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})

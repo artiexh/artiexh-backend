@@ -48,6 +48,7 @@ public class ProviderEntity {
 	@ManyToMany(mappedBy = "providers")
 	private Set<ProductBaseEntity> productBases;
 
+	@Builder.Default
 	@ManyToMany
 	@JoinTable(name = "provider_category_mapping",
 		joinColumns = @JoinColumn(name = "provider_id"),
