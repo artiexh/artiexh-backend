@@ -1,8 +1,6 @@
 package com.artiexh.model.rest.post;
 
-import com.artiexh.model.domain.Post;
 import com.artiexh.model.rest.account.AccountProfile;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
