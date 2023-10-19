@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @NoArgsConstructor
@@ -27,7 +27,7 @@ public class OrderTransaction {
 
 	private String orderInfo;
 
-	private LocalDateTime payDate;
+	private Instant payDate;
 
 	private String responseCode;
 

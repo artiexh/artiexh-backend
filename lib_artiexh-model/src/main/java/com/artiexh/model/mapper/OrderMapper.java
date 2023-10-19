@@ -29,8 +29,6 @@ import java.util.Set;
 public interface OrderMapper {
 
 	@Mapping(target = "orderId", source = "orderGroup.id")
-	@Mapping(target = "createdDate", qualifiedByName = "fromUTCToLocal")
-	@Mapping(target = "modifiedDate", qualifiedByName = "fromUTCToLocal")
 	Order entityToResponseDomain(OrderEntity entity);
 
 	@Mapping(target = "createdDate", ignore = true)

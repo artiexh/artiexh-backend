@@ -4,13 +4,15 @@ import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -21,20 +23,20 @@ import java.time.ZoneId;
 public class BaseAuditEntity {
 	@Column(name = "created_date", nullable = false, updatable = false)
 	@CreatedDate
-	private LocalDateTime createdDate;
+	private Instant createdDate;
 
 	@Column(name = "modified_date")
 	@LastModifiedDate
-	private LocalDateTime modifiedDate;
+	private Instant modifiedDate;
 
 	@PrePersist
 	public void onCreate() {
-		this.createdDate = LocalDateTime.now(ZoneId.of("UTC"));
-		this.modifiedDate = LocalDateTime.now(ZoneId.of("UTC"));
+		this.createdDate = Instant.now();
+		this.modifiedDate = Instant.now();
 	}
 
 	@PreUpdate
 	public void onUpdate() {
-		this.modifiedDate = LocalDateTime.now(ZoneId.of("UTC"));
+		this.modifiedDate = Instant.now();
 	}
 }

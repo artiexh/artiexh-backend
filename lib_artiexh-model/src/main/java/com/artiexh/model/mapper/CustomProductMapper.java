@@ -2,13 +2,12 @@ package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.CustomProductEntity;
 import com.artiexh.data.jpa.entity.CustomProductTagEntity;
-import com.artiexh.data.jpa.entity.ProductCategoryEntity;
-import com.artiexh.model.domain.CustomProduct;
 import com.artiexh.data.jpa.entity.ProductVariantCombinationEntity;
+import com.artiexh.model.domain.CustomProduct;
 import com.artiexh.model.rest.campaign.request.CustomProductRequest;
 import com.artiexh.model.rest.campaign.response.CustomProductResponse;
-import org.apache.commons.lang3.StringUtils;
 import com.artiexh.model.rest.campaign.response.InventoryItemResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
 
 import java.util.Set;
@@ -57,8 +56,6 @@ public interface CustomProductMapper {
 	@Mapping(target = "inventoryItem.productBase", source = "inventoryItem.variant.productBase")
 	@Mapping(target = "inventoryItem.variant.variantCombination", source = "inventoryItem.variant.variantCombinations")
 	@Mapping(target = "providerConfig", ignore = true)
-	@Mapping(target = "createdDate", qualifiedByName = "fromUTCToLocal")
-	@Mapping(target = "modifiedDate", qualifiedByName = "fromUTCToLocal")
 	CustomProductResponse entityToResponse(CustomProductEntity product);
 
 	@IterableMapping(qualifiedByName = "entityToResponse")
@@ -79,8 +76,6 @@ public interface CustomProductMapper {
 	@Mapping(target = "price.amount", source = "priceAmount")
 	@Mapping(target = "price.unit", source = "priceUnit")
 	@Mapping(target = "inventoryItem", qualifiedByName = "entityToDomainWithoutVariant")
-	@Mapping(target = "createdDate", qualifiedByName = "fromUTCToLocal")
-	@Mapping(target = "modifiedDate", qualifiedByName = "fromUTCToLocal")
 	CustomProduct entityToDomain(CustomProductEntity product);
 
 	@Named("domainToEntity")

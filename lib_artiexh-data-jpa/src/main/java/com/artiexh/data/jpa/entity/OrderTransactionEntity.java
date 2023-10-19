@@ -6,7 +6,7 @@ import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -38,7 +38,7 @@ public class OrderTransactionEntity {
 
 	private String orderInfo;
 
-	private LocalDateTime payDate;
+	private Instant payDate;
 
 	private String responseCode;
 

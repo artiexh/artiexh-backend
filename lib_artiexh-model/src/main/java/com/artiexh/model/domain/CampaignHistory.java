@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @NoArgsConstructor
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class CampaignHistory {
 	@JsonIgnore
 	private Long campaignId;
-	private LocalDateTime eventTime;
+	private Instant eventTime;
 	private CampaignHistoryAction action;
 	private String message;
 }

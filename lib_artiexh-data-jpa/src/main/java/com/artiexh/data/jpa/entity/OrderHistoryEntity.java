@@ -6,7 +6,7 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Builder
 @NoArgsConstructor
@@ -22,7 +22,7 @@ public class OrderHistoryEntity {
 
 	@Column(name = "datetime", nullable = false, updatable = false)
 	@CreatedDate
-	private LocalDateTime datetime;
+	private Instant datetime;
 
 	@Size(max = 255)
 	@Column(name = "message")

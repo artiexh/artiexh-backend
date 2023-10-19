@@ -1,8 +1,5 @@
 package com.artiexh.model.rest.post;
 
-import com.artiexh.data.jpa.entity.ArtistEntity;
-import com.artiexh.data.jpa.entity.ProductAttachEntity;
-import com.artiexh.model.domain.Artist;
 import com.artiexh.model.domain.ProductAttach;
 import com.artiexh.model.rest.account.AccountProfile;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,7 +9,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Set;
 
 @Builder
