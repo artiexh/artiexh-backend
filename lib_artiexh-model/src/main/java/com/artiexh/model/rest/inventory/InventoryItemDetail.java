@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -49,10 +50,10 @@ public class InventoryItemDetail {
 	private Set<String> tags = Set.of();
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	private LocalDateTime createdDate;
+	private Instant createdDate;
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	private LocalDateTime modifiedDate;
+	private Instant modifiedDate;
 
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@JsonSerialize(using = ToStringSerializer.class)

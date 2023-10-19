@@ -10,6 +10,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -32,7 +33,7 @@ public class Post {
 
 	private int numOfComments;
 
-	private LocalDateTime createdDate;
+	private Instant createdDate;
 
-	private LocalDateTime modifiedDate;
+	private Instant modifiedDate;
 }

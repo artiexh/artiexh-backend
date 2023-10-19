@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -23,7 +24,7 @@ public class CustomProductResponse {
 	private Set<ProductAttach> attaches;
 	private Set<String> tags;
 	private InventoryItemResponse inventoryItem;
-	private LocalDateTime createdDate;
-	private LocalDateTime modifiedDate;
+	private Instant createdDate;
+	private Instant modifiedDate;
 	private ProviderConfigResponse providerConfig;
 }

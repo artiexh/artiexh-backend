@@ -22,14 +22,19 @@ import java.util.Set;
 		ShopMapper.class,
 		OrderTransactionMapper.class,
 		AddressMapper.class,
-		OrderHistoryMapper.class
+		OrderHistoryMapper.class,
+		DateTimeMapper.class
 	}
 )
 public interface OrderMapper {
 
 	@Mapping(target = "orderId", source = "orderGroup.id")
+	@Mapping(target = "createdDate", qualifiedByName = "fromUTCToLocal")
+	@Mapping(target = "modifiedDate", qualifiedByName = "fromUTCToLocal")
 	Order entityToResponseDomain(OrderEntity entity);
 
+	@Mapping(target = "createdDate", ignore = true)
+	@Mapping(target = "modifiedDate", ignore = true)
 	OrderEntity orderToOrderEntity(Order order);
 
 	ShopOrderResponse domainToArtistResponse(Order order);

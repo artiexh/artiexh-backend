@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {ProductAttachMapper.class, InventoryMapper.class, ArtistMapper.class, CampaignMapper.class})
+	uses = {ProductAttachMapper.class, InventoryMapper.class, ArtistMapper.class, CampaignMapper.class, DateTimeMapper.class})
 public interface CustomProductMapper {
 
 	@Mapping(target = "id", ignore = true)
@@ -57,6 +57,8 @@ public interface CustomProductMapper {
 	@Mapping(target = "inventoryItem.productBase", source = "inventoryItem.variant.productBase")
 	@Mapping(target = "inventoryItem.variant.variantCombination", source = "inventoryItem.variant.variantCombinations")
 	@Mapping(target = "providerConfig", ignore = true)
+	@Mapping(target = "createdDate", qualifiedByName = "fromUTCToLocal")
+	@Mapping(target = "modifiedDate", qualifiedByName = "fromUTCToLocal")
 	CustomProductResponse entityToResponse(CustomProductEntity product);
 
 	@IterableMapping(qualifiedByName = "entityToResponse")
@@ -77,9 +79,13 @@ public interface CustomProductMapper {
 	@Mapping(target = "price.amount", source = "priceAmount")
 	@Mapping(target = "price.unit", source = "priceUnit")
 	@Mapping(target = "inventoryItem", qualifiedByName = "entityToDomainWithoutVariant")
+	@Mapping(target = "createdDate", qualifiedByName = "fromUTCToLocal")
+	@Mapping(target = "modifiedDate", qualifiedByName = "fromUTCToLocal")
 	CustomProduct entityToDomain(CustomProductEntity product);
 
 	@Named("domainToEntity")
+	@Mapping(target = "createdDate", ignore = true)
+	@Mapping(target = "modifiedDate", ignore = true)
 	@Mapping(target = "priceUnit", source = "price.unit")
 	@Mapping(target = "priceAmount", source = "price.amount")
 	CustomProductEntity domainToEntity(CustomProduct customProduct);
