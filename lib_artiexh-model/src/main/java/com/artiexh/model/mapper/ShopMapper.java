@@ -3,7 +3,7 @@ package com.artiexh.model.mapper;
 import com.artiexh.data.jpa.entity.ArtistEntity;
 import com.artiexh.model.domain.Shop;
 import com.artiexh.model.rest.address.AddressResponse;
-import com.artiexh.model.rest.artist.RegistrationShopRequest;
+import com.artiexh.model.rest.artist.request.RegistrationShopRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;

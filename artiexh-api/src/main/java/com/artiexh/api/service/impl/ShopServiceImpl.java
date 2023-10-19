@@ -1,8 +1,10 @@
 package com.artiexh.api.service.impl;
 
 import com.artiexh.api.service.ShopService;
+import com.artiexh.api.service.product.ProductService;
 import com.artiexh.data.jpa.entity.ArtistEntity;
 import com.artiexh.data.jpa.repository.ArtistRepository;
+import com.artiexh.model.domain.Product;
 import com.artiexh.model.domain.Shop;
 import com.artiexh.model.mapper.ShopMapper;
 import com.artiexh.model.rest.address.AddressResponse;
@@ -10,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ShopServiceImpl implements ShopService {
 	private final ArtistRepository artistRepository;
+	private final ProductService productService;
 	private final ShopMapper shopMapper;
 
 	@Override
@@ -39,6 +43,14 @@ public class ShopServiceImpl implements ShopService {
 		return artistRepository.findById(id)
 			.map(shopMapper::entityToShopAddressResponse)
 			.orElseThrow(() -> new EntityNotFoundException("id " + id + " not existed"));
+	}
+
+	@Override
+	public Page<Product> getShopProduct(long shopId, Query query, Pageable pageable) {
+		if (!artistRepository.existsById(shopId)) {
+			throw new EntityNotFoundException("Shop id " + shopId + " not existed");
+		}
+		return productService.getInPage(query, pageable);
 	}
 
 }

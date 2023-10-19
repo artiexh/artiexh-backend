@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.artist;
+package com.artiexh.model.rest.artist.response;
 
 import com.artiexh.model.domain.OrderStatus;
 import com.artiexh.model.domain.PaymentMethod;
@@ -13,7 +13,6 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter

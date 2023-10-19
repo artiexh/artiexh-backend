@@ -4,8 +4,8 @@ import com.artiexh.data.jpa.entity.OrderEntity;
 import com.artiexh.model.domain.Order;
 import com.artiexh.model.domain.OrderDetail;
 import com.artiexh.model.domain.OrderStatus;
-import com.artiexh.model.rest.artist.ShopOrderResponse;
-import com.artiexh.model.rest.artist.ShopOrderResponsePage;
+import com.artiexh.model.rest.artist.response.ShopOrderResponse;
+import com.artiexh.model.rest.artist.response.ShopOrderResponsePage;
 import com.artiexh.model.rest.order.response.OrderDetailResponse;
 import com.artiexh.model.rest.user.UserOrderResponse;
 import com.artiexh.model.rest.user.UserOrderResponsePage;
@@ -29,8 +29,6 @@ import java.util.Set;
 public interface OrderMapper {
 
 	@Mapping(target = "orderId", source = "orderGroup.id")
-	@Mapping(target = "createdDate", qualifiedByName = "fromUTCToLocal")
-	@Mapping(target = "modifiedDate", qualifiedByName = "fromUTCToLocal")
 	Order entityToResponseDomain(OrderEntity entity);
 
 	@Mapping(target = "createdDate", ignore = true)

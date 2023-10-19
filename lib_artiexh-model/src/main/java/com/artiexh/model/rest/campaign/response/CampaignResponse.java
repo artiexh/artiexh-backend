@@ -1,7 +1,6 @@
 package com.artiexh.model.rest.campaign.response;
 
 import com.artiexh.model.domain.CampaignStatus;
-import com.artiexh.model.rest.product.response.ProductResponse;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
@@ -29,6 +28,5 @@ public class CampaignResponse {
 		private String username;
 		private String displayName;
 		private String avatarUrl;
-		private ProductResponse.Province province;
 	}
 }

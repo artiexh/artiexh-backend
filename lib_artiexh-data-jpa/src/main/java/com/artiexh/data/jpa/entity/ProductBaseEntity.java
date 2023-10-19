@@ -5,10 +5,11 @@ import com.artiexh.data.jpa.entity.embededmodel.OptionConfig;
 import io.hypersistence.utils.hibernate.id.Tsid;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.Type;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -23,7 +24,7 @@ import java.util.Set;
 @SuperBuilder(toBuilder = true)
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "product_base")
-public class ProductBaseEntity extends BaseAuditEntity{
+public class ProductBaseEntity extends BaseAuditEntity {
 	@Id
 	@Tsid
 	@Column(name = "id", nullable = false)

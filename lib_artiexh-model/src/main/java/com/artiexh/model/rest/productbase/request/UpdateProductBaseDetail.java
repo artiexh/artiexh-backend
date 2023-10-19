@@ -2,14 +2,11 @@ package com.artiexh.model.rest.productbase.request;
 
 import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
 import com.artiexh.data.jpa.entity.embededmodel.OptionConfig;
-import com.artiexh.model.domain.Model3DCode;
 import com.artiexh.model.domain.ProductAttach;
 import com.artiexh.model.domain.ProductOption;
-import com.artiexh.model.rest.category.ProductCategoryResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
