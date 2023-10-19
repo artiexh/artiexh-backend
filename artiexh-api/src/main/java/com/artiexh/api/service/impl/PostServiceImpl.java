@@ -13,7 +13,6 @@ import com.artiexh.model.domain.Post;
 import com.artiexh.model.domain.PostComment;
 import com.artiexh.model.mapper.PostCommentMapper;
 import com.artiexh.model.mapper.PostMapper;
-import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,6 +30,7 @@ public class PostServiceImpl implements PostService {
 	private final UserRepository userRepository;
 	private final PostMapper postMapper;
 	private final PostCommentMapper postCommentMapper;
+
 	@Override
 	@Transactional
 	public Post create(Long userId, Post post) {

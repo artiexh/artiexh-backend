@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.artist;
+package com.artiexh.model.rest.artist.response;
 
 import com.artiexh.model.domain.OrderHistory;
 import com.artiexh.model.rest.order.response.OrderDetailResponse;

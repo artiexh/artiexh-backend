@@ -6,9 +6,10 @@ import com.artiexh.api.service.AccountService;
 import com.artiexh.api.service.ArtistService;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
-import com.artiexh.model.rest.artist.ShopOrderResponse;
-import com.artiexh.model.rest.artist.ShopOrderResponsePage;
 import com.artiexh.model.rest.artist.filter.ProductPageFilter;
+import com.artiexh.model.rest.artist.response.ArtistProfileResponse;
+import com.artiexh.model.rest.artist.response.ShopOrderResponse;
+import com.artiexh.model.rest.artist.response.ShopOrderResponsePage;
 import com.artiexh.model.rest.order.request.OrderPageFilter;
 import com.artiexh.model.rest.order.request.UpdateShippingOrderRequest;
 import com.artiexh.model.rest.product.response.ProductResponse;
@@ -29,6 +30,15 @@ public class ArtistController {
 
 	private final ArtistService artistService;
 	private final AccountService accountService;
+
+	@GetMapping(Endpoint.Artist.ARTIST_PROFILE)
+	public ArtistProfileResponse getProfile(@PathVariable long id) {
+		try {
+			return artistService.getProfile(id);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+		}
+	}
 
 	@GetMapping(Endpoint.Artist.ARTIST_PRODUCT)
 	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")

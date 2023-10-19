@@ -8,7 +8,7 @@ import com.artiexh.model.domain.Artist;
 import com.artiexh.model.domain.User;
 import com.artiexh.model.mapper.AccountMapper;
 import com.artiexh.model.mapper.UserMapper;
-import com.artiexh.model.rest.artist.RegistrationShopRequest;
+import com.artiexh.model.rest.artist.request.RegistrationShopRequest;
 import com.artiexh.model.rest.auth.RegisterAdminRequest;
 import com.artiexh.model.rest.auth.RegisterUserRequest;
 import jakarta.servlet.http.HttpServletResponse;
