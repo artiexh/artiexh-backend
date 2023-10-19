@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -22,8 +22,8 @@ import java.util.function.Function;
 @AllArgsConstructor
 public class OrderPageFilter {
 	private OrderStatus status;
-	private LocalDateTime from;
-	private LocalDateTime to;
+	private Instant from;
+	private Instant to;
 
 	public Specification<OrderEntity> getSpecificationForArtist(Long shopId) {
 		return getSpecification(root -> root.get("shop").get("id"), shopId);

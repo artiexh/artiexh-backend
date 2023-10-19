@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -291,7 +292,7 @@ public class OrderGroupServiceImpl implements OrderGroupService {
 			.orderInfo(paymentQueryProperties.getVnp_OrderInfo())
 			.bankCode(paymentQueryProperties.getVnp_BankCode())
 			.cardType(paymentQueryProperties.getVnp_CardType())
-			.payDate(DateTimeUtils.stringToInstant(paymentQueryProperties.getVnp_PayDate(), "yyyyMMddHHmmss"))
+			.payDate(DateTimeUtils.stringToInstant(paymentQueryProperties.getVnp_PayDate(), "yyyyMMddHHmmss", ZoneId.of("Asia/Ho_Chi_Minh")))
 			.priceAmount(new BigDecimal(paymentQueryProperties.getVnp_Amount()).divide(new BigDecimal(100)))
 			.responseCode(paymentQueryProperties.getVnp_ResponseCode())
 			.transactionStatus(paymentQueryProperties.getVnp_TransactionStatus())

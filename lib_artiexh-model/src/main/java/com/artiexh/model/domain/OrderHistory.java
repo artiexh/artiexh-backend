@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @NoArgsConstructor
@@ -13,7 +13,7 @@ public class OrderHistory {
 
 	private OrderHistoryStatus status;
 
-	private LocalDateTime datetime;
+	private Instant datetime;
 
 	private String message;
 

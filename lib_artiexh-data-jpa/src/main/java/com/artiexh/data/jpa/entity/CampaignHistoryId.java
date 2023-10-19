@@ -8,7 +8,7 @@ import org.springframework.data.annotation.CreatedDate;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Objects;
 
 @Getter
@@ -26,7 +26,7 @@ public class CampaignHistoryId implements Serializable {
 
 	@Column(name = "event_time", nullable = false)
 	@CreatedDate
-	private LocalDateTime eventTime;
+	private Instant eventTime;
 
 	@Override
 	public boolean equals(Object o) {

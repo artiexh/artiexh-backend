@@ -13,8 +13,6 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 )
 public interface PostMapper {
 	@Mapping(target = "owner", source = "owner", qualifiedByName = "basicArtistInfo")
-	@Mapping(target = "createdDate", qualifiedByName = "fromUTCToLocal")
-	@Mapping(target = "modifiedDate", qualifiedByName = "fromUTCToLocal")
 	Post entityToDomain(PostEntity entity);
 
 	PostDetail domainToDetail(Post post);
