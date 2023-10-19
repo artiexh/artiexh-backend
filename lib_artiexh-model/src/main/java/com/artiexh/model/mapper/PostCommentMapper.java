@@ -1,11 +1,8 @@
 package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.PostCommentEntity;
-import com.artiexh.data.jpa.entity.PostEntity;
-import com.artiexh.model.domain.Post;
 import com.artiexh.model.domain.PostComment;
 import com.artiexh.model.rest.post.PostCommentDetail;
-import com.artiexh.model.rest.post.PostDetail;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;

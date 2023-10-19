@@ -1,6 +1,5 @@
 package com.artiexh.model.domain;
 
-import com.artiexh.model.rest.account.AccountProfile;
 import lombok.*;
 
 @Builder

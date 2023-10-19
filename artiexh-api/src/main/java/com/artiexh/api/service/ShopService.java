@@ -1,10 +1,12 @@
 package com.artiexh.api.service;
 
 import com.artiexh.data.jpa.entity.ArtistEntity;
+import com.artiexh.model.domain.Product;
 import com.artiexh.model.domain.Shop;
 import com.artiexh.model.rest.address.AddressResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.jpa.domain.Specification;
 
 public interface ShopService {
@@ -14,5 +16,8 @@ public interface ShopService {
 	Shop getShopById(Long id);
 
 	AddressResponse getShopAddress(Long id);
+
+	Page<Product> getShopProduct(long shopId, Query query, Pageable pageable);
+
 
 }

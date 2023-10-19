@@ -1,11 +1,8 @@
 package com.artiexh.model.rest.productbase;
 
-import com.artiexh.data.jpa.entity.OrderEntity;
-import com.artiexh.data.jpa.entity.OrderGroupEntity;
 import com.artiexh.data.jpa.entity.ProductBaseEntity;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

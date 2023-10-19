@@ -2,33 +2,36 @@ package com.artiexh.api.service.impl;
 
 import com.artiexh.api.service.ArtistService;
 import com.artiexh.api.service.OrderService;
+import com.artiexh.api.service.PostService;
 import com.artiexh.api.service.product.ProductService;
-import com.artiexh.data.jpa.entity.OrderEntity;
-import com.artiexh.data.jpa.entity.OrderHistoryEntity;
-import com.artiexh.data.jpa.entity.OrderHistoryEntityId;
+import com.artiexh.data.jpa.entity.*;
+import com.artiexh.data.jpa.repository.ArtistRepository;
 import com.artiexh.data.jpa.repository.OrderHistoryRepository;
 import com.artiexh.data.jpa.repository.OrderRepository;
+import com.artiexh.data.jpa.repository.SubscriptionRepository;
 import com.artiexh.ghtk.client.model.GhtkResponse;
 import com.artiexh.ghtk.client.model.order.CreateOrderRequest;
 import com.artiexh.ghtk.client.service.GhtkOrderService;
-import com.artiexh.model.domain.Order;
-import com.artiexh.model.domain.OrderHistoryStatus;
-import com.artiexh.model.domain.OrderStatus;
-import com.artiexh.model.domain.Product;
+import com.artiexh.model.domain.*;
+import com.artiexh.model.mapper.ArtistMapper;
 import com.artiexh.model.mapper.OrderMapper;
 import com.artiexh.model.mapper.ProductMapper;
+import com.artiexh.model.mapper.SubscriptionMapper;
 import com.artiexh.model.rest.PageResponse;
-import com.artiexh.model.rest.artist.ShopOrderResponse;
-import com.artiexh.model.rest.artist.ShopOrderResponsePage;
+import com.artiexh.model.rest.artist.response.ArtistProfileResponse;
+import com.artiexh.model.rest.artist.response.ShopOrderResponse;
+import com.artiexh.model.rest.artist.response.ShopOrderResponsePage;
 import com.artiexh.model.rest.order.request.UpdateShippingOrderRequest;
 import com.artiexh.model.rest.product.response.ProductResponse;
-import jakarta.transaction.Transactional;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
@@ -37,15 +40,37 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class ArtistServiceImpl implements ArtistService {
 
+	private final ArtistRepository artistRepository;
+	private final SubscriptionRepository subscriptionRepository;
 	private final OrderRepository orderRepository;
+	private final OrderHistoryRepository orderHistoryRepository;
 	private final ProductService productService;
 	private final OrderService orderService;
+	private final GhtkOrderService ghtkOrderService;
+	private final PostService postService;
 	private final ProductMapper productMapper;
 	private final OrderMapper orderMapper;
-	private final GhtkOrderService ghtkOrderService;
-	private final OrderHistoryRepository orderHistoryRepository;
+	private final ArtistMapper artistMapper;
+	private final SubscriptionMapper subscriptionMapper;
+
+	@Override
+	public ArtistProfileResponse getProfile(long id) {
+		ArtistEntity artistEntity = artistRepository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException("Artist id: " + id + " not found"));
+
+		ArtistProfileResponse result = artistMapper.entityToProfileResponse(artistEntity);
+
+		Pageable pageable = PageRequest.of(1, 10);
+		Page<SubscriptionEntity> subscriptionPage = subscriptionRepository.findAllByArtistId(id, pageable);
+
+		result.setNumOfSubscriptions(subscriptionPage.getTotalElements());
+		result.setSubscriptionsFrom(subscriptionPage.map(subscriptionMapper::subscriptionEntityToArtistSubscription).toSet());
+
+		return result;
+	}
 
 	@Override
 	public PageResponse<ProductResponse> getAllProducts(Query query, Pageable pageable) {
@@ -220,5 +245,13 @@ public class ArtistServiceImpl implements ArtistService {
 
 		orderEntity.getOrderHistories().add(savedOrderHistoryEntity);
 		return orderMapper.domainToArtistResponse(orderMapper.entityToResponseDomain(orderEntity));
+	}
+
+	@Override
+	public Page<Post> getArtistPost(Long artistId, Pageable pageable) {
+		if (!artistRepository.existsById(artistId)) {
+			throw new EntityNotFoundException("Arist id: " + artistId + " not existed");
+		}
+		return postService.getAllPost(artistId, pageable);
 	}
 }

@@ -31,9 +31,9 @@ import org.springframework.web.server.ResponseStatusException;
 public class ShopController {
 	private final ShopService shopService;
 	private final ProductService productService;
+	private final ProductMapper productMapper;
 	@Value("${artiexh.security.admin.id}")
 	private Long rootAdminId;
-	private final ProductMapper productMapper;
 
 	@GetMapping
 	public PageResponse<Shop> getAllShops(
@@ -58,6 +58,23 @@ public class ShopController {
 	public AddressResponse getShopAddress(@PathVariable Long id) {
 		try {
 			return shopService.getShopAddress(id);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+		}
+	}
+
+	@GetMapping("/{id}/product")
+	public PageResponse<ProductResponse> getShopProduct(@PathVariable long id,
+														@ParameterObject @Valid ShopProductFilter filter,
+														@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest) {
+		try {
+			filter.setShopId(id);
+			Page<Product> productPage = shopService.getShopProduct(
+				id,
+				filter.getQuery(),
+				paginationAndSortingRequest.getPageable()
+			);
+			return new PageResponse<>(productMapper.productPageToProductResponsePage(productPage));
 		} catch (EntityNotFoundException ex) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
 		}

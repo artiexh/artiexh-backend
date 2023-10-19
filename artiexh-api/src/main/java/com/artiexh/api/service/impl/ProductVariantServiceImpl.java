@@ -20,8 +20,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -65,9 +66,9 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 				.build());
 			combinationEntity.setProductVariant(entity);
 			variantCombinationRepository.save(combinationEntity);
-		};
+		}
 
-		for (ProductVariantProvider providerConfig : product.getProviderConfigs())  {
+        for (ProductVariantProvider providerConfig : product.getProviderConfigs()) {
 			ProductVariantProviderEntity provider = mapper.domainToEntity(providerConfig);
 			provider.setId(ProductVariantProviderId.builder()
 				.businessCode(providerConfig.getBusinessCode())
@@ -77,9 +78,9 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 			provider.setProvider(providerRepository.findById(providerConfig.getBusinessCode())
 				.orElseThrow(EntityNotFoundException::new));
 			productVariantProviderRepository.save(provider);
-		};
+		}
 
-		product.setId(entity.getId());
+        product.setId(entity.getId());
 		return product;
 	}
 
@@ -90,14 +91,14 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 		for (VariantCombination combination : combinations) {
 			boolean isExisted = existedCombinations.stream().anyMatch(existedCombination ->
 				existedCombination.getOptionValueId().equals(combination.getOptionValueId())
-				&& existedCombination.getOptionId().equals(combination.getOptionId())
+					&& existedCombination.getOptionId().equals(combination.getOptionId())
 			);
 
 			if (!isExisted) {
 				throw new IllegalArgumentException(ErrorCode.OPTION_VALUE_INVALID.getMessage() + combination.getOptionValueId());
 			}
 
-			 existedOptions.removeIf(existedOption -> existedOption.getId().equals(combination.getOptionId()));
+			existedOptions.removeIf(existedOption -> existedOption.getId().equals(combination.getOptionId()));
 		}
 
 		boolean isExisted = existedOptions.stream().anyMatch(existedOption -> !existedOption.getIsOptional());
@@ -177,8 +178,8 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 				.orElseThrow(EntityNotFoundException::new));
 			productVariantProviderRepository.save(provider);
 			providers.add(provider);
-		};
-		entity.getProviderConfigs().addAll(providers);
+		}
+        entity.getProviderConfigs().addAll(providers);
 
 		repository.save(entity);
 		return mapper.entityToDomain(entity, new CycleAvoidingMappingContext());
@@ -204,8 +205,8 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 				.orElseThrow(EntityNotFoundException::new));
 			productVariantProviderRepository.save(provider);
 			providers.add(provider);
-		};
-		entity.getProviderConfigs().addAll(providers);
+		}
+        entity.getProviderConfigs().addAll(providers);
 
 		repository.save(entity);
 		return mapper.entityToDomain(entity, new CycleAvoidingMappingContext());

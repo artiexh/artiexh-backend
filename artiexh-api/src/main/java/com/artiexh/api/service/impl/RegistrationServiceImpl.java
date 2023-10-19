@@ -11,7 +11,7 @@ import com.artiexh.model.domain.User;
 import com.artiexh.model.mapper.AccountMapper;
 import com.artiexh.model.mapper.ArtistMapper;
 import com.artiexh.model.mapper.UserMapper;
-import com.artiexh.model.rest.artist.RegistrationShopRequest;
+import com.artiexh.model.rest.artist.request.RegistrationShopRequest;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
