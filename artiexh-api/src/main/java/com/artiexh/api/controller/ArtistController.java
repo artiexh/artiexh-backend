@@ -2,8 +2,9 @@ package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.exception.ErrorCode;
-import com.artiexh.api.service.AccountService;
 import com.artiexh.api.service.ArtistService;
+import com.artiexh.model.domain.Post;
+import com.artiexh.model.mapper.PostMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.artist.filter.ProductPageFilter;
@@ -12,11 +13,13 @@ import com.artiexh.model.rest.artist.response.ShopOrderResponse;
 import com.artiexh.model.rest.artist.response.ShopOrderResponsePage;
 import com.artiexh.model.rest.order.request.OrderPageFilter;
 import com.artiexh.model.rest.order.request.UpdateShippingOrderRequest;
+import com.artiexh.model.rest.post.PostDetail;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -29,7 +32,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class ArtistController {
 
 	private final ArtistService artistService;
-	private final AccountService accountService;
+	private final PostMapper postMapper;
 
 	@GetMapping(Endpoint.Artist.ARTIST_PROFILE)
 	public ArtistProfileResponse getProfile(@PathVariable long id) {
@@ -91,6 +94,17 @@ public class ArtistController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.ORDER_NOT_FOUND.getMessage(), exception);
 		} catch (IllegalArgumentException exception) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
+		}
+	}
+
+	@GetMapping(Endpoint.Artist.ARTIST_POST)
+	public PageResponse<PostDetail> getArtistPost(@PathVariable long id,
+												  @Valid @ParameterObject PaginationAndSortingRequest pagination) {
+		try {
+			Page<Post> posts = artistService.getArtistPost(id, pagination.getPageable());
+			return new PageResponse<>(posts.map(postMapper::domainToDetail));
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
 		}
 	}
 }

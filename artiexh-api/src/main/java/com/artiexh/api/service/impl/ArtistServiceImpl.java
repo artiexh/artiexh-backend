@@ -2,6 +2,7 @@ package com.artiexh.api.service.impl;
 
 import com.artiexh.api.service.ArtistService;
 import com.artiexh.api.service.OrderService;
+import com.artiexh.api.service.PostService;
 import com.artiexh.api.service.product.ProductService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.ArtistRepository;
@@ -11,10 +12,7 @@ import com.artiexh.data.jpa.repository.SubscriptionRepository;
 import com.artiexh.ghtk.client.model.GhtkResponse;
 import com.artiexh.ghtk.client.model.order.CreateOrderRequest;
 import com.artiexh.ghtk.client.service.GhtkOrderService;
-import com.artiexh.model.domain.Order;
-import com.artiexh.model.domain.OrderHistoryStatus;
-import com.artiexh.model.domain.OrderStatus;
-import com.artiexh.model.domain.Product;
+import com.artiexh.model.domain.*;
 import com.artiexh.model.mapper.ArtistMapper;
 import com.artiexh.model.mapper.OrderMapper;
 import com.artiexh.model.mapper.ProductMapper;
@@ -48,10 +46,11 @@ public class ArtistServiceImpl implements ArtistService {
 	private final ArtistRepository artistRepository;
 	private final SubscriptionRepository subscriptionRepository;
 	private final OrderRepository orderRepository;
+	private final OrderHistoryRepository orderHistoryRepository;
 	private final ProductService productService;
 	private final OrderService orderService;
 	private final GhtkOrderService ghtkOrderService;
-	private final OrderHistoryRepository orderHistoryRepository;
+	private final PostService postService;
 	private final ProductMapper productMapper;
 	private final OrderMapper orderMapper;
 	private final ArtistMapper artistMapper;
@@ -246,5 +245,13 @@ public class ArtistServiceImpl implements ArtistService {
 
 		orderEntity.getOrderHistories().add(savedOrderHistoryEntity);
 		return orderMapper.domainToArtistResponse(orderMapper.entityToResponseDomain(orderEntity));
+	}
+
+	@Override
+	public Page<Post> getArtistPost(Long artistId, Pageable pageable) {
+		if (!artistRepository.existsById(artistId)) {
+			throw new EntityNotFoundException("Arist id: " + artistId + " not existed");
+		}
+		return postService.getAllPost(artistId, pageable);
 	}
 }
