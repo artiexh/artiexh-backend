@@ -25,6 +25,7 @@ public class UserAddressEntity {
 	@Column(name = "type", nullable = false)
 	private Byte type;
 
+	@Builder.Default
 	@Column(name = "is_default", nullable = false)
 	private Boolean isDefault = false;
 

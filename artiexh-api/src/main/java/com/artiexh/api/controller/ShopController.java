@@ -9,6 +9,7 @@ import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.address.AddressResponse;
+import com.artiexh.model.rest.product.request.GetAllProductFilter;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import com.artiexh.model.rest.shop.ShopPageFilter;
 import com.artiexh.model.rest.shop.ShopProductFilter;
@@ -65,7 +66,7 @@ public class ShopController {
 
 	@GetMapping("/{id}/product")
 	public PageResponse<ProductResponse> getShopProduct(@PathVariable long id,
-														@ParameterObject @Valid ShopProductFilter filter,
+														@ParameterObject @Valid GetAllProductFilter filter,
 														@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest) {
 		try {
 			filter.setShopId(id);

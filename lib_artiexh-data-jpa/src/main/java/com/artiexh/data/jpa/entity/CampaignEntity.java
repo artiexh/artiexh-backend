@@ -31,6 +31,7 @@ public class CampaignEntity {
 	@JoinColumn(name = "owner_id", nullable = false)
 	private ArtistEntity owner;
 
+	@Builder.Default
 	@OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<CustomProductEntity> customProducts = new LinkedHashSet<>();
 
@@ -43,6 +44,7 @@ public class CampaignEntity {
 	@Column(name = "description", length = 1000)
 	private String description;
 
+	@Builder.Default
 	@OneToMany(fetch = FetchType.LAZY,
 		cascade = CascadeType.ALL,
 		orphanRemoval = true)

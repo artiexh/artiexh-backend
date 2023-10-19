@@ -1,10 +1,7 @@
 package com.artiexh.data.jpa.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.LinkedHashSet;
@@ -32,9 +29,11 @@ public class UserEntity extends AccountEntity {
 	@JoinColumn(name = "id")
 	private CartEntity shoppingCart;
 
+	@Builder.Default
 	@OneToMany(mappedBy = "user")
 	private Set<UserAddressEntity> addresses = new LinkedHashSet<>();
 
+	@Builder.Default
 	@OneToMany(mappedBy = "user")
 	private Set<OrderGroupEntity> orderGroups = new LinkedHashSet<>();
 

@@ -1,6 +1,7 @@
 package com.artiexh.model.rest.product.request;
 
 import com.artiexh.model.domain.ProductStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,9 +32,15 @@ public class GetAllProductFilter {
 	private Integer wardId;
 	private Integer categoryId;
 	private String[] tagNames;
+	@JsonIgnore
+	private Long shopId;
 
 	public Query getQuery() {
 		var boolQuery = new BoolQueryBuilder().should(new TermsQueryBuilder("status", List.of(ProductStatus.PRE_ORDER.getValue(), ProductStatus.AVAILABLE.getValue()))).minimumShouldMatch(1);
+
+		if (shopId != null) {
+			boolQuery.must(new TermQueryBuilder("shop.id", shopId));
+		}
 
 		if (minPrice != null) {
 			boolQuery.must(new RangeQueryBuilder("price.amount").gte(minPrice));

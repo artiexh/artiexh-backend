@@ -3,10 +3,7 @@ package com.artiexh.data.jpa.entity;
 import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -71,6 +68,7 @@ public class ProductEntity {
 	@Column(name = "delivery_type", nullable = false)
 	private Byte deliveryType;
 
+	@Builder.Default
 	@Column(name = "average_rate", nullable = false)
 	private Float averageRate = 0f;
 
@@ -90,12 +88,14 @@ public class ProductEntity {
 	@Column(name = "weight", nullable = false)
 	private Float weight;
 
+	@Builder.Default
 	@ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinTable(name = "product_bundle_mapping",
 		joinColumns = @JoinColumn(name = "bundle_id"),
 		inverseJoinColumns = @JoinColumn(name = "product_id"))
 	private Set<ProductEntity> bundleItems = new LinkedHashSet<>();
 
+	@Builder.Default
 	@ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinTable(name = "product_bundle_mapping",
 		joinColumns = @JoinColumn(name = "product_id"),
