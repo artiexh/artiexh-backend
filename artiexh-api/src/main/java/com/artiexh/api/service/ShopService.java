@@ -15,9 +15,11 @@ public interface ShopService {
 
 	Shop getShopById(Long id);
 
+	Shop getShopByUsername(String usename);
+
 	AddressResponse getShopAddress(Long id);
 
-	Page<Product> getShopProduct(long shopId, Query query, Pageable pageable);
+	Page<Product> getShopProduct(String username, Query query, Pageable pageable);
 
 
 }

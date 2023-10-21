@@ -46,10 +46,10 @@ public class ShopController {
 		);
 	}
 
-	@GetMapping("/{id}")
-	public Shop getShop(@PathVariable Long id) {
+	@GetMapping("/{username}")
+	public Shop getShop(@PathVariable String username) {
 		try {
-			return shopService.getShopById(id);
+			return shopService.getShopByUsername(username);
 		} catch (EntityNotFoundException ex) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
 		}
@@ -64,14 +64,14 @@ public class ShopController {
 		}
 	}
 
-	@GetMapping("/{id}/product")
-	public PageResponse<ProductResponse> getShopProduct(@PathVariable long id,
+	@GetMapping("/{username}/product")
+	public PageResponse<ProductResponse> getShopProduct(@PathVariable String username,
 														@ParameterObject @Valid GetAllProductFilter filter,
 														@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest) {
 		try {
-			filter.setShopId(id);
+			filter.setUsername(username);
 			Page<Product> productPage = shopService.getShopProduct(
-				id,
+				username,
 				filter.getQuery(),
 				paginationAndSortingRequest.getPageable()
 			);

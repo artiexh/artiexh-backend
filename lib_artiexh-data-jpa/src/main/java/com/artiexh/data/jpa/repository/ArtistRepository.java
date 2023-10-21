@@ -8,11 +8,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface ArtistRepository extends JpaRepository<ArtistEntity, Long>, JpaSpecificationExecutor<ArtistEntity> {
 
 	@Modifying(flushAutomatically = true, clearAutomatically = true)
 	@Query(value = "INSERT INTO artist(id) VALUES(:id)", nativeQuery = true)
 	void createArtistByExistedUserId(@Param("id") Long id);
+
+	boolean existsByUsername(String username);
+
+	Optional<ArtistEntity> findByUsername(String username);
 
 }
