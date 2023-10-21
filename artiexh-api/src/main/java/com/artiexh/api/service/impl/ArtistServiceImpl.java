@@ -60,11 +60,21 @@ public class ArtistServiceImpl implements ArtistService {
 	public ArtistProfileResponse getProfile(long id) {
 		ArtistEntity artistEntity = artistRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException("Artist id: " + id + " not found"));
+		return getProfile(artistEntity);
+	}
 
+	@Override
+	public ArtistProfileResponse getProfile(String username) {
+		ArtistEntity artistEntity = artistRepository.findByUsername(username)
+			.orElseThrow(() -> new EntityNotFoundException("Artist: " + username + " not found"));
+		return getProfile(artistEntity);
+	}
+
+	private ArtistProfileResponse getProfile(ArtistEntity artistEntity) {
 		ArtistProfileResponse result = artistMapper.entityToProfileResponse(artistEntity);
 
 		Pageable pageable = PageRequest.of(1, 10);
-		Page<SubscriptionEntity> subscriptionPage = subscriptionRepository.findAllByArtistId(id, pageable);
+		Page<SubscriptionEntity> subscriptionPage = subscriptionRepository.findAllByArtistId(artistEntity.getId(), pageable);
 
 		result.setNumOfSubscriptions(subscriptionPage.getTotalElements());
 		result.setSubscriptionsFrom(subscriptionPage.map(subscriptionMapper::subscriptionEntityToArtistSubscription).toSet());
