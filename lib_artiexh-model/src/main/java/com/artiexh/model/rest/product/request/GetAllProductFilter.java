@@ -33,13 +33,13 @@ public class GetAllProductFilter {
 	private Integer categoryId;
 	private String[] tagNames;
 	@JsonIgnore
-	private Long shopId;
+	private String username;
 
 	public Query getQuery() {
 		var boolQuery = new BoolQueryBuilder().should(new TermsQueryBuilder("status", List.of(ProductStatus.PRE_ORDER.getValue(), ProductStatus.AVAILABLE.getValue()))).minimumShouldMatch(1);
 
-		if (shopId != null) {
-			boolQuery.must(new TermQueryBuilder("shop.id", shopId));
+		if (username != null) {
+			boolQuery.must(new TermQueryBuilder("owner.username", username));
 		}
 
 		if (minPrice != null) {

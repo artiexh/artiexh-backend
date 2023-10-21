@@ -39,6 +39,13 @@ public class ShopServiceImpl implements ShopService {
 	}
 
 	@Override
+	public Shop getShopByUsername(String usename) {
+		return artistRepository.findByUsername(usename)
+			.map(shopMapper::entityToDomain)
+			.orElseThrow(() -> new EntityNotFoundException("Artist " + usename + " not existed"));
+	}
+
+	@Override
 	public AddressResponse getShopAddress(Long id) {
 		return artistRepository.findById(id)
 			.map(shopMapper::entityToShopAddressResponse)
@@ -46,9 +53,9 @@ public class ShopServiceImpl implements ShopService {
 	}
 
 	@Override
-	public Page<Product> getShopProduct(long shopId, Query query, Pageable pageable) {
-		if (!artistRepository.existsById(shopId)) {
-			throw new EntityNotFoundException("Shop id " + shopId + " not existed");
+	public Page<Product> getShopProduct(String username, Query query, Pageable pageable) {
+		if (!artistRepository.existsByUsername(username)) {
+			throw new EntityNotFoundException("Artist " + username + " not existed");
 		}
 		return productService.getInPage(query, pageable);
 	}

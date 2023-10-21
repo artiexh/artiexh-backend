@@ -35,9 +35,9 @@ public class ArtistController {
 	private final PostMapper postMapper;
 
 	@GetMapping(Endpoint.Artist.ARTIST_PROFILE)
-	public ArtistProfileResponse getProfile(@PathVariable long id) {
+	public ArtistProfileResponse getProfile(@PathVariable String username) {
 		try {
-			return artistService.getProfile(id);
+			return artistService.getProfile(username);
 		} catch (EntityNotFoundException ex) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
 		}
