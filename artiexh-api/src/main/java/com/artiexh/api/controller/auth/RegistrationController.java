@@ -1,4 +1,4 @@
-package com.artiexh.api.controller;
+package com.artiexh.api.controller.auth;
 
 import com.artiexh.api.authentication.ResponseTokenProcessor;
 import com.artiexh.api.base.common.Endpoint;
