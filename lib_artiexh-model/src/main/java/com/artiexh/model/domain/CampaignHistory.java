@@ -16,4 +16,5 @@ public class CampaignHistory {
 	private Instant eventTime;
 	private CampaignHistoryAction action;
 	private String message;
+	private String updatedBy;
 }
