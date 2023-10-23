@@ -2,13 +2,17 @@ package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.ShopService;
+import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.product.ProductService;
+import com.artiexh.model.domain.Campaign;
 import com.artiexh.model.domain.Product;
 import com.artiexh.model.domain.Shop;
+import com.artiexh.model.mapper.CampaignMapper;
 import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.address.AddressResponse;
+import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import com.artiexh.model.rest.product.request.GetAllProductFilter;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import com.artiexh.model.rest.shop.ShopPageFilter;
@@ -33,6 +37,8 @@ public class ShopController {
 	private final ShopService shopService;
 	private final ProductService productService;
 	private final ProductMapper productMapper;
+	private final CampaignService campaignService;
+	private final CampaignMapper campaignMapper;
 	@Value("${artiexh.security.admin.id}")
 	private Long rootAdminId;
 
@@ -103,4 +109,15 @@ public class ShopController {
 		return new PageResponse<>(productMapper.productPageToProductResponsePage(productPage));
 	}
 
+	@GetMapping("/{username}/campaign")
+	public PageResponse<CampaignResponse> getShopCampaign(
+		@ParameterObject @Valid PaginationAndSortingRequest pagination,
+		@PathVariable String username) {
+		try {
+			Page<CampaignResponse> campaignPage = campaignService.getAllCampaigns(username, pagination.getPageable());
+			return new PageResponse<>(campaignPage);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+		}
+	}
 }

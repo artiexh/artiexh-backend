@@ -7,18 +7,17 @@ import com.artiexh.api.service.provider.ProviderService;
 import com.artiexh.model.domain.Role;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
-import com.artiexh.model.rest.campaign.request.CampaignRequest;
-import com.artiexh.model.rest.campaign.request.CampaignRequestFilter;
-import com.artiexh.model.rest.campaign.request.PublishProductRequest;
-import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
+import com.artiexh.model.rest.campaign.request.*;
 import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignProviderResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
+import com.artiexh.model.rest.campaign.response.CustomProductResponse;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -167,6 +166,18 @@ public class CampaignController {
 			return campaignService.publishProduct(campaignId, request);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
+	}
+
+	@GetMapping("/{id}/product")
+	public PageResponse<CustomProductResponse> getShopProductCampaign(
+		@ParameterObject @Valid PaginationAndSortingRequest pagination,
+		@PathVariable("id") Long campaignId) {
+		try {
+			Page<CustomProductResponse> productCampaign = campaignService.getAllProductCampaign(campaignId, pagination.getPageable());
+			return new PageResponse<>(productCampaign);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
 		}
 	}
 }
