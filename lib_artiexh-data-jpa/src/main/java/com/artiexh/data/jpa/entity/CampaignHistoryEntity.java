@@ -22,7 +22,8 @@ public class CampaignHistoryEntity {
 	@Column(name = "message", length = 1000)
 	private String message;
 
+	@Builder.Default
 	@Column(name = "updated_by", nullable = false)
-	private String updatedBy;
+	private String updatedBy = "";
 
 }
