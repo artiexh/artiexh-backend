@@ -20,8 +20,12 @@ public class CampaignRequest {
 
 	@NotEmpty
 	private String name;
-	
+
 	private String description;
+
+	private String thumbnailUrl;
+
+	private String content;
 
 	@NotNull
 	private String providerId;

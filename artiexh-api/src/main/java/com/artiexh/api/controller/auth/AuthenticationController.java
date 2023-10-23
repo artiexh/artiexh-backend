@@ -1,4 +1,4 @@
-package com.artiexh.api.controller;
+package com.artiexh.api.controller.auth;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.AuthenticationService;
