@@ -15,6 +15,7 @@ import com.artiexh.model.rest.address.AddressResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import com.artiexh.model.rest.product.request.GetAllProductFilter;
 import com.artiexh.model.rest.product.response.ProductResponse;
+import com.artiexh.model.rest.shop.ShopCampaignFilter;
 import com.artiexh.model.rest.shop.ShopPageFilter;
 import com.artiexh.model.rest.shop.ShopProductFilter;
 import jakarta.persistence.EntityNotFoundException;
@@ -112,9 +113,11 @@ public class ShopController {
 	@GetMapping("/{username}/campaign")
 	public PageResponse<CampaignResponse> getShopCampaign(
 		@ParameterObject @Valid PaginationAndSortingRequest pagination,
+		@ParameterObject @Valid ShopCampaignFilter filter,
 		@PathVariable String username) {
 		try {
-			Page<CampaignResponse> campaignPage = campaignService.getAllCampaigns(username, pagination.getPageable());
+			filter.setUsername(username);
+			Page<CampaignResponse> campaignPage = campaignService.getAllCampaigns(filter.getSpecification(), pagination.getPageable());
 			return new PageResponse<>(campaignPage);
 		} catch (EntityNotFoundException ex) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());

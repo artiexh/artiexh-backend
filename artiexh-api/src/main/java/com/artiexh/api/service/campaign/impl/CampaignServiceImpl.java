@@ -252,11 +252,6 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
-	public Page<CampaignResponse> getAllCampaigns(String username, Pageable pageable) {
-		return campaignRepository.findAllByOwnerUsername(username, pageable).map(campaignMapper::entityToResponse);
-	}
-
-	@Override
 	public CampaignDetailResponse getCampaignDetail(Long userId, Long campaignId) {
 		var userEntity = accountRepository.findById(userId)
 			.orElseThrow(() -> new UsernameNotFoundException("user " + userId + " not found"));

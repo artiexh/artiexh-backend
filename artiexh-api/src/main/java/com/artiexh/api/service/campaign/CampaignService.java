@@ -22,8 +22,6 @@ public interface CampaignService {
 
 	Page<CampaignResponse> getAllCampaigns(Specification<CampaignEntity> specification, Pageable pageable);
 
-	Page<CampaignResponse> getAllCampaigns(String username, Pageable pageable);
-
 	CampaignDetailResponse getCampaignDetail(Long userId, Long campaignId);
 
 	CampaignResponse artistUpdateStatus(Long artistId, UpdateCampaignStatusRequest request);

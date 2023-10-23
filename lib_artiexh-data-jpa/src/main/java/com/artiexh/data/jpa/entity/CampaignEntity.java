@@ -52,4 +52,6 @@ public class CampaignEntity {
 	@OrderBy("id.eventTime desc")
 	private Set<CampaignHistoryEntity> campaignHistories = new LinkedHashSet<>();
 
+	@Column(name = "is_private", nullable = false)
+	private Boolean isPrivate;
 }
