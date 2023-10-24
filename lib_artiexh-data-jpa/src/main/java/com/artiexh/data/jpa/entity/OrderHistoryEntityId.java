@@ -3,10 +3,7 @@ package com.artiexh.data.jpa.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.Hibernate;
 
 import java.io.Serial;
@@ -18,6 +15,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
+@Builder
 public class OrderHistoryEntityId implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 6651597644338920273L;

@@ -104,25 +104,14 @@ public class OrderController {
 	}
 
 	@PatchMapping("/{id}/status")
+	@PreAuthorize("hasAnyAuthority('USER', 'ADMIN', 'STAFF')")
 	public ResponseEntity<Void> updateStatus(
 		Authentication authentication,
 		@ParameterObject UpdateStatusRequest request,
 		@PathVariable Long id
 	) {
 		var userId = (Long) authentication.getPrincipal();
-		switch (request.getStatus()) {
-			case REFUNDED -> {
-				orderService.refundOrder(id, userId);
-				return ResponseEntity.ok().build();
-			}
-			case CANCELLED -> {
-				orderService.cancelOrder(id, request.getMessage(), userId);
-				return ResponseEntity.ok().build();
-			}
-			default -> {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You only update order status CANCELED or REFUNDED");
-			}
-		}
-
+		orderGroupService.updateStatus(request.getMessage(), userId, request.getStatus(), id);
+		return ResponseEntity.ok().build();
 	}
 }

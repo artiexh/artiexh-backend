@@ -2,6 +2,7 @@ package com.artiexh.api.service;
 
 import com.artiexh.data.jpa.entity.OrderGroupEntity;
 import com.artiexh.model.domain.OrderGroup;
+import com.artiexh.model.domain.OrderStatus;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
 import com.artiexh.model.rest.order.request.PaymentQueryProperties;
 import org.springframework.data.domain.Page;
@@ -19,5 +20,7 @@ public interface OrderGroupService {
 	String payment(Long id, PaymentQueryProperties paymentQueryProperties, Long userId, String confirmUrl);
 
 	void confirmPayment(PaymentQueryProperties paymentQueryProperties);
+
+	void updateStatus(String message, Long updatedBy, OrderStatus status, Long orderGroupId);
 
 }

@@ -4,6 +4,7 @@ import com.artiexh.api.config.VnpConfigurationProperties;
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.CartService;
 import com.artiexh.api.service.OrderGroupService;
+import com.artiexh.api.service.OrderService;
 import com.artiexh.api.utils.DateTimeUtils;
 import com.artiexh.api.utils.PaymentUtils;
 import com.artiexh.data.jpa.entity.*;
@@ -44,6 +45,7 @@ public class OrderGroupServiceImpl implements OrderGroupService {
 	private final CartItemRepository cartItemRepository;
 	private final OrderGroupMapper orderGroupMapper;
 	private final CartService cartService;
+	private final OrderService orderService;
 	private final OrderTransactionMapper orderTransactionMapper;
 	private final OrderTransactionRepository orderTransactionRepository;
 	private final OrderGroupRepository orderGroupRepository;
@@ -318,5 +320,25 @@ public class OrderGroupServiceImpl implements OrderGroupService {
 		}
 		log.info("Payment Transaction " + paymentQueryProperties.getVnp_TransactionNo() + " Status " + paymentQueryProperties.getVnp_TransactionStatus());
 		log.info("Payment Transaction " + paymentQueryProperties.getVnp_TransactionNo() + " Response Code " + paymentQueryProperties.getVnp_ResponseCode());
+	}
+
+	@Override
+	public void updateStatus(String message, Long updatedBy, OrderStatus status, Long orderGroupId) {
+		Set<OrderEntity> orders = orderRepository.getAllByOrderGroupId(orderGroupId);
+		for (OrderEntity order : orders) {
+			switch (status) {
+				case CANCELLED -> {
+					orderService.cancelOrder(order, message, updatedBy);
+					return ;
+				}
+				case REFUNDED -> {
+					orderService.refundOrder(order, updatedBy);
+					return ;
+				}
+				default -> {
+					return ;
+				}
+			}
+		}
 	}
 }
