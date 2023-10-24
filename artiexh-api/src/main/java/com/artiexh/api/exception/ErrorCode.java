@@ -27,6 +27,7 @@ public enum ErrorCode {
 	//Order
 	ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "Order is not found"),
 	ORDER_IS_INVALID(HttpStatus.BAD_REQUEST, "Your can not get this order"),
+	ORDER_STATUS_NOT_ALLOWED(HttpStatus.FORBIDDEN, "Only Admin or Owner can cancel order"),
 
 	//Provider
 	PROVIDER_NOT_FOUND(HttpStatus.NOT_FOUND, "Provider is not found"),
