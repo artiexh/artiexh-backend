@@ -561,6 +561,11 @@ public class CampaignServiceImpl implements CampaignService {
 		return productResponses;
 	}
 
+	@Override
+	public Page<CustomProductResponse> getAllProductCampaign(Long campaignId, Pageable pageable) {
+		return customProductRepository.findAllByCampaignId(campaignId, pageable).map(customProductMapper::entityToResponse);
+	}
+
 	private void staffPublishProductCampaign(CampaignEntity campaignEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.APPROVED.getByteValue()) {
 			throw new IllegalArgumentException("You can only update campaign from APPROVED to PUBLISHED");
