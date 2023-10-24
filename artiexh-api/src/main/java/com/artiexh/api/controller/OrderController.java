@@ -107,7 +107,7 @@ public class OrderController {
 	@PatchMapping("/{id}/status")
 	public ResponseEntity<Void> updateStatus(
 		Authentication authentication,
-		@RequestBody UpdateStatusRequest request,
+		@RequestBody @Valid UpdateStatusRequest request,
 		@PathVariable Long id
 	) {
 		try {
