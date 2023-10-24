@@ -118,7 +118,6 @@ public class ShopController {
 		@PathVariable String username) {
 		try {
 			filter.setUsername(username);
-			filter.setCampaignStatus(CampaignStatus.PUBLISHED);
 			Page<CampaignResponse> campaignPage = campaignService.getAllCampaigns(filter.getSpecification(), pagination.getPageable());
 			return new PageResponse<>(campaignPage);
 		} catch (EntityNotFoundException ex) {

@@ -3,6 +3,7 @@ package com.artiexh.model.rest.shop;
 import com.artiexh.data.jpa.entity.ArtistEntity;
 import com.artiexh.data.jpa.entity.CampaignEntity;
 import com.artiexh.model.domain.CampaignStatus;
+import com.artiexh.model.domain.CampaignType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
@@ -21,21 +22,17 @@ import java.util.List;
 public class ShopCampaignFilter {
 	@JsonIgnore
 	private String username;
-	@JsonIgnore
-	private CampaignStatus campaignStatus;
-	private Boolean isPrivate;
+	private CampaignType campaignType;
 
 	public Specification<CampaignEntity> getSpecification() {
 		return (root, query, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
+			predicates.add(builder.equal(root.get("isPublished"), true));
 			if (username != null) {
 				predicates.add(builder.like(root.join("owner").get("username"), username));
 			}
-			if (campaignStatus != null) {
-				predicates.add(builder.equal(root.get("status"), campaignStatus.getByteValue()));
-			}
-			if (isPrivate != null) {
-				predicates.add(builder.equal(root.get("isPrivate"), isPrivate));
+			if (campaignType != null) {
+				predicates.add(builder.equal(root.get("type"), campaignType.getByteValue()));
 			}
 			return builder.and(predicates.toArray(new Predicate[0]));
 		};
