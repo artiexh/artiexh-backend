@@ -20,7 +20,4 @@ public interface OrderGroupService {
 	String payment(Long id, PaymentQueryProperties paymentQueryProperties, Long userId, String confirmUrl);
 
 	void confirmPayment(PaymentQueryProperties paymentQueryProperties);
-
-	void updateStatus(String message, Long updatedBy, OrderStatus status, Long orderGroupId);
-
 }

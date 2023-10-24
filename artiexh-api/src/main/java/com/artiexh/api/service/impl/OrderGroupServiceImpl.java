@@ -321,24 +321,4 @@ public class OrderGroupServiceImpl implements OrderGroupService {
 		log.info("Payment Transaction " + paymentQueryProperties.getVnp_TransactionNo() + " Status " + paymentQueryProperties.getVnp_TransactionStatus());
 		log.info("Payment Transaction " + paymentQueryProperties.getVnp_TransactionNo() + " Response Code " + paymentQueryProperties.getVnp_ResponseCode());
 	}
-
-	@Override
-	public void updateStatus(String message, Long updatedBy, OrderStatus status, Long orderGroupId) {
-		Set<OrderEntity> orders = orderRepository.getAllByOrderGroupId(orderGroupId);
-		for (OrderEntity order : orders) {
-			switch (status) {
-				case CANCELLED -> {
-					orderService.cancelOrder(order, message, updatedBy);
-					return ;
-				}
-				case REFUNDED -> {
-					orderService.refundOrder(order, updatedBy);
-					return ;
-				}
-				default -> {
-					return ;
-				}
-			}
-		}
-	}
 }

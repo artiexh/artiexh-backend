@@ -1,20 +1,17 @@
 package com.artiexh.api.service.impl;
 
+import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.OrderService;
+import com.artiexh.data.jpa.entity.AccountEntity;
 import com.artiexh.data.jpa.entity.OrderEntity;
 import com.artiexh.data.jpa.entity.OrderHistoryEntity;
 import com.artiexh.data.jpa.entity.OrderHistoryEntityId;
-import com.artiexh.data.jpa.repository.ArtistRepository;
-import com.artiexh.data.jpa.repository.OrderHistoryRepository;
-import com.artiexh.data.jpa.repository.OrderRepository;
-import com.artiexh.data.jpa.repository.UserAddressRepository;
+import com.artiexh.data.jpa.repository.*;
 import com.artiexh.ghtk.client.model.GhtkResponse;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeRequest;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
 import com.artiexh.ghtk.client.service.GhtkOrderService;
-import com.artiexh.model.domain.Order;
-import com.artiexh.model.domain.OrderHistoryStatus;
-import com.artiexh.model.domain.OrderStatus;
+import com.artiexh.model.domain.*;
 import com.artiexh.model.mapper.OrderMapper;
 import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.mapper.UserAddressMapper;
@@ -30,13 +27,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.time.Instant;
-import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
 public class OrderServiceImpl implements OrderService {
 	private final UserAddressRepository userAddressRepository;
+	private final AccountRepository accountRepository;
 	private final OrderRepository orderRepository;
 	private final OrderHistoryRepository orderHistoryRepository;
 	private final OrderMapper orderMapper;
@@ -125,12 +122,20 @@ public class OrderServiceImpl implements OrderService {
 
 	@Transactional
 	@Override
-	public void cancelOrder(OrderEntity order, String message, Long updatedBy) {
-		if (!order.getStatus().equals(OrderStatus.PAYING.getByteValue()) ||
-		!order.getStatus().equals(OrderStatus.PREPARING.getByteValue())) {
+	public void cancelOrder(Long orderId, String message, Long updatedBy) {
+		OrderEntity order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
+
+		AccountEntity account = accountRepository.findById(updatedBy).orElseThrow(EntityNotFoundException::new);
+		if (!account.getId().equals(order.getOrderGroup().getUser().getId())
+			&& (account.getRole() != Role.ADMIN.getByteValue() &&
+				account.getRole() != Role.STAFF.getByteValue())) {
+			throw new IllegalArgumentException(ErrorCode.ORDER_STATUS_NOT_ALLOWED.name());
+		}
+		if (order.getStatus() != OrderStatus.PAYING.getByteValue() &&
+			order.getStatus() != OrderStatus.PREPARING.getByteValue()) {
 			throw new IllegalArgumentException("Order can not be canceled if order's status are not PAYING or PREPARING");
 		}
-		order.setStatus(OrderStatus.CANCELLED.getByteValue());
+		order.setStatus(OrderStatus.CANCELED.getByteValue());
 		//TODO: revert campaign product quantity
 		orderRepository.save(order);
 
@@ -148,8 +153,9 @@ public class OrderServiceImpl implements OrderService {
 
 	@Transactional
 	@Override
-	public void refundOrder(OrderEntity order, Long updatedBy) {
-		if (!order.getStatus().equals(OrderStatus.CANCELLED.getByteValue())) {
+	public void refundOrder(Long orderId, Long updatedBy) {
+		OrderEntity order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
+		if (!order.getStatus().equals(OrderStatus.CANCELED.getByteValue())) {
 			throw new IllegalArgumentException("Order can not be refunded before CANCELED");
 		}
 		order.setStatus(OrderStatus.REFUNDED.getByteValue());
@@ -159,7 +165,7 @@ public class OrderServiceImpl implements OrderService {
 		OrderHistoryEntity orderHistory = OrderHistoryEntity.builder()
 			.id(OrderHistoryEntityId.builder()
 				.orderId(order.getId())
-				.status(OrderHistoryStatus.CANCELED.getByteValue())
+				.status(OrderHistoryStatus.REFUNDED.getByteValue())
 				.build())
 			.datetime(Instant.now())
 			.build();

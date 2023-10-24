@@ -7,6 +7,7 @@ import com.artiexh.api.service.OrderGroupService;
 import com.artiexh.api.service.OrderService;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
 import com.artiexh.model.domain.OrderGroup;
+import com.artiexh.model.domain.Role;
 import com.artiexh.model.mapper.OrderGroupMapper;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
 import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
@@ -104,14 +105,34 @@ public class OrderController {
 	}
 
 	@PatchMapping("/{id}/status")
-	@PreAuthorize("hasAnyAuthority('USER', 'ADMIN', 'STAFF')")
 	public ResponseEntity<Void> updateStatus(
 		Authentication authentication,
-		@ParameterObject UpdateStatusRequest request,
+		@RequestBody UpdateStatusRequest request,
 		@PathVariable Long id
 	) {
-		var userId = (Long) authentication.getPrincipal();
-		orderGroupService.updateStatus(request.getMessage(), userId, request.getStatus(), id);
-		return ResponseEntity.ok().build();
+		try {
+			var userId = (Long) authentication.getPrincipal();
+			switch (request.getStatus()) {
+				case CANCELED -> orderService.cancelOrder(id, request.getMessage(), userId);
+				case REFUNDED -> {
+					boolean isAdmin = authentication.getAuthorities().stream()
+						.anyMatch(r -> r.getAuthority().equals(Role.ADMIN.name()) || r.getAuthority().equals(Role.STAFF.name()));
+					if (!isAdmin) {
+						throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only Admin or Staff can update order's status REFUNDED");
+					}
+					orderService.refundOrder(id, userId);
+				}
+				default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can just update order's status REFUNDED or CANCELED ");
+			}
+			return ResponseEntity.ok().build();
+		} catch (IllegalArgumentException ex) {
+			if (ex.getMessage().equals(ErrorCode.ORDER_STATUS_NOT_ALLOWED.name())) {
+				throw new ResponseStatusException(HttpStatus.FORBIDDEN, ErrorCode.ORDER_STATUS_NOT_ALLOWED.getMessage());
+			}
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage(), ex);
+		}
+
 	}
 }
