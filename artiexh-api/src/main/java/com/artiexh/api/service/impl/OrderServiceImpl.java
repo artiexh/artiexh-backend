@@ -114,4 +114,14 @@ public class OrderServiceImpl implements OrderService {
 		return response.getFee();
 	}
 
+	@Override
+	public void cancelOrder(Long id, String message, Long createdBy) {
+
+	}
+
+	@Override
+	public void refundOrder(Long id, Long createdBy) {
+
+	}
+
 }

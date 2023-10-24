@@ -11,6 +11,7 @@ import com.artiexh.model.mapper.OrderGroupMapper;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
 import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
 import com.artiexh.model.rest.order.request.PaymentQueryProperties;
+import com.artiexh.model.rest.order.request.UpdateStatusRequest;
 import com.artiexh.model.rest.order.response.PaymentResponse;
 import com.artiexh.model.rest.user.UserOrderGroupResponse;
 import jakarta.persistence.EntityNotFoundException;
@@ -100,5 +101,28 @@ public class OrderController {
 			redisTemplate.boundValueOps("payment_confirm_url_" + paymentQueryProperties.getVnp_TxnRef()).getAndDelete();
 		URI uri = URI.create(confirmUrl + "/" + paymentQueryProperties.getVnp_TxnRef());
 		return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
+	}
+
+	@PatchMapping("/{id}/status")
+	public ResponseEntity<Void> updateStatus(
+		Authentication authentication,
+		@ParameterObject UpdateStatusRequest request,
+		@PathVariable Long id
+	) {
+		var userId = (Long) authentication.getPrincipal();
+		switch (request.getStatus()) {
+			case REFUNDED -> {
+				orderService.refundOrder(id, userId);
+				return ResponseEntity.ok().build();
+			}
+			case CANCELLED -> {
+				orderService.cancelOrder(id, request.getMessage(), userId);
+				return ResponseEntity.ok().build();
+			}
+			default -> {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You only update order status CANCELED or REFUNDED");
+			}
+		}
+
 	}
 }

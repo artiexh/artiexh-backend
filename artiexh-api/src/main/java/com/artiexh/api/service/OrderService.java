@@ -20,4 +20,8 @@ public interface OrderService {
 
 	ShipFeeResponse.ShipFee getShippingFee(Long userId, Long addressId, GetShippingFeeRequest request);
 
+	void cancelOrder(Long id, String message, Long createdBy);
+
+	void refundOrder(Long id, Long createdBy);
+
 }
