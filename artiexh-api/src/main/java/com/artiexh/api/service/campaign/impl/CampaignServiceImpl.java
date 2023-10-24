@@ -402,38 +402,11 @@ public class CampaignServiceImpl implements CampaignService {
 			case REQUEST_CHANGE -> staffRequestChangeCampaign(campaignEntity, accountEntity, request.getMessage());
 			case APPROVED -> staffApproveCampaign(campaignEntity, accountEntity, request.getMessage());
 			case REJECTED -> staffRejectCampaign(campaignEntity, accountEntity, request.getMessage());
+			case MANUFACTURING -> staffStartManufactureCampaign(campaignEntity, accountEntity, request.getMessage());
+			case DONE -> staffFinishManufactureCampaign(campaignEntity, accountEntity, request.getMessage());
 			default ->
 				throw new IllegalArgumentException("You can only update campaign to status REQUEST_CHANGE, APPROVED or REJECTED");
 		};
-	}
-
-	@Override
-	@Transactional
-	public Set<ProductResponse> publishProduct(Long campaignId, Set<PublishProductRequest> products) {
-		CampaignEntity campaign = campaignRepository.findById(campaignId).orElseThrow(EntityNotFoundException::new);
-
-		if (!campaign.getStatus().equals(CampaignStatus.APPROVED.getByteValue())) {
-			throw new IllegalArgumentException("You can only publish product after campaign's status is APPROVED");
-		}
-
-		Set<Long> productCampaignIds = campaign.getCustomProducts().stream().map(CustomProductEntity::getId).collect(Collectors.toSet());
-		Set<Long> productIds = products.stream().map(PublishProductRequest::getCustomProductId).collect(Collectors.toSet());
-
-		if (!productCampaignIds.equals(productIds)) {
-			throw new IllegalArgumentException("All product in campaign must be published");
-		}
-
-		Set<ProductResponse> productResponses = new HashSet<>();
-		for (PublishProductRequest unpublishedProduct : products) {
-			Product product = productMapper.publishProductRequestToProduct(unpublishedProduct);
-
-			product = productService.create(campaign.getOwner().getId(), product);
-			productResponses.add(productMapper.domainToProductResponse(product));
-		}
-
-		staffPublishProductCampaign(campaign, "");
-
-		return productResponses;
 	}
 
 	private CampaignResponse staffRequestChangeCampaign(CampaignEntity campaignEntity,
@@ -517,12 +490,81 @@ public class CampaignServiceImpl implements CampaignService {
 		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
 	}
 
+	private CampaignResponse staffStartManufactureCampaign(CampaignEntity campaignEntity,
+														   AccountEntity accountEntity,
+														   String message) {
+		if (campaignEntity.getStatus() != CampaignStatus.APPROVED.getByteValue()) {
+			throw new IllegalArgumentException("You can only update campaign from APPROVED to MANUFACTURING");
+		}
+
+		campaignEntity.setStatus(CampaignStatus.MANUFACTURING.getByteValue());
+		campaignEntity.getCampaignHistories().add(
+			CampaignHistoryEntity.builder()
+				.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())
+				.action(CampaignHistoryAction.MANUFACTURING.getByteValue())
+				.message(message)
+				.updatedBy(accountEntity.getUsername())
+				.build()
+		);
+
+		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
+	}
+
+	private CampaignResponse staffFinishManufactureCampaign(CampaignEntity campaignEntity,
+															AccountEntity accountEntity,
+															String message) {
+		if (campaignEntity.getStatus() != CampaignStatus.APPROVED.getByteValue()
+			&& campaignEntity.getStatus() != CampaignStatus.MANUFACTURING.getByteValue()) {
+			throw new IllegalArgumentException("You can only update campaign from APPROVED or MANUFACTURING to DONE");
+		}
+
+		campaignEntity.setStatus(CampaignStatus.DONE.getByteValue());
+		campaignEntity.getCampaignHistories().add(
+			CampaignHistoryEntity.builder()
+				.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())
+				.action(CampaignHistoryAction.DONE.getByteValue())
+				.message(message)
+				.updatedBy(accountEntity.getUsername())
+				.build()
+		);
+
+		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
+	}
+
+	@Override
+	@Transactional
+	public Set<ProductResponse> publishProduct(Long campaignId, Set<PublishProductRequest> products) {
+		CampaignEntity campaign = campaignRepository.findById(campaignId).orElseThrow(EntityNotFoundException::new);
+
+		if (!campaign.getStatus().equals(CampaignStatus.APPROVED.getByteValue())) {
+			throw new IllegalArgumentException("You can only publish product after campaign's status is APPROVED");
+		}
+
+		Set<Long> productCampaignIds = campaign.getCustomProducts().stream().map(CustomProductEntity::getId).collect(Collectors.toSet());
+		Set<Long> productIds = products.stream().map(PublishProductRequest::getCustomProductId).collect(Collectors.toSet());
+
+		if (!productCampaignIds.equals(productIds)) {
+			throw new IllegalArgumentException("All product in campaign must be published");
+		}
+
+		Set<ProductResponse> productResponses = new HashSet<>();
+		for (PublishProductRequest unpublishedProduct : products) {
+			Product product = productMapper.publishProductRequestToProduct(unpublishedProduct);
+
+			product = productService.create(campaign.getOwner().getId(), product);
+			productResponses.add(productMapper.domainToProductResponse(product));
+		}
+
+		staffPublishProductCampaign(campaign, "");
+
+		return productResponses;
+	}
+
 	private void staffPublishProductCampaign(CampaignEntity campaignEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.APPROVED.getByteValue()) {
 			throw new IllegalArgumentException("You can only update campaign from APPROVED to PUBLISHED");
 		}
 
-		campaignEntity.setStatus(CampaignStatus.PUBLISHED.getByteValue());
 		campaignEntity.getCampaignHistories().add(
 			CampaignHistoryEntity.builder()
 				.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())
