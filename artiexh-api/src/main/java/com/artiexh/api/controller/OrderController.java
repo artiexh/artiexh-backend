@@ -3,6 +3,7 @@ package com.artiexh.api.controller;
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.base.common.Endpoint.Order;
 import com.artiexh.api.exception.ErrorCode;
+import com.artiexh.api.exception.IllegalAccessException;
 import com.artiexh.api.service.OrderGroupService;
 import com.artiexh.api.service.OrderService;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
@@ -12,7 +13,7 @@ import com.artiexh.model.mapper.OrderGroupMapper;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
 import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
 import com.artiexh.model.rest.order.request.PaymentQueryProperties;
-import com.artiexh.model.rest.order.request.UpdateStatusRequest;
+import com.artiexh.model.rest.order.request.UpdateOrderStatusRequest;
 import com.artiexh.model.rest.order.response.PaymentResponse;
 import com.artiexh.model.rest.user.UserOrderGroupResponse;
 import jakarta.persistence.EntityNotFoundException;
@@ -107,7 +108,7 @@ public class OrderController {
 	@PatchMapping("/{id}/status")
 	public ResponseEntity<Void> updateStatus(
 		Authentication authentication,
-		@RequestBody @Valid UpdateStatusRequest request,
+		@RequestBody @Valid UpdateOrderStatusRequest request,
 		@PathVariable Long id
 	) {
 		try {
@@ -126,12 +127,11 @@ public class OrderController {
 			}
 			return ResponseEntity.ok().build();
 		} catch (IllegalArgumentException ex) {
-			if (ex.getMessage().equals(ErrorCode.ORDER_STATUS_NOT_ALLOWED.name())) {
-				throw new ResponseStatusException(HttpStatus.FORBIDDEN, ErrorCode.ORDER_STATUS_NOT_ALLOWED.getMessage());
-			}
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
 		} catch (EntityNotFoundException ex) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage(), ex);
+		} catch (IllegalAccessException ex) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, ex.getMessage(), ex);
 		}
 
 	}

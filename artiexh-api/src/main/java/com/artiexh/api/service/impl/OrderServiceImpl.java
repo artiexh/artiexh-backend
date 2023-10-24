@@ -1,6 +1,7 @@
 package com.artiexh.api.service.impl;
 
 import com.artiexh.api.exception.ErrorCode;
+import com.artiexh.api.exception.IllegalAccessException;
 import com.artiexh.api.service.OrderService;
 import com.artiexh.data.jpa.entity.AccountEntity;
 import com.artiexh.data.jpa.entity.OrderEntity;
@@ -129,7 +130,7 @@ public class OrderServiceImpl implements OrderService {
 		if (!account.getId().equals(order.getOrderGroup().getUser().getId())
 			&& (account.getRole() != Role.ADMIN.getByteValue() &&
 				account.getRole() != Role.STAFF.getByteValue())) {
-			throw new IllegalArgumentException(ErrorCode.ORDER_STATUS_NOT_ALLOWED.name());
+			throw new IllegalAccessException(ErrorCode.ORDER_STATUS_NOT_ALLOWED.getMessage());
 		}
 		if (order.getStatus() != OrderStatus.PAYING.getByteValue() &&
 			order.getStatus() != OrderStatus.PREPARING.getByteValue()) {

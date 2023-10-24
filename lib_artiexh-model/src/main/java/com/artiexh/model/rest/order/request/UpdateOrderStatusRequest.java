@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateStatusRequest {
+public class UpdateOrderStatusRequest {
 	private String message;
 	@NotNull
 	private OrderStatus status;
