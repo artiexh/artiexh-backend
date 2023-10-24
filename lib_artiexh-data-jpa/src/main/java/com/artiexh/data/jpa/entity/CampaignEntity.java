@@ -58,4 +58,9 @@ public class CampaignEntity {
 	@Column(name = "content", columnDefinition = "text /*!100301 COMPRESSED*/(0, 0)")
 	private String content;
 
+	@Column(name = "is_published", nullable = false)
+	private Boolean isPublished;
+
+	@Column(name = "type", nullable = false)
+	private Byte type;
 }

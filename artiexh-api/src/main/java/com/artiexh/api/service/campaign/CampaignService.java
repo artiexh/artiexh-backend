@@ -6,6 +6,7 @@ import com.artiexh.model.rest.campaign.request.PublishProductRequest;
 import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
 import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
+import com.artiexh.model.rest.campaign.response.CustomProductResponse;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,4 +29,6 @@ public interface CampaignService {
 	CampaignResponse reviewCampaign(Long staffId, UpdateCampaignStatusRequest request);
 
 	Set<ProductResponse> publishProduct(Long campaignId, Set<PublishProductRequest> request);
+
+	Page<CustomProductResponse> getAllProductCampaign(Long campaignId, Pageable pageable);
 }

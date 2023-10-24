@@ -2,10 +2,7 @@ package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.CampaignEntity;
 import com.artiexh.data.jpa.entity.CampaignHistoryEntity;
-import com.artiexh.model.domain.Campaign;
-import com.artiexh.model.domain.CampaignHistory;
-import com.artiexh.model.domain.CampaignHistoryAction;
-import com.artiexh.model.domain.CampaignStatus;
+import com.artiexh.model.domain.*;
 import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import org.mapstruct.Mapper;
@@ -31,6 +28,10 @@ public interface CampaignMapper {
 
 	default CampaignStatus campaignStatusFrom(byte value) {
 		return CampaignStatus.fromValue(value);
+	}
+
+	default CampaignType campaignTypeFrom(byte value) {
+		return CampaignType.fromValue(value);
 	}
 
 	default byte campaignStatusTo(CampaignStatus status) {
