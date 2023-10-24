@@ -18,6 +18,7 @@ public class CampaignResponse {
 	private Owner owner;
 	private String name;
 	private String description;
+	private String thumbnailUrl;
 	private CampaignType type;
 	private Boolean isPublished;
 

@@ -52,6 +52,12 @@ public class CampaignEntity {
 	@OrderBy("id.eventTime desc")
 	private Set<CampaignHistoryEntity> campaignHistories = new LinkedHashSet<>();
 
+	@Column(name = "thumbnail_url", length = 2048)
+	private String thumbnailUrl;
+
+	@Column(name = "content", columnDefinition = "text /*!100301 COMPRESSED*/(0, 0)")
+	private String content;
+
 	@Column(name = "is_published", nullable = false)
 	private Boolean isPublished;
 

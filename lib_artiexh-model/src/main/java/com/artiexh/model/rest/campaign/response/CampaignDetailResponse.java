@@ -17,4 +17,5 @@ public class CampaignDetailResponse extends CampaignResponse {
 	private ProviderInfo provider;
 	private Set<CustomProductResponse> customProducts;
 	private Set<CampaignHistory> campaignHistories;
+	private String content;
 }

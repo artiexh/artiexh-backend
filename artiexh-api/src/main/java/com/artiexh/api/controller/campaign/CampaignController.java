@@ -2,7 +2,6 @@ package com.artiexh.api.controller.campaign;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.campaign.CampaignService;
-import com.artiexh.api.service.product.ProductService;
 import com.artiexh.api.service.provider.ProviderService;
 import com.artiexh.model.domain.Role;
 import com.artiexh.model.rest.PageResponse;
@@ -37,7 +36,6 @@ import static com.artiexh.model.domain.CampaignStatus.ALLOWED_ADMIN_VIEW_STATUS;
 public class CampaignController {
 	private final CampaignService campaignService;
 	private final ProviderService providerService;
-	private final ProductService productService;
 
 	@PostMapping
 	@PreAuthorize("hasAuthority('ARTIST')")
