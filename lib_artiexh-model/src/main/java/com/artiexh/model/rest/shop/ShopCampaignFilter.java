@@ -29,7 +29,7 @@ public class ShopCampaignFilter {
 			List<Predicate> predicates = new ArrayList<>();
 			predicates.add(builder.equal(root.get("isPublished"), true));
 			if (username != null) {
-				predicates.add(builder.like(root.join("owner").get("username"), username));
+				predicates.add(builder.equal(root.join("owner").get("username"), username));
 			}
 			if (campaignType != null) {
 				predicates.add(builder.equal(root.get("type"), campaignType.getByteValue()));
