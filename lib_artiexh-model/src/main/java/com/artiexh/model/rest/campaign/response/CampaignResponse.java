@@ -1,6 +1,7 @@
 package com.artiexh.model.rest.campaign.response;
 
 import com.artiexh.model.domain.CampaignStatus;
+import com.artiexh.model.domain.CampaignType;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,8 @@ public class CampaignResponse {
 	private String name;
 	private String description;
 	private String thumbnailUrl;
+	private CampaignType type;
+	private Boolean isPublished;
 
 
 	@Data

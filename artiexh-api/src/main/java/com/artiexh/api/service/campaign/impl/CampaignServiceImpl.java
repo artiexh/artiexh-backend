@@ -18,6 +18,7 @@ import com.artiexh.model.rest.campaign.request.PublishProductRequest;
 import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
 import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
+import com.artiexh.model.rest.campaign.response.CustomProductResponse;
 import com.artiexh.model.rest.campaign.response.ProviderConfigResponse;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
@@ -558,6 +559,11 @@ public class CampaignServiceImpl implements CampaignService {
 		staffPublishProductCampaign(campaign, "");
 
 		return productResponses;
+	}
+
+	@Override
+	public Page<CustomProductResponse> getAllProductCampaign(Long campaignId, Pageable pageable) {
+		return customProductRepository.findAllByCampaignId(campaignId, pageable).map(customProductMapper::entityToResponse);
 	}
 
 	private void staffPublishProductCampaign(CampaignEntity campaignEntity, String message) {
