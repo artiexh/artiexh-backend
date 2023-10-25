@@ -123,8 +123,10 @@ public class CampaignServiceImpl implements CampaignService {
 		campaignEntity.setCampaignHistories(Set.of(createCampaignHistoryEntity));
 		var result = campaignMapper.entityToDetailResponse(campaignEntity);
 
-		var provider = providerRepository.getReferenceById(request.getProviderId());
-		result.setProvider(providerMapper.entityToInfo(provider));
+		if (request.getProviderId() != null) {
+			var provider = providerRepository.getReferenceById(request.getProviderId());
+			result.setProvider(providerMapper.entityToInfo(provider));
+		}
 
 		for (var customProductResponse : result.getCustomProducts()) {
 			customProductResponse.setProviderConfig(providerConfigsByCustomProductId.get(customProductResponse.getId()));
@@ -222,7 +224,7 @@ public class CampaignServiceImpl implements CampaignService {
 	private void validateCreateCustomProductRequest(Long ownerId,
 													String providerId,
 													Set<CustomProductRequest> requests) {
-		if (!providerRepository.existsById(providerId)) {
+		if (providerId != null && !providerRepository.existsById(providerId)) {
 			throw new IllegalArgumentException("providerId " + providerId + " not valid");
 		}
 
@@ -234,20 +236,22 @@ public class CampaignServiceImpl implements CampaignService {
 				throw new IllegalArgumentException("you not own inventoryItem " + customProductRequest.getInventoryItemId());
 			}
 
-			var providerConfig = inventoryItemEntity.getVariant().getProviderConfigs().stream()
-				.filter(config -> config.getId().getBusinessCode().equals(providerId))
-				.findAny()
-				.orElseThrow(() -> new IllegalArgumentException("inventoryItem " + customProductRequest.getInventoryItemId() + " is not supported by provider " + providerId));
+			if (providerId != null) {
+				var providerConfig = inventoryItemEntity.getVariant().getProviderConfigs().stream()
+					.filter(config -> config.getId().getBusinessCode().equals(providerId))
+					.findAny()
+					.orElseThrow(() -> new IllegalArgumentException("inventoryItem " + customProductRequest.getInventoryItemId() + " is not supported by provider " + providerId));
 
-			if (customProductRequest.getQuantity() != null
-				&& providerConfig.getMinQuantity() > customProductRequest.getQuantity()) {
-				throw new IllegalArgumentException("customProduct quantity must greater than " + providerConfig.getMinQuantity());
-			}
+				if (customProductRequest.getQuantity() != null
+					&& providerConfig.getMinQuantity() > customProductRequest.getQuantity()) {
+					throw new IllegalArgumentException("customProduct quantity must greater than " + providerConfig.getMinQuantity());
+				}
 
-			if (customProductRequest.getPrice() != null
-				&& customProductRequest.getPrice().getAmount() != null
-				&& providerConfig.getBasePriceAmount().compareTo(customProductRequest.getPrice().getAmount()) > 0) {
-				throw new IllegalArgumentException("customProduct price amount must greater than " + providerConfig.getBasePriceAmount());
+				if (customProductRequest.getPrice() != null
+					&& customProductRequest.getPrice().getAmount() != null
+					&& providerConfig.getBasePriceAmount().compareTo(customProductRequest.getPrice().getAmount()) > 0) {
+					throw new IllegalArgumentException("customProduct price amount must greater than " + providerConfig.getBasePriceAmount());
+				}
 			}
 		}
 	}

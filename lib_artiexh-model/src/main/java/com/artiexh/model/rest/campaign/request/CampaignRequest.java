@@ -3,7 +3,6 @@ package com.artiexh.model.rest.campaign.request;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,10 +26,9 @@ public class CampaignRequest {
 
 	private String content;
 
-	@NotNull
 	private String providerId;
 
 	@Valid
-	private Set<CustomProductRequest> customProducts;
+	private Set<CustomProductRequest> customProducts = Set.of();
 
 }
