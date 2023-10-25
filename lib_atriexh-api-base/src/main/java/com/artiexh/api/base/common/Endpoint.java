@@ -179,4 +179,9 @@ public final class Endpoint {
 		public static final String DETAIL = "/{id}";
 		public static final String COMMENT = "/comment";
 	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Marketplace {
+		public static final String ROOT = PREFIX + "/marketplace";
+	}
 }
