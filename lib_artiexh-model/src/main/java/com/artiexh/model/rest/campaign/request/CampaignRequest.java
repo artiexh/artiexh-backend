@@ -1,5 +1,6 @@
 package com.artiexh.model.rest.campaign.request;
 
+import com.artiexh.model.domain.CampaignType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -21,16 +22,18 @@ public class CampaignRequest {
 	@NotEmpty
 	private String name;
 
+	@NotNull
+	private CampaignType type;
+
 	private String description;
 
 	private String thumbnailUrl;
 
 	private String content;
 
-	@NotNull
 	private String providerId;
 
 	@Valid
-	private Set<CustomProductRequest> customProducts;
+	private Set<CustomProductRequest> customProducts = Set.of();
 
 }
