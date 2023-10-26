@@ -6,7 +6,10 @@ import com.artiexh.api.service.provider.ProviderService;
 import com.artiexh.model.domain.Role;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
-import com.artiexh.model.rest.campaign.request.*;
+import com.artiexh.model.rest.campaign.request.CampaignRequest;
+import com.artiexh.model.rest.campaign.request.CampaignRequestFilter;
+import com.artiexh.model.rest.campaign.request.PublishProductRequest;
+import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
 import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignProviderResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
@@ -16,6 +19,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,28 +40,42 @@ import static com.artiexh.model.domain.CampaignStatus.ALLOWED_ADMIN_VIEW_STATUS;
 public class CampaignController {
 	private final CampaignService campaignService;
 	private final ProviderService providerService;
+	@Value("${artiexh.security.admin.id}")
+	private Long rootAdminId;
 
 	@PostMapping
-	@PreAuthorize("hasAuthority('ARTIST')")
+	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN','STAFF')")
 	public CampaignDetailResponse createCampaign(Authentication authentication,
 												 @RequestBody @Validated CampaignRequest request) {
-		long artistId = (long) authentication.getPrincipal();
+		var role = authentication.getAuthorities().stream()
+			.map(GrantedAuthority::getAuthority)
+			.findFirst()
+			.map(Role::valueOf)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has no role"));
+		long ownerId = role == Role.STAFF ? rootAdminId : (long) authentication.getPrincipal();
+
 		try {
-			return campaignService.createCampaign(artistId, request);
+			return campaignService.createCampaign(ownerId, request);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		}
 	}
 
 	@PutMapping("/{id}")
-	@PreAuthorize("hasAuthority('ARTIST')")
+	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN','STAFF')")
 	public CampaignDetailResponse updateCampaign(Authentication authentication,
 												 @PathVariable Long id,
 												 @RequestBody @Validated CampaignRequest request) {
-		long artistId = (long) authentication.getPrincipal();
+		var role = authentication.getAuthorities().stream()
+			.map(GrantedAuthority::getAuthority)
+			.findFirst()
+			.map(Role::valueOf)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has no role"));
+		long ownerId = role == Role.STAFF ? rootAdminId : (long) authentication.getPrincipal();
+
 		request.setId(id);
 		try {
-			return campaignService.updateCampaign(artistId, request);
+			return campaignService.updateCampaign(ownerId, request);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		} catch (EntityNotFoundException ex) {

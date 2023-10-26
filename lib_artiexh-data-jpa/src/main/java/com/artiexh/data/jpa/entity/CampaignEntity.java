@@ -2,7 +2,6 @@ package com.artiexh.data.jpa.entity;
 
 import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.LinkedHashSet;
@@ -22,11 +21,9 @@ public class CampaignEntity {
 	@Column(name = "id", nullable = false)
 	private Long id;
 
-	@NotNull
 	@Column(name = "status", nullable = false)
 	private Byte status;
 
-	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "owner_id", nullable = false)
 	private ArtistEntity owner;
@@ -35,7 +32,7 @@ public class CampaignEntity {
 	@OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<CustomProductEntity> customProducts = new LinkedHashSet<>();
 
-	@Column(name = "provider_id", nullable = false, length = 13)
+	@Column(name = "provider_id", length = 13)
 	private String providerId;
 
 	@Column(name = "name", nullable = false)
@@ -58,8 +55,9 @@ public class CampaignEntity {
 	@Column(name = "content", columnDefinition = "text /*!100301 COMPRESSED*/(0, 0)")
 	private String content;
 
+	@Builder.Default
 	@Column(name = "is_published", nullable = false)
-	private Boolean isPublished;
+	private Boolean isPublished = false;
 
 	@Column(name = "type", nullable = false)
 	private Byte type;

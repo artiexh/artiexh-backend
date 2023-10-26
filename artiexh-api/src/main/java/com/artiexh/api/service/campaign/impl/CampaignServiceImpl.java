@@ -4,10 +4,7 @@ import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.product.ProductService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.*;
-import com.artiexh.model.domain.CampaignHistoryAction;
-import com.artiexh.model.domain.CampaignStatus;
-import com.artiexh.model.domain.Product;
-import com.artiexh.model.domain.Role;
+import com.artiexh.model.domain.*;
 import com.artiexh.model.mapper.CampaignMapper;
 import com.artiexh.model.mapper.CustomProductMapper;
 import com.artiexh.model.mapper.ProductMapper;
@@ -57,18 +54,29 @@ public class CampaignServiceImpl implements CampaignService {
 	@Override
 	@Transactional
 	public CampaignDetailResponse createCampaign(Long ownerId, CampaignRequest request) {
-		validateCreateCustomProductRequest(ownerId, request.getProviderId(), request.getCustomProducts());
+		ArtistEntity ownerEntity = artistRepository.getReferenceById(ownerId);
+		if (ownerEntity.getRole() == Role.ARTIST.getByteValue()
+			&& request.getType() == CampaignType.PUBLIC) {
+			throw new IllegalArgumentException("Artist cannot create public campaign");
+		}
 
-		ArtistEntity artistEntity = artistRepository.getReferenceById(ownerId);
+		if (ownerEntity.getRole() == Role.ADMIN.getByteValue()
+			&& request.getType() != CampaignType.PUBLIC) {
+			throw new IllegalArgumentException("Admin can only create public campaign");
+		}
+
+		validateCreateCustomProductRequest(ownerEntity, request.getProviderId(), request.getCustomProducts());
+
 		var campaignEntity = campaignRepository.save(
 			CampaignEntity.builder()
 				.status(CampaignStatus.DRAFT.getByteValue())
-				.owner(artistEntity)
+				.owner(ownerEntity)
 				.providerId(request.getProviderId())
 				.name(request.getName())
 				.description(request.getDescription())
 				.thumbnailUrl(request.getThumbnailUrl())
 				.content(request.getContent())
+				.type(request.getType().getByteValue())
 				.build()
 		);
 
@@ -115,7 +123,7 @@ public class CampaignServiceImpl implements CampaignService {
 		var createCampaignHistoryEntity = campaignHistoryRepository.save(CampaignHistoryEntity.builder()
 			.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())
 			.action(CampaignHistoryAction.CREATE.getByteValue())
-			.updatedBy(artistEntity.getUsername())
+			.updatedBy(ownerEntity.getUsername())
 			.build()
 		);
 
@@ -123,8 +131,10 @@ public class CampaignServiceImpl implements CampaignService {
 		campaignEntity.setCampaignHistories(Set.of(createCampaignHistoryEntity));
 		var result = campaignMapper.entityToDetailResponse(campaignEntity);
 
-		var provider = providerRepository.getReferenceById(request.getProviderId());
-		result.setProvider(providerMapper.entityToInfo(provider));
+		if (request.getProviderId() != null) {
+			var provider = providerRepository.getReferenceById(request.getProviderId());
+			result.setProvider(providerMapper.entityToInfo(provider));
+		}
 
 		for (var customProductResponse : result.getCustomProducts()) {
 			customProductResponse.setProviderConfig(providerConfigsByCustomProductId.get(customProductResponse.getId()));
@@ -135,6 +145,17 @@ public class CampaignServiceImpl implements CampaignService {
 	@Override
 	@Transactional
 	public CampaignDetailResponse updateCampaign(Long ownerId, CampaignRequest request) {
+		ArtistEntity ownerEntity = artistRepository.getReferenceById(ownerId);
+		if (ownerEntity.getRole() == Role.ARTIST.getByteValue()
+			&& request.getType() == CampaignType.PUBLIC) {
+			throw new IllegalArgumentException("Artist cannot create public campaign");
+		}
+
+		if (ownerEntity.getRole() == Role.ADMIN.getByteValue()
+			&& request.getType() != CampaignType.PUBLIC) {
+			throw new IllegalArgumentException("Admin can only create public campaign");
+		}
+
 		var oldCampaignEntity = campaignRepository.findById(request.getId())
 			.orElseThrow(() -> new EntityNotFoundException("campaign " + request.getId() + " not valid"));
 
@@ -147,7 +168,7 @@ public class CampaignServiceImpl implements CampaignService {
 			throw new IllegalArgumentException("You can only update campaign with status DRAFT or REQUEST_CHANGE");
 		}
 
-		validateCreateCustomProductRequest(ownerId, request.getProviderId(), request.getCustomProducts());
+		validateCreateCustomProductRequest(ownerEntity, request.getProviderId(), request.getCustomProducts());
 
 		var inventoryItemToCustomProductMap = oldCampaignEntity.getCustomProducts().stream()
 			.collect(Collectors.toMap(
@@ -219,10 +240,10 @@ public class CampaignServiceImpl implements CampaignService {
 		);
 	}
 
-	private void validateCreateCustomProductRequest(Long ownerId,
+	private void validateCreateCustomProductRequest(AccountEntity ownerEntity,
 													String providerId,
 													Set<CustomProductRequest> requests) {
-		if (!providerRepository.existsById(providerId)) {
+		if (providerId != null && !providerRepository.existsById(providerId)) {
 			throw new IllegalArgumentException("providerId " + providerId + " not valid");
 		}
 
@@ -230,24 +251,27 @@ public class CampaignServiceImpl implements CampaignService {
 			var inventoryItemEntity = inventoryItemRepository.findById(customProductRequest.getInventoryItemId())
 				.orElseThrow(() -> new IllegalArgumentException("inventoryItem " + customProductRequest.getInventoryItemId() + " not valid"));
 
-			if (!ownerId.equals(inventoryItemEntity.getArtist().getId())) {
+			if (ownerEntity.getRole() == Role.ARTIST.getByteValue()
+				&& !ownerEntity.getId().equals(inventoryItemEntity.getArtist().getId())) {
 				throw new IllegalArgumentException("you not own inventoryItem " + customProductRequest.getInventoryItemId());
 			}
 
-			var providerConfig = inventoryItemEntity.getVariant().getProviderConfigs().stream()
-				.filter(config -> config.getId().getBusinessCode().equals(providerId))
-				.findAny()
-				.orElseThrow(() -> new IllegalArgumentException("inventoryItem " + customProductRequest.getInventoryItemId() + " is not supported by provider " + providerId));
+			if (providerId != null) {
+				var providerConfig = inventoryItemEntity.getVariant().getProviderConfigs().stream()
+					.filter(config -> config.getId().getBusinessCode().equals(providerId))
+					.findAny()
+					.orElseThrow(() -> new IllegalArgumentException("inventoryItem " + customProductRequest.getInventoryItemId() + " is not supported by provider " + providerId));
 
-			if (customProductRequest.getQuantity() != null
-				&& providerConfig.getMinQuantity() > customProductRequest.getQuantity()) {
-				throw new IllegalArgumentException("customProduct quantity must greater than " + providerConfig.getMinQuantity());
-			}
+				if (customProductRequest.getQuantity() != null
+					&& providerConfig.getMinQuantity() > customProductRequest.getQuantity()) {
+					throw new IllegalArgumentException("customProduct quantity must greater than " + providerConfig.getMinQuantity());
+				}
 
-			if (customProductRequest.getPrice() != null
-				&& customProductRequest.getPrice().getAmount() != null
-				&& providerConfig.getBasePriceAmount().compareTo(customProductRequest.getPrice().getAmount()) > 0) {
-				throw new IllegalArgumentException("customProduct price amount must greater than " + providerConfig.getBasePriceAmount());
+				if (customProductRequest.getPrice() != null
+					&& customProductRequest.getPrice().getAmount() != null
+					&& providerConfig.getBasePriceAmount().compareTo(customProductRequest.getPrice().getAmount()) > 0) {
+					throw new IllegalArgumentException("customProduct price amount must greater than " + providerConfig.getBasePriceAmount());
+				}
 			}
 		}
 	}
@@ -291,8 +315,10 @@ public class CampaignServiceImpl implements CampaignService {
 
 		var result = campaignMapper.entityToDetailResponse(campaignEntity);
 
-		var provider = providerRepository.getReferenceById(campaignEntity.getProviderId());
-		result.setProvider(providerMapper.entityToInfo(provider));
+		if (campaignEntity.getProviderId() != null) {
+			var provider = providerRepository.getReferenceById(campaignEntity.getProviderId());
+			result.setProvider(providerMapper.entityToInfo(provider));
+		}
 		for (var customProductResponse : result.getCustomProducts()) {
 			customProductResponse.setProviderConfig(providerConfigsByCustomProductId.get(customProductResponse.getId()));
 		}
