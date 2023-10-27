@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProductBaseRepository extends JpaRepository<ProductBaseEntity, Long>,
 	JpaSpecificationExecutor<ProductBaseEntity> {
-	@Modifying(clearAutomatically = true)
+	@Modifying
 	@Query("update ProductBaseEntity product " +
 		"set product.hasVariant = true " +
 		"where product.id = :productBaseId and product.hasVariant = false")
