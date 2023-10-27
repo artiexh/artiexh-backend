@@ -221,8 +221,10 @@ public class CampaignServiceImpl implements CampaignService {
 
 		var result = campaignMapper.entityToDetailResponse(savedCampaignEntity);
 
-		var provider = providerRepository.getReferenceById(request.getProviderId());
-		result.setProvider(providerMapper.entityToInfo(provider));
+		if (request.getProviderId() != null) {
+			var provider = providerRepository.getReferenceById(request.getProviderId());
+			result.setProvider(providerMapper.entityToInfo(provider));
+		}
 		for (var customProductResponse : result.getCustomProducts()) {
 			customProductResponse.setProviderConfig(providerConfigsByCustomProductId.get(customProductResponse.getId()));
 		}
