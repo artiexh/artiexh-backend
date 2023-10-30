@@ -6,8 +6,6 @@ import com.artiexh.data.jpa.entity.InventoryItemEntity;
 import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.artiexh.data.jpa.entity.ProviderEntity;
 import com.artiexh.data.jpa.repository.InventoryItemRepository;
-import com.artiexh.data.jpa.repository.ProductBaseRepository;
-import com.artiexh.data.jpa.repository.ProductVariantProviderRepository;
 import com.artiexh.data.jpa.repository.ProviderRepository;
 import com.artiexh.model.domain.Provider;
 import com.artiexh.model.mapper.CycleAvoidingMappingContext;
@@ -30,8 +28,6 @@ import java.util.stream.Collectors;
 public class ProviderServiceImpl implements ProviderService {
 	private final ProviderMapper providerMapper;
 	private final ProviderRepository providerRepository;
-	private final ProductBaseRepository productBaseRepository;
-	private final ProductVariantProviderRepository providerConfigRepository;
 	private final InventoryItemRepository inventoryItemRepository;
 
 	@Override

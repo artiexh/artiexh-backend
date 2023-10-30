@@ -15,7 +15,7 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 public class CampaignDetailResponse extends CampaignResponse {
 	private ProviderInfo provider;
-	private Set<CustomProductResponse> customProducts;
+	private Set<ProductInCampaignResponse> productInCampaigns;
 	private Set<CampaignHistory> campaignHistories;
 	private String content;
 }

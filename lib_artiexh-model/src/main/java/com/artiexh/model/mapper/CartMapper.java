@@ -40,7 +40,7 @@ public interface CartMapper {
 	@Mapping(target = "price.amount", source = "priceAmount")
 	@Mapping(target = "price.unit", source = "priceUnit")
 	@Mapping(target = "thumbnailUrl", source = "attaches", qualifiedByName = "getProductThumbnailUrl")
-	@Mapping(target = "customProduct", ignore = true)
+	@Mapping(target = "productInCampaign", ignore = true)
 	Product productEntityToCartItemProduct(ProductEntity productEntity);
 
 	CartEntity domainToEntity(Cart cart);

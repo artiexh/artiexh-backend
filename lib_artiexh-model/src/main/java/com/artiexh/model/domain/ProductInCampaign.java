@@ -11,9 +11,9 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomProduct {
+public class ProductInCampaign {
 	private Long id;
-	private InventoryItem inventoryItem;
+	private InventoryItem customProduct;
 	private Campaign campaign;
 	private String name;
 	private Integer quantity;

@@ -9,9 +9,9 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomProductTagId implements Serializable {
+public class ProductInCampaignTagId implements Serializable {
 
-	private Long customProductId;
+	private Long productInCampaignId;
 
 	private String name;
 

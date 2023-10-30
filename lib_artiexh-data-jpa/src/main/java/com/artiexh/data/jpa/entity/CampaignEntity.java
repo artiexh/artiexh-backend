@@ -30,7 +30,7 @@ public class CampaignEntity {
 
 	@Builder.Default
 	@OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
-	private Set<CustomProductEntity> customProducts = new LinkedHashSet<>();
+	private Set<ProductInCampaignEntity> productInCampaigns = new LinkedHashSet<>();
 
 	@Column(name = "provider_id", length = 13)
 	private String providerId;

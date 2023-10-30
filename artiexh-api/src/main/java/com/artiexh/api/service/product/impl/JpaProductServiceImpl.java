@@ -88,17 +88,17 @@ public class JpaProductServiceImpl implements JpaProductService {
 		productEntity.setTags(tagEntities);
 		productEntity.setBundleItems(bundleItems);
 
-		if (product.getCustomProduct() == null) {
+		if (product.getProductInCampaign() == null) {
 			productEntity.setShop(artistEntity);
 		} else {
 			ArtistEntity adminShop = artistRepository.findById(rootAdminId)
 				.orElseThrow(() -> new IllegalArgumentException("Admin shop is not configured"));
 
-			CustomProductEntity customProduct = customProductRepository.findById(product.getCustomProduct().getId())
+			ProductInCampaignEntity customProduct = customProductRepository.findById(product.getProductInCampaign().getId())
 				.orElseThrow(() -> new IllegalArgumentException("Custom product is not found"));
 
 			productEntity.setShop(adminShop);
-			productEntity.setCustomProductId(customProduct.getId());
+			productEntity.setProductInCampaignId(customProduct.getId());
 		}
 
 		ProductEntity savedProductEntity = productRepository.save(productEntity);

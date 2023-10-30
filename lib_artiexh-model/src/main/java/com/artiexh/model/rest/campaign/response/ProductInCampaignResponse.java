@@ -11,7 +11,7 @@ import java.time.Instant;
 import java.util.Set;
 
 @Data
-public class CustomProductResponse {
+public class ProductInCampaignResponse {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	private String name;
@@ -22,7 +22,7 @@ public class CustomProductResponse {
 	private String description;
 	private Set<ProductAttach> attaches;
 	private Set<String> tags;
-	private InventoryItemResponse inventoryItem;
+	private InventoryItemResponse customProduct;
 	private Instant createdDate;
 	private Instant modifiedDate;
 	private ProviderConfigResponse providerConfig;

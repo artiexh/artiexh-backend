@@ -34,6 +34,6 @@ public class CampaignRequest {
 	private String providerId;
 
 	@Valid
-	private Set<CustomProductRequest> customProducts = Set.of();
+	private Set<ProductInCampaignRequest> productInCampaigns = Set.of();
 
 }

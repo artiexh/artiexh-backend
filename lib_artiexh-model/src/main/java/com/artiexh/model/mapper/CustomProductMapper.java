@@ -1,12 +1,12 @@
 package com.artiexh.model.mapper;
 
-import com.artiexh.data.jpa.entity.CustomProductEntity;
-import com.artiexh.data.jpa.entity.CustomProductTagEntity;
+import com.artiexh.data.jpa.entity.ProductInCampaignEntity;
+import com.artiexh.data.jpa.entity.ProductInCampaignTagEntity;
 import com.artiexh.data.jpa.entity.ProductVariantCombinationEntity;
-import com.artiexh.model.domain.CustomProduct;
-import com.artiexh.model.rest.campaign.request.CustomProductRequest;
-import com.artiexh.model.rest.campaign.response.CustomProductResponse;
+import com.artiexh.model.domain.ProductInCampaign;
+import com.artiexh.model.rest.campaign.request.ProductInCampaignRequest;
 import com.artiexh.model.rest.campaign.response.InventoryItemResponse;
+import com.artiexh.model.rest.campaign.response.ProductInCampaignResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
 
@@ -21,19 +21,19 @@ public interface CustomProductMapper {
 	@Mapping(target = "campaign", ignore = true)
 	@Mapping(target = "priceUnit", source = "price.unit")
 	@Mapping(target = "priceAmount", source = "price.amount")
-	@Mapping(target = "inventoryItem.id", source = "inventoryItemId")
+	@Mapping(target = "customProduct.id", source = "customProductId")
 	@Mapping(target = "tags", ignore = true)
-	CustomProductEntity createRequestToEntity(CustomProductRequest request);
+	ProductInCampaignEntity createRequestToEntity(ProductInCampaignRequest request);
 
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "campaign", ignore = true)
 	@Mapping(target = "priceUnit", source = "price.unit")
 	@Mapping(target = "priceAmount", source = "price.amount")
-	@Mapping(target = "inventoryItem.id", source = "inventoryItemId")
+	@Mapping(target = "customProduct.id", source = "customProductId")
 	@Mapping(target = "tags", ignore = true)
-	void createRequestToEntity(CustomProductRequest request, @MappingTarget CustomProductEntity entity);
+	void createRequestToEntity(ProductInCampaignRequest request, @MappingTarget ProductInCampaignEntity entity);
 
-	default String customProductTagEntityToName(CustomProductTagEntity tagEntity) {
+	default String customProductTagEntityToName(ProductInCampaignTagEntity tagEntity) {
 		if (tagEntity == null) {
 			return null;
 		}
@@ -41,8 +41,8 @@ public interface CustomProductMapper {
 		return tagEntity.getName();
 	}
 
-	default CustomProductTagEntity tagNameToTagEntity(String tagName) {
-		CustomProductTagEntity tagEntity = new CustomProductTagEntity();
+	default ProductInCampaignTagEntity tagNameToTagEntity(String tagName) {
+		ProductInCampaignTagEntity tagEntity = new ProductInCampaignTagEntity();
 		if (StringUtils.isNotBlank(tagName)) {
 			tagEntity.setName(tagName);
 		}
@@ -53,13 +53,13 @@ public interface CustomProductMapper {
 	@Named("entityToResponse")
 	@Mapping(target = "price.amount", source = "priceAmount")
 	@Mapping(target = "price.unit", source = "priceUnit")
-	@Mapping(target = "inventoryItem.productBase", source = "inventoryItem.variant.productBase")
-	@Mapping(target = "inventoryItem.variant.variantCombination", source = "inventoryItem.variant.variantCombinations")
+	@Mapping(target = "customProduct.productBase", source = "customProduct.variant.productBase")
+	@Mapping(target = "customProduct.variant.variantCombination", source = "customProduct.variant.variantCombinations")
 	@Mapping(target = "providerConfig", ignore = true)
-	CustomProductResponse entityToResponse(CustomProductEntity product);
+	ProductInCampaignResponse entityToResponse(ProductInCampaignEntity product);
 
 	@IterableMapping(qualifiedByName = "entityToResponse")
-	Set<CustomProductResponse> entityToResponse(Set<CustomProductEntity> product);
+	Set<ProductInCampaignResponse> entityToResponse(Set<ProductInCampaignEntity> product);
 
 	default Set<InventoryItemResponse.VariantCombinationResponse> variantCombinationEntitiesToKeyValue(Set<ProductVariantCombinationEntity> variantCombinations) {
 		return variantCombinations.stream()
@@ -75,13 +75,13 @@ public interface CustomProductMapper {
 	@Named("entityToDomain")
 	@Mapping(target = "price.amount", source = "priceAmount")
 	@Mapping(target = "price.unit", source = "priceUnit")
-	@Mapping(target = "inventoryItem", qualifiedByName = "entityToDomainWithoutVariant")
-	CustomProduct entityToDomain(CustomProductEntity product);
+	@Mapping(target = "customProduct", qualifiedByName = "entityToDomainWithoutVariant")
+	ProductInCampaign entityToDomain(ProductInCampaignEntity product);
 
 	@Named("domainToEntity")
 	@Mapping(target = "createdDate", ignore = true)
 	@Mapping(target = "modifiedDate", ignore = true)
 	@Mapping(target = "priceUnit", source = "price.unit")
 	@Mapping(target = "priceAmount", source = "price.amount")
-	CustomProductEntity domainToEntity(CustomProduct customProduct);
+	ProductInCampaignEntity domainToEntity(ProductInCampaign productInCampaign);
 }

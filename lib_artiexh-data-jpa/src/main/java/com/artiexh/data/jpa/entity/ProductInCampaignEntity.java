@@ -16,17 +16,17 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "custom_product")
+@Table(name = "product_in_campaign")
 @EntityListeners(AuditingEntityListener.class)
-public class CustomProductEntity extends BaseAuditEntity {
+public class ProductInCampaignEntity extends BaseAuditEntity {
 	@Id
 	@Tsid
 	@JoinColumn(name = "id", nullable = false)
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "inventory_item_id", nullable = false)
-	private InventoryItemEntity inventoryItem;
+	@JoinColumn(name = "custom_product_id", nullable = false)
+	private InventoryItemEntity customProduct;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "campaign_id", nullable = false)
@@ -63,7 +63,7 @@ public class CustomProductEntity extends BaseAuditEntity {
 
 	@Builder.Default
 	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
-	@JoinColumn(name = "custom_product_id", updatable = false)
-	private Set<CustomProductTagEntity> tags = new LinkedHashSet<>();
+	@JoinColumn(name = "product_in_campaign_id", updatable = false)
+	private Set<ProductInCampaignTagEntity> tags = new LinkedHashSet<>();
 
 }
