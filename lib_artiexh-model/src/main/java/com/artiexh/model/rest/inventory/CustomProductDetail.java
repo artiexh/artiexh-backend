@@ -19,7 +19,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class InventoryItemDetail {
+public class CustomProductDetail {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long variantId;
 

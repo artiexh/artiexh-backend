@@ -152,8 +152,8 @@ public final class Endpoint {
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
-	public static class InventoryItem {
-		public static final String ROOT = PREFIX + "/inventory-item";
+	public static class CustomProduct {
+		public static final String ROOT = PREFIX + "/custom-product";
 		public static final String DETAIL = "/{id}";
 	}
 

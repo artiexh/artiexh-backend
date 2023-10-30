@@ -26,7 +26,7 @@ public class ProductInCampaignEntity extends BaseAuditEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "custom_product_id", nullable = false)
-	private InventoryItemEntity customProduct;
+	private CustomProductEntity customProduct;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "campaign_id", nullable = false)

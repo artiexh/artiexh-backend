@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 		ArtistMapper.class,
 		ProductAttachMapper.class,
 		ShopMapper.class,
+		ProductInCampaignMapper.class,
 		CustomProductMapper.class,
-		InventoryMapper.class,
 		CampaignMapper.class
 	}
 )

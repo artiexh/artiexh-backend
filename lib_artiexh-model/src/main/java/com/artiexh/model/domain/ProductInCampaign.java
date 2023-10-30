@@ -13,7 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class ProductInCampaign {
 	private Long id;
-	private InventoryItem customProduct;
+	private CustomProduct customProduct;
 	private Campaign campaign;
 	private String name;
 	private Integer quantity;

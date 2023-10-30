@@ -12,7 +12,7 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class InventoryItem {
+public class CustomProduct {
 	private Long id;
 	private String name;
 	private ProductVariant variant;

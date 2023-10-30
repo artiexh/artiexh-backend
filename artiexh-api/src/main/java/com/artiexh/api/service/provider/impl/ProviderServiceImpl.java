@@ -2,10 +2,10 @@ package com.artiexh.api.service.provider.impl;
 
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.provider.ProviderService;
-import com.artiexh.data.jpa.entity.InventoryItemEntity;
+import com.artiexh.data.jpa.entity.CustomProductEntity;
 import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.artiexh.data.jpa.entity.ProviderEntity;
-import com.artiexh.data.jpa.repository.InventoryItemRepository;
+import com.artiexh.data.jpa.repository.CustomProductRepository;
 import com.artiexh.data.jpa.repository.ProviderRepository;
 import com.artiexh.model.domain.Provider;
 import com.artiexh.model.mapper.CycleAvoidingMappingContext;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class ProviderServiceImpl implements ProviderService {
 	private final ProviderMapper providerMapper;
 	private final ProviderRepository providerRepository;
-	private final InventoryItemRepository inventoryItemRepository;
+	private final CustomProductRepository customProductRepository;
 
 	@Override
 	@Transactional
@@ -71,7 +71,7 @@ public class ProviderServiceImpl implements ProviderService {
 
 	@Override
 	public Set<CampaignProviderResponse> getAllSupportedInventoryItems(Long artistId, Set<Long> inventoryItemIds) {
-		var inventoryItemEntities = inventoryItemRepository.findAllById(inventoryItemIds);
+		var inventoryItemEntities = customProductRepository.findAllById(inventoryItemIds);
 
 		for (var inventoryItemEntity : inventoryItemEntities) {
 			if (!inventoryItemEntity.getArtist().getId().equals(artistId)) {
@@ -80,7 +80,7 @@ public class ProviderServiceImpl implements ProviderService {
 		}
 
 		var variantIds = inventoryItemEntities.stream()
-			.map(InventoryItemEntity::getVariant)
+			.map(CustomProductEntity::getVariant)
 			.map(ProductVariantEntity::getId)
 			.collect(Collectors.toSet());
 

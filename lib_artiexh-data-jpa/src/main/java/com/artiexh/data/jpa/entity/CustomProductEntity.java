@@ -14,12 +14,12 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "inventory_item")
+@Table(name = "custom_product")
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
 @EntityListeners(AuditingEntityListener.class)
-public class InventoryItemEntity extends BaseAuditEntity {
+public class CustomProductEntity extends BaseAuditEntity {
 	@Id
 	@Tsid
 	private Long id;
@@ -51,8 +51,8 @@ public class InventoryItemEntity extends BaseAuditEntity {
 
 	@Builder.Default
 	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
-	@JoinColumn(name = "inventory_item_id", updatable = false)
-	private Set<InventoryItemTagEntity> tags = new LinkedHashSet<>();
+	@JoinColumn(name = "custom_product_id", updatable = false)
+	private Set<CustomProductTagEntity> tags = new LinkedHashSet<>();
 
 	@OneToOne()
 	@JoinColumn(name = "thumbnail_id")
