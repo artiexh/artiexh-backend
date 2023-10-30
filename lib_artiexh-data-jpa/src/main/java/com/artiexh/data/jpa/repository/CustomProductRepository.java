@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Repository
 public interface CustomProductRepository extends JpaRepository<CustomProductEntity, Long>, JpaSpecificationExecutor<CustomProductEntity> {
-	Optional<CustomProductEntity> findInventoryItemEntityByIdAndArtistId(Long id, Long artistId);
+	Optional<CustomProductEntity> findByIdAndArtistId(Long id, Long artistId);
 
 	@Modifying
 	@Query(value = "delete from CustomProductEntity item where item.id = :id")

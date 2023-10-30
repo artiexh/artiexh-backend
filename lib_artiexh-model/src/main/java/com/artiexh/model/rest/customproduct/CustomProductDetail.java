@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.inventory;
+package com.artiexh.model.rest.customproduct;
 
 import com.artiexh.model.domain.Media;
 import com.artiexh.model.rest.productvariant.ProductVariantDetail;

@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.inventory;
+package com.artiexh.model.rest.customproduct;
 
 import com.artiexh.data.jpa.entity.CustomProductEntity;
 import com.artiexh.data.jpa.entity.ProductTemplateEntity;

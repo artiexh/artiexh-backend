@@ -116,11 +116,11 @@ public class CampaignController {
 
 	@GetMapping("/provider")
 	@PreAuthorize("hasAuthority('ARTIST')")
-	public Set<CampaignProviderResponse> getProviderSupportInventoryItems(Authentication authentication,
-																		  @ParameterObject @RequestParam Set<Long> inventoryItemIds) {
+	public Set<CampaignProviderResponse> getProviderSupportCustomProducts(Authentication authentication,
+																		  @ParameterObject @RequestParam Set<Long> customProductIds) {
 		long artistId = (long) authentication.getPrincipal();
 		try {
-			return providerService.getAllSupportedInventoryItems(artistId, inventoryItemIds);
+			return providerService.getAllSupportedCustomProducts(artistId, customProductIds);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		}

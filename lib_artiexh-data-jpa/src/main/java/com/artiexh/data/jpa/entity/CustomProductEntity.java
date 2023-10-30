@@ -28,7 +28,7 @@ public class CustomProductEntity extends BaseAuditEntity {
 	private String name;
 
 	@OneToMany(orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-	@JoinColumn(name = "inventory_item_id")
+	@JoinColumn(name = "custom_product_id")
 	private Set<ImageSetEntity> imageSet;
 
 	@ManyToOne

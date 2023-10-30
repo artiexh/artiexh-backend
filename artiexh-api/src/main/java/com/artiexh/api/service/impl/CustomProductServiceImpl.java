@@ -131,10 +131,10 @@ public class CustomProductServiceImpl implements CustomProductService {
 		return savedEntity;
 	}
 
-	private List<CustomProductTagEntity> saveCustomProductTag(Long inventoryItemId, Set<String> tags) {
+	private List<CustomProductTagEntity> saveCustomProductTag(Long customProductId, Set<String> tags) {
 		return customProductTagRepository.saveAll(
 			tags.stream()
-				.map(tag -> new CustomProductTagEntity(inventoryItemId, tag))
+				.map(tag -> new CustomProductTagEntity(customProductId, tag))
 				.collect(Collectors.toSet())
 		);
 	}
@@ -159,14 +159,14 @@ public class CustomProductServiceImpl implements CustomProductService {
 	@Override
 	@Transactional(readOnly = true)
 	public CustomProduct getById(Long userId, Long id) {
-		CustomProductEntity item = customProductRepository.findInventoryItemEntityByIdAndArtistId(id, userId)
+		CustomProductEntity item = customProductRepository.findByIdAndArtistId(id, userId)
 			.orElseThrow(EntityNotFoundException::new);
 		return customProductMapper.entityToDomain(item);
 	}
 
 	@Override
 	public void delete(Long userId, Long id) {
-		CustomProductEntity item = customProductRepository.findInventoryItemEntityByIdAndArtistId(id, userId)
+		CustomProductEntity item = customProductRepository.findByIdAndArtistId(id, userId)
 			.orElseThrow(EntityNotFoundException::new);
 		customProductRepository.deleteById(item.getId());
 	}

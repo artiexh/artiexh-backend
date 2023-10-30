@@ -4,7 +4,7 @@ import com.artiexh.data.jpa.entity.ImageSetEntity;
 import com.artiexh.data.jpa.entity.MediaEntity;
 import com.artiexh.model.domain.ImageSet;
 import com.artiexh.model.domain.Media;
-import com.artiexh.model.rest.inventory.CustomProductDetail;
+import com.artiexh.model.rest.customproduct.CustomProductDetail;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;

@@ -54,7 +54,7 @@ public interface ProviderMapper {
 		return Provider.builder().businessCode(businessCode).build();
 	}
 
-	@Mapping(target = "designItems", ignore = true)
+	@Mapping(target = "customProducts", ignore = true)
 	CampaignProviderResponse entityToCampaignProviderResponse(ProviderEntity entity);
 
 	ProviderConfigResponse entityToCampaignProviderConfig(ProductVariantProviderEntity entity);

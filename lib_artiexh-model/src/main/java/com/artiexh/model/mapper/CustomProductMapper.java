@@ -3,7 +3,7 @@ package com.artiexh.model.mapper;
 import com.artiexh.data.jpa.entity.CustomProductEntity;
 import com.artiexh.data.jpa.entity.CustomProductTagEntity;
 import com.artiexh.model.domain.CustomProduct;
-import com.artiexh.model.rest.inventory.CustomProductDetail;
+import com.artiexh.model.rest.customproduct.CustomProductDetail;
 import org.mapstruct.*;
 
 @Mapper(
@@ -39,7 +39,7 @@ public interface CustomProductMapper {
 	@Mapping(target = "artist", qualifiedByName = "basicArtistInfo")
 	CustomProduct entityToDomainWithoutVariant(CustomProductEntity entity);
 
-	default String inventoryItemTagToTag(CustomProductTagEntity tag) {
+	default String customProductTagToTag(CustomProductTagEntity tag) {
 		if (tag == null) {
 			return null;
 		}

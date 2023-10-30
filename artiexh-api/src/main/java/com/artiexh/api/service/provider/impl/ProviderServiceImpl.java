@@ -70,16 +70,16 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	@Override
-	public Set<CampaignProviderResponse> getAllSupportedInventoryItems(Long artistId, Set<Long> inventoryItemIds) {
-		var inventoryItemEntities = customProductRepository.findAllById(inventoryItemIds);
+	public Set<CampaignProviderResponse> getAllSupportedCustomProducts(Long artistId, Set<Long> customProductIds) {
+		var customProductEntities = customProductRepository.findAllById(customProductIds);
 
-		for (var inventoryItemEntity : inventoryItemEntities) {
-			if (!inventoryItemEntity.getArtist().getId().equals(artistId)) {
-				throw new IllegalArgumentException("You not own inventoryItem " + inventoryItemEntity.getId());
+		for (var customProductEntity : customProductEntities) {
+			if (!customProductEntity.getArtist().getId().equals(artistId)) {
+				throw new IllegalArgumentException("You not own customProduct " + customProductEntity.getId());
 			}
 		}
 
-		var variantIds = inventoryItemEntities.stream()
+		var variantIds = customProductEntities.stream()
 			.map(CustomProductEntity::getVariant)
 			.map(ProductVariantEntity::getId)
 			.collect(Collectors.toSet());
@@ -95,12 +95,12 @@ public class ProviderServiceImpl implements ProviderService {
 						providerMapper::entityToCampaignProviderConfig
 					));
 				var response = providerMapper.entityToCampaignProviderResponse(providerEntity);
-				response.setDesignItems(inventoryItemEntities.stream()
+				response.setCustomProducts(customProductEntities.stream()
 					.filter(designItemEntity -> providerConfigs.containsKey(designItemEntity.getVariant().getId()))
-					.map(designItemEntity -> CampaignProviderResponse.InventoryItem.builder()
-						.id(designItemEntity.getId())
-						.name(designItemEntity.getName())
-						.config(providerConfigs.get(designItemEntity.getVariant().getId()))
+					.map(customProductEntity -> CampaignProviderResponse.CustomProduct.builder()
+						.id(customProductEntity.getId())
+						.name(customProductEntity.getName())
+						.config(providerConfigs.get(customProductEntity.getVariant().getId()))
 						.build())
 					.collect(Collectors.toSet()));
 				return response;
