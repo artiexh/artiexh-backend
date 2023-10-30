@@ -1,7 +1,7 @@
 package com.artiexh.model.rest.productvariant;
 
 import com.artiexh.model.domain.VariantCombination;
-import com.artiexh.model.rest.productbase.ProductBaseInfo;
+import com.artiexh.model.rest.producttemplate.ProductTemplateInfo;
 import com.artiexh.model.rest.provider.ProviderInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -32,8 +32,8 @@ public class ProductVariantDetail {
 	private Set<ProviderConfig> providerConfigs;
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@Schema(allOf = ProductBaseInfo.class)
-	private ProductBaseInfo productBase;
+	@Schema(allOf = ProductTemplateInfo.class)
+	private ProductTemplateInfo productTemplate;
 
 	@NotNull
 	@Valid

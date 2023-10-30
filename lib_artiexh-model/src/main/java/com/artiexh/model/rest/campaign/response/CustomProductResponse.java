@@ -1,29 +1,55 @@
 package com.artiexh.model.rest.campaign.response;
 
-import com.artiexh.model.domain.Money;
-import com.artiexh.model.domain.ProductAttach;
-import com.artiexh.model.domain.ProductCategory;
+import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
+import com.artiexh.model.domain.ImageSet;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CustomProductResponse {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	private String name;
-	private Integer quantity;
-	private Money price;
-	private Integer limitPerOrder;
-	private ProductCategory category;
+	private String combinationCode;
+	private Set<ImageSet> imageSet;
 	private String description;
-	private Set<ProductAttach> attaches;
-	private Set<String> tags;
-	private InventoryItemResponse inventoryItem;
-	private Instant createdDate;
-	private Instant modifiedDate;
-	private ProviderConfigResponse providerConfig;
+	private ProductTemplateResponse productTemplate;
+	private VariantResponse variant;
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class ProductTemplateResponse {
+		@JsonSerialize(using = ToStringSerializer.class)
+		private Long id;
+		private String name;
+		private List<ImageCombination> imageCombinations;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class VariantResponse {
+		@JsonSerialize(using = ToStringSerializer.class)
+		private Long id;
+		private Set<VariantCombinationResponse> variantCombination;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class VariantCombinationResponse {
+		private String optionName;
+		private String valueName;
+		private String value;
+	}
+
 }

@@ -6,7 +6,7 @@ import com.artiexh.model.rest.campaign.request.PublishProductRequest;
 import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
 import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
-import com.artiexh.model.rest.campaign.response.CustomProductResponse;
+import com.artiexh.model.rest.campaign.response.ProductInCampaignResponse;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,5 +30,5 @@ public interface CampaignService {
 
 	Set<ProductResponse> publishProduct(Long campaignId, Set<PublishProductRequest> request);
 
-	Page<CustomProductResponse> getAllProductCampaign(Long campaignId, Pageable pageable);
+	Page<ProductInCampaignResponse> getAllProductCampaign(Long campaignId, Pageable pageable);
 }

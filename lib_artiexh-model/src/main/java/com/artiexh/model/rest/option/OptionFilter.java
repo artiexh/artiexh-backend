@@ -19,13 +19,13 @@ import java.util.List;
 @AllArgsConstructor
 public class OptionFilter {
 	@JsonSerialize(using = ToStringSerializer.class)
-	private Long productBaseId;
+	private Long productTemplateId;
 
 	public Specification<ProductOptionEntity> getSpecification() {
 		return (root, cQuery, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
-			if (productBaseId != null) {
-				predicates.add(builder.equal(root.get("productId"), productBaseId));
+			if (productTemplateId != null) {
+				predicates.add(builder.equal(root.get("productTemplateId"), productTemplateId));
 			}
 			return builder.and(predicates.toArray(new Predicate[0]));
 		};

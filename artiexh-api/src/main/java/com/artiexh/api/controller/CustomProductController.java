@@ -2,13 +2,13 @@ package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.exception.ErrorCode;
-import com.artiexh.api.service.InventoryItemService;
-import com.artiexh.model.domain.InventoryItem;
-import com.artiexh.model.mapper.InventoryMapper;
+import com.artiexh.api.service.CustomProductService;
+import com.artiexh.model.domain.CustomProduct;
+import com.artiexh.model.mapper.CustomProductMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
-import com.artiexh.model.rest.inventory.InventoryItemDetail;
-import com.artiexh.model.rest.inventory.ItemFilter;
+import com.artiexh.model.rest.customproduct.CustomProductDetail;
+import com.artiexh.model.rest.customproduct.ItemFilter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,24 +22,24 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = Endpoint.InventoryItem.ROOT)
-public class InventoryItemController {
-	private final InventoryItemService inventoryItemService;
-	private final InventoryMapper inventoryMapper;
+@RequestMapping(path = Endpoint.CustomProduct.ROOT)
+public class CustomProductController {
+	private final CustomProductService customProductService;
+	private final CustomProductMapper customProductMapper;
 
 	@PostMapping()
 	@PreAuthorize("hasAuthority('ARTIST')")
-	public InventoryItemDetail saveItem(
+	public CustomProductDetail saveItem(
 		Authentication authentication,
-		@Valid @RequestBody InventoryItemDetail detail) {
+		@Valid @RequestBody CustomProductDetail detail) {
 		try {
 			long userId = (long) authentication.getPrincipal();
 			detail.setArtistId(userId);
 
-			InventoryItem item = inventoryMapper.detailToDomain(detail);
-			item = inventoryItemService.save(item);
+			CustomProduct item = customProductMapper.detailToDomain(detail);
+			item = customProductService.save(item);
 
-			return inventoryMapper.domainToDetail(item);
+			return customProductMapper.domainToDetail(item);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
 				exception.getMessage(),
@@ -53,16 +53,16 @@ public class InventoryItemController {
 
 	@GetMapping()
 	@PreAuthorize("hasAuthority('ARTIST')")
-	public PageResponse<InventoryItemDetail> getAll(
+	public PageResponse<CustomProductDetail> getAll(
 		Authentication authentication,
 		@ParameterObject ItemFilter filter,
 		@Valid @ParameterObject PaginationAndSortingRequest paginationAndSortingRequest) {
 		try {
 			long userId = (long) authentication.getPrincipal();
 			filter.setArtistId(userId);
-			Page<InventoryItem> itemPage = inventoryItemService.getAll(filter.getSpecification(), paginationAndSortingRequest.getPageable());
+			Page<CustomProduct> itemPage = customProductService.getAll(filter.getSpecification(), paginationAndSortingRequest.getPageable());
 
-			return new PageResponse<>(itemPage.map(inventoryMapper::domainToDetail));
+			return new PageResponse<>(itemPage.map(customProductMapper::domainToDetail));
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
 				ErrorCode.PRODUCT_NOT_FOUND.getMessage(),
@@ -74,16 +74,16 @@ public class InventoryItemController {
 		}
 	}
 
-	@GetMapping(Endpoint.InventoryItem.DETAIL)
+	@GetMapping(Endpoint.CustomProduct.DETAIL)
 	@PreAuthorize("hasAuthority('ARTIST')")
-	public InventoryItemDetail getById(
+	public CustomProductDetail getById(
 		Authentication authentication,
 		@PathVariable("id") Long id) {
 		try {
 			long userId = (long) authentication.getPrincipal();
-			InventoryItem item = inventoryItemService.getById(userId, id);
+			CustomProduct item = customProductService.getById(userId, id);
 
-			return inventoryMapper.domainToDetail(item);
+			return customProductMapper.domainToDetail(item);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
 				ErrorCode.PRODUCT_NOT_FOUND.getMessage(),
@@ -91,14 +91,14 @@ public class InventoryItemController {
 		}
 	}
 
-	@DeleteMapping(Endpoint.InventoryItem.DETAIL)
+	@DeleteMapping(Endpoint.CustomProduct.DETAIL)
 	@PreAuthorize("hasAuthority('ARTIST')")
 	public void delete(
 		Authentication authentication,
 		@PathVariable("id") Long id) {
 		try {
 			long userId = (long) authentication.getPrincipal();
-			inventoryItemService.delete(userId, id);
+			customProductService.delete(userId, id);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
 				ErrorCode.PRODUCT_NOT_FOUND.getMessage(),

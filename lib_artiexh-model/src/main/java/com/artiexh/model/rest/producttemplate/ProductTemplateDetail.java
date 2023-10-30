@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.productbase;
+package com.artiexh.model.rest.producttemplate;
 
 import com.artiexh.model.rest.provider.ProviderDetail;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,7 +14,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductBaseDetail extends ProductBaseInfo {
+public class ProductTemplateDetail extends ProductTemplateInfo {
 
 	@Size(max = 1000)
 	private String description;

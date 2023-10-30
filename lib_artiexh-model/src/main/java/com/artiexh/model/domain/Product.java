@@ -32,5 +32,5 @@ public class Product {
 	private Float weight;
 	private Set<Product> bundles;
 	private Set<Product> bundleItems;
-	private CustomProduct customProduct;
+	private ProductInCampaign productInCampaign;
 }

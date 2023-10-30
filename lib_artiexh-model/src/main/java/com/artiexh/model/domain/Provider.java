@@ -26,7 +26,7 @@ public class Provider {
 
 	private Set<ProductVariant> productVariants;
 
-	private Set<ProductBase> productBases;
+	private Set<ProductTemplate> productTemplates;
 
 	private String website;
 

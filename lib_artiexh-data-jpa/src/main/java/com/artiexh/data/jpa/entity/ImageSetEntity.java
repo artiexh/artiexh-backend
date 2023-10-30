@@ -24,6 +24,4 @@ public class ImageSetEntity {
 	@JoinColumn(name = "mockup_image_id", referencedColumnName = "id")
 	private MediaEntity mockupImage;
 
-//	@Column(name = "inventory_item_id")
-//	private Long inventoryItemId;
 }

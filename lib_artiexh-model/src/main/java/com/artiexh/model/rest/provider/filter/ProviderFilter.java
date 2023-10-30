@@ -1,6 +1,6 @@
 package com.artiexh.model.rest.provider.filter;
 
-import com.artiexh.data.jpa.entity.ProductBaseEntity;
+import com.artiexh.data.jpa.entity.ProductTemplateEntity;
 import com.artiexh.data.jpa.entity.ProviderCategoryEntity;
 import com.artiexh.data.jpa.entity.ProviderEntity;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -26,7 +26,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class ProviderFilter {
 	@JsonSerialize(using = StringArraySerializer.class)
-	private Long[] productBaseIds;
+	private Long[] productTemplateIds;
 	private String businessName;
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Set<Long> categoryIds;
@@ -37,9 +37,9 @@ public class ProviderFilter {
 			if (StringUtils.isNotEmpty(businessName)) {
 				predicates.add(builder.like(root.get("businessName"), "%" + businessName + "%"));
 			}
-			if (productBaseIds != null && productBaseIds.length > 0) {
-				Join<ProviderEntity, ProductBaseEntity> joinProviderProvidedProduct = root.join("productBases");
-				predicates.add(joinProviderProvidedProduct.get("id").in(Arrays.asList(productBaseIds)));
+			if (productTemplateIds != null && productTemplateIds.length > 0) {
+				Join<ProviderEntity, ProductTemplateEntity> joinProviderProvidedProduct = root.join("productTemplates");
+				predicates.add(joinProviderProvidedProduct.get("id").in(Arrays.asList(productTemplateIds)));
 			}
 			if (categoryIds != null) {
 				Join<ProviderEntity, ProviderCategoryEntity> joinProviderCategory = root.join("categories");

@@ -13,7 +13,7 @@ import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
 import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignProviderResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
-import com.artiexh.model.rest.campaign.response.CustomProductResponse;
+import com.artiexh.model.rest.campaign.response.ProductInCampaignResponse;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -116,11 +116,11 @@ public class CampaignController {
 
 	@GetMapping("/provider")
 	@PreAuthorize("hasAuthority('ARTIST')")
-	public Set<CampaignProviderResponse> getProviderSupportInventoryItems(Authentication authentication,
-																		  @ParameterObject @RequestParam Set<Long> inventoryItemIds) {
+	public Set<CampaignProviderResponse> getProviderSupportCustomProducts(Authentication authentication,
+																		  @ParameterObject @RequestParam Set<Long> customProductIds) {
 		long artistId = (long) authentication.getPrincipal();
 		try {
-			return providerService.getAllSupportedInventoryItems(artistId, inventoryItemIds);
+			return providerService.getAllSupportedCustomProducts(artistId, customProductIds);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		}
@@ -186,11 +186,11 @@ public class CampaignController {
 	}
 
 	@GetMapping("/{id}/product")
-	public PageResponse<CustomProductResponse> getShopProductCampaign(
+	public PageResponse<ProductInCampaignResponse> getShopProductCampaign(
 		@ParameterObject @Valid PaginationAndSortingRequest pagination,
 		@PathVariable("id") Long campaignId) {
 		try {
-			Page<CustomProductResponse> productCampaign = campaignService.getAllProductCampaign(campaignId, pagination.getPageable());
+			Page<ProductInCampaignResponse> productCampaign = campaignService.getAllProductCampaign(campaignId, pagination.getPageable());
 			return new PageResponse<>(productCampaign);
 		} catch (EntityNotFoundException ex) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());

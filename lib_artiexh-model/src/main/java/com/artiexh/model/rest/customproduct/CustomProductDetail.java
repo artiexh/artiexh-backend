@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.inventory;
+package com.artiexh.model.rest.customproduct;
 
 import com.artiexh.model.domain.Media;
 import com.artiexh.model.rest.productvariant.ProductVariantDetail;
@@ -19,7 +19,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class InventoryItemDetail {
+public class CustomProductDetail {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long variantId;
 

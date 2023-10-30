@@ -22,13 +22,13 @@ public class CampaignProviderResponse {
 	private String imageUrl;
 	private String description;
 	private String website;
-	private Set<InventoryItem> designItems;
+	private Set<CustomProduct> customProducts;
 
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Builder
-	public static class InventoryItem {
+	public static class CustomProduct {
 		@JsonSerialize(using = ToStringSerializer.class)
 		private Long id;
 		private String name;

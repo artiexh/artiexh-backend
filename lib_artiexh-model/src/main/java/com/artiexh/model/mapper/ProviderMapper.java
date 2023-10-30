@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {ProductVariantMapper.class, ProductBaseMapper.class, ProviderCategoryMapper.class}
+	uses = {ProductVariantMapper.class, ProductTemplateMapper.class, ProviderCategoryMapper.class}
 )
 public interface ProviderMapper {
 	//Provider entityToDomain(ProviderEntity entity);
@@ -23,26 +23,26 @@ public interface ProviderMapper {
 
 	ProviderEntity domainToEntity(Provider domain);
 
-	@Mapping(target = "productBases", ignore = true)
+	@Mapping(target = "productTemplates", ignore = true)
 	ProviderEntity domainToEntity(Provider domain, @MappingTarget ProviderEntity entity);
 
 	Provider entityToDomain(ProviderEntity entity, @Context CycleAvoidingMappingContext context);
 
 	@Named("entityToBasicDomain")
 	@Mapping(target = "productVariants", ignore = true)
-	@Mapping(target = "productBases", ignore = true)
+	@Mapping(target = "productTemplates", ignore = true)
 	Provider entityToBasicDomain(ProviderEntity entity);
 
-	@Mapping(target = "productBases", source = "productBases", qualifiedByName = "domainSetToInfoSet")
+	@Mapping(target = "productTemplates", source = "productTemplates", qualifiedByName = "domainSetToInfoSet")
 	ProviderDetail domainToDetail(Provider domain);
 
-	@Mapping(target = "productBases", source = "productBases", ignore = true)
-	@Named("domainToDetailWithoutProductBases")
-	ProviderDetail domainToDetailWithoutProductBases(Provider domain);
+	@Mapping(target = "productTemplates", source = "productTemplates", ignore = true)
+	@Named("domainToDetailWithoutProductTemplates")
+	ProviderDetail domainToDetailWithoutProductTemplates(Provider domain);
 
-	@IterableMapping(qualifiedByName = "domainToDetailWithoutProductBases")
-	@Named("domainSetToDetailSetWithoutProductBases")
-	Set<ProviderDetail> domainSetToDetailSetWithoutProductBases(Set<Provider> domain);
+	@IterableMapping(qualifiedByName = "domainToDetailWithoutProductTemplates")
+	@Named("domainSetToDetailSetWithoutProductTemplates")
+	Set<ProviderDetail> domainSetToDetailSetWithoutProductTemplates(Set<Provider> domain);
 
 	@Named("domainToInfo")
 	ProviderInfo domainToInfo(Provider domain);
@@ -54,7 +54,7 @@ public interface ProviderMapper {
 		return Provider.builder().businessCode(businessCode).build();
 	}
 
-	@Mapping(target = "designItems", ignore = true)
+	@Mapping(target = "customProducts", ignore = true)
 	CampaignProviderResponse entityToCampaignProviderResponse(ProviderEntity entity);
 
 	ProviderConfigResponse entityToCampaignProviderConfig(ProductVariantProviderEntity entity);

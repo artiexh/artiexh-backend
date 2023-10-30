@@ -11,7 +11,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {CustomProductMapper.class}
+	uses = {ProductInCampaignMapper.class}
 )
 public interface CampaignMapper {
 

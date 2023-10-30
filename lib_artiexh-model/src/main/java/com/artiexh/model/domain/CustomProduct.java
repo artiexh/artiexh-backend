@@ -1,28 +1,28 @@
 package com.artiexh.model.domain;
 
-import com.artiexh.data.jpa.entity.ProductAttachEntity;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.Instant;
 import java.util.Set;
 
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomProduct {
 	private Long id;
-	private InventoryItem inventoryItem;
-	private Campaign campaign;
 	private String name;
-	private Integer quantity;
-	private Money price;
-	private Integer limitPerOrder;
-	private ProductCategory category;
+	private ProductVariant variant;
+	private Artist artist;
+	private Set<ImageSet> imageSet;
+	private String combinationCode;
+	private Long campaignLock;
 	private String description;
-	private Set<ProductAttachEntity> attaches;
 	private Set<String> tags;
+	private Media thumbnail;
 	private Instant createdDate;
 	private Instant modifiedDate;
 }

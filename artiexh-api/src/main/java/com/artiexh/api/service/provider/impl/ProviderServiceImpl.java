@@ -2,12 +2,10 @@ package com.artiexh.api.service.provider.impl;
 
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.provider.ProviderService;
-import com.artiexh.data.jpa.entity.InventoryItemEntity;
+import com.artiexh.data.jpa.entity.CustomProductEntity;
 import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.artiexh.data.jpa.entity.ProviderEntity;
-import com.artiexh.data.jpa.repository.InventoryItemRepository;
-import com.artiexh.data.jpa.repository.ProductBaseRepository;
-import com.artiexh.data.jpa.repository.ProductVariantProviderRepository;
+import com.artiexh.data.jpa.repository.CustomProductRepository;
 import com.artiexh.data.jpa.repository.ProviderRepository;
 import com.artiexh.model.domain.Provider;
 import com.artiexh.model.mapper.CycleAvoidingMappingContext;
@@ -30,9 +28,7 @@ import java.util.stream.Collectors;
 public class ProviderServiceImpl implements ProviderService {
 	private final ProviderMapper providerMapper;
 	private final ProviderRepository providerRepository;
-	private final ProductBaseRepository productBaseRepository;
-	private final ProductVariantProviderRepository providerConfigRepository;
-	private final InventoryItemRepository inventoryItemRepository;
+	private final CustomProductRepository customProductRepository;
 
 	@Override
 	@Transactional
@@ -74,17 +70,17 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	@Override
-	public Set<CampaignProviderResponse> getAllSupportedInventoryItems(Long artistId, Set<Long> inventoryItemIds) {
-		var inventoryItemEntities = inventoryItemRepository.findAllById(inventoryItemIds);
+	public Set<CampaignProviderResponse> getAllSupportedCustomProducts(Long artistId, Set<Long> customProductIds) {
+		var customProductEntities = customProductRepository.findAllById(customProductIds);
 
-		for (var inventoryItemEntity : inventoryItemEntities) {
-			if (!inventoryItemEntity.getArtist().getId().equals(artistId)) {
-				throw new IllegalArgumentException("You not own inventoryItem " + inventoryItemEntity.getId());
+		for (var customProductEntity : customProductEntities) {
+			if (!customProductEntity.getArtist().getId().equals(artistId)) {
+				throw new IllegalArgumentException("You not own customProduct " + customProductEntity.getId());
 			}
 		}
 
-		var variantIds = inventoryItemEntities.stream()
-			.map(InventoryItemEntity::getVariant)
+		var variantIds = customProductEntities.stream()
+			.map(CustomProductEntity::getVariant)
 			.map(ProductVariantEntity::getId)
 			.collect(Collectors.toSet());
 
@@ -99,12 +95,12 @@ public class ProviderServiceImpl implements ProviderService {
 						providerMapper::entityToCampaignProviderConfig
 					));
 				var response = providerMapper.entityToCampaignProviderResponse(providerEntity);
-				response.setDesignItems(inventoryItemEntities.stream()
+				response.setCustomProducts(customProductEntities.stream()
 					.filter(designItemEntity -> providerConfigs.containsKey(designItemEntity.getVariant().getId()))
-					.map(designItemEntity -> CampaignProviderResponse.InventoryItem.builder()
-						.id(designItemEntity.getId())
-						.name(designItemEntity.getName())
-						.config(providerConfigs.get(designItemEntity.getVariant().getId()))
+					.map(customProductEntity -> CampaignProviderResponse.CustomProduct.builder()
+						.id(customProductEntity.getId())
+						.name(customProductEntity.getName())
+						.config(providerConfigs.get(customProductEntity.getVariant().getId()))
 						.build())
 					.collect(Collectors.toSet()));
 				return response;

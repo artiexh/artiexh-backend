@@ -34,14 +34,14 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 	private final VariantCombinationRepository variantCombinationRepository;
 	private final ProductVariantProviderRepository productVariantProviderRepository;
 	private final ProviderRepository providerRepository;
-	private final ProductBaseRepository productBaseRepository;
+	private final ProductTemplateRepository productTemplateRepository;
 
 	@Override
 	@Transactional
 	public ProductVariant create(ProductVariant product) {
 
 		//Validate provider
-		int allowedProviders = providerRepository.countProvider(product.getProductBaseId(), product.getProviderConfigs().stream()
+		int allowedProviders = providerRepository.countProvider(product.getProductTemplateId(), product.getProviderConfigs().stream()
 			.map(ProductVariantProvider::getBusinessCode)
 			.toList());
 
@@ -51,7 +51,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 
 		//Validation option id and option value
 		if (!product.getVariantCombinations().isEmpty()) {
-			List<ProductOptionEntity> existedOptions = productOptionRepository.findProductOptionEntityByProductId(product.getProductBaseId());
+			List<ProductOptionEntity> existedOptions = productOptionRepository.findProductOptionEntityByProductTemplateId(product.getProductTemplateId());
 			validateOptions(existedOptions, product.getVariantCombinations());
 		}
 
@@ -68,7 +68,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 			variantCombinationRepository.save(combinationEntity);
 		}
 
-        for (ProductVariantProvider providerConfig : product.getProviderConfigs()) {
+		for (ProductVariantProvider providerConfig : product.getProviderConfigs()) {
 			ProductVariantProviderEntity provider = mapper.domainToEntity(providerConfig);
 			provider.setId(ProductVariantProviderId.builder()
 				.businessCode(providerConfig.getBusinessCode())
@@ -80,7 +80,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 			productVariantProviderRepository.save(provider);
 		}
 
-        product.setId(entity.getId());
+		product.setId(entity.getId());
 		return product;
 	}
 
@@ -110,13 +110,13 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 
 	@Override
 	@Transactional
-	public Set<ProductVariant> create(Set<ProductVariant> products, Long productBaseId) {
+	public Set<ProductVariant> create(Set<ProductVariant> products, Long productTemplateId) {
 		Set<ProductVariant> result = new HashSet<>();
 		for (ProductVariant productVariant : products) {
-			productVariant.setProductBaseId(productBaseId);
+			productVariant.setProductTemplateId(productTemplateId);
 			result.add(create(productVariant));
 		}
-		productBaseRepository.updateVariant(productBaseId);
+		productTemplateRepository.updateVariant(productTemplateId);
 		return result;
 	}
 
@@ -128,11 +128,11 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 				new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + product.getId())
 			);
 
-		Long productBaseId = entity.getProductBaseId();
+		Long productTemplateId = entity.getProductTemplateId();
 
 		//Validate provider
 		int allowedProviders = providerRepository.countProvider(
-			productBaseId,
+			productTemplateId,
 			product.getProviderConfigs().stream()
 				.map(ProductVariantProvider::getBusinessCode)
 				.toList()
@@ -144,7 +144,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 
 		//Validation option id and option value
 		if (!product.getVariantCombinations().isEmpty()) {
-			List<ProductOptionEntity> existedOptions = productOptionRepository.findProductOptionEntityByProductId(productBaseId);
+			List<ProductOptionEntity> existedOptions = productOptionRepository.findProductOptionEntityByProductTemplateId(productTemplateId);
 			validateOptions(existedOptions, product.getVariantCombinations());
 		}
 
@@ -179,7 +179,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 			productVariantProviderRepository.save(provider);
 			providers.add(provider);
 		}
-        entity.getProviderConfigs().addAll(providers);
+		entity.getProviderConfigs().addAll(providers);
 
 		repository.save(entity);
 		return mapper.entityToDomain(entity, new CycleAvoidingMappingContext());
@@ -206,15 +206,15 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 			productVariantProviderRepository.save(provider);
 			providers.add(provider);
 		}
-        entity.getProviderConfigs().addAll(providers);
+		entity.getProviderConfigs().addAll(providers);
 
 		repository.save(entity);
 		return mapper.entityToDomain(entity, new CycleAvoidingMappingContext());
 	}
 
 	@Override
-	public void delete(String businessCode, Long productBaseId) {
-		ProductVariantEntity product = repository.findById(productBaseId)
+	public void delete(Long id) {
+		ProductVariantEntity product = repository.findById(id)
 			.orElseThrow(EntityNotFoundException::new);
 		repository.deleteById(product.getId());
 	}
@@ -236,12 +236,12 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Page<ProductVariant> getAll(Long productBaseId, Set<Long> optionValueIds, Pageable pageable) {
+	public Page<ProductVariant> getAll(Long productTemplateIds, Set<Long> optionValueIds, Pageable pageable) {
 		Page<ProductVariantEntity> productPage;
 		if (optionValueIds == null || optionValueIds.isEmpty()) {
-			productPage = repository.findAllByProductBaseId(productBaseId, pageable);
+			productPage = repository.findAllByProductTemplateId(productTemplateIds, pageable);
 		} else {
-			productPage = repository.findAllByOptionAndProductBaseId(pageable, optionValueIds, optionValueIds.size());
+			productPage = repository.findAllByOptionAndProductTemplateId(pageable, optionValueIds, optionValueIds.size());
 		}
 		return productPage.map(product -> mapper.entityToDomain(product, new CycleAvoidingMappingContext()));
 	}

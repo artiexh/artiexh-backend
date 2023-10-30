@@ -19,7 +19,7 @@ public class ProductOption {
 	private String name;
 	@JsonSerialize(using = ToStringSerializer.class)
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	private Long productId;
+	private Long productTemplateId;
 	private Integer index;
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;

@@ -14,7 +14,7 @@ import java.util.Set;
 @Builder
 public class ProductVariantCollection {
 	@JsonSerialize(using = ToStringSerializer.class)
-	private Long productBaseId;
+	private Long productTemplateId;
 
 	private Set<ProductVariantDetail> variants;
 }

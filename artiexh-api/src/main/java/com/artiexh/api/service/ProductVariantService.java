@@ -12,16 +12,17 @@ import java.util.Set;
 public interface ProductVariantService {
 	ProductVariant create(ProductVariant product);
 
-	Set<ProductVariant> create(Set<ProductVariant> product, Long productBaseId);
+	Set<ProductVariant> create(Set<ProductVariant> product, Long productTemplateId);
 
 	ProductVariant update(ProductVariant product);
 
 	ProductVariant updateProviderConfig(Long id, Set<ProductVariantProvider> providerConfigs);
 
-	void delete(String businessCode, Long productBaseId);
+	void delete(Long id);
 
 	ProductVariant getById(Long id);
 
 	Page<ProductVariant> getAll(Specification<ProductVariantEntity> specification, Pageable pageable);
-	Page<ProductVariant> getAll(Long productBaseIds, Set<Long> optionValueIds, Pageable pageable);
+
+	Page<ProductVariant> getAll(Long productTemplateIds, Set<Long> optionValueIds, Pageable pageable);
 }
