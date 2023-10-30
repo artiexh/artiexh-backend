@@ -18,7 +18,7 @@ import java.util.Set;
 public class ProductVariantFilter {
 	@JsonSerialize(using = ToStringSerializer.class)
 	@NotNull
-	private Long productBaseId;
+	private Long productTemplateId;
 
 	@JsonSerialize(using = StringCollectionSerializer.class)
 	private Set<Long> optionValueIds;

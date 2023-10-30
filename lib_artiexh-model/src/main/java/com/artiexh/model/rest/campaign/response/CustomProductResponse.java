@@ -14,20 +14,20 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class InventoryItemResponse {
+public class CustomProductResponse {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	private String name;
 	private String combinationCode;
 	private Set<ImageSet> imageSet;
 	private String description;
-	private ProductBaseResponse productBase;
+	private ProductTemplateResponse productTemplate;
 	private VariantResponse variant;
 
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class ProductBaseResponse {
+	public static class ProductTemplateResponse {
 		@JsonSerialize(using = ToStringSerializer.class)
 		private Long id;
 		private String name;

@@ -13,7 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ProductBase {
+public class ProductTemplate {
 	private Long id;
 
 	private Instant createdDate;

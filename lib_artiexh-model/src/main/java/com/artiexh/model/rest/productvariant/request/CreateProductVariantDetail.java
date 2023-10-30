@@ -20,7 +20,7 @@ import java.util.Set;
 public class CreateProductVariantDetail {
 	@JsonSerialize(using = ToStringSerializer.class)
 	@NotNull
-	private Long productBaseId;
+	private Long productTemplateId;
 
 	@Valid
 	@NotEmpty

@@ -14,10 +14,10 @@ import java.util.Set;
 @Repository
 public interface ProviderRepository extends JpaRepository<ProviderEntity, String>, JpaSpecificationExecutor<ProviderEntity> {
 	@Query(nativeQuery = true, value = """
-		select count(*) from product_base_provider_mapping
-		where product_base_id = :productBaseId and business_code in :businessCodes
+		select count(*) from product_template_provider_mapping
+		where product_template_id = :productTemplateId and business_code in :businessCodes
 		""")
-	int countProvider(@NotNull @Param("productBaseId") Long productBaseId, @NotNull @Param("businessCodes") List<String> businessCodes);
+	int countProvider(@NotNull @Param("productTemplateId") Long productTemplateId, @NotNull @Param("businessCodes") List<String> businessCodes);
 
 	@Query("""
 		select provider

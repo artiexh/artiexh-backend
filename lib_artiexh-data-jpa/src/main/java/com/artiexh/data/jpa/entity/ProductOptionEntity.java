@@ -18,8 +18,8 @@ public class ProductOptionEntity {
 	@Tsid
 	private Long id;
 
-	@Column(name = "product_id")
-	private Long productId;
+	@Column(name = "product_template_id")
+	private Long productTemplateId;
 
 	@Column(name = "name", length = 50)
 	private String name;

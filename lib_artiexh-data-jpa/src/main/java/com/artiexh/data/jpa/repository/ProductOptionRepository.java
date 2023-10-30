@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface ProductOptionRepository extends JpaRepository<ProductOptionEntity, Long>, JpaSpecificationExecutor<ProductOptionEntity> {
-	Optional<ProductOptionEntity> findProductOptionEntityByProductIdAndId(Long productId, Long id);
+	Optional<ProductOptionEntity> findProductOptionEntityByProductTemplateIdAndId(Long productTemplateId, Long id);
 
-	List<ProductOptionEntity> findProductOptionEntityByProductId(Long productId);
+	List<ProductOptionEntity> findProductOptionEntityByProductTemplateId(Long productTemplateId);
 }

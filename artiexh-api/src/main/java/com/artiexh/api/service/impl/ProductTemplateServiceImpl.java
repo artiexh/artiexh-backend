@@ -1,17 +1,17 @@
 package com.artiexh.api.service.impl;
 
 import com.artiexh.api.exception.ErrorCode;
-import com.artiexh.api.service.ProductBaseService;
+import com.artiexh.api.service.ProductTemplateService;
 import com.artiexh.api.service.ProductVariantService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.MediaRepository;
 import com.artiexh.data.jpa.repository.OptionValueRepository;
-import com.artiexh.data.jpa.repository.ProductBaseRepository;
 import com.artiexh.data.jpa.repository.ProductOptionRepository;
-import com.artiexh.model.domain.ProductBase;
+import com.artiexh.data.jpa.repository.ProductTemplateRepository;
+import com.artiexh.model.domain.ProductTemplate;
 import com.artiexh.model.domain.ProductVariant;
 import com.artiexh.model.mapper.CycleAvoidingMappingContext;
-import com.artiexh.model.mapper.ProductBaseMapper;
+import com.artiexh.model.mapper.ProductTemplateMapper;
 import com.artiexh.model.mapper.ProviderMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +25,9 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ProductBaseServiceImpl implements ProductBaseService {
-	private final ProductBaseMapper productBaseMapper;
-	private final ProductBaseRepository productBaseRepository;
+public class ProductTemplateServiceImpl implements ProductTemplateService {
+	private final ProductTemplateMapper productTemplateMapper;
+	private final ProductTemplateRepository productTemplateRepository;
 	private final ProductOptionRepository productOptionRepository;
 	private final OptionValueRepository optionValueRepository;
 	private final MediaRepository mediaRepository;
@@ -36,16 +36,16 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 
 	@Override
 	@Transactional
-	public ProductBase create(ProductBase product) {
-		ProductBaseEntity entity = productBaseMapper.domainToEntity(product);
+	public ProductTemplate create(ProductTemplate product) {
+		ProductTemplateEntity entity = productTemplateMapper.domainToEntity(product);
 
 		entity.setHasVariant(false);
 		entity.setModelFile(mediaRepository.getReferenceById(product.getModelFile().getId()));
 
-		entity = productBaseRepository.save(entity);
+		entity = productTemplateRepository.save(entity);
 
 		for (ProductOptionEntity productOption : entity.getProductOptions()) {
-			productOption.setProductId(entity.getId());
+			productOption.setProductTemplateId(entity.getId());
 			productOption = productOptionRepository.save(productOption);
 
 			for (OptionValueEntity optionValue : productOption.getOptionValues()) {
@@ -54,23 +54,23 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 			}
 		}
 
-		product = productBaseMapper.entityToDomain(entity, new CycleAvoidingMappingContext());
+		product = productTemplateMapper.entityToDomain(entity, new CycleAvoidingMappingContext());
 		return product;
 	}
 
 	@Override
 	@Transactional
-	public ProductBase update(ProductBase product) {
-		ProductBaseEntity entity = productBaseRepository.findById(product.getId())
+	public ProductTemplate update(ProductTemplate product) {
+		ProductTemplateEntity entity = productTemplateRepository.findById(product.getId())
 			.orElseThrow(EntityNotFoundException::new);
 
-		entity = productBaseMapper.domainToEntity(product, entity);
+		entity = productTemplateMapper.domainToEntity(product, entity);
 
 		entity.setModelFile(MediaEntity.builder().id(product.getModelFile().getId()).build());
 		entity.setCategory(ProductCategoryEntity.builder().id(product.getCategory().getId()).build());
 
 		for (ProductOptionEntity option : entity.getProductOptions()) {
-			option.setProductId(entity.getId());
+			option.setProductTemplateId(entity.getId());
 			productOptionRepository.save(option);
 
 			for (OptionValueEntity optionValue : option.getOptionValues()) {
@@ -79,31 +79,31 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 			}
 		}
 
-		productBaseRepository.save(entity);
+		productTemplateRepository.save(entity);
 
-		product = productBaseMapper.entityToDomain(entity, new CycleAvoidingMappingContext());
+		product = productTemplateMapper.entityToDomain(entity, new CycleAvoidingMappingContext());
 		return product;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public Page<ProductBase> getInPage(Specification<ProductBaseEntity> specification, Pageable pageable) {
-		Page<ProductBaseEntity> entities = productBaseRepository.findAll(specification, pageable);
-		return entities.map(entity -> productBaseMapper.entityToDomain(entity, new CycleAvoidingMappingContext()));
+	public Page<ProductTemplate> getInPage(Specification<ProductTemplateEntity> specification, Pageable pageable) {
+		Page<ProductTemplateEntity> entities = productTemplateRepository.findAll(specification, pageable);
+		return entities.map(entity -> productTemplateMapper.entityToDomain(entity, new CycleAvoidingMappingContext()));
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public ProductBase getById(Long id) {
-		ProductBaseEntity entity = productBaseRepository.findById(id)
+	public ProductTemplate getById(Long id) {
+		ProductTemplateEntity entity = productTemplateRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + id));
-		return productBaseMapper.entityToDomain(entity, new CycleAvoidingMappingContext());
+		return productTemplateMapper.entityToDomain(entity, new CycleAvoidingMappingContext());
 	}
 
 	@Override
 	@Transactional
-	public ProductBase updateProductBaseConfig(ProductBase product) {
-		ProductBaseEntity entity = productBaseRepository.findById(product.getId())
+	public ProductTemplate updateProductTemplateConfig(ProductTemplate product) {
+		ProductTemplateEntity entity = productTemplateRepository.findById(product.getId())
 			.orElseThrow(EntityNotFoundException::new);
 
 		for (ProductVariantEntity variant : entity.getProvidedModels()) {
@@ -119,12 +119,12 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 				.collect(Collectors.toSet())
 		);
 
-		productBaseRepository.save(entity);
+		productTemplateRepository.save(entity);
 
 		for (ProductVariant variant : product.getProductVariants()) {
 			variantService.updateProviderConfig(variant.getId(), variant.getProviderConfigs());
 		}
 
-		return productBaseMapper.entityToDomain(entity, new CycleAvoidingMappingContext());
+		return productTemplateMapper.entityToDomain(entity, new CycleAvoidingMappingContext());
 	}
 }

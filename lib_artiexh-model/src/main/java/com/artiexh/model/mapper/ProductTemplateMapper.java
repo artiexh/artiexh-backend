@@ -1,11 +1,11 @@
 package com.artiexh.model.mapper;
 
-import com.artiexh.data.jpa.entity.ProductBaseEntity;
+import com.artiexh.data.jpa.entity.ProductTemplateEntity;
 import com.artiexh.model.domain.*;
-import com.artiexh.model.rest.productbase.ProductBaseDetail;
-import com.artiexh.model.rest.productbase.ProductBaseInfo;
-import com.artiexh.model.rest.productbase.request.UpdateProductBaseDetail;
-import com.artiexh.model.rest.productbase.request.UpdateProviderConfig;
+import com.artiexh.model.rest.producttemplate.ProductTemplateDetail;
+import com.artiexh.model.rest.producttemplate.ProductTemplateInfo;
+import com.artiexh.model.rest.producttemplate.request.UpdateProductTemplateDetail;
+import com.artiexh.model.rest.producttemplate.request.UpdateProviderConfig;
 import com.artiexh.model.rest.productvariant.ProductVariantDetail;
 import org.mapstruct.*;
 
@@ -18,42 +18,42 @@ import java.util.stream.Collectors;
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
 	uses = {ProviderMapper.class, ProductCategoryMapper.class, ProductAttachMapper.class, MediaMapper.class, DateTimeMapper.class}
 )
-public interface ProductBaseMapper {
-	ProductBase entityToDomain(ProductBaseEntity entity, @Context CycleAvoidingMappingContext context);
+public interface ProductTemplateMapper {
+	ProductTemplate entityToDomain(ProductTemplateEntity entity, @Context CycleAvoidingMappingContext context);
 
 	@Named("entityToBasicDomain")
 	@Mapping(target = "providers", ignore = true)
 	@Mapping(target = "productVariants", ignore = true)
-	ProductBase entityToBasicDomain(ProductBaseEntity entity);
+	ProductTemplate entityToBasicDomain(ProductTemplateEntity entity);
 
 	@Mapping(target = "createdDate", ignore = true)
 	@Mapping(target = "modifiedDate", ignore = true)
-	ProductBaseEntity domainToEntity(ProductBase domain);
+	ProductTemplateEntity domainToEntity(ProductTemplate domain);
 
 	@Mapping(target = "providers", ignore = true)
 	@Mapping(target = "category", ignore = true)
 	@Mapping(target = "createdDate", ignore = true)
 	@Mapping(target = "modifiedDate", ignore = true)
-	ProductBaseEntity domainToEntity(ProductBase domain, @MappingTarget ProductBaseEntity entity);
+	ProductTemplateEntity domainToEntity(ProductTemplate domain, @MappingTarget ProductTemplateEntity entity);
 
 	@Mapping(target = "category", source = "categoryId")
 	@Mapping(target = "providers", source = "businessCodes")
 	@Mapping(target = "modelFile", source = "modelFileId", qualifiedByName = "idToDomain")
-	ProductBase detailToDomain(ProductBaseDetail detail);
+	ProductTemplate detailToDomain(ProductTemplateDetail detail);
 
 	@Mapping(target = "category", source = "categoryId")
 	@Mapping(target = "modelFile", source = "modelFileId", qualifiedByName = "idToDomain")
-	ProductBase detailToDomain(UpdateProductBaseDetail detail);
+	ProductTemplate detailToDomain(UpdateProductTemplateDetail detail);
 
-	@Mapping(target = "providers", source = "providers", qualifiedByName = "domainSetToDetailSetWithoutProductBases")
-	ProductBaseDetail domainToDetail(ProductBase domain);
+	@Mapping(target = "providers", source = "providers", qualifiedByName = "domainSetToDetailSetWithoutProductTemplates")
+	ProductTemplateDetail domainToDetail(ProductTemplate domain);
 
 	@Named("domainToInfo")
-	ProductBaseInfo domainToInfo(ProductBase domain);
+	ProductTemplateInfo domainToInfo(ProductTemplate domain);
 
 	@IterableMapping(qualifiedByName = "domainToInfo")
 	@Named("domainSetToInfoSet")
-	Set<ProductBaseInfo> domainSetToInfoSet(Set<ProductBase> domainSet);
+	Set<ProductTemplateInfo> domainSetToInfoSet(Set<ProductTemplate> domainSet);
 
 	default Integer toValue(Model3DCode code) {
 		return code.getValue();
@@ -63,13 +63,13 @@ public interface ProductBaseMapper {
 		return Model3DCode.fromValue(value);
 	}
 
-	default ProductBase idToDomain(Long productId) {
-		return ProductBase.builder().id(productId).build();
+	default ProductTemplate idToDomain(Long productId) {
+		return ProductTemplate.builder().id(productId).build();
 	}
 
-	default ProductBase detailToDomain(UpdateProviderConfig detail) {
-		ProductBase productBase = new ProductBase();
-		productBase.setProviders(
+	default ProductTemplate detailToDomain(UpdateProviderConfig detail) {
+		ProductTemplate productTemplate = new ProductTemplate();
+		productTemplate.setProviders(
 			detail.getProviders().stream()
 				.map(businessCode -> Provider.builder().businessCode(businessCode).build())
 				.collect(Collectors.toSet())
@@ -102,7 +102,7 @@ public interface ProductBaseMapper {
 			variants.add(variant);
 		}
 
-		productBase.setProductVariants(variants);
-		return productBase;
+		productTemplate.setProductVariants(variants);
+		return productTemplate;
 	}
 }

@@ -93,7 +93,7 @@ public class CampaignServiceImpl implements CampaignService {
 			if (!StringUtils.hasText(customProductEntity.getDescription())) {
 				customProductEntity.setDescription(inventoryItemEntity.getDescription());
 			}
-			customProductEntity.setCategory(inventoryItemEntity.getVariant().getProductBase().getCategory());
+			customProductEntity.setCategory(inventoryItemEntity.getVariant().getProductTemplate().getCategory());
 			var savedCustomProductEntity = productInCampaignRepository.save(customProductEntity);
 
 			var savedCustomProductTag = saveCustomProductTag(savedCustomProductEntity.getId(), productInCampaignRequest.getTags());

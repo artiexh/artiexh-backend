@@ -1,7 +1,7 @@
 package com.artiexh.model.rest.inventory;
 
 import com.artiexh.data.jpa.entity.CustomProductEntity;
-import com.artiexh.data.jpa.entity.ProductBaseEntity;
+import com.artiexh.data.jpa.entity.ProductTemplateEntity;
 import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -38,8 +38,8 @@ public class ItemFilter {
 			}
 
 			if (categoryIds != null && !categoryIds.isEmpty()) {
-				Join<CustomProductEntity, ProductBaseEntity> productBaseJoin = root.join("variant").join("productBase");
-				predicates.add(productBaseJoin.get("category").get("id").in(categoryIds));
+				Join<CustomProductEntity, ProductTemplateEntity> productTemplateJoin = root.join("variant").join("productTemplate");
+				predicates.add(productTemplateJoin.get("category").get("id").in(categoryIds));
 			}
 
 			if (providerIds != null && !providerIds.isEmpty()) {

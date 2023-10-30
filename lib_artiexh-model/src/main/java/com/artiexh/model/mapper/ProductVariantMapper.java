@@ -16,17 +16,17 @@ import java.util.Set;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {ProductBaseMapper.class, ProviderMapper.class}
+	uses = {ProductTemplateMapper.class, ProviderMapper.class}
 )
 public interface ProductVariantMapper {
 	ProductVariant entityToDomain(ProductVariantEntity entity, @Context CycleAvoidingMappingContext context);
 
 	@Named("entityToBasicDomain")
-	@Mapping(target = "productBase", qualifiedByName = "entityToBasicDomain")
+	@Mapping(target = "productTemplate", qualifiedByName = "entityToBasicDomain")
 	@Mapping(target = "providerConfigs", qualifiedByName = "entitySetToBasicDomainSet")
 	ProductVariant entityToBasicDomain(ProductVariantEntity entity);
 
-	@Mapping(target = "productBase", ignore = true)
+	@Mapping(target = "productTemplate", ignore = true)
 	@Named("detailToDomain")
 	ProductVariant detailToDomain(ProductVariantDetail detail);
 
@@ -35,7 +35,7 @@ public interface ProductVariantMapper {
 
 	ProductVariant updateRequestToDomain(UpdateProductVariantDetail detail);
 
-	@Mapping(target = "productBase", source = "productBase", qualifiedByName = "domainToInfo")
+	@Mapping(target = "productTemplate", source = "productTemplate", qualifiedByName = "domainToInfo")
 	@Named("domainToDetail")
 	ProductVariantDetail domainToDetail(ProductVariant domain);
 
@@ -46,8 +46,8 @@ public interface ProductVariantMapper {
 	@Mapping(target = "variantCombinations", ignore = true)
 	ProductVariantEntity domainToEntity(ProductVariant domain);
 
-	@Mapping(target = "productBase", ignore = true)
-	@Mapping(target = "productBaseId", ignore = true)
+	@Mapping(target = "productTemplate", ignore = true)
+	@Mapping(target = "productTemplateId", ignore = true)
 	@Mapping(target = "variantCombinations", ignore = true)
 	@Mapping(target = "providerConfigs", ignore = true)
 	ProductVariantEntity domainToEntity(ProductVariant domain, @MappingTarget ProductVariantEntity entity);

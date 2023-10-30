@@ -23,8 +23,8 @@ import java.util.Set;
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "product_base")
-public class ProductBaseEntity extends BaseAuditEntity {
+@Table(name = "product_template")
+public class ProductTemplateEntity extends BaseAuditEntity {
 	@Id
 	@Tsid
 	@Column(name = "id", nullable = false)
@@ -58,17 +58,17 @@ public class ProductBaseEntity extends BaseAuditEntity {
 	@Column(name = "has_variant", nullable = false)
 	private boolean hasVariant;
 
-	@OneToMany(mappedBy = "productBase", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "productTemplate", fetch = FetchType.LAZY)
 	private Set<ProductVariantEntity> providedModels;
 
 	@OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
-	@JoinColumn(name = "product_id")
+	@JoinColumn(name = "product_template_id")
 	private Set<ProductOptionEntity> productOptions;
 
 	@ManyToMany()
 	@JoinTable(
-		name = "product_base_provider_mapping",
-		joinColumns = {@JoinColumn(name = "product_base_id")},
+		name = "product_template_provider_mapping",
+		joinColumns = {@JoinColumn(name = "product_template_id")},
 		inverseJoinColumns = {@JoinColumn(name = "business_code")}
 	)
 	private Set<ProviderEntity> providers;

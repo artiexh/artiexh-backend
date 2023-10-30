@@ -5,7 +5,7 @@ import com.artiexh.data.jpa.entity.ProductInCampaignTagEntity;
 import com.artiexh.data.jpa.entity.ProductVariantCombinationEntity;
 import com.artiexh.model.domain.ProductInCampaign;
 import com.artiexh.model.rest.campaign.request.ProductInCampaignRequest;
-import com.artiexh.model.rest.campaign.response.InventoryItemResponse;
+import com.artiexh.model.rest.campaign.response.CustomProductResponse;
 import com.artiexh.model.rest.campaign.response.ProductInCampaignResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
@@ -53,7 +53,7 @@ public interface ProductInCampaignMapper {
 	@Named("entityToResponse")
 	@Mapping(target = "price.amount", source = "priceAmount")
 	@Mapping(target = "price.unit", source = "priceUnit")
-	@Mapping(target = "customProduct.productBase", source = "customProduct.variant.productBase")
+	@Mapping(target = "customProduct.productTemplate", source = "customProduct.variant.productTemplate")
 	@Mapping(target = "customProduct.variant.variantCombination", source = "customProduct.variant.variantCombinations")
 	@Mapping(target = "providerConfig", ignore = true)
 	ProductInCampaignResponse entityToResponse(ProductInCampaignEntity product);
@@ -61,9 +61,9 @@ public interface ProductInCampaignMapper {
 	@IterableMapping(qualifiedByName = "entityToResponse")
 	Set<ProductInCampaignResponse> entityToResponse(Set<ProductInCampaignEntity> product);
 
-	default Set<InventoryItemResponse.VariantCombinationResponse> variantCombinationEntitiesToKeyValue(Set<ProductVariantCombinationEntity> variantCombinations) {
+	default Set<CustomProductResponse.VariantCombinationResponse> variantCombinationEntitiesToKeyValue(Set<ProductVariantCombinationEntity> variantCombinations) {
 		return variantCombinations.stream()
-			.map(entity -> new InventoryItemResponse.VariantCombinationResponse(
+			.map(entity -> new CustomProductResponse.VariantCombinationResponse(
 				entity.getOptionValue().getOption().getName(),
 				entity.getOptionValue().getName(),
 				entity.getOptionValue().getValue()

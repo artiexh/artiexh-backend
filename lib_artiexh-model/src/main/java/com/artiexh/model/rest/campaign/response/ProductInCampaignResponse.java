@@ -22,7 +22,7 @@ public class ProductInCampaignResponse {
 	private String description;
 	private Set<ProductAttach> attaches;
 	private Set<String> tags;
-	private InventoryItemResponse customProduct;
+	private CustomProductResponse customProduct;
 	private Instant createdDate;
 	private Instant modifiedDate;
 	private ProviderConfigResponse providerConfig;

@@ -63,7 +63,7 @@ public class CustomProductServiceImpl implements CustomProductService {
 		CustomProductEntity entity = customProductMapper.domainToEntity(item);
 
 		if (entity.getCombinationCode() != null) {
-			var combinationConfig = variant.getProductBase().getImageCombinations().stream()
+			var combinationConfig = variant.getProductTemplate().getImageCombinations().stream()
 				.filter(combination -> combination.getCode().equals(entity.getCombinationCode()))
 				.findAny()
 				.orElseThrow(() -> new IllegalArgumentException("combinationCode is not valid"));
@@ -94,7 +94,7 @@ public class CustomProductServiceImpl implements CustomProductService {
 		}
 
 		if (item.getCombinationCode() != null) {
-			var combinationConfig = entity.getVariant().getProductBase().getImageCombinations().stream()
+			var combinationConfig = entity.getVariant().getProductTemplate().getImageCombinations().stream()
 				.filter(combination -> combination.getCode().equals(item.getCombinationCode()))
 				.findAny()
 				.orElseThrow(() -> new IllegalArgumentException("combinationCode is not valid"));
@@ -159,14 +159,14 @@ public class CustomProductServiceImpl implements CustomProductService {
 	@Override
 	@Transactional(readOnly = true)
 	public CustomProduct getById(Long userId, Long id) {
-		CustomProductEntity item = customProductRepository.findByIdAndArtistId(id, userId)
+		CustomProductEntity item = customProductRepository.findInventoryItemEntityByIdAndArtistId(id, userId)
 			.orElseThrow(EntityNotFoundException::new);
 		return customProductMapper.entityToDomain(item);
 	}
 
 	@Override
 	public void delete(Long userId, Long id) {
-		CustomProductEntity item = customProductRepository.findByIdAndArtistId(id, userId)
+		CustomProductEntity item = customProductRepository.findInventoryItemEntityByIdAndArtistId(id, userId)
 			.orElseThrow(EntityNotFoundException::new);
 		customProductRepository.deleteById(item.getId());
 	}

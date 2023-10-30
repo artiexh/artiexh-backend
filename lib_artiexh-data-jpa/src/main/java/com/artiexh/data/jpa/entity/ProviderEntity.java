@@ -46,7 +46,7 @@ public class ProviderEntity {
 	private String imageUrl;
 
 	@ManyToMany(mappedBy = "providers")
-	private Set<ProductBaseEntity> productBases;
+	private Set<ProductTemplateEntity> productTemplates;
 
 	@Builder.Default
 	@ManyToMany
