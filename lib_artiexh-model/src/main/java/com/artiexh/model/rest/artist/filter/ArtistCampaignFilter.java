@@ -36,7 +36,7 @@ public class ArtistCampaignFilter {
 				predicates.add(builder.equal(root.get("type"), campaignType.getByteValue()));
 			} else {
 				predicates.add(root.get("type").in(
-					CampaignType.MARKETPLACE_VIEW_TYPE.stream()
+					CampaignType.ARTIST_VIEW_TYPE.stream()
 						.map(CampaignType::getByteValue)
 						.collect(Collectors.toSet())
 				));
