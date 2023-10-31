@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +23,8 @@ public class ArtistCampaignFilter {
 	@JsonIgnore
 	private long id;
 	private CampaignType campaignType;
+	private Instant from = Instant.now();
+	private Instant to;
 
 	public Specification<CampaignEntity> getSpecification() {
 		return (root, query, builder) -> {
@@ -40,6 +43,20 @@ public class ArtistCampaignFilter {
 						.map(CampaignType::getByteValue)
 						.collect(Collectors.toSet())
 				));
+			}
+
+			if (to != null) {
+				List<Predicate> toPredicate = new ArrayList<>();
+				toPredicate.add(builder.lessThanOrEqualTo(root.get("from"), to));
+				toPredicate.add(builder.lessThanOrEqualTo(root.get("to"), to));
+				predicates.add(builder.or(toPredicate.toArray(new Predicate[0])));
+			}
+
+			if (from != null) {
+				List<Predicate> fromPredicate = new ArrayList<>();
+				fromPredicate.add(builder.greaterThanOrEqualTo(root.get("from"), from));
+				fromPredicate.add(builder.greaterThanOrEqualTo(root.get("to"), from));
+				predicates.add(builder.or(fromPredicate.toArray(new Predicate[0])));
 			}
 			return builder.and(predicates.toArray(new Predicate[0]));
 		};

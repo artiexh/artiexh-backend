@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.Set;
 
 @Data
@@ -28,6 +29,10 @@ public class Campaign {
 	private String content;
 
 	private CampaignType campaignType;
+
+	private Instant from;
+
+	private Instant to;
 
 	private Set<CampaignHistory> campaignHistories;
 
