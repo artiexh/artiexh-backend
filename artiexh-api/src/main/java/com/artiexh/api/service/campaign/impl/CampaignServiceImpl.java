@@ -331,6 +331,11 @@ public class CampaignServiceImpl implements CampaignService {
 	public PublishedCampaignDetailResponse getCampaignDetail(Long campaignId) {
 		CampaignEntity campaignEntity = campaignRepository.findById(campaignId)
 			.orElseThrow(EntityNotFoundException::new);
+
+		if (!campaignEntity.getIsPublished()) {
+			throw new IllegalArgumentException(ErrorCode.CAMPAIGN_UNPUBLISHED.getMessage());
+		}
+
 		PublishedCampaignDetailResponse result = campaignMapper.entityToPublishedCampaignDetailResponse(campaignEntity);
 
 		if (campaignEntity.getProviderId() != null) {

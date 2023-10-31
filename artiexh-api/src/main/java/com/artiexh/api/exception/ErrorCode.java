@@ -50,7 +50,10 @@ public enum ErrorCode {
 	DOWNLOAD_NOT_ALLOWED(HttpStatus.FORBIDDEN, "You are not allowed to download this file"),
 	OWNER_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "Shared User can not be owner"),
 	//AUTH
-	ACCOUNT_INFO_NOT_FOUND(HttpStatus.OK, "Can not get account information from request");
+	ACCOUNT_INFO_NOT_FOUND(HttpStatus.OK, "Can not get account information from request"),
+
+	//CAMPAIGN
+	CAMPAIGN_UNPUBLISHED(HttpStatus.BAD_REQUEST, "You are not allowed to view unpublished campaign");
 	private final HttpStatus statusCode;
 	private final String message;
 
