@@ -7,6 +7,7 @@ import com.artiexh.model.domain.Product;
 import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
+import com.artiexh.model.rest.artist.filter.ArtistCampaignFilter;
 import com.artiexh.model.rest.campaign.request.CampaignRequestFilter;
 import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
@@ -64,4 +65,18 @@ public class MarketplaceController {
 		}
 	}
 
+	@GetMapping("/artist/{id}/campaign")
+	public PageResponse<CampaignResponse> getArtistCampaign(
+		@PathVariable long id,
+		@ParameterObject @Valid PaginationAndSortingRequest pagination,
+		@ParameterObject @Valid ArtistCampaignFilter filter
+	) {
+		try {
+			filter.setId(id);
+			Page<CampaignResponse> campaignPage = campaignService.getAllCampaigns(filter.getSpecification(), pagination.getPageable());
+			return new PageResponse<>(campaignPage);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+		}
+	}
 }

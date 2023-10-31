@@ -111,19 +111,4 @@ public class ArtistController {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
 		}
 	}
-
-	@GetMapping(Endpoint.Artist.ARTIST_CAMPAIGN)
-	public PageResponse<CampaignResponse> getArtistCampaign(
-		@PathVariable long id,
-		@ParameterObject @Valid PaginationAndSortingRequest pagination,
-		@ParameterObject @Valid ArtistCampaignFilter filter
-		) {
-		try {
-			filter.setId(id);
-			Page<CampaignResponse> campaignPage = campaignService.getAllCampaigns(filter.getSpecification(), pagination.getPageable());
-			return new PageResponse<>(campaignPage);
-		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
-		}
-	}
 }
