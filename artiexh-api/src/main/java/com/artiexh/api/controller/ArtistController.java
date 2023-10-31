@@ -3,6 +3,7 @@ package com.artiexh.api.controller;
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.ArtistService;
+import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.model.domain.Post;
 import com.artiexh.model.mapper.PostMapper;
 import com.artiexh.model.rest.PageResponse;
@@ -11,10 +12,12 @@ import com.artiexh.model.rest.artist.filter.ProductPageFilter;
 import com.artiexh.model.rest.artist.response.ArtistProfileResponse;
 import com.artiexh.model.rest.artist.response.ShopOrderResponse;
 import com.artiexh.model.rest.artist.response.ShopOrderResponsePage;
+import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import com.artiexh.model.rest.order.request.OrderPageFilter;
 import com.artiexh.model.rest.order.request.UpdateShippingOrderRequest;
 import com.artiexh.model.rest.post.PostDetail;
 import com.artiexh.model.rest.product.response.ProductResponse;
+import com.artiexh.model.rest.artist.filter.ArtistCampaignFilter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +35,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class ArtistController {
 
 	private final ArtistService artistService;
+	private final CampaignService campaignService;
 	private final PostMapper postMapper;
 
 	@GetMapping(Endpoint.Artist.ARTIST_PROFILE)
@@ -103,6 +107,21 @@ public class ArtistController {
 		try {
 			Page<Post> posts = artistService.getArtistPost(id, pagination.getPageable());
 			return new PageResponse<>(posts.map(postMapper::domainToDetail));
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+		}
+	}
+
+	@GetMapping(Endpoint.Artist.ARTIST_CAMPAIGN)
+	public PageResponse<CampaignResponse> getArtistCampaign(
+		@PathVariable long id,
+		@ParameterObject @Valid PaginationAndSortingRequest pagination,
+		@ParameterObject @Valid ArtistCampaignFilter filter
+		) {
+		try {
+			filter.setId(id);
+			Page<CampaignResponse> campaignPage = campaignService.getAllCampaigns(filter.getSpecification(), pagination.getPageable());
+			return new PageResponse<>(campaignPage);
 		} catch (EntityNotFoundException ex) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
 		}

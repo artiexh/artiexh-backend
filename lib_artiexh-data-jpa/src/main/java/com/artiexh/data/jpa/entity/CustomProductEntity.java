@@ -57,4 +57,11 @@ public class CustomProductEntity extends BaseAuditEntity {
 	@OneToOne()
 	@JoinColumn(name = "thumbnail_id")
 	private MediaEntity thumbnail;
+
+	@ManyToOne()
+	@JoinColumn(name = "category_id")
+	private ProductCategoryEntity category;
+
+	@Column(name = "max_item_per_order")
+	private Integer maxItemPerOrder;
 }

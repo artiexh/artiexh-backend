@@ -33,4 +33,5 @@ public class Product {
 	private Set<Product> bundles;
 	private Set<Product> bundleItems;
 	private ProductInCampaign productInCampaign;
+	private Campaign campaign;
 }

@@ -104,4 +104,16 @@ public class ProductEntity {
 
 	@Column(name = "product_in_campaign_id")
 	private Long productInCampaignId;
+
+	@OneToOne()
+	@JoinColumn(
+		name = "campaign_id",
+		referencedColumnName= "id",
+		updatable = false,
+		insertable = false
+	)
+	private CampaignEntity campaign;
+
+	@Column(name = "campaign_id")
+	private Long campaignId;
 }

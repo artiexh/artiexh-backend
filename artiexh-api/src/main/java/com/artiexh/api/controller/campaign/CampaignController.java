@@ -174,7 +174,7 @@ public class CampaignController {
 		}
 	}
 
-	@PostMapping("/{id}/product")
+	@PostMapping("/{id}/published-product")
 	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
 	public Set<ProductResponse> publishProduct(@PathVariable("id") Long campaignId,
 											   @RequestBody @Valid Set<PublishProductRequest> request) {
@@ -182,18 +182,6 @@ public class CampaignController {
 			return campaignService.publishProduct(campaignId, request);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
-		}
-	}
-
-	@GetMapping("/{id}/product")
-	public PageResponse<ProductInCampaignResponse> getShopProductCampaign(
-		@ParameterObject @Valid PaginationAndSortingRequest pagination,
-		@PathVariable("id") Long campaignId) {
-		try {
-			Page<ProductInCampaignResponse> productCampaign = campaignService.getAllProductCampaign(campaignId, pagination.getPageable());
-			return new PageResponse<>(productCampaign);
-		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
 		}
 	}
 }

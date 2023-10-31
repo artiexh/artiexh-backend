@@ -94,15 +94,19 @@ public class JpaProductServiceImpl implements JpaProductService {
 			ArtistEntity adminShop = artistRepository.findById(rootAdminId)
 				.orElseThrow(() -> new IllegalArgumentException("Admin shop is not configured"));
 
-			ProductInCampaignEntity customProduct = productInCampaignRepository.findById(product.getProductInCampaign().getId())
+			ProductInCampaignEntity campaignProduct = productInCampaignRepository.findById(product.getProductInCampaign().getId())
 				.orElseThrow(() -> new IllegalArgumentException("Custom product is not found"));
 
 			productEntity.setShop(adminShop);
-			productEntity.setProductInCampaignId(customProduct.getId());
+			productEntity.setProductInCampaignId(campaignProduct.getId());
+			productEntity.setCampaignId(campaignProduct.getCampaign().getId());
 		}
 
 		ProductEntity savedProductEntity = productRepository.save(productEntity);
-		return productMapper.entityToDomain(savedProductEntity);
+
+		product = productMapper.entityToDomain(savedProductEntity);
+		product.setCampaign(Campaign.builder().id(productEntity.getCampaignId()).build());
+		return product;
 	}
 
 	@Override
