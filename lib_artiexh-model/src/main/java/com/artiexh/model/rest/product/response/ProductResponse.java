@@ -1,6 +1,7 @@
 package com.artiexh.model.rest.product.response;
 
 import com.artiexh.model.domain.*;
+import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import com.artiexh.model.rest.campaign.response.CustomProductInfo;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -39,6 +40,7 @@ public class ProductResponse {
 	private Set<ProductResponse> bundles;
 	private Set<ProductResponse> bundleItems;
 	private CustomProductInfo customProduct;
+	private CampaignResponse campaign;
 
 	@Data
 	@NoArgsConstructor

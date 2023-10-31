@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {ProductMapper.class, AccountMapper.class, ProductAttachMapper.class, ShopMapper.class, ArtistMapper.class}
+	uses = {ProductMapper.class, AccountMapper.class, ProductAttachMapper.class, ShopMapper.class, ArtistMapper.class, CampaignMapper.class}
 )
 public interface CartMapper {
 

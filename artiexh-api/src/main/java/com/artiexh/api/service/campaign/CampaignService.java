@@ -7,6 +7,7 @@ import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
 import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import com.artiexh.model.rest.campaign.response.ProductInCampaignResponse;
+import com.artiexh.model.rest.campaign.response.PublishedCampaignDetailResponse;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,8 @@ public interface CampaignService {
 	Page<CampaignResponse> getAllCampaigns(Specification<CampaignEntity> specification, Pageable pageable);
 
 	CampaignDetailResponse getCampaignDetail(Long userId, Long campaignId);
+
+	PublishedCampaignDetailResponse getCampaignDetail(Long campaignId);
 
 	CampaignResponse artistUpdateStatus(Long artistId, UpdateCampaignStatusRequest request);
 
