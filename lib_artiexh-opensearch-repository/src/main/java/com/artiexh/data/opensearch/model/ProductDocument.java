@@ -31,7 +31,8 @@ public class ProductDocument {
 	private Float averageRate;
 	@Field(name = "tags", type = FieldType.Keyword)
 	private String[] tags;
-
+	@Field(name = "campaignId", type = FieldType.Long)
+	private Long campaignId;
 	@Data
 	public static class Money {
 		@Field(name = "amount", type = FieldType.Float)

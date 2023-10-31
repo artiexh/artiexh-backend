@@ -67,6 +67,7 @@ public final class Endpoint {
 		public static final String ARTIST_PRODUCT = "/product";
 		public static final String ARTIST_ORDER = "/order-shop";
 		public static final String ARTIST_POST = "/{id}/post";
+		public static final String ARTIST_CAMPAIGN = "/{id}/campaign";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)

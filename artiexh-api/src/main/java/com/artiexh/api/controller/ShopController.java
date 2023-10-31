@@ -4,8 +4,6 @@ import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.ShopService;
 import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.product.ProductService;
-import com.artiexh.model.domain.Campaign;
-import com.artiexh.model.domain.CampaignStatus;
 import com.artiexh.model.domain.Product;
 import com.artiexh.model.domain.Shop;
 import com.artiexh.model.mapper.CampaignMapper;
@@ -16,7 +14,7 @@ import com.artiexh.model.rest.address.AddressResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import com.artiexh.model.rest.product.request.GetAllProductFilter;
 import com.artiexh.model.rest.product.response.ProductResponse;
-import com.artiexh.model.rest.shop.ShopCampaignFilter;
+import com.artiexh.model.rest.artist.filter.ArtistCampaignFilter;
 import com.artiexh.model.rest.shop.ShopPageFilter;
 import com.artiexh.model.rest.shop.ShopProductFilter;
 import jakarta.persistence.EntityNotFoundException;
@@ -109,19 +107,5 @@ public class ShopController {
 			paginationAndSortingRequest.getPageable()
 		);
 		return new PageResponse<>(productMapper.productPageToProductResponsePage(productPage));
-	}
-
-	@GetMapping("/{username}/campaign")
-	public PageResponse<CampaignResponse> getShopCampaign(
-		@ParameterObject @Valid PaginationAndSortingRequest pagination,
-		@ParameterObject @Valid ShopCampaignFilter filter,
-		@PathVariable String username) {
-		try {
-			filter.setUsername(username);
-			Page<CampaignResponse> campaignPage = campaignService.getAllCampaigns(filter.getSpecification(), pagination.getPageable());
-			return new PageResponse<>(campaignPage);
-		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
-		}
 	}
 }

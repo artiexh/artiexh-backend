@@ -23,6 +23,8 @@ public class CustomProduct {
 	private String description;
 	private Set<String> tags;
 	private Media thumbnail;
+	private ProductCategory category;
+	private Integer maxItemPerOrder;
 	private Instant createdDate;
 	private Instant modifiedDate;
 }

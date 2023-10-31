@@ -2,6 +2,7 @@ package com.artiexh.model.rest.campaign.request;
 
 import com.artiexh.data.jpa.entity.CampaignEntity;
 import com.artiexh.model.domain.CampaignStatus;
+import com.artiexh.model.domain.CampaignType;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,10 +21,13 @@ public class CampaignRequestFilter {
 	private Set<CampaignStatus> status;
 	private String ownerId;
 	private String providerId;
+	private CampaignType campaignType;
 
 	public Specification<CampaignEntity> getSpecification() {
 		return ((root, query, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
+
+			predicates.add(builder.equal(root.get("isPublished"), true));
 
 			if (status != null && !status.isEmpty()) {
 				predicates.add(root.get("status").in(
@@ -39,6 +43,15 @@ public class CampaignRequestFilter {
 				predicates.add(builder.equal(root.get("providerId"), providerId));
 			}
 
+			if(campaignType != null && CampaignType.MARKETPLACE_VIEW_TYPE.contains(campaignType)) {
+				predicates.add(builder.equal(root.get("type"), campaignType.getByteValue()));
+			} else {
+				predicates.add(root.get("type").in(
+					CampaignType.MARKETPLACE_VIEW_TYPE.stream()
+						.map(CampaignType::getByteValue)
+						.collect(Collectors.toSet())
+				));
+			}
 			return builder.and(predicates.toArray(new Predicate[0]));
 		});
 	}

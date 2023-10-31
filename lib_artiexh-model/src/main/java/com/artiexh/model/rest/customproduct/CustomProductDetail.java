@@ -1,6 +1,8 @@
 package com.artiexh.model.rest.customproduct;
 
 import com.artiexh.model.domain.Media;
+import com.artiexh.model.domain.ProductCategory;
+import com.artiexh.model.rest.product.response.ProductResponse;
 import com.artiexh.model.rest.productvariant.ProductVariantDetail;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -61,6 +63,15 @@ public class CustomProductDetail {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@Schema(allOf = Media.class)
 	private Media thumbnail;
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@Schema(allOf = ProductCategory.class)
+	private ProductCategory category;
+
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private Long categoryId;
+
+	private Integer maxItemPerOrder;
 
 	@Data
 	@NoArgsConstructor

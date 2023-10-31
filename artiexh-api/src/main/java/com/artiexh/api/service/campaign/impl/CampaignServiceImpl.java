@@ -1,5 +1,6 @@
 package com.artiexh.api.service.campaign.impl;
 
+import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.product.ProductService;
 import com.artiexh.data.jpa.entity.*;
@@ -13,15 +14,13 @@ import com.artiexh.model.rest.campaign.request.CampaignRequest;
 import com.artiexh.model.rest.campaign.request.ProductInCampaignRequest;
 import com.artiexh.model.rest.campaign.request.PublishProductRequest;
 import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
-import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
-import com.artiexh.model.rest.campaign.response.CampaignResponse;
-import com.artiexh.model.rest.campaign.response.ProductInCampaignResponse;
-import com.artiexh.model.rest.campaign.response.ProviderConfigResponse;
+import com.artiexh.model.rest.campaign.response.*;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -50,6 +49,7 @@ public class CampaignServiceImpl implements CampaignService {
 	private final ProductMapper productMapper;
 	private final ProviderMapper providerMapper;
 	private final ArtistRepository artistRepository;
+	private final ProductRepository productRepository;
 
 	@Override
 	@Transactional
@@ -328,6 +328,26 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
+	public PublishedCampaignDetailResponse getCampaignDetail(Long campaignId) {
+		CampaignEntity campaignEntity = campaignRepository.findById(campaignId)
+			.orElseThrow(EntityNotFoundException::new);
+
+		if (!campaignEntity.getIsPublished()) {
+			throw new IllegalArgumentException(ErrorCode.CAMPAIGN_UNPUBLISHED.getMessage());
+		}
+
+		PublishedCampaignDetailResponse result = campaignMapper.entityToPublishedCampaignDetailResponse(campaignEntity);
+
+		if (campaignEntity.getProviderId() != null) {
+			ProviderEntity provider = providerRepository.findById(campaignEntity.getProviderId()).orElse(ProviderEntity.builder().build());
+			result.setProvider(providerMapper.entityToInfo(provider));
+		} else {
+			throw new IllegalArgumentException(ErrorCode.PROVIDER_NOT_FOUND.getMessage());
+		}
+		return result;
+	}
+
+	@Override
 	@Transactional
 	public CampaignResponse artistUpdateStatus(Long artistId, UpdateCampaignStatusRequest request) {
 		var campaignEntity = campaignRepository.findById(request.getId())
@@ -569,6 +589,10 @@ public class CampaignServiceImpl implements CampaignService {
 			throw new IllegalArgumentException("You can only publish product after campaign's status is APPROVED");
 		}
 
+		if (campaign.getIsPublished()) {
+			throw new IllegalArgumentException("Product in this campaign is published");
+		}
+
 		Set<Long> productCampaignIds = campaign.getProductInCampaigns().stream().map(ProductInCampaignEntity::getId).collect(Collectors.toSet());
 		Set<Long> productIds = products.stream().map(PublishProductRequest::getProductInCampaignId).collect(Collectors.toSet());
 
@@ -599,6 +623,7 @@ public class CampaignServiceImpl implements CampaignService {
 			throw new IllegalArgumentException("You can only update campaign from APPROVED to PUBLISHED");
 		}
 
+		campaignEntity.setIsPublished(true);
 		campaignEntity.getCampaignHistories().add(
 			CampaignHistoryEntity.builder()
 				.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())
