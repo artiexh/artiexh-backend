@@ -14,7 +14,6 @@ public interface CustomProductMapper {
 	@Mapping(target = "artist", source = "artistId", qualifiedByName = "idToDomain")
 	@Mapping(target = "variant", source = "variantId", qualifiedByName = "idToDomain")
 	@Mapping(target = "thumbnail", source = "thumbnailId", qualifiedByName = "idToDomain")
-	@Mapping(target = "category.id", source = "categoryId")
 	CustomProduct detailToDomain(CustomProductDetail detail);
 
 	@Mapping(target = "variant", source = "variant", qualifiedByName = "domainToDetail")

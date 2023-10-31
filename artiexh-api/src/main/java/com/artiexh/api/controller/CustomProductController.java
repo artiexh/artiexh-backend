@@ -32,13 +32,11 @@ public class CustomProductController {
 	public CustomProductDetail saveItem(
 		Authentication authentication,
 		@Valid @RequestBody CustomProductDetail detail) {
+		long userId = (long) authentication.getPrincipal();
+		detail.setArtistId(userId);
+
 		try {
-			long userId = (long) authentication.getPrincipal();
-			detail.setArtistId(userId);
-
-			CustomProduct item = customProductMapper.detailToDomain(detail);
-			item = customProductService.save(item);
-
+			CustomProduct item = customProductService.save(customProductMapper.detailToDomain(detail));
 			return customProductMapper.domainToDetail(item);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,

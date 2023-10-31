@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CustomProductServiceImpl implements CustomProductService {
 	private final CustomProductRepository customProductRepository;
@@ -55,37 +56,23 @@ public class CustomProductServiceImpl implements CustomProductService {
 		return customProductMapper.entityToDomain(entity);
 	}
 
-	@Transactional
-	public CustomProductEntity createItem(CustomProduct item) {
+	private CustomProductEntity createItem(CustomProduct item) {
 		ProductVariantEntity variant = variantRepository.findById(item.getVariant().getId())
-			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + item.getVariant().getId()));
+			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.VARIANT_NOT_FOUND.getMessage() + item.getVariant().getId()));
+
+		validateImageSet(item.getCombinationCode(), item.getImageSet(), variant);
 
 		CustomProductEntity entity = customProductMapper.domainToEntity(item);
-
-		if (entity.getCombinationCode() != null) {
-			var combinationConfig = variant.getProductTemplate().getImageCombinations().stream()
-				.filter(combination -> combination.getCode().equals(entity.getCombinationCode()))
-				.findAny()
-				.orElseThrow(() -> new IllegalArgumentException("combinationCode is not valid"));
-
-			if (isNotValidateImagePosition(combinationConfig, item.getImageSet())) {
-				throw new IllegalArgumentException("Image position is not valid");
-			}
-		} else if (entity.getImageSet() != null && !entity.getImageSet().isEmpty()) {
-			throw new IllegalArgumentException("Cannot set imageSet without combinationCode");
-		}
-
 		entity.setVariant(variant);
+		entity.setCategory(variant.getProductTemplate().getCategory());
 		var savedEntity = customProductRepository.save(entity);
-
 		var savedTagEntities = saveCustomProductTag(savedEntity.getId(), item.getTags());
 		savedEntity.setTags(new HashSet<>(savedTagEntities));
 
 		return savedEntity;
 	}
 
-	@Transactional
-	public CustomProductEntity updateItem(CustomProduct item) {
+	private CustomProductEntity updateItem(CustomProduct item) {
 		CustomProductEntity entity = customProductRepository.findById(item.getId())
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + item.getId()));
 
@@ -93,18 +80,7 @@ public class CustomProductServiceImpl implements CustomProductService {
 			throw new IllegalArgumentException("Cannot change variant");
 		}
 
-		if (item.getCombinationCode() != null) {
-			var combinationConfig = entity.getVariant().getProductTemplate().getImageCombinations().stream()
-				.filter(combination -> combination.getCode().equals(item.getCombinationCode()))
-				.findAny()
-				.orElseThrow(() -> new IllegalArgumentException("combinationCode is not valid"));
-
-			if (isNotValidateImagePosition(combinationConfig, item.getImageSet())) {
-				throw new IllegalArgumentException("Image position is not valid");
-			}
-		} else if (item.getImageSet() != null && !item.getImageSet().isEmpty()) {
-			throw new IllegalArgumentException("Cannot set imageSet without combinationCode");
-		}
+		validateImageSet(item.getCombinationCode(), item.getImageSet(), entity.getVariant());
 
 		entity.setName(item.getName());
 		entity.setCombinationCode(item.getCombinationCode());
@@ -122,9 +98,10 @@ public class CustomProductServiceImpl implements CustomProductService {
 		}
 
 		entity.setDescription(item.getDescription());
+		entity.setMaxItemPerOrder(item.getMaxItemPerOrder());
 
 		entity.getTags().clear();
-		var savedEntity = customProductRepository.saveAndFlush(entity);
+		var savedEntity = customProductRepository.save(entity);
 		var savedTagEntities = saveCustomProductTag(savedEntity.getId(), item.getTags());
 		savedEntity.getTags().addAll(savedTagEntities);
 
@@ -139,7 +116,22 @@ public class CustomProductServiceImpl implements CustomProductService {
 		);
 	}
 
-	private boolean isNotValidateImagePosition(ImageCombination combinationConfig, Set<ImageSet> imageSet) {
+	private void validateImageSet(String combinationCode, Set<ImageSet> imageSet, ProductVariantEntity variantEntity) {
+		if (combinationCode != null) {
+			var combinationConfig = variantEntity.getProductTemplate().getImageCombinations().stream()
+				.filter(combination -> combination.getCode().equals(combinationCode))
+				.findAny()
+				.orElseThrow(() -> new IllegalArgumentException("combinationCode is not valid"));
+
+			if (isNotValidImagePosition(combinationConfig, imageSet)) {
+				throw new IllegalArgumentException("Image position is not valid");
+			}
+		} else if (imageSet != null && !imageSet.isEmpty()) {
+			throw new IllegalArgumentException("Cannot set imageSet without combinationCode");
+		}
+	}
+
+	private boolean isNotValidImagePosition(ImageCombination combinationConfig, Set<ImageSet> imageSet) {
 		if (imageSet == null) {
 			return false;
 		}
