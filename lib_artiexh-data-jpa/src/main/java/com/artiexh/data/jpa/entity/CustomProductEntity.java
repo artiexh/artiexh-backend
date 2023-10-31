@@ -55,8 +55,8 @@ public class CustomProductEntity extends BaseAuditEntity {
 	private Set<CustomProductTagEntity> tags = new LinkedHashSet<>();
 
 	@OneToOne()
-	@JoinColumn(name = "thumbnail_id")
-	private MediaEntity thumbnail;
+	@JoinColumn(name = "model_thumbnail_id")
+	private MediaEntity modelThumbnail;
 
 	@ManyToOne()
 	@JoinColumn(name = "category_id")

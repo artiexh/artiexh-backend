@@ -7,8 +7,7 @@ import com.artiexh.model.domain.CustomProduct;
 import com.artiexh.model.mapper.CustomProductMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
-import com.artiexh.model.rest.customproduct.CustomProductDetail;
-import com.artiexh.model.rest.customproduct.ItemFilter;
+import com.artiexh.model.rest.customproduct.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,17 +26,35 @@ public class CustomProductController {
 	private final CustomProductService customProductService;
 	private final CustomProductMapper customProductMapper;
 
-	@PostMapping()
+	@PostMapping("/general")
 	@PreAuthorize("hasAuthority('ARTIST')")
-	public CustomProductDetail saveItem(
-		Authentication authentication,
-		@Valid @RequestBody CustomProductDetail detail) {
+	public CustomProductGeneralResponse saveGeneralItem(Authentication authentication,
+														@Valid @RequestBody CustomProductGeneralRequest detail) {
 		long userId = (long) authentication.getPrincipal();
 		detail.setArtistId(userId);
 
 		try {
-			CustomProduct item = customProductService.save(customProductMapper.detailToDomain(detail));
-			return customProductMapper.domainToDetail(item);
+			return customProductService.saveGeneral(detail);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+				exception.getMessage(),
+				exception);
+		} catch (IllegalArgumentException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+				exception.getMessage(),
+				exception);
+		}
+	}
+
+	@PostMapping("/design")
+	@PreAuthorize("hasAuthority('ARTIST')")
+	public CustomProductDesignResponse saveDesignItem(Authentication authentication,
+													  @Valid @RequestBody CustomProductDesignRequest detail) {
+		long userId = (long) authentication.getPrincipal();
+		detail.setArtistId(userId);
+
+		try {
+			return customProductService.saveDesign(detail);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
 				exception.getMessage(),
@@ -51,7 +68,7 @@ public class CustomProductController {
 
 	@GetMapping()
 	@PreAuthorize("hasAuthority('ARTIST')")
-	public PageResponse<CustomProductDetail> getAll(
+	public PageResponse<CustomProductGeneralRequest> getAll(
 		Authentication authentication,
 		@ParameterObject ItemFilter filter,
 		@Valid @ParameterObject PaginationAndSortingRequest paginationAndSortingRequest) {
@@ -72,16 +89,27 @@ public class CustomProductController {
 		}
 	}
 
-	@GetMapping(Endpoint.CustomProduct.DETAIL)
+	@GetMapping(Endpoint.CustomProduct.DETAIL + "/general")
 	@PreAuthorize("hasAuthority('ARTIST')")
-	public CustomProductDetail getById(
+	public CustomProductGeneralResponse getGeneralById(Authentication authentication, @PathVariable("id") Long id) {
+		long userId = (long) authentication.getPrincipal();
+		try {
+			return customProductService.getGeneralById(userId, id);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+				ErrorCode.PRODUCT_NOT_FOUND.getMessage(),
+				exception);
+		}
+	}
+
+	@GetMapping(Endpoint.CustomProduct.DETAIL + "/design")
+	@PreAuthorize("hasAuthority('ARTIST')")
+	public CustomProductDesignResponse getDesignById(
 		Authentication authentication,
 		@PathVariable("id") Long id) {
 		try {
 			long userId = (long) authentication.getPrincipal();
-			CustomProduct item = customProductService.getById(userId, id);
-
-			return customProductMapper.domainToDetail(item);
+			return customProductService.getDesignById(userId, id);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
 				ErrorCode.PRODUCT_NOT_FOUND.getMessage(),
