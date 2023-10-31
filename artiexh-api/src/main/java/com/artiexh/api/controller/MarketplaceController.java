@@ -48,7 +48,14 @@ public class MarketplaceController {
 	public PublishedCampaignDetailResponse getDetail(
 		@ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
 		@PathVariable Long id) {
-		return campaignService.getCampaignDetail(id);
+		try {
+			return campaignService.getCampaignDetail(id);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
+
 	}
 
 	@GetMapping("/campaign/{id}/product")

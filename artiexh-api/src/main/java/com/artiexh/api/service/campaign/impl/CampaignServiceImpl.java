@@ -1,5 +1,6 @@
 package com.artiexh.api.service.campaign.impl;
 
+import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.product.ProductService;
 import com.artiexh.data.jpa.entity.*;
@@ -335,6 +336,8 @@ public class CampaignServiceImpl implements CampaignService {
 		if (campaignEntity.getProviderId() != null) {
 			ProviderEntity provider = providerRepository.findById(campaignEntity.getProviderId()).orElse(ProviderEntity.builder().build());
 			result.setProvider(providerMapper.entityToInfo(provider));
+		} else {
+			throw new IllegalArgumentException(ErrorCode.PROVIDER_NOT_FOUND.getMessage());
 		}
 		return result;
 	}
