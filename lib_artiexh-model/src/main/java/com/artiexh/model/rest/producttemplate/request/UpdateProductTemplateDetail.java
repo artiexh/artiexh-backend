@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.productbase.request;
+package com.artiexh.model.rest.producttemplate.request;
 
 import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
 import com.artiexh.data.jpa.entity.embededmodel.OptionConfig;
@@ -24,7 +24,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateProductBaseDetail {
+public class UpdateProductTemplateDetail {
 	@JsonSerialize(using = ToStringSerializer.class)
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long id;

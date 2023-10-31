@@ -20,7 +20,7 @@ import java.util.Set;
 public class PublishProductRequest {
 	@NotNull
 	@JsonSerialize(using = ToStringSerializer.class)
-	private Long customProductId;
+	private Long productInCampaignId;
 
 	@NotNull
 	private ProductStatus status;

@@ -14,7 +14,7 @@ import java.util.Set;
 public class OptionDetail {
 	private Long id;
 
-	private Long productBaseId;
+	private Long productTemplateId;
 
 	private String name;
 

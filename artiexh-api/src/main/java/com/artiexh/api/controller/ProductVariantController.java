@@ -40,7 +40,7 @@ public class ProductVariantController {
 		@ParameterObject PaginationAndSortingRequest paginationAndSortingRequest,
 		@ParameterObject ProductVariantFilter filter) {
 		paginationAndSortingRequest.setSortBy(null);
-		Page<ProductVariant> productPage = productVariantService.getAll(filter.getProductBaseId(), filter.getOptionValueIds(), paginationAndSortingRequest.getPageable());
+		Page<ProductVariant> productPage = productVariantService.getAll(filter.getProductTemplateId(), filter.getOptionValueIds(), paginationAndSortingRequest.getPageable());
 		return new PageResponse<>(productPage.map(productVariantMapper::domainToDetail));
 	}
 
@@ -50,10 +50,10 @@ public class ProductVariantController {
 		@Valid @RequestBody CreateProductVariantDetail detail) {
 		Set<ProductVariant> variants = productVariantMapper.detailSetToDomainSet(detail.getVariants());
 		try {
-			variants = productVariantService.create(variants, detail.getProductBaseId());
+			variants = productVariantService.create(variants, detail.getProductTemplateId());
 			Set<ProductVariantDetail> variantResponses = productVariantMapper.domainSetToDetailSet(variants);
 			return ProductVariantCollection.builder()
-				.productBaseId(detail.getProductBaseId())
+				.productTemplateId(detail.getProductTemplateId())
 				.variants(variantResponses)
 				.build();
 		} catch (IllegalArgumentException exception) {
@@ -64,7 +64,6 @@ public class ProductVariantController {
 	}
 
 
-	//TODO: Update product variant
 	@PutMapping(Endpoint.ProductVariant.DETAIL)
 	@PreAuthorize("hasAuthority('ADMIN')")
 	public ProductVariantDetail update(
@@ -90,9 +89,9 @@ public class ProductVariantController {
 //	@PreAuthorize("hasAuthority('ADMIN')")
 //	public void delete(
 //		@PathVariable("providerId") String businessCode,
-//		@PathVariable("productBaseId") Long productBaseId) {
+//		@PathVariable("productTemplateId") Long productTemplateId) {
 //		try {
-//			productVariantService.delete(businessCode, productBaseId);
+//			productVariantService.delete(businessCode, productTemplateId);
 //		} catch (EntityNotFoundException exception) {
 //			throw new ResponseStatusException(ErrorCode.PRODUCT_NOT_FOUND.getCode(),
 //				ErrorCode.PRODUCT_NOT_FOUND.getMessage());

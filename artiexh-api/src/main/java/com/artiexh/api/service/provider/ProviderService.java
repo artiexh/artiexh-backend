@@ -20,5 +20,5 @@ public interface ProviderService {
 
 	Page<Provider> getInPage(Specification<ProviderEntity> specification, Pageable pageable);
 
-	Set<CampaignProviderResponse> getAllSupportedInventoryItems(Long artistId, Set<Long> inventoryItemIds);
+	Set<CampaignProviderResponse> getAllSupportedCustomProducts(Long artistId, Set<Long> customProductIds);
 }

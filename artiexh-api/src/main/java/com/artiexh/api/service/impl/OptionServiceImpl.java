@@ -6,7 +6,6 @@ import com.artiexh.data.jpa.entity.ProductOptionTemplateEntity;
 import com.artiexh.data.jpa.entity.ProductVariantCombinationEntity;
 import com.artiexh.data.jpa.repository.OptionTemplateRepository;
 import com.artiexh.data.jpa.repository.ProductOptionRepository;
-import com.artiexh.data.jpa.repository.ProductVariantRepository;
 import com.artiexh.data.jpa.repository.VariantCombinationRepository;
 import com.artiexh.model.domain.ProductOption;
 import com.artiexh.model.mapper.ProductOptionMapper;
@@ -27,7 +26,6 @@ public class OptionServiceImpl implements OptionService {
 	private final ProductOptionRepository productOptionRepository;
 	private final OptionTemplateRepository optionTemplateRepository;
 	private final ProductOptionMapper productOptionMapper;
-	private final ProductVariantRepository productVariantRepository;
 	private final VariantCombinationRepository variantCombinationRepository;
 
 	@Override
@@ -46,23 +44,23 @@ public class OptionServiceImpl implements OptionService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Map<String, Set<String>> getActiveVariantOption(Long productBaseId, Long[]optionValueIds) {
+	public Map<String, Set<String>> getActiveVariantOption(Long productTemplateId, Long[] optionValueIds) {
 		Map<String, Set<String>> activeOptions = new HashMap<>();
 		Set<ProductVariantCombinationEntity> matchedCombination = new HashSet<>();
 
 		if (optionValueIds != null) {
 			List<ProductVariantCombinationEntity> variantCombinationEntities =
-				variantCombinationRepository.findAllUniqueCombinationsByProductBaseId(productBaseId, optionValueIds, optionValueIds.length);
+				variantCombinationRepository.findAllUniqueCombinationsByProductTemplateId(productTemplateId, optionValueIds, optionValueIds.length);
 
 			for (ProductVariantCombinationEntity variantCombination : variantCombinationEntities) {
 				matchedCombination.addAll(variantCombination.getProductVariant().getVariantCombinations());
 			}
 		} else {
-			matchedCombination.addAll(variantCombinationRepository.findAllUniqueCombinationsByProductBaseId(productBaseId));
+			matchedCombination.addAll(variantCombinationRepository.findAllUniqueCombinationsByProductTemplateId(productTemplateId));
 		}
 
 
-		for(ProductVariantCombinationEntity variantCombinationEntity : matchedCombination) {
+		for (ProductVariantCombinationEntity variantCombinationEntity : matchedCombination) {
 			if (activeOptions.containsKey(variantCombinationEntity.getOptionId().toString())) {
 				activeOptions.get(variantCombinationEntity.getOptionId().toString())
 					.add(variantCombinationEntity.getId().getOptionValueId().toString());

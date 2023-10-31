@@ -23,13 +23,13 @@ public class ProductVariantEntity {
 	private Long id;
 
 	@NotNull
-	@Column(name = "product_base_id", nullable = false)
-	private Long productBaseId;
+	@Column(name = "product_template_id", nullable = false)
+	private Long productTemplateId;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JoinColumn(name = "product_base_id", insertable = false, updatable = false)
-	private ProductBaseEntity productBase;
+	@JoinColumn(name = "product_template_id", insertable = false, updatable = false)
+	private ProductTemplateEntity productTemplate;
 
 	@Builder.Default
 	@OneToMany(mappedBy = "productVariant",

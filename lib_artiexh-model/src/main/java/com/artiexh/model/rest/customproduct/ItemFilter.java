@@ -1,7 +1,7 @@
-package com.artiexh.model.rest.inventory;
+package com.artiexh.model.rest.customproduct;
 
-import com.artiexh.data.jpa.entity.InventoryItemEntity;
-import com.artiexh.data.jpa.entity.ProductBaseEntity;
+import com.artiexh.data.jpa.entity.CustomProductEntity;
+import com.artiexh.data.jpa.entity.ProductTemplateEntity;
 import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -28,7 +28,7 @@ public class ItemFilter {
 	private Set<Long> categoryIds;
 	private Set<String> providerIds;
 
-	public Specification<InventoryItemEntity> getSpecification() {
+	public Specification<CustomProductEntity> getSpecification() {
 		return (root, cQuery, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			predicates.add(builder.equal(root.get("artist").get("id"), artistId));
@@ -38,12 +38,12 @@ public class ItemFilter {
 			}
 
 			if (categoryIds != null && !categoryIds.isEmpty()) {
-				Join<InventoryItemEntity, ProductBaseEntity> productBaseJoin = root.join("variant").join("productBase");
-				predicates.add(productBaseJoin.get("category").get("id").in(categoryIds));
+				Join<CustomProductEntity, ProductTemplateEntity> productTemplateJoin = root.join("variant").join("productTemplate");
+				predicates.add(productTemplateJoin.get("category").get("id").in(categoryIds));
 			}
 
 			if (providerIds != null && !providerIds.isEmpty()) {
-				Join<InventoryItemEntity, ProductVariantEntity> productVariantJoin = root.join("variant");
+				Join<CustomProductEntity, ProductVariantEntity> productVariantJoin = root.join("variant");
 				predicates.add(productVariantJoin.get("providerConfigs").get("provider").get("id").in(providerIds));
 			}
 

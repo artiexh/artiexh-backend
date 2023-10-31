@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.productbase.request;
+package com.artiexh.model.rest.producttemplate.request;
 
 import com.artiexh.model.rest.productvariant.ProductVariantDetail;
 import jakarta.validation.constraints.NotEmpty;

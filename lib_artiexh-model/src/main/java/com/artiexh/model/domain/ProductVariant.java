@@ -12,11 +12,11 @@ import java.util.Set;
 public class ProductVariant {
 	private Long id;
 
-	private Long productBaseId;
+	private Long productTemplateId;
 
 	private String businessCode;
 
-	private ProductBase productBase;
+	private ProductTemplate productTemplate;
 
 	private Set<VariantCombination> variantCombinations;
 

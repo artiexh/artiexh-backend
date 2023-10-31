@@ -1,6 +1,6 @@
-package com.artiexh.model.rest.productbase;
+package com.artiexh.model.rest.producttemplate;
 
-import com.artiexh.data.jpa.entity.ProductBaseEntity;
+import com.artiexh.data.jpa.entity.ProductTemplateEntity;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.persistence.criteria.Predicate;
@@ -18,12 +18,12 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductBaseFilter {
+public class ProductTemplateFilter {
 	private String name;
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long categoryId;
 
-	public Specification<ProductBaseEntity> getSpecification() {
+	public Specification<ProductTemplateEntity> getSpecification() {
 		return (root, cQuery, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			predicates.add(builder.equal(root.get("hasVariant"), true));

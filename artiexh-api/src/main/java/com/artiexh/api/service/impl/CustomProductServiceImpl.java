@@ -1,19 +1,19 @@
 package com.artiexh.api.service.impl;
 
 import com.artiexh.api.exception.ErrorCode;
-import com.artiexh.api.service.InventoryItemService;
-import com.artiexh.data.jpa.entity.InventoryItemEntity;
-import com.artiexh.data.jpa.entity.InventoryItemTagEntity;
+import com.artiexh.api.service.CustomProductService;
+import com.artiexh.data.jpa.entity.CustomProductEntity;
+import com.artiexh.data.jpa.entity.CustomProductTagEntity;
 import com.artiexh.data.jpa.entity.ProductVariantEntity;
 import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
 import com.artiexh.data.jpa.entity.embededmodel.ImageConfig;
-import com.artiexh.data.jpa.repository.InventoryItemRepository;
-import com.artiexh.data.jpa.repository.InventoryItemTagRepository;
+import com.artiexh.data.jpa.repository.CustomProductRepository;
+import com.artiexh.data.jpa.repository.CustomProductTagRepository;
 import com.artiexh.data.jpa.repository.MediaRepository;
 import com.artiexh.data.jpa.repository.ProductVariantRepository;
+import com.artiexh.model.domain.CustomProduct;
 import com.artiexh.model.domain.ImageSet;
-import com.artiexh.model.domain.InventoryItem;
-import com.artiexh.model.mapper.InventoryMapper;
+import com.artiexh.model.mapper.CustomProductMapper;
 import com.artiexh.model.mapper.MediaMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -30,18 +30,18 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class InventoryItemItemServiceImpl implements InventoryItemService {
-	private final InventoryItemRepository inventoryItemRepository;
+public class CustomProductServiceImpl implements CustomProductService {
+	private final CustomProductRepository customProductRepository;
 	private final ProductVariantRepository variantRepository;
-	private final InventoryItemTagRepository inventoryItemTagRepository;
-	private final InventoryMapper inventoryMapper;
+	private final CustomProductTagRepository customProductTagRepository;
+	private final CustomProductMapper customProductMapper;
 	private final MediaMapper mediaMapper;
 	private final MediaRepository mediaRepository;
 
 	@Override
 	@Transactional
-	public InventoryItem save(InventoryItem item) {
-		InventoryItemEntity entity;
+	public CustomProduct save(CustomProduct item) {
+		CustomProductEntity entity;
 
 		if (item.getId() != null) {
 			entity = updateItem(item);
@@ -52,18 +52,18 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 			entity = createItem(item);
 		}
 
-		return inventoryMapper.entityToDomain(entity);
+		return customProductMapper.entityToDomain(entity);
 	}
 
 	@Transactional
-	public InventoryItemEntity createItem(InventoryItem item) {
+	public CustomProductEntity createItem(CustomProduct item) {
 		ProductVariantEntity variant = variantRepository.findById(item.getVariant().getId())
 			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + item.getVariant().getId()));
 
-		InventoryItemEntity entity = inventoryMapper.domainToEntity(item);
+		CustomProductEntity entity = customProductMapper.domainToEntity(item);
 
 		if (entity.getCombinationCode() != null) {
-			var combinationConfig = variant.getProductBase().getImageCombinations().stream()
+			var combinationConfig = variant.getProductTemplate().getImageCombinations().stream()
 				.filter(combination -> combination.getCode().equals(entity.getCombinationCode()))
 				.findAny()
 				.orElseThrow(() -> new IllegalArgumentException("combinationCode is not valid"));
@@ -76,17 +76,17 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 		}
 
 		entity.setVariant(variant);
-		var savedEntity = inventoryItemRepository.save(entity);
+		var savedEntity = customProductRepository.save(entity);
 
-		var savedTagEntities = saveInventoryItemTag(savedEntity.getId(), item.getTags());
+		var savedTagEntities = saveCustomProductTag(savedEntity.getId(), item.getTags());
 		savedEntity.setTags(new HashSet<>(savedTagEntities));
 
 		return savedEntity;
 	}
 
 	@Transactional
-	public InventoryItemEntity updateItem(InventoryItem item) {
-		InventoryItemEntity entity = inventoryItemRepository.findById(item.getId())
+	public CustomProductEntity updateItem(CustomProduct item) {
+		CustomProductEntity entity = customProductRepository.findById(item.getId())
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + item.getId()));
 
 		if (!entity.getVariant().getId().equals(item.getVariant().getId())) {
@@ -94,7 +94,7 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 		}
 
 		if (item.getCombinationCode() != null) {
-			var combinationConfig = entity.getVariant().getProductBase().getImageCombinations().stream()
+			var combinationConfig = entity.getVariant().getProductTemplate().getImageCombinations().stream()
 				.filter(combination -> combination.getCode().equals(item.getCombinationCode()))
 				.findAny()
 				.orElseThrow(() -> new IllegalArgumentException("combinationCode is not valid"));
@@ -124,17 +124,17 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 		entity.setDescription(item.getDescription());
 
 		entity.getTags().clear();
-		var savedEntity = inventoryItemRepository.saveAndFlush(entity);
-		var savedTagEntities = saveInventoryItemTag(savedEntity.getId(), item.getTags());
+		var savedEntity = customProductRepository.saveAndFlush(entity);
+		var savedTagEntities = saveCustomProductTag(savedEntity.getId(), item.getTags());
 		savedEntity.getTags().addAll(savedTagEntities);
 
 		return savedEntity;
 	}
 
-	private List<InventoryItemTagEntity> saveInventoryItemTag(Long inventoryItemId, Set<String> tags) {
-		return inventoryItemTagRepository.saveAll(
+	private List<CustomProductTagEntity> saveCustomProductTag(Long customProductId, Set<String> tags) {
+		return customProductTagRepository.saveAll(
 			tags.stream()
-				.map(tag -> new InventoryItemTagEntity(inventoryItemId, tag))
+				.map(tag -> new CustomProductTagEntity(customProductId, tag))
 				.collect(Collectors.toSet())
 		);
 	}
@@ -151,23 +151,23 @@ public class InventoryItemItemServiceImpl implements InventoryItemService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Page<InventoryItem> getAll(Specification<InventoryItemEntity> specification, Pageable pageable) {
-		Page<InventoryItemEntity> itemPage = inventoryItemRepository.findAll(specification, pageable);
-		return itemPage.map(inventoryMapper::entityToDomain);
+	public Page<CustomProduct> getAll(Specification<CustomProductEntity> specification, Pageable pageable) {
+		Page<CustomProductEntity> itemPage = customProductRepository.findAll(specification, pageable);
+		return itemPage.map(customProductMapper::entityToDomain);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public InventoryItem getById(Long userId, Long id) {
-		InventoryItemEntity item = inventoryItemRepository.findInventoryItemEntityByIdAndArtistId(id, userId)
+	public CustomProduct getById(Long userId, Long id) {
+		CustomProductEntity item = customProductRepository.findByIdAndArtistId(id, userId)
 			.orElseThrow(EntityNotFoundException::new);
-		return inventoryMapper.entityToDomain(item);
+		return customProductMapper.entityToDomain(item);
 	}
 
 	@Override
 	public void delete(Long userId, Long id) {
-		InventoryItemEntity item = inventoryItemRepository.findInventoryItemEntityByIdAndArtistId(id, userId)
+		CustomProductEntity item = customProductRepository.findByIdAndArtistId(id, userId)
 			.orElseThrow(EntityNotFoundException::new);
-		inventoryItemRepository.deleteById(item.getId());
+		customProductRepository.deleteById(item.getId());
 	}
 }
