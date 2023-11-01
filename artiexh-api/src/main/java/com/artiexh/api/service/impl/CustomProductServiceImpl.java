@@ -11,13 +11,9 @@ import com.artiexh.data.jpa.entity.embededmodel.ImageConfig;
 import com.artiexh.data.jpa.repository.CustomProductRepository;
 import com.artiexh.data.jpa.repository.CustomProductTagRepository;
 import com.artiexh.data.jpa.repository.ProductVariantRepository;
-import com.artiexh.model.domain.CustomProduct;
 import com.artiexh.model.mapper.CustomProductMapper;
 import com.artiexh.model.mapper.MediaMapper;
-import com.artiexh.model.rest.customproduct.CustomProductDesignRequest;
-import com.artiexh.model.rest.customproduct.CustomProductDesignResponse;
-import com.artiexh.model.rest.customproduct.CustomProductGeneralRequest;
-import com.artiexh.model.rest.customproduct.CustomProductGeneralResponse;
+import com.artiexh.model.rest.customproduct.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -187,9 +183,9 @@ public class CustomProductServiceImpl implements CustomProductService {
 	}
 
 	@Override
-	public Page<CustomProduct> getAll(Specification<CustomProductEntity> specification, Pageable pageable) {
+	public Page<CustomProductResponse> getAll(Specification<CustomProductEntity> specification, Pageable pageable) {
 		Page<CustomProductEntity> itemPage = customProductRepository.findAll(specification, pageable);
-		return itemPage.map(customProductMapper::entityToDomain);
+		return itemPage.map(customProductMapper::entityToGetAllResponse);
 	}
 
 	@Override

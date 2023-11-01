@@ -3,7 +3,6 @@ package com.artiexh.api.controller;
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.CustomProductService;
-import com.artiexh.model.domain.CustomProduct;
 import com.artiexh.model.mapper.CustomProductMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
@@ -68,16 +67,16 @@ public class CustomProductController {
 
 	@GetMapping()
 	@PreAuthorize("hasAuthority('ARTIST')")
-	public PageResponse<CustomProductGeneralRequest> getAll(
+	public PageResponse<CustomProductResponse> getAll(
 		Authentication authentication,
 		@ParameterObject ItemFilter filter,
 		@Valid @ParameterObject PaginationAndSortingRequest paginationAndSortingRequest) {
 		try {
 			long userId = (long) authentication.getPrincipal();
 			filter.setArtistId(userId);
-			Page<CustomProduct> itemPage = customProductService.getAll(filter.getSpecification(), paginationAndSortingRequest.getPageable());
+			Page<CustomProductResponse> itemPage = customProductService.getAll(filter.getSpecification(), paginationAndSortingRequest.getPageable());
 
-			return new PageResponse<>(itemPage.map(customProductMapper::domainToDetail));
+			return new PageResponse<>(itemPage);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
 				ErrorCode.PRODUCT_NOT_FOUND.getMessage(),
