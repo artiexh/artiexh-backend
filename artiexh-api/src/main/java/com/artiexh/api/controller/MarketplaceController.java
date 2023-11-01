@@ -40,7 +40,7 @@ public class MarketplaceController {
 	@GetMapping("/campaign")
 	public PageResponse<CampaignResponse> getAllPublicCampaign(@ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
 															   @ParameterObject CampaignRequestFilter filter) {
-		var response = campaignService.getAllCampaigns(filter.getSpecification(), paginationAndSortingRequest.getPageable());
+		var response = campaignService.getAllCampaigns(filter.getMarketPlaceSpecification(), paginationAndSortingRequest.getPageable());
 		return new PageResponse<>(response);
 	}
 
