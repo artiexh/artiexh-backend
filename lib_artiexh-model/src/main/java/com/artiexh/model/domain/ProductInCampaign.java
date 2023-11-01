@@ -1,6 +1,5 @@
 package com.artiexh.model.domain;
 
-import com.artiexh.data.jpa.entity.ProductAttachEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,7 +20,6 @@ public class ProductInCampaign {
 	private Integer limitPerOrder;
 	private ProductCategory category;
 	private String description;
-	private Set<ProductAttachEntity> attaches;
 	private Set<String> tags;
 	private Instant createdDate;
 	private Instant modifiedDate;

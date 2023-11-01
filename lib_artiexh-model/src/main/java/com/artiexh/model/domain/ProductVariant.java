@@ -14,8 +14,6 @@ public class ProductVariant {
 
 	private Long productTemplateId;
 
-	private String businessCode;
-
 	private ProductTemplate productTemplate;
 
 	private Set<VariantCombination> variantCombinations;

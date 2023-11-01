@@ -36,7 +36,7 @@ public class CustomProductEntity extends BaseAuditEntity {
 	@JoinColumn(name = "artist_id", nullable = false)
 	private ArtistEntity artist;
 
-	@ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REMOVE})
+	@ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH, CascadeType.REMOVE})
 	@JoinColumn(name = "variant_id", nullable = false)
 	private ProductVariantEntity variant;
 
@@ -54,9 +54,9 @@ public class CustomProductEntity extends BaseAuditEntity {
 	@JoinColumn(name = "custom_product_id", updatable = false)
 	private Set<CustomProductTagEntity> tags = new LinkedHashSet<>();
 
-	@OneToOne()
-	@JoinColumn(name = "thumbnail_id")
-	private MediaEntity thumbnail;
+	@OneToOne(orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@JoinColumn(name = "model_thumbnail_id")
+	private MediaEntity modelThumbnail;
 
 	@ManyToOne()
 	@JoinColumn(name = "category_id")
@@ -64,4 +64,11 @@ public class CustomProductEntity extends BaseAuditEntity {
 
 	@Column(name = "max_item_per_order")
 	private Integer maxItemPerOrder;
+
+	@OneToMany(
+		fetch = FetchType.LAZY,
+		orphanRemoval = true,
+		cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@JoinColumn(name = "custom_product_id")
+	private Set<ProductAttachEntity> attaches;
 }
