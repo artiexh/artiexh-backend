@@ -56,7 +56,6 @@ public interface CustomProductMapper {
 	CustomProductDesignResponse entityToDesignResponse(CustomProductEntity entity);
 
 	@Named("variantCombinationEntityToDomain")
-	@Mapping(target = "optionValue.optionId", ignore = true)
 	@Mapping(target = "option.id", source = "optionValue.option.id")
 	@Mapping(target = "option.name", source = "optionValue.option.name")
 	@Mapping(target = "option.index", source = "optionValue.option.index")
