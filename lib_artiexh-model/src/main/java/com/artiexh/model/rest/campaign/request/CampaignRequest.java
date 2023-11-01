@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.Set;
 
 @Data
@@ -32,6 +33,10 @@ public class CampaignRequest {
 	private String content;
 
 	private String providerId;
+
+	private Instant from;
+
+	private Instant to;
 
 	@Valid
 	private Set<ProductInCampaignRequest> products = Set.of();

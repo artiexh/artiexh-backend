@@ -65,6 +65,8 @@ public class CampaignServiceImpl implements CampaignService {
 				.thumbnailUrl(request.getThumbnailUrl())
 				.content(request.getContent())
 				.type(request.getType().getByteValue())
+				.from(request.getFrom())
+				.to(request.getTo())
 				.build()
 		);
 
@@ -138,6 +140,9 @@ public class CampaignServiceImpl implements CampaignService {
 		oldCampaignEntity.setDescription(request.getDescription());
 		oldCampaignEntity.setThumbnailUrl(request.getThumbnailUrl());
 		oldCampaignEntity.setContent(request.getContent());
+		oldCampaignEntity.setType(request.getType().getByteValue());
+		oldCampaignEntity.setFrom(request.getFrom());
+		oldCampaignEntity.setTo(request.getTo());
 		oldCampaignEntity.getProductInCampaigns().clear();
 		oldCampaignEntity.getProductInCampaigns().addAll(productInCampaigns);
 
@@ -317,11 +322,18 @@ public class CampaignServiceImpl implements CampaignService {
 		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
 	}
 
-	private CampaignResponse artistSubmitCampaign(CampaignEntity campaignEntity, ArtistEntity artistEntity, String
-		message) {
+	private CampaignResponse artistSubmitCampaign(CampaignEntity campaignEntity, ArtistEntity artistEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue()
 			&& campaignEntity.getStatus() != CampaignStatus.REQUEST_CHANGE.getByteValue()) {
 			throw new IllegalArgumentException("You can only update campaign from DRAFT, REQUEST_CHANGE to WAITING");
+		}
+
+		if (campaignEntity.getFrom() == null || campaignEntity.getTo() == null) {
+			throw new IllegalArgumentException("From, to must not be null");
+		}
+
+		if (campaignEntity.getProductInCampaigns().isEmpty()) {
+			throw new IllegalArgumentException("Campaign products must not be empty");
 		}
 
 		for (var productInCampaignEntity : campaignEntity.getProductInCampaigns()) {
