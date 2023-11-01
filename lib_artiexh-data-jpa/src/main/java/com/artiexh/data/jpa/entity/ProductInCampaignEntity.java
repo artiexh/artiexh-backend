@@ -2,13 +2,14 @@ package com.artiexh.data.jpa.entity;
 
 import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -32,9 +33,6 @@ public class ProductInCampaignEntity extends BaseAuditEntity {
 	@JoinColumn(name = "campaign_id", nullable = false)
 	private CampaignEntity campaign;
 
-	@Column(name = "name")
-	private String name;
-
 	@Column(name = "quantity")
 	private Integer quantity;
 
@@ -44,19 +42,7 @@ public class ProductInCampaignEntity extends BaseAuditEntity {
 	@Column(name = "price_amount", precision = 38, scale = 2)
 	private BigDecimal priceAmount;
 
-	@Column(name = "limit_per_order")
-	private Integer limitPerOrder;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "category_id")
-	private ProductCategoryEntity category;
-
-	@Column(name = "description", length = 1000)
-	private String description;
-
-	@Builder.Default
-	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
-	@JoinColumn(name = "product_in_campaign_id", updatable = false)
-	private Set<ProductInCampaignTagEntity> tags = new LinkedHashSet<>();
+	@Column(name = "weight")
+	private Float weight;
 
 }
