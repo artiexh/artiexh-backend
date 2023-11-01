@@ -10,9 +10,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-import java.lang.annotation.Target;
-import java.util.ServiceLoader;
-
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
 	uses = {ProductInCampaignMapper.class, ProviderMapper.class}
@@ -24,6 +21,7 @@ public interface CampaignMapper {
 	@Mapping(target = "campaignHistories", ignore = true)
 	Campaign entityToDomain(CampaignEntity entity);
 
+	@Mapping(target = "products", source = "productInCampaigns")
 	@Mapping(target = "provider", ignore = true)
 	CampaignDetailResponse entityToDetailResponse(CampaignEntity entity);
 

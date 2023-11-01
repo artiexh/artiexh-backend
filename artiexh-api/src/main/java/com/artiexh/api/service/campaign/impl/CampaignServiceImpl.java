@@ -53,7 +53,7 @@ public class CampaignServiceImpl implements CampaignService {
 	public CampaignDetailResponse createCampaign(Long ownerId, CampaignRequest request) {
 		ArtistEntity ownerEntity = artistRepository.getReferenceById(ownerId);
 		validateCampaignTypeWithRole(ownerEntity, request);
-		validateCreateCustomProductRequest(ownerEntity, request.getProviderId(), request.getProductInCampaigns());
+		validateCreateCustomProductRequest(ownerEntity, request.getProviderId(), request.getProducts());
 
 		var campaignEntity = campaignRepository.save(
 			CampaignEntity.builder()
@@ -68,7 +68,7 @@ public class CampaignServiceImpl implements CampaignService {
 				.build()
 		);
 
-		var savedProductInCampaigns = request.getProductInCampaigns().stream().map(productInCampaignRequest -> {
+		var savedProductInCampaigns = request.getProducts().stream().map(productInCampaignRequest -> {
 			var customProductEntity = customProductRepository.getReferenceById(productInCampaignRequest.getCustomProductId());
 
 			var productInCampaignEntity = productInCampaignMapper.createRequestToEntity(productInCampaignRequest);
@@ -108,7 +108,7 @@ public class CampaignServiceImpl implements CampaignService {
 			throw new IllegalArgumentException("You can only update campaign with status DRAFT or REQUEST_CHANGE");
 		}
 
-		validateCreateCustomProductRequest(ownerEntity, request.getProviderId(), request.getProductInCampaigns());
+		validateCreateCustomProductRequest(ownerEntity, request.getProviderId(), request.getProducts());
 
 		var customProductIdToProductInCampaignMap = oldCampaignEntity.getProductInCampaigns().stream()
 			.collect(Collectors.toMap(
@@ -116,7 +116,7 @@ public class CampaignServiceImpl implements CampaignService {
 				productInCampaign -> productInCampaign)
 			);
 
-		var productInCampaigns = request.getProductInCampaigns().stream()
+		var productInCampaigns = request.getProducts().stream()
 			.map(productInCampaignRequest -> {
 				ProductInCampaignEntity productInCampaignEntity =
 					customProductIdToProductInCampaignMap.get(productInCampaignRequest.getCustomProductId());
@@ -150,7 +150,7 @@ public class CampaignServiceImpl implements CampaignService {
 		if (campaignEntity.getProviderId() != null) {
 			var provider = providerRepository.getReferenceById(campaignEntity.getProviderId());
 			result.setProvider(providerMapper.entityToInfo(provider));
-			fillProviderConfigToResponse(campaignEntity.getProviderId(), result.getProductInCampaigns());
+			fillProviderConfigToResponse(campaignEntity.getProviderId(), result.getProducts());
 		}
 		return result;
 	}
@@ -288,8 +288,7 @@ public class CampaignServiceImpl implements CampaignService {
 		};
 	}
 
-	private CampaignResponse artistCancelCampaign(CampaignEntity campaignEntity, ArtistEntity artistEntity, String
-		message) {
+	private CampaignResponse artistCancelCampaign(CampaignEntity campaignEntity, ArtistEntity artistEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue()
 			&& campaignEntity.getStatus() != CampaignStatus.REQUEST_CHANGE.getByteValue()
 			&& campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
@@ -514,8 +513,12 @@ public class CampaignServiceImpl implements CampaignService {
 			throw new IllegalArgumentException("Product in this campaign is published");
 		}
 
-		Set<Long> productCampaignIds = campaign.getProductInCampaigns().stream().map(ProductInCampaignEntity::getId).collect(Collectors.toSet());
-		Set<Long> productIds = products.stream().map(PublishProductRequest::getProductInCampaignId).collect(Collectors.toSet());
+		Set<Long> productCampaignIds = campaign.getProductInCampaigns().stream()
+			.map(ProductInCampaignEntity::getId)
+			.collect(Collectors.toSet());
+		Set<Long> productIds = products.stream()
+			.map(PublishProductRequest::getProductInCampaignId)
+			.collect(Collectors.toSet());
 
 		if (!productCampaignIds.equals(productIds)) {
 			throw new IllegalArgumentException("All product in campaign must be published");
