@@ -1,13 +1,11 @@
 package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.ProductInCampaignEntity;
-import com.artiexh.data.jpa.entity.ProductInCampaignTagEntity;
 import com.artiexh.data.jpa.entity.ProductVariantCombinationEntity;
 import com.artiexh.model.domain.ProductInCampaign;
 import com.artiexh.model.rest.campaign.request.ProductInCampaignRequest;
 import com.artiexh.model.rest.campaign.response.CustomProductResponse;
 import com.artiexh.model.rest.campaign.response.ProductInCampaignResponse;
-import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
 
 import java.util.Set;
@@ -22,7 +20,6 @@ public interface ProductInCampaignMapper {
 	@Mapping(target = "priceUnit", source = "price.unit")
 	@Mapping(target = "priceAmount", source = "price.amount")
 	@Mapping(target = "customProduct.id", source = "customProductId")
-	@Mapping(target = "tags", ignore = true)
 	ProductInCampaignEntity createRequestToEntity(ProductInCampaignRequest request);
 
 	@Mapping(target = "id", ignore = true)
@@ -30,25 +27,7 @@ public interface ProductInCampaignMapper {
 	@Mapping(target = "priceUnit", source = "price.unit")
 	@Mapping(target = "priceAmount", source = "price.amount")
 	@Mapping(target = "customProduct.id", source = "customProductId")
-	@Mapping(target = "tags", ignore = true)
 	void createRequestToEntity(ProductInCampaignRequest request, @MappingTarget ProductInCampaignEntity entity);
-
-	default String customProductTagEntityToName(ProductInCampaignTagEntity tagEntity) {
-		if (tagEntity == null) {
-			return null;
-		}
-
-		return tagEntity.getName();
-	}
-
-	default ProductInCampaignTagEntity tagNameToTagEntity(String tagName) {
-		ProductInCampaignTagEntity tagEntity = new ProductInCampaignTagEntity();
-		if (StringUtils.isNotBlank(tagName)) {
-			tagEntity.setName(tagName);
-		}
-
-		return tagEntity;
-	}
 
 	@Named("entityToResponse")
 	@Mapping(target = "price.amount", source = "priceAmount")

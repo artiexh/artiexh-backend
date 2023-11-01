@@ -13,14 +13,12 @@ import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
 import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignProviderResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
-import com.artiexh.model.rest.campaign.response.ProductInCampaignResponse;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -30,6 +28,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static com.artiexh.model.domain.CampaignStatus.ALLOWED_ADMIN_VIEW_STATUS;
@@ -47,10 +46,7 @@ public class CampaignController {
 	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN','STAFF')")
 	public CampaignDetailResponse createCampaign(Authentication authentication,
 												 @RequestBody @Validated CampaignRequest request) {
-		var role = authentication.getAuthorities().stream()
-			.map(GrantedAuthority::getAuthority)
-			.findFirst()
-			.map(Role::valueOf)
+		var role = extractRole(authentication)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has no role"));
 		long ownerId = role == Role.STAFF ? rootAdminId : (long) authentication.getPrincipal();
 
@@ -66,10 +62,7 @@ public class CampaignController {
 	public CampaignDetailResponse updateCampaign(Authentication authentication,
 												 @PathVariable Long id,
 												 @RequestBody @Validated CampaignRequest request) {
-		var role = authentication.getAuthorities().stream()
-			.map(GrantedAuthority::getAuthority)
-			.findFirst()
-			.map(Role::valueOf)
+		var role = extractRole(authentication)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has no role"));
 		long ownerId = role == Role.STAFF ? rootAdminId : (long) authentication.getPrincipal();
 
@@ -88,15 +81,11 @@ public class CampaignController {
 	public CampaignResponse updateStatus(Authentication authentication,
 										 @PathVariable Long id,
 										 @RequestBody @Validated UpdateCampaignStatusRequest request) {
-		request.setId(id);
-
-		var role = authentication.getAuthorities().stream()
-			.map(GrantedAuthority::getAuthority)
-			.findFirst()
-			.map(Role::valueOf)
+		var role = extractRole(authentication)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has no role"));
 
 		Long userId = (Long) authentication.getPrincipal();
+		request.setId(id);
 
 		try {
 			return switch (role) {
@@ -131,12 +120,8 @@ public class CampaignController {
 	public PageResponse<CampaignResponse> getAllCampaigns(Authentication authentication,
 														  @ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
 														  @ParameterObject CampaignRequestFilter filter) {
-		var role = authentication.getAuthorities().stream()
-			.map(GrantedAuthority::getAuthority)
-			.findFirst()
-			.map(Role::valueOf)
+		var role = extractRole(authentication)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has no role"));
-
 		Long userId = (Long) authentication.getPrincipal();
 
 		if (role == Role.ARTIST) {
@@ -161,7 +146,9 @@ public class CampaignController {
 	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN','STAFF')")
 	public CampaignDetailResponse getCampaign(Authentication authentication,
 											  @PathVariable Long id) {
-		Long userId = (Long) authentication.getPrincipal();
+		var role = extractRole(authentication)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has no role"));
+		long userId = role == Role.STAFF ? rootAdminId : (long) authentication.getPrincipal();
 
 		try {
 			return campaignService.getCampaignDetail(userId, id);
@@ -183,5 +170,12 @@ public class CampaignController {
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		}
+	}
+
+	private Optional<Role> extractRole(Authentication authentication) {
+		return authentication.getAuthorities().stream()
+			.map(GrantedAuthority::getAuthority)
+			.findFirst()
+			.map(Role::valueOf);
 	}
 }

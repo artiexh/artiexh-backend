@@ -20,14 +20,13 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.artiexh.model.domain.CampaignStatus.ALLOWED_ADMIN_VIEW_STATUS;
@@ -40,7 +39,6 @@ public class CampaignServiceImpl implements CampaignService {
 	private final ProductInCampaignRepository productInCampaignRepository;
 	private final CustomProductRepository customProductRepository;
 	private final ProviderRepository providerRepository;
-	private final ProductInCampaignTagRepository productInCampaignTagRepository;
 	private final CampaignHistoryRepository campaignHistoryRepository;
 	private final AccountRepository accountRepository;
 	private final ProductInCampaignMapper productInCampaignMapper;
@@ -49,22 +47,12 @@ public class CampaignServiceImpl implements CampaignService {
 	private final ProductMapper productMapper;
 	private final ProviderMapper providerMapper;
 	private final ArtistRepository artistRepository;
-	private final ProductRepository productRepository;
 
 	@Override
 	@Transactional
 	public CampaignDetailResponse createCampaign(Long ownerId, CampaignRequest request) {
 		ArtistEntity ownerEntity = artistRepository.getReferenceById(ownerId);
-		if (ownerEntity.getRole() == Role.ARTIST.getByteValue()
-			&& request.getType() == CampaignType.PUBLIC) {
-			throw new IllegalArgumentException("Artist cannot create public campaign");
-		}
-
-		if (ownerEntity.getRole() == Role.ADMIN.getByteValue()
-			&& request.getType() != CampaignType.PUBLIC) {
-			throw new IllegalArgumentException("Admin can only create public campaign");
-		}
-
+		validateCampaignTypeWithRole(ownerEntity, request);
 		validateCreateCustomProductRequest(ownerEntity, request.getProviderId(), request.getProductInCampaigns());
 
 		var campaignEntity = campaignRepository.save(
@@ -80,44 +68,14 @@ public class CampaignServiceImpl implements CampaignService {
 				.build()
 		);
 
-		Map<Long, ProviderConfigResponse> providerConfigsByProductInCampaignId = new HashMap<>();
-		var saveProductInCampaigns = request.getProductInCampaigns().stream().map(productInCampaignRequest -> {
+		var savedProductInCampaigns = request.getProductInCampaigns().stream().map(productInCampaignRequest -> {
 			var customProductEntity = customProductRepository.getReferenceById(productInCampaignRequest.getCustomProductId());
 
 			var productInCampaignEntity = productInCampaignMapper.createRequestToEntity(productInCampaignRequest);
 			productInCampaignEntity.setCustomProduct(customProductEntity);
 			productInCampaignEntity.setCampaign(campaignEntity);
-			if (!StringUtils.hasText(productInCampaignEntity.getName())) {
-				productInCampaignEntity.setName(customProductEntity.getName());
-			}
-			if (!StringUtils.hasText(productInCampaignEntity.getDescription())) {
-				productInCampaignEntity.setDescription(customProductEntity.getDescription());
-			}
-			productInCampaignEntity.setCategory(customProductEntity.getVariant().getProductTemplate().getCategory());
-			var savedProductInCampaignEntity = productInCampaignRepository.save(productInCampaignEntity);
 
-			var savedProductInCampaignTag = saveProductInCampaignTag(savedProductInCampaignEntity.getId(), productInCampaignRequest.getTags());
-			if (savedProductInCampaignTag.isEmpty()) {
-				var inventoryItemTags = customProductEntity.getTags().stream()
-					.map(inventoryItemTagEntity -> new ProductInCampaignTagEntity(savedProductInCampaignEntity.getId(), inventoryItemTagEntity.getName()))
-					.collect(Collectors.toSet());
-				savedProductInCampaignEntity.setTags(new HashSet<>(productInCampaignTagRepository.saveAll(inventoryItemTags)));
-			} else {
-				savedProductInCampaignEntity.setTags(new HashSet<>(savedProductInCampaignTag));
-			}
-
-			customProductEntity.getVariant().getProviderConfigs().stream()
-				.filter(config -> config.getId().getBusinessCode().equals(request.getProviderId()))
-				.findAny()
-				.ifPresent(providerConfigEntity ->
-					providerConfigsByProductInCampaignId.put(
-						savedProductInCampaignEntity.getId(),
-						new ProviderConfigResponse(
-							providerConfigEntity.getManufacturingTime(),
-							providerConfigEntity.getMinQuantity(),
-							providerConfigEntity.getBasePriceAmount()
-						)));
-			return savedProductInCampaignEntity;
+			return productInCampaignRepository.save(productInCampaignEntity);
 		}).collect(Collectors.toSet());
 
 		var createCampaignHistoryEntity = campaignHistoryRepository.save(CampaignHistoryEntity.builder()
@@ -127,34 +85,16 @@ public class CampaignServiceImpl implements CampaignService {
 			.build()
 		);
 
-		campaignEntity.setProductInCampaigns(saveProductInCampaigns);
+		campaignEntity.setProductInCampaigns(savedProductInCampaigns);
 		campaignEntity.setCampaignHistories(Set.of(createCampaignHistoryEntity));
-		var result = campaignMapper.entityToDetailResponse(campaignEntity);
-
-		if (request.getProviderId() != null) {
-			var provider = providerRepository.getReferenceById(request.getProviderId());
-			result.setProvider(providerMapper.entityToInfo(provider));
-		}
-
-		for (var productInCampaignResponse : result.getProductInCampaigns()) {
-			productInCampaignResponse.setProviderConfig(providerConfigsByProductInCampaignId.get(productInCampaignResponse.getId()));
-		}
-		return result;
+		return buildCampaignDetailResponse(campaignEntity);
 	}
 
 	@Override
 	@Transactional
 	public CampaignDetailResponse updateCampaign(Long ownerId, CampaignRequest request) {
 		ArtistEntity ownerEntity = artistRepository.getReferenceById(ownerId);
-		if (ownerEntity.getRole() == Role.ARTIST.getByteValue()
-			&& request.getType() == CampaignType.PUBLIC) {
-			throw new IllegalArgumentException("Artist cannot create public campaign");
-		}
-
-		if (ownerEntity.getRole() == Role.ADMIN.getByteValue()
-			&& request.getType() != CampaignType.PUBLIC) {
-			throw new IllegalArgumentException("Admin can only create public campaign");
-		}
+		validateCampaignTypeWithRole(ownerEntity, request);
 
 		var oldCampaignEntity = campaignRepository.findById(request.getId())
 			.orElseThrow(() -> new EntityNotFoundException("campaign " + request.getId() + " not valid"));
@@ -176,38 +116,21 @@ public class CampaignServiceImpl implements CampaignService {
 				productInCampaign -> productInCampaign)
 			);
 
-		Map<Long, ProviderConfigResponse> providerConfigsByProductInCampaignId = new HashMap<>();
 		var productInCampaigns = request.getProductInCampaigns().stream()
 			.map(productInCampaignRequest -> {
-				ProductInCampaignEntity productInCampaignEntity = customProductIdToProductInCampaignMap.get(productInCampaignRequest.getCustomProductId());
+				ProductInCampaignEntity productInCampaignEntity =
+					customProductIdToProductInCampaignMap.get(productInCampaignRequest.getCustomProductId());
+
 				if (productInCampaignEntity != null) {
 					productInCampaignMapper.createRequestToEntity(productInCampaignRequest, productInCampaignEntity);
 				} else {
 					var customProductEntity = customProductRepository.getReferenceById(productInCampaignRequest.getCustomProductId());
-
 					productInCampaignEntity = productInCampaignMapper.createRequestToEntity(productInCampaignRequest);
 					productInCampaignEntity.setCustomProduct(customProductEntity);
 					productInCampaignEntity.setCampaign(oldCampaignEntity);
 				}
 
-				productInCampaignEntity.getTags().clear();
-				var savedProductInCampaignEntity = productInCampaignRepository.save(productInCampaignEntity);
-
-				var savedProductInCampaignTag = saveProductInCampaignTag(savedProductInCampaignEntity.getId(), productInCampaignRequest.getTags());
-				savedProductInCampaignEntity.getTags().addAll(savedProductInCampaignTag);
-
-				savedProductInCampaignEntity.getCustomProduct().getVariant().getProviderConfigs().stream()
-					.filter(config -> config.getId().getBusinessCode().equals(request.getProviderId()))
-					.findAny()
-					.ifPresent(providerConfigEntity ->
-						providerConfigsByProductInCampaignId.put(
-							savedProductInCampaignEntity.getId(),
-							new ProviderConfigResponse(
-								providerConfigEntity.getManufacturingTime(),
-								providerConfigEntity.getMinQuantity(),
-								providerConfigEntity.getBasePriceAmount()
-							)));
-				return savedProductInCampaignEntity;
+				return productInCampaignRepository.save(productInCampaignEntity);
 			})
 			.collect(Collectors.toSet());
 
@@ -217,32 +140,50 @@ public class CampaignServiceImpl implements CampaignService {
 		oldCampaignEntity.setContent(request.getContent());
 		oldCampaignEntity.getProductInCampaigns().clear();
 		oldCampaignEntity.getProductInCampaigns().addAll(productInCampaigns);
+
 		var savedCampaignEntity = campaignRepository.save(oldCampaignEntity);
+		return buildCampaignDetailResponse(savedCampaignEntity);
+	}
 
-		var result = campaignMapper.entityToDetailResponse(savedCampaignEntity);
-
-		if (request.getProviderId() != null) {
-			var provider = providerRepository.getReferenceById(request.getProviderId());
+	private CampaignDetailResponse buildCampaignDetailResponse(CampaignEntity campaignEntity) {
+		var result = campaignMapper.entityToDetailResponse(campaignEntity);
+		if (campaignEntity.getProviderId() != null) {
+			var provider = providerRepository.getReferenceById(campaignEntity.getProviderId());
 			result.setProvider(providerMapper.entityToInfo(provider));
-		}
-		for (var productInCampaignResponse : result.getProductInCampaigns()) {
-			productInCampaignResponse.setProviderConfig(providerConfigsByProductInCampaignId.get(productInCampaignResponse.getId()));
+			fillProviderConfigToResponse(campaignEntity.getProviderId(), result.getProductInCampaigns());
 		}
 		return result;
 	}
 
-	private List<ProductInCampaignTagEntity> saveProductInCampaignTag(Long productInCampaignId, Set<String> tags) {
-		if (tags == null || tags.isEmpty()) {
-			return Collections.emptyList();
+	private void fillProviderConfigToResponse(String providerId, Set<ProductInCampaignResponse> productInCampaignResponses) {
+		for (var productInCampaignResponse : productInCampaignResponses) {
+			customProductRepository.getReferenceById(productInCampaignResponse.getCustomProduct().getId())
+				.getVariant().getProviderConfigs().stream()
+				.filter(config -> config.getId().getBusinessCode().equals(providerId))
+				.findAny()
+				.map(providerConfigEntity -> new ProviderConfigResponse(
+					providerConfigEntity.getManufacturingTime(),
+					providerConfigEntity.getMinQuantity(),
+					providerConfigEntity.getBasePriceAmount()
+				))
+				.ifPresent(productInCampaignResponse::setProviderConfig);
 		}
-		return productInCampaignTagRepository.saveAll(
-			tags.stream()
-				.map(tag -> new ProductInCampaignTagEntity(productInCampaignId, tag))
-				.collect(Collectors.toSet())
-		);
 	}
 
-	private void validateCreateCustomProductRequest(AccountEntity ownerEntity,
+	private void validateCampaignTypeWithRole(ArtistEntity ownerEntity, CampaignRequest request) {
+		Role role = Role.fromValue(ownerEntity.getRole());
+		CampaignType type = request.getType();
+
+		if (role == Role.ARTIST && type == CampaignType.PUBLIC) {
+			throw new IllegalArgumentException("Artist cannot create public campaign");
+		}
+
+		if (role == Role.ADMIN && type != CampaignType.PUBLIC) {
+			throw new IllegalArgumentException("Admin can only create public campaign");
+		}
+	}
+
+	private void validateCreateCustomProductRequest(ArtistEntity ownerEntity,
 													String providerId,
 													Set<ProductInCampaignRequest> requests) {
 		if (providerId != null && !providerRepository.existsById(providerId)) {
@@ -255,25 +196,30 @@ public class CampaignServiceImpl implements CampaignService {
 
 			if (ownerEntity.getRole() == Role.ARTIST.getByteValue()
 				&& !ownerEntity.getId().equals(customProductEntity.getArtist().getId())) {
-				throw new IllegalArgumentException("you not own customProduct " + productInCampaignRequest.getCustomProductId());
+				throw new IllegalArgumentException("You not own customProduct " + customProductEntity.getId());
 			}
 
-			if (providerId != null) {
-				var providerConfig = customProductEntity.getVariant().getProviderConfigs().stream()
-					.filter(config -> config.getId().getBusinessCode().equals(providerId))
-					.findAny()
-					.orElseThrow(() -> new IllegalArgumentException("customProduct " + productInCampaignRequest.getCustomProductId() + " is not supported by provider " + providerId));
+			validateProviderSupportCustomProduct(providerId, customProductEntity, productInCampaignRequest);
+		}
+	}
 
-				if (productInCampaignRequest.getQuantity() != null
-					&& providerConfig.getMinQuantity() > productInCampaignRequest.getQuantity()) {
-					throw new IllegalArgumentException("customProduct quantity must greater than " + providerConfig.getMinQuantity());
-				}
+	private void validateProviderSupportCustomProduct(String providerId,
+													  CustomProductEntity customProductEntity,
+													  ProductInCampaignRequest productRequest) {
+		if (providerId != null) {
+			var providerConfig = customProductEntity.getVariant().getProviderConfigs().stream()
+				.filter(config -> providerId.equals(config.getId().getBusinessCode()))
+				.findAny()
+				.orElseThrow(() -> new IllegalArgumentException("customProduct " + customProductEntity.getId() + " is not supported by provider " + providerId));
 
-				if (productInCampaignRequest.getPrice() != null
-					&& productInCampaignRequest.getPrice().getAmount() != null
-					&& providerConfig.getBasePriceAmount().compareTo(productInCampaignRequest.getPrice().getAmount()) > 0) {
-					throw new IllegalArgumentException("customProduct price amount must greater than " + providerConfig.getBasePriceAmount());
-				}
+			if (productRequest.getQuantity() != null && providerConfig.getMinQuantity() > productRequest.getQuantity()) {
+				throw new IllegalArgumentException("product quantity must greater than " + providerConfig.getMinQuantity());
+			}
+
+			if (productRequest.getPrice() != null
+				&& productRequest.getPrice().getAmount() != null
+				&& providerConfig.getBasePriceAmount().compareTo(productRequest.getPrice().getAmount()) > 0) {
+				throw new IllegalArgumentException("product price amount must greater than " + providerConfig.getBasePriceAmount());
 			}
 		}
 	}
@@ -291,40 +237,16 @@ public class CampaignServiceImpl implements CampaignService {
 		var campaignEntity = campaignRepository.findById(campaignId)
 			.orElseThrow(() -> new EntityNotFoundException("campaignId " + campaignId + " not valid"));
 
-		if (userEntity.getRole() == Role.ARTIST.getByteValue() && !campaignEntity.getOwner().getId().equals(userId)) {
+		if (userEntity.getRole() == Role.ADMIN.getByteValue()) {
+			if (!ALLOWED_ADMIN_VIEW_STATUS.contains(CampaignStatus.fromValue(campaignEntity.getStatus()))
+				&& !campaignEntity.getOwner().getId().equals(userId)) {
+				throw new IllegalArgumentException("You can only get campaigns after submitted");
+			}
+		} else if (!campaignEntity.getOwner().getId().equals(userId)) {
 			throw new IllegalArgumentException("You not own campaign " + campaignId);
 		}
 
-		if ((userEntity.getRole() == Role.ADMIN.getByteValue() || userEntity.getRole() == Role.STAFF.getByteValue())
-			&& !ALLOWED_ADMIN_VIEW_STATUS.contains(CampaignStatus.fromValue(campaignEntity.getStatus()))) {
-			throw new IllegalArgumentException("You can only get campaigns after submitted");
-		}
-
-		Map<Long, ProviderConfigResponse> providerConfigsByProductInCampaignId = new HashMap<>();
-		for (var productInCampaignEntity : campaignEntity.getProductInCampaigns()) {
-			productInCampaignEntity.getCustomProduct().getVariant().getProviderConfigs().stream()
-				.filter(config -> config.getId().getBusinessCode().equals(campaignEntity.getProviderId()))
-				.findAny()
-				.ifPresent(providerConfigEntity ->
-					providerConfigsByProductInCampaignId.put(
-						productInCampaignEntity.getId(),
-						new ProviderConfigResponse(
-							providerConfigEntity.getManufacturingTime(),
-							providerConfigEntity.getMinQuantity(),
-							providerConfigEntity.getBasePriceAmount()
-						)));
-		}
-
-		var result = campaignMapper.entityToDetailResponse(campaignEntity);
-
-		if (campaignEntity.getProviderId() != null) {
-			var provider = providerRepository.getReferenceById(campaignEntity.getProviderId());
-			result.setProvider(providerMapper.entityToInfo(provider));
-		}
-		for (var productInCampaignResponse : result.getProductInCampaigns()) {
-			productInCampaignResponse.setProviderConfig(providerConfigsByProductInCampaignId.get(productInCampaignResponse.getId()));
-		}
-		return result;
+		return buildCampaignDetailResponse(campaignEntity);
 	}
 
 	@Override
@@ -332,7 +254,7 @@ public class CampaignServiceImpl implements CampaignService {
 		CampaignEntity campaignEntity = campaignRepository.findById(campaignId)
 			.orElseThrow(EntityNotFoundException::new);
 
-		if (!campaignEntity.getIsPublished()) {
+		if (!Boolean.TRUE.equals(campaignEntity.getIsPublished())) {
 			throw new IllegalArgumentException(ErrorCode.CAMPAIGN_UNPUBLISHED.getMessage());
 		}
 
@@ -366,7 +288,8 @@ public class CampaignServiceImpl implements CampaignService {
 		};
 	}
 
-	private CampaignResponse artistCancelCampaign(CampaignEntity campaignEntity, ArtistEntity artistEntity, String message) {
+	private CampaignResponse artistCancelCampaign(CampaignEntity campaignEntity, ArtistEntity artistEntity, String
+		message) {
 		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue()
 			&& campaignEntity.getStatus() != CampaignStatus.REQUEST_CHANGE.getByteValue()
 			&& campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
@@ -395,24 +318,22 @@ public class CampaignServiceImpl implements CampaignService {
 		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
 	}
 
-	private CampaignResponse artistSubmitCampaign(CampaignEntity campaignEntity, ArtistEntity artistEntity, String message) {
+	private CampaignResponse artistSubmitCampaign(CampaignEntity campaignEntity, ArtistEntity artistEntity, String
+		message) {
 		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue()
 			&& campaignEntity.getStatus() != CampaignStatus.REQUEST_CHANGE.getByteValue()) {
 			throw new IllegalArgumentException("You can only update campaign from DRAFT, REQUEST_CHANGE to WAITING");
 		}
 
-		for (var productInCampginEntity : campaignEntity.getProductInCampaigns()) {
-			if (!StringUtils.hasText(productInCampginEntity.getName())) {
-				throw new IllegalArgumentException("customProduct " + productInCampginEntity.getId() + " name must not empty");
+		for (var productInCampaignEntity : campaignEntity.getProductInCampaigns()) {
+			if (productInCampaignEntity.getQuantity() == null) {
+				throw new IllegalArgumentException("customProduct " + productInCampaignEntity.getId() + " quantity must not null");
 			}
-			if (productInCampginEntity.getQuantity() == null) {
-				throw new IllegalArgumentException("customProduct " + productInCampginEntity.getId() + " quantity must not null");
+			if (productInCampaignEntity.getPriceUnit() == null) {
+				throw new IllegalArgumentException("customProduct " + productInCampaignEntity.getId() + " price.Unit must not null");
 			}
-			if (productInCampginEntity.getPriceUnit() == null) {
-				throw new IllegalArgumentException("customProduct " + productInCampginEntity.getId() + " price.Unit must not null");
-			}
-			if (productInCampginEntity.getPriceAmount() == null) {
-				throw new IllegalArgumentException("customProduct " + productInCampginEntity.getId() + " price.Amount must not null");
+			if (productInCampaignEntity.getPriceAmount() == null) {
+				throw new IllegalArgumentException("customProduct " + productInCampaignEntity.getId() + " price.Amount must not null");
 			}
 		}
 
@@ -589,7 +510,7 @@ public class CampaignServiceImpl implements CampaignService {
 			throw new IllegalArgumentException("You can only publish product after campaign's status is APPROVED");
 		}
 
-		if (campaign.getIsPublished()) {
+		if (Boolean.TRUE.equals(campaign.getIsPublished())) {
 			throw new IllegalArgumentException("Product in this campaign is published");
 		}
 
