@@ -1,8 +1,6 @@
 package com.artiexh.model.rest.customproduct;
 
 import com.artiexh.model.domain.ImageSet;
-import com.artiexh.model.domain.OptionValue;
-import com.artiexh.model.domain.ProductOption;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Builder;
@@ -37,4 +35,21 @@ public class CustomProductDesignResponse extends CustomProductResponse {
 		private OptionValue optionValue;
 	}
 
+	@Data
+	@Builder
+	public static class ProductOption {
+		@JsonSerialize(using = ToStringSerializer.class)
+		private Long id;
+		private String name;
+		private Integer index;
+	}
+
+	@Data
+	@Builder
+	public static class OptionValue {
+		@JsonSerialize(using = ToStringSerializer.class)
+		private Long id;
+		private String name;
+		private String value;
+	}
 }
