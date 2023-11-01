@@ -51,6 +51,7 @@ public interface CustomProductMapper {
 	@Mapping(target = "variant", qualifiedByName = "entityToBasicDomain")
 	CustomProduct entityToDomain(CustomProductEntity entity);
 
+	@Named("customProductEntityToGeneralResponse")
 	CustomProductGeneralResponse entityToGeneralResponse(CustomProductEntity entity);
 
 	CustomProductDesignResponse entityToDesignResponse(CustomProductEntity entity);

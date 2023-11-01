@@ -1,15 +1,12 @@
 package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.ProductInCampaignEntity;
-import com.artiexh.data.jpa.entity.ProductVariantCombinationEntity;
 import com.artiexh.model.domain.ProductInCampaign;
 import com.artiexh.model.rest.campaign.request.ProductInCampaignRequest;
-import com.artiexh.model.rest.campaign.response.CustomProductResponse;
 import com.artiexh.model.rest.campaign.response.ProductInCampaignResponse;
 import org.mapstruct.*;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
 	uses = {ProductAttachMapper.class, CustomProductMapper.class, ArtistMapper.class, CampaignMapper.class, DateTimeMapper.class})
@@ -32,24 +29,12 @@ public interface ProductInCampaignMapper {
 	@Named("entityToResponse")
 	@Mapping(target = "price.amount", source = "priceAmount")
 	@Mapping(target = "price.unit", source = "priceUnit")
-	@Mapping(target = "customProduct.productTemplate", source = "customProduct.variant.productTemplate")
-	@Mapping(target = "customProduct.variant.variantCombination", source = "customProduct.variant.variantCombinations")
+	@Mapping(target = "customProduct", qualifiedByName = "customProductEntityToGeneralResponse")
 	@Mapping(target = "providerConfig", ignore = true)
 	ProductInCampaignResponse entityToResponse(ProductInCampaignEntity product);
 
 	@IterableMapping(qualifiedByName = "entityToResponse")
 	Set<ProductInCampaignResponse> entityToResponse(Set<ProductInCampaignEntity> product);
-
-	default Set<CustomProductResponse.VariantCombinationResponse> variantCombinationEntitiesToKeyValue(Set<ProductVariantCombinationEntity> variantCombinations) {
-		return variantCombinations.stream()
-			.map(entity -> new CustomProductResponse.VariantCombinationResponse(
-				entity.getOptionValue().getOption().getName(),
-				entity.getOptionValue().getName(),
-				entity.getOptionValue().getValue()
-			))
-			.collect(Collectors.toSet());
-	}
-
 
 	@Named("entityToDomain")
 	@Mapping(target = "price.amount", source = "priceAmount")
