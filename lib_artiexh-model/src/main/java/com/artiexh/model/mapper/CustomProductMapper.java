@@ -4,10 +4,7 @@ import com.artiexh.data.jpa.entity.CustomProductEntity;
 import com.artiexh.data.jpa.entity.CustomProductTagEntity;
 import com.artiexh.data.jpa.entity.ProductVariantCombinationEntity;
 import com.artiexh.model.domain.CustomProduct;
-import com.artiexh.model.rest.customproduct.CustomProductDesignRequest;
-import com.artiexh.model.rest.customproduct.CustomProductDesignResponse;
-import com.artiexh.model.rest.customproduct.CustomProductGeneralRequest;
-import com.artiexh.model.rest.customproduct.CustomProductGeneralResponse;
+import com.artiexh.model.rest.customproduct.*;
 import org.mapstruct.*;
 
 import java.util.Set;
@@ -50,6 +47,8 @@ public interface CustomProductMapper {
 
 	@Mapping(target = "variant", qualifiedByName = "entityToBasicDomain")
 	CustomProduct entityToDomain(CustomProductEntity entity);
+
+	CustomProductResponse entityToGetAllResponse(CustomProductEntity entity);
 
 	@Named("customProductEntityToGeneralResponse")
 	CustomProductGeneralResponse entityToGeneralResponse(CustomProductEntity entity);
