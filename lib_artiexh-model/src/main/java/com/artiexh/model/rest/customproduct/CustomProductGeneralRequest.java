@@ -16,7 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class CustomProductGeneralRequest {
-
+	@JsonIgnore
 	private Long id;
 
 	@NotNull
