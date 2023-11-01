@@ -64,6 +64,7 @@ springdoc:
       enabled: true
     operations-sorter: alpha
     tags-sorter: alpha
+  use-fqn: true
   writer-with-order-by-keys: true
 artiexh:
   payment:
