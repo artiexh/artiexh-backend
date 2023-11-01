@@ -39,19 +39,7 @@ public class CustomProductServiceImpl implements CustomProductService {
 
 	@Override
 	@Transactional
-	public CustomProductGeneralResponse saveGeneral(CustomProductGeneralRequest item) {
-		CustomProductEntity entity;
-
-		if (item.getId() != null) {
-			entity = updateGeneral(item);
-		} else {
-			entity = createGeneral(item);
-		}
-
-		return customProductMapper.entityToGeneralResponse(entity);
-	}
-
-	private CustomProductEntity createGeneral(CustomProductGeneralRequest item) {
+	public CustomProductGeneralResponse createGeneral(CustomProductGeneralRequest item) {
 		ProductVariantEntity variant = variantRepository.findById(item.getVariantId())
 			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.VARIANT_NOT_FOUND.getMessage() + item.getVariantId()));
 
@@ -63,10 +51,12 @@ public class CustomProductServiceImpl implements CustomProductService {
 		var savedTagEntities = saveCustomProductTag(savedEntity.getId(), item.getTags());
 		savedEntity.setTags(new HashSet<>(savedTagEntities));
 
-		return savedEntity;
+		return customProductMapper.entityToGeneralResponse(savedEntity);
 	}
 
-	private CustomProductEntity updateGeneral(CustomProductGeneralRequest item) {
+	@Override
+	@Transactional
+	public CustomProductGeneralResponse updateGeneral(CustomProductGeneralRequest item) {
 		CustomProductEntity entity = customProductRepository.findById(item.getId())
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + item.getId()));
 
@@ -89,24 +79,12 @@ public class CustomProductServiceImpl implements CustomProductService {
 		var savedTagEntities = saveCustomProductTag(savedEntity.getId(), item.getTags());
 		savedEntity.getTags().addAll(savedTagEntities);
 
-		return savedEntity;
+		return customProductMapper.entityToGeneralResponse(savedEntity);
 	}
 
 	@Override
 	@Transactional
-	public CustomProductDesignResponse saveDesign(CustomProductDesignRequest item) {
-		CustomProductEntity entity;
-
-		if (item.getId() != null) {
-			entity = updateDesign(item);
-		} else {
-			entity = createDesign(item);
-		}
-
-		return customProductMapper.entityToDesignResponse(entity);
-	}
-
-	private CustomProductEntity createDesign(CustomProductDesignRequest item) {
+	public CustomProductDesignResponse createDesign(CustomProductDesignRequest item) {
 		ProductVariantEntity variant = variantRepository.findById(item.getVariantId())
 			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.VARIANT_NOT_FOUND.getMessage() + item.getVariantId()));
 
@@ -116,10 +94,12 @@ public class CustomProductServiceImpl implements CustomProductService {
 		entity.setVariant(variant);
 		entity.setCategory(variant.getProductTemplate().getCategory());
 
-		return customProductRepository.save(entity);
+		return customProductMapper.entityToDesignResponse(customProductRepository.save(entity));
 	}
 
-	private CustomProductEntity updateDesign(CustomProductDesignRequest item) {
+	@Override
+	@Transactional
+	public CustomProductDesignResponse updateDesign(CustomProductDesignRequest item) {
 		CustomProductEntity entity = customProductRepository.findById(item.getId())
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + item.getId()));
 
@@ -146,7 +126,7 @@ public class CustomProductServiceImpl implements CustomProductService {
 			entity.setModelThumbnail(null);
 		}
 
-		return customProductRepository.save(entity);
+		return customProductMapper.entityToDesignResponse(customProductRepository.save(entity));
 	}
 
 	private List<CustomProductTagEntity> saveCustomProductTag(Long customProductId, Set<String> tags) {

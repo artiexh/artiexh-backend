@@ -27,13 +27,35 @@ public class CustomProductController {
 
 	@PostMapping("/general")
 	@PreAuthorize("hasAuthority('ARTIST')")
-	public CustomProductGeneralResponse saveGeneralItem(Authentication authentication,
-														@Valid @RequestBody CustomProductGeneralRequest detail) {
+	public CustomProductGeneralResponse createGeneralItem(Authentication authentication,
+														  @Valid @RequestBody CustomProductGeneralRequest detail) {
 		long userId = (long) authentication.getPrincipal();
 		detail.setArtistId(userId);
 
 		try {
-			return customProductService.saveGeneral(detail);
+			return customProductService.createGeneral(detail);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+				exception.getMessage(),
+				exception);
+		} catch (IllegalArgumentException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+				exception.getMessage(),
+				exception);
+		}
+	}
+
+	@PutMapping(Endpoint.CustomProduct.DETAIL + "/general")
+	@PreAuthorize("hasAuthority('ARTIST')")
+	public CustomProductGeneralResponse updateGeneralItem(Authentication authentication,
+														  @PathVariable long id,
+														  @Valid @RequestBody CustomProductGeneralRequest detail) {
+		long userId = (long) authentication.getPrincipal();
+		detail.setId(id);
+		detail.setArtistId(userId);
+
+		try {
+			return customProductService.updateGeneral(detail);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
 				exception.getMessage(),
@@ -47,13 +69,35 @@ public class CustomProductController {
 
 	@PostMapping("/design")
 	@PreAuthorize("hasAuthority('ARTIST')")
-	public CustomProductDesignResponse saveDesignItem(Authentication authentication,
-													  @Valid @RequestBody CustomProductDesignRequest detail) {
+	public CustomProductDesignResponse createDesignItem(Authentication authentication,
+														@Valid @RequestBody CustomProductDesignRequest detail) {
 		long userId = (long) authentication.getPrincipal();
 		detail.setArtistId(userId);
 
 		try {
-			return customProductService.saveDesign(detail);
+			return customProductService.createDesign(detail);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+				exception.getMessage(),
+				exception);
+		} catch (IllegalArgumentException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+				exception.getMessage(),
+				exception);
+		}
+	}
+
+	@PutMapping(Endpoint.CustomProduct.DETAIL + "/design")
+	@PreAuthorize("hasAuthority('ARTIST')")
+	public CustomProductDesignResponse updateDesignItem(Authentication authentication,
+														@PathVariable long id,
+														@Valid @RequestBody CustomProductDesignRequest detail) {
+		long userId = (long) authentication.getPrincipal();
+		detail.setId(id);
+		detail.setArtistId(userId);
+
+		try {
+			return customProductService.updateDesign(detail);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
 				exception.getMessage(),
