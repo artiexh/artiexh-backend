@@ -58,11 +58,10 @@ public interface CustomProductMapper {
 	@Named("variantCombinationEntityToDomain")
 	@Mapping(target = "option.id", source = "optionValue.option.id")
 	@Mapping(target = "option.name", source = "optionValue.option.name")
-	@Mapping(target = "option.index", source = "optionValue.option.index")
-	CustomProductDesignResponse.ProductVariantCombination variantCombinationEntityToDomain(ProductVariantCombinationEntity entity);
+	ProductVariantCombinationResponse variantCombinationEntityToDomain(ProductVariantCombinationEntity entity);
 
 	@IterableMapping(qualifiedByName = "variantCombinationEntityToDomain")
-	Set<CustomProductDesignResponse.ProductVariantCombination> variantCombinationsEntityToDomains(Set<ProductVariantCombinationEntity> entities);
+	Set<ProductVariantCombinationResponse> variantCombinationsEntityToDomains(Set<ProductVariantCombinationEntity> entities);
 
 	@Named("entityToDomainWithoutVariant")
 	@Mapping(target = "variant", ignore = true)
