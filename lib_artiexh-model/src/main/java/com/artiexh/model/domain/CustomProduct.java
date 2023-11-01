@@ -22,9 +22,10 @@ public class CustomProduct {
 	private Long campaignLock;
 	private String description;
 	private Set<String> tags;
-	private Media thumbnail;
+	private Media modelThumbnail;
 	private ProductCategory category;
 	private Integer maxItemPerOrder;
 	private Instant createdDate;
 	private Instant modifiedDate;
+	private Set<ProductAttach> attaches;
 }

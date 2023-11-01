@@ -4,11 +4,13 @@ import com.artiexh.data.jpa.entity.CampaignEntity;
 import com.artiexh.model.domain.CampaignStatus;
 import com.artiexh.model.domain.CampaignType;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.validation.ConstraintViolationException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +24,8 @@ public class CampaignRequestFilter {
 	private String ownerId;
 	private String providerId;
 	private CampaignType campaignType;
+	private Instant from = Instant.now();
+	private Instant to;
 
 	public Specification<CampaignEntity> getSpecification() {
 		return ((root, query, builder) -> {
@@ -43,7 +47,17 @@ public class CampaignRequestFilter {
 				predicates.add(builder.equal(root.get("providerId"), providerId));
 			}
 
-			if(campaignType != null && CampaignType.MARKETPLACE_VIEW_TYPE.contains(campaignType)) {
+			return builder.and(predicates.toArray(new Predicate[0]));
+		});
+	}
+
+	private Specification<CampaignEntity> getProgressPublishedCampaign() {
+		return ((root, query, builder) -> {
+			List<Predicate> predicates = new ArrayList<>();
+
+			predicates.add(builder.equal(root.get("isPublished"), true));
+
+			if (campaignType != null && CampaignType.MARKETPLACE_VIEW_TYPE.contains(campaignType)) {
 				predicates.add(builder.equal(root.get("type"), campaignType.getByteValue()));
 			} else {
 				predicates.add(root.get("type").in(
@@ -52,8 +66,25 @@ public class CampaignRequestFilter {
 						.collect(Collectors.toSet())
 				));
 			}
+
+			if (to != null) {
+				List<Predicate> toPredicate = new ArrayList<>();
+				toPredicate.add(builder.lessThanOrEqualTo(root.get("from"), to));
+				toPredicate.add(builder.lessThanOrEqualTo(root.get("to"), to));
+				predicates.add(builder.or(toPredicate.toArray(new Predicate[0])));
+			}
+
+			if (from != null) {
+				List<Predicate> fromPredicate = new ArrayList<>();
+				fromPredicate.add(builder.greaterThanOrEqualTo(root.get("from"), from));
+				fromPredicate.add(builder.greaterThanOrEqualTo(root.get("to"), from));
+				predicates.add(builder.or(fromPredicate.toArray(new Predicate[0])));
+			}
 			return builder.and(predicates.toArray(new Predicate[0]));
 		});
 	}
 
+	public Specification<CampaignEntity> getMarketPlaceSpecification() {
+		return Specification.where(getSpecification()).and(getProgressPublishedCampaign());
+	}
 }
