@@ -4,6 +4,7 @@ import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -61,4 +62,10 @@ public class CampaignEntity {
 
 	@Column(name = "type", nullable = false)
 	private Byte type;
+
+	@Column(name = "from")
+	private Instant from;
+
+	@Column(name = "to")
+	private Instant to;
 }
