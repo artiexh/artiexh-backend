@@ -7,9 +7,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 public interface CustomProductService {
-	CustomProductGeneralResponse saveGeneral(CustomProductGeneralRequest item);
 
-	CustomProductDesignResponse saveDesign(CustomProductDesignRequest item);
+	CustomProductGeneralResponse createGeneral(CustomProductGeneralRequest item);
+
+	CustomProductGeneralResponse updateGeneral(CustomProductGeneralRequest item);
+
+	CustomProductDesignResponse createDesign(CustomProductDesignRequest item);
+
+	CustomProductDesignResponse updateDesign(CustomProductDesignRequest item);
 
 	Page<CustomProductResponse> getAll(Specification<CustomProductEntity> specification, Pageable pageable);
 
