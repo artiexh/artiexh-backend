@@ -27,4 +27,5 @@ public class CustomProduct {
 	private Integer maxItemPerOrder;
 	private Instant createdDate;
 	private Instant modifiedDate;
+	private Set<ProductAttach> attaches;
 }

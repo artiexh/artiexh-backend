@@ -74,7 +74,7 @@ public class ProductTemplateEntity extends BaseAuditEntity {
 	private Set<ProviderEntity> providers;
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-	@JoinColumn(name = "product_base_id")
+	@JoinColumn(name = "product_template_id")
 	private Set<ProductAttachEntity> attaches;
 
 	@ManyToOne

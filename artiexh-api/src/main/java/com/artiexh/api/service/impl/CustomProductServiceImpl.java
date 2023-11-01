@@ -10,7 +10,6 @@ import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
 import com.artiexh.data.jpa.entity.embededmodel.ImageConfig;
 import com.artiexh.data.jpa.repository.CustomProductRepository;
 import com.artiexh.data.jpa.repository.CustomProductTagRepository;
-import com.artiexh.data.jpa.repository.MediaRepository;
 import com.artiexh.data.jpa.repository.ProductVariantRepository;
 import com.artiexh.model.domain.CustomProduct;
 import com.artiexh.model.mapper.CustomProductMapper;
@@ -41,7 +40,6 @@ public class CustomProductServiceImpl implements CustomProductService {
 	private final CustomProductTagRepository customProductTagRepository;
 	private final CustomProductMapper customProductMapper;
 	private final MediaMapper mediaMapper;
-	private final MediaRepository mediaRepository;
 
 	@Override
 	@Transactional
@@ -82,7 +80,11 @@ public class CustomProductServiceImpl implements CustomProductService {
 
 		entity.setName(item.getName());
 		entity.getImageSet().clear();
-		entity.setModelThumbnail(MediaEntity.builder().id(item.getModelThumbnailId()).build());
+		if (item.getModelThumbnailId() != null) {
+			entity.setModelThumbnail(MediaEntity.builder().id(item.getModelThumbnailId()).build());
+		} else {
+			entity.setModelThumbnail(null);
+		}
 		entity.setDescription(item.getDescription());
 		entity.setMaxItemPerOrder(item.getMaxItemPerOrder());
 		entity.getTags().clear();
@@ -142,8 +144,11 @@ public class CustomProductServiceImpl implements CustomProductService {
 			);
 		}
 
-		entity.setModelThumbnail(MediaEntity.builder().id(item.getModelThumbnailId()).build());
-		entity.getTags().clear();
+		if (item.getModelThumbnailId() != null) {
+			entity.setModelThumbnail(MediaEntity.builder().id(item.getModelThumbnailId()).build());
+		} else {
+			entity.setModelThumbnail(null);
+		}
 
 		return customProductRepository.save(entity);
 	}

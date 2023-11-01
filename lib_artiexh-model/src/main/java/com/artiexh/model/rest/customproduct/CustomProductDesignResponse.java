@@ -6,12 +6,14 @@ import com.artiexh.model.domain.ProductOption;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Builder;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
-@Setter
+@EqualsAndHashCode(callSuper = true)
+@Data
 @SuperBuilder
 public class CustomProductDesignResponse extends CustomProductResponse {
 	private ProductVariant variant;
@@ -19,7 +21,7 @@ public class CustomProductDesignResponse extends CustomProductResponse {
 	private String combinationCode;
 
 
-	@Setter
+	@Data
 	@Builder
 	public static class ProductVariant {
 		@JsonSerialize(using = ToStringSerializer.class)
@@ -28,7 +30,7 @@ public class CustomProductDesignResponse extends CustomProductResponse {
 		private ProductTemplateInCustomProductResponse productTemplate;
 	}
 
-	@Setter
+	@Data
 	@Builder
 	public static class ProductVariantCombination {
 		private ProductOption option;

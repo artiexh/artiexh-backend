@@ -54,13 +54,6 @@ public class ProductInCampaignEntity extends BaseAuditEntity {
 	@Column(name = "description", length = 1000)
 	private String description;
 
-	@OneToMany(
-		fetch = FetchType.LAZY,
-		orphanRemoval = true,
-		cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-	@JoinColumn(name = "custom_product_id")
-	private Set<ProductAttachEntity> attaches;
-
 	@Builder.Default
 	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
 	@JoinColumn(name = "product_in_campaign_id", updatable = false)

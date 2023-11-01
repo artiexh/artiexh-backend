@@ -4,13 +4,13 @@ import com.artiexh.model.domain.Media;
 import com.artiexh.model.domain.ProductCategory;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import lombok.Setter;
+import lombok.Data;
 import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 import java.util.Set;
 
-@Setter
+@Data
 @SuperBuilder
 public class CustomProductResponse {
 	@JsonSerialize(using = ToStringSerializer.class)

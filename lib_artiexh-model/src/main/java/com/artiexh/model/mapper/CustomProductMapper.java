@@ -14,7 +14,7 @@ import java.util.Set;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {MediaMapper.class, ArtistMapper.class, ProductVariantMapper.class, DateTimeMapper.class}
+	uses = {MediaMapper.class, ArtistMapper.class, ProductVariantMapper.class, DateTimeMapper.class, ProductAttachMapper.class}
 )
 public interface CustomProductMapper {
 	@Mapping(target = "artist", source = "artistId", qualifiedByName = "idToDomain")
