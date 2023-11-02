@@ -1,6 +1,7 @@
 package com.artiexh.model.rest.customproduct;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -27,7 +28,8 @@ public class CustomProductDesignRequest {
 	@JsonIgnore
 	private Long artistId;
 
-	private Set<ImageSet> imageSet;
+	@Valid
+	private Set<ImageSet> imageSet = Set.of();
 
 	private String combinationCode;
 
@@ -37,8 +39,10 @@ public class CustomProductDesignRequest {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class ImageSet {
+		@NotNull
+		private String positionCode;
+		@NotNull
 		private Long mockupImageId;
 		private Long manufacturingImageId;
-		private String positionCode;
 	}
 }
