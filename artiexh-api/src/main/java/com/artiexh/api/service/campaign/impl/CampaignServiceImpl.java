@@ -137,6 +137,7 @@ public class CampaignServiceImpl implements CampaignService {
 			.collect(Collectors.toSet());
 
 		oldCampaignEntity.setName(request.getName());
+		oldCampaignEntity.setProviderId(request.getProviderId());
 		oldCampaignEntity.setDescription(request.getDescription());
 		oldCampaignEntity.setThumbnailUrl(request.getThumbnailUrl());
 		oldCampaignEntity.setContent(request.getContent());
