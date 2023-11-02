@@ -10,7 +10,6 @@ import com.artiexh.data.jpa.repository.CustomProductTagRepository;
 import com.artiexh.data.jpa.repository.MediaRepository;
 import com.artiexh.data.jpa.repository.ProductVariantRepository;
 import com.artiexh.model.mapper.CustomProductMapper;
-import com.artiexh.model.mapper.MediaMapper;
 import com.artiexh.model.rest.customproduct.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +32,6 @@ public class CustomProductServiceImpl implements CustomProductService {
 	private final ProductVariantRepository variantRepository;
 	private final CustomProductTagRepository customProductTagRepository;
 	private final CustomProductMapper customProductMapper;
-	private final MediaMapper mediaMapper;
 	private final MediaRepository mediaRepository;
 
 	@Override
