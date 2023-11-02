@@ -10,8 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,7 +23,6 @@ public class CartItemResponse {
 	private String description;
 	private ProductType type;
 	private Long remainingQuantity;
-	private Instant publishDatetime;
 	private Long maxItemsPerOrder;
 	private DeliveryType deliveryType;
 	private Integer quantity;

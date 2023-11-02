@@ -18,6 +18,8 @@ public interface CampaignMapper {
 
 	CampaignResponse entityToResponse(CampaignEntity entity);
 
+	CampaignResponse domainToResponse(Campaign domain);
+
 	@Mapping(target = "campaignHistories", ignore = true)
 	Campaign entityToDomain(CampaignEntity entity);
 
