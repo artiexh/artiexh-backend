@@ -2,6 +2,8 @@ package com.artiexh.model.domain;
 
 import lombok.*;
 
+import java.time.Instant;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,4 +17,8 @@ public class PostComment {
 	private Post post;
 
 	private User owner;
+
+	private Instant createdDate;
+
+	private Instant modifiedDate;
 }

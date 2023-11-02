@@ -8,7 +8,9 @@ import org.springframework.data.domain.Pageable;
 public interface PostService {
 	Post create(Long userId, Post post);
 
-	Page<Post> getAllPost(Long userId, Pageable pageable);
+	Page<Post> getAllPost(String username, Pageable pageable);
+
+	Page<Post> getAllPost(Long artistId, Pageable pageable);
 
 	PostComment create(Long userId, Long postId, PostComment post);
 
