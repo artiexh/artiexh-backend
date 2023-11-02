@@ -32,4 +32,7 @@ public interface MediaMapper {
 
 	@Named("idToDomain")
 	Media idToDomain(Long id);
+
+	@Named("idToEntity")
+	MediaEntity idToEntity(Long id);
 }
