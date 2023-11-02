@@ -3,20 +3,20 @@ package com.artiexh.model.mapper;
 import com.artiexh.data.jpa.entity.CartEntity;
 import com.artiexh.data.jpa.entity.CartItemEntity;
 import com.artiexh.data.jpa.entity.ProductEntity;
+import com.artiexh.model.domain.Campaign;
 import com.artiexh.model.domain.Cart;
 import com.artiexh.model.domain.CartItem;
 import com.artiexh.model.domain.Product;
-import com.artiexh.model.domain.Shop;
+import com.artiexh.model.rest.cart.response.CartCampaignResponse;
 import com.artiexh.model.rest.cart.response.CartItemResponse;
 import com.artiexh.model.rest.cart.response.CartResponse;
-import com.artiexh.model.rest.cart.response.ShopInCartResponse;
-import com.artiexh.model.rest.cart.response.ShopItemsResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,31 +43,30 @@ public interface CartMapper {
 	@Mapping(target = "productInCampaign", ignore = true)
 	Product productEntityToCartItemProduct(ProductEntity productEntity);
 
+	@Mapping(target = "id", ignore = true)
 	CartEntity domainToEntity(Cart cart);
 
-	@Mapping(target = "shopItems", source = "cartItems", qualifiedByName = "artistItemsResponseMapping")
+	@Mapping(target = "campaigns", source = "cartItems", qualifiedByName = "campaignsResponseMapping")
 	CartResponse domainToCartResponse(Cart cart);
 
-	@Named("artistItemsResponseMapping")
-	default Set<ShopItemsResponse> artistItemsResponseMapping(Set<CartItem> cartItems) {
+	@Named("campaignsResponseMapping")
+	default Set<CartCampaignResponse> campaignsResponseMapping(Set<CartItem> cartItems) {
 		if (cartItems == null) {
 			return Collections.emptySet();
 		}
 		return cartItems.stream()
 			.collect(Collectors.groupingBy(
-				cartItem -> cartItem.getProduct().getShop(),
+				cartItem -> cartItem.getProduct().getCampaign(),
 				Collectors.mapping(this::domainToCartItemResponse, Collectors.toSet())
 			))
 			.entrySet().stream()
-			.map(entry -> new ShopItemsResponse(
-				artistToShopInfoResponse(entry.getKey()),
-				entry.getValue()
-			))
+			.map(this::entryProductByCampaignToCartCampaignResponse)
 			.collect(Collectors.toSet());
 	}
 
-	@Mapping(target = "imageUrl", source = "shopImageUrl")
-	ShopInCartResponse artistToShopInfoResponse(Shop shop);
+	@Mapping(target = "campaign", source = "entry.key")
+	@Mapping(target = "items", source = "entry.value")
+	CartCampaignResponse entryProductByCampaignToCartCampaignResponse(Map.Entry<Campaign, Set<CartItemResponse>> entry);
 
 	@Mapping(target = "id", source = "product.id")
 	@Mapping(target = "status", source = "product.status")
