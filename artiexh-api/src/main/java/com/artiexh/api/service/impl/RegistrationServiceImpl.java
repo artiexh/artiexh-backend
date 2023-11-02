@@ -75,7 +75,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	@Override
-	public Artist registerArtist(Long id, RegistrationShopRequest request) {
+	public Artist registerArtist(Long id) {
 		UserEntity userEntity = userRepository.findById(id)
 			.orElseThrow(EntityNotFoundException::new);
 
@@ -87,22 +87,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 			throw new IllegalArgumentException("User role is not USER, cannot register as ARTIST");
 		}
 
-		if (!wardRepository.existsById(request.getShopWardId())) {
-			throw new IllegalArgumentException("wardId not existed");
-		}
-
 		artistRepository.createArtistByExistedUserId(id);
 		ArtistEntity artistEntity = artistRepository.findById(id)
 			.orElseThrow(EntityNotFoundException::new);
 
 		artistEntity.setRole((byte) Role.ARTIST.getValue());
-		artistEntity.setShopName(request.getShopName());
-		if (!StringUtils.hasText(request.getShopImageUrl())) {
-			request.setShopImageUrl(artistEntity.getAvatarUrl());
-		}
-		artistEntity.setShopImageUrl(request.getShopImageUrl());
-		artistEntity.setShopWard(WardEntity.builder().id(request.getShopWardId()).build());
-		artistEntity.setShopAddress(request.getShopAddress());
 		return artistMapper.basicArtistInfo(artistRepository.save(artistEntity));
 	}
 

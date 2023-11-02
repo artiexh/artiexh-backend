@@ -9,7 +9,7 @@ public interface RegistrationService {
 
 	User createUser(User user);
 
-	Artist registerArtist(Long id, RegistrationShopRequest request);
+	Artist registerArtist(Long id);
 
 	Account createAdmin(Account account);
 
