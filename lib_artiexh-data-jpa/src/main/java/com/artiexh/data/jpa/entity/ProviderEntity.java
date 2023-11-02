@@ -33,7 +33,7 @@ public class ProviderEntity {
 	@Column(name = "phone", length = 15, nullable = false)
 	private String phone;
 
-	@Column(name = "description", nullable = false)
+	@Column(name = "description", length = 1000, nullable = false)
 	private String description;
 
 	@OneToMany(mappedBy = "provider", fetch = FetchType.EAGER)
