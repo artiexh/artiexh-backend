@@ -99,7 +99,7 @@ public class OrderServiceImpl implements OrderService {
 			.orElseThrow(() -> new IllegalArgumentException("ShopId not existed"));
 
 		var request = ShipFeeRequest.builder()
-			.pickAddress(shopEntity.getShopAddress())
+			.pickAddress(shopEntity.getAddress())
 			.pickProvince(shopEntity.getShopWard().getDistrict().getProvince().getFullName())
 			.pickDistrict(shopEntity.getShopWard().getDistrict().getFullName())
 			.pickWard(shopEntity.getShopWard().getFullName())

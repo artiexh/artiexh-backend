@@ -27,11 +27,11 @@ public class ArtistEntity extends UserEntity {
 	@ToString.Exclude
 	private Set<ProductEntity> shopProducts;
 
-	@Column(name = "shop_name")
-	private String shopName;
+	@Column(name = "bank_account")
+	private String bankAccount;
 
-	@Column(name = "shop_image_url")
-	private String shopImageUrl;
+	@Column(name = "bank_name")
+	private String bankName;
 
 	@OneToMany(mappedBy = "artist")
 	@ToString.Exclude
@@ -42,11 +42,11 @@ public class ArtistEntity extends UserEntity {
 	private WardEntity shopWard;
 
 	@Column(name = "shop_address")
-	private String shopAddress;
+	private String address;
 
 	@Size(max = 15)
 	@Column(name = "shop_phone", length = 15)
-	private String shopPhone;
+	private String phone;
 
 	@Builder.Default
 	@OneToMany(mappedBy = "owner")

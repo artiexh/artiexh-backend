@@ -3,7 +3,7 @@ package com.artiexh.model.mapper;
 import com.artiexh.data.jpa.entity.ArtistEntity;
 import com.artiexh.model.domain.Shop;
 import com.artiexh.model.rest.address.AddressResponse;
-import com.artiexh.model.rest.artist.request.RegistrationShopRequest;
+import com.artiexh.model.rest.artist.request.RegistrationArtistRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -17,14 +17,14 @@ public interface ShopMapper {
 
 	ArtistEntity domainToEntity(Shop shop);
 
-	Shop requestToDomain(RegistrationShopRequest request);
+	Shop requestToDomain(RegistrationArtistRequest request);
 
 	@Named("basicShopInfo")
 	@Mapping(target = "owner", source = ".", qualifiedByName = "basicArtistInfo")
 	Shop entityToDomain(ArtistEntity entity);
 
 	@Mapping(target = "ward", source = "shopWard")
-	@Mapping(target = "address", source = "shopAddress")
+	@Mapping(target = "address", source = "address")
 	AddressResponse entityToShopAddressResponse(ArtistEntity entity);
 
 }

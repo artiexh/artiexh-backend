@@ -69,4 +69,17 @@ public class AccountServiceImpl implements AccountService {
 			default -> null;
 		};
 	}
+
+	@Override
+	public AccountProfile updateProfile(Long id, AccountProfile accountProfile) {
+		AccountEntity entity = accountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+
+		entity.setDisplayName(accountProfile.getDisplayName());
+		entity.setEmail(accountProfile.getEmail());
+		entity.setAvatarUrl(accountProfile.getAvatarUrl());
+
+		AccountProfile profile = userMapper.entityToAccountProfile((UserEntity) entity);
+		profile.setNumOfSubscriptions(subscriptionRepository.countByUserId(entity.getId()));
+		return profile;
+	}
 }
