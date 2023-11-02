@@ -2,14 +2,12 @@ package com.artiexh.api.service.impl;
 
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.CustomProductService;
-import com.artiexh.data.jpa.entity.CustomProductEntity;
-import com.artiexh.data.jpa.entity.CustomProductTagEntity;
-import com.artiexh.data.jpa.entity.MediaEntity;
-import com.artiexh.data.jpa.entity.ProductVariantEntity;
+import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
 import com.artiexh.data.jpa.entity.embededmodel.ImageConfig;
 import com.artiexh.data.jpa.repository.CustomProductRepository;
 import com.artiexh.data.jpa.repository.CustomProductTagRepository;
+import com.artiexh.data.jpa.repository.MediaRepository;
 import com.artiexh.data.jpa.repository.ProductVariantRepository;
 import com.artiexh.model.mapper.CustomProductMapper;
 import com.artiexh.model.mapper.MediaMapper;
@@ -36,6 +34,7 @@ public class CustomProductServiceImpl implements CustomProductService {
 	private final CustomProductTagRepository customProductTagRepository;
 	private final CustomProductMapper customProductMapper;
 	private final MediaMapper mediaMapper;
+	private final MediaRepository mediaRepository;
 
 	@Override
 	@Transactional
@@ -88,11 +87,17 @@ public class CustomProductServiceImpl implements CustomProductService {
 		ProductVariantEntity variant = variantRepository.findById(item.getVariantId())
 			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.VARIANT_NOT_FOUND.getMessage() + item.getVariantId()));
 
-		validateImageSet(item.getCombinationCode(), item.getImageSet(), variant);
+		var imageSetEntity = validateImageSet(
+			item.getArtistId(),
+			item.getCombinationCode(),
+			item.getImageSet(),
+			variant
+		);
 
 		CustomProductEntity entity = customProductMapper.designRequestToEntity(item);
 		entity.setVariant(variant);
 		entity.setCategory(variant.getProductTemplate().getCategory());
+		entity.setImageSet(imageSetEntity);
 
 		return customProductMapper.entityToDesignResponse(customProductRepository.save(entity));
 	}
@@ -107,17 +112,19 @@ public class CustomProductServiceImpl implements CustomProductService {
 			throw new IllegalArgumentException("Cannot change variant");
 		}
 
-		validateImageSet(item.getCombinationCode(), item.getImageSet(), entity.getVariant());
+		var imageSetEntity = validateImageSet(
+			item.getArtistId(),
+			item.getCombinationCode(),
+			item.getImageSet(),
+			entity.getVariant()
+		);
 
 		entity.setName(item.getName());
 		entity.setCombinationCode(item.getCombinationCode());
 
 		entity.getImageSet().clear();
 		if (item.getImageSet() != null) {
-			entity.getImageSet().addAll(item.getImageSet().stream()
-				.map(mediaMapper::detailToEntity)
-				.collect(Collectors.toSet())
-			);
+			entity.getImageSet().addAll(imageSetEntity);
 		}
 
 		if (item.getModelThumbnailId() != null) {
@@ -137,7 +144,10 @@ public class CustomProductServiceImpl implements CustomProductService {
 		);
 	}
 
-	private void validateImageSet(String combinationCode, Set<CustomProductDesignRequest.ImageSet> imageSet, ProductVariantEntity variantEntity) {
+	private Set<ImageSetEntity> validateImageSet(Long artistId,
+												 String combinationCode,
+												 Set<CustomProductDesignRequest.ImageSet> imageSet,
+												 ProductVariantEntity variantEntity) {
 		if (combinationCode != null) {
 			var combinationConfig = variantEntity.getProductTemplate().getImageCombinations().stream()
 				.filter(combination -> combination.getCode().equals(combinationCode))
@@ -147,19 +157,43 @@ public class CustomProductServiceImpl implements CustomProductService {
 			if (isNotValidImagePosition(combinationConfig, imageSet)) {
 				throw new IllegalArgumentException("Image position is not valid");
 			}
-		} else if (imageSet != null && !imageSet.isEmpty()) {
+
+			return validateImageSetMedia(artistId, imageSet);
+		} else if (!imageSet.isEmpty()) {
 			throw new IllegalArgumentException("Cannot set imageSet without combinationCode");
 		}
+		return Set.of();
 	}
 
-	private boolean isNotValidImagePosition(ImageCombination combinationConfig, Set<CustomProductDesignRequest.ImageSet> imageSet) {
-		if (imageSet == null) {
-			return false;
-		}
+	private boolean isNotValidImagePosition(ImageCombination combinationConfig,
+											Set<CustomProductDesignRequest.ImageSet> imageSet) {
 		var configCodes = combinationConfig.getImages().stream().map(ImageConfig::getCode).collect(Collectors.toSet());
-		var positionCodes = imageSet.stream().map(CustomProductDesignRequest.ImageSet::getPositionCode).collect(Collectors.toSet());
+		var positionCodes = imageSet.stream()
+			.map(CustomProductDesignRequest.ImageSet::getPositionCode)
+			.collect(Collectors.toSet());
 		positionCodes.removeAll(configCodes);
 		return !positionCodes.isEmpty();
+	}
+
+	private Set<ImageSetEntity> validateImageSetMedia(Long artistId, Set<CustomProductDesignRequest.ImageSet> imageSets) {
+		return imageSets.stream()
+			.map(imageSet -> {
+				var imageSetEntityBuilder = ImageSetEntity.builder()
+					.positionCode(imageSet.getPositionCode())
+					.mockupImage(mediaRepository.findByIdAndOwnerId(imageSet.getMockupImageId(), artistId)
+						.orElseThrow(() ->
+							new IllegalArgumentException("mockupImageId " + imageSet.getMockupImageId() + " is not valid")
+						));
+
+				if (imageSet.getManufacturingImageId() != null) {
+					imageSetEntityBuilder.manufacturingImage(
+						mediaRepository.findByIdAndOwnerId(imageSet.getManufacturingImageId(), artistId).orElseThrow(() ->
+							new IllegalArgumentException("manufacturingImageId " + imageSet.getManufacturingImageId() + " is not valid")
+						));
+				}
+				return imageSetEntityBuilder.build();
+			})
+			.collect(Collectors.toSet());
 	}
 
 	@Override

@@ -63,9 +63,9 @@ public class CampaignEntity {
 	@Column(name = "type", nullable = false)
 	private Byte type;
 
-	@Column(name = "from")
+	@Column(name = "`from`")
 	private Instant from;
 
-	@Column(name = "to")
+	@Column(name = "`to`")
 	private Instant to;
 }

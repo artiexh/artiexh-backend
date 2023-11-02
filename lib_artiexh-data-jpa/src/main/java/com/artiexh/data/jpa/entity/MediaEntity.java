@@ -26,7 +26,7 @@ public class MediaEntity {
 	private String name;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "owner_id", nullable = true)
+	@JoinColumn(name = "owner_id")
 	private AccountEntity owner;
 
 	@ManyToMany(fetch = FetchType.LAZY)
