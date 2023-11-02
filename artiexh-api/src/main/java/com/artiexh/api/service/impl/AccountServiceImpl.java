@@ -71,6 +71,7 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
+	@Transactional
 	public AccountProfile updateProfile(Long id, AccountProfile accountProfile) {
 		AccountEntity entity = accountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 
@@ -78,6 +79,7 @@ public class AccountServiceImpl implements AccountService {
 		entity.setEmail(accountProfile.getEmail());
 		entity.setAvatarUrl(accountProfile.getAvatarUrl());
 
+		accountRepository.save(entity);
 		AccountProfile profile = userMapper.entityToAccountProfile((UserEntity) entity);
 		profile.setNumOfSubscriptions(subscriptionRepository.countByUserId(entity.getId()));
 		return profile;
