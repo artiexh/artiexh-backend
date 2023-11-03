@@ -41,10 +41,11 @@ public class PostController {
 	}
 
 	@GetMapping
-	public PageResponse<PostDetail> getAll(Authentication authentication, @Valid @ParameterObject PaginationAndSortingRequest pagination) {
-		long userId = (long) authentication.getPrincipal();
+	public PageResponse<PostDetail> getAll(
+		@RequestParam(required = false) String username,
+		@Valid @ParameterObject PaginationAndSortingRequest pagination) {
 		try {
-			Page<Post> post = postService.getAllPost(userId, pagination.getPageable());
+			Page<Post> post = postService.getAllPost(username, pagination.getPageable());
 			return new PageResponse<>(post.map(postMapper::domainToDetail));
 		} catch (IllegalArgumentException exception) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);

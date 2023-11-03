@@ -3,17 +3,20 @@ package com.artiexh.data.jpa.entity;
 import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Entity
 @Table(name = "post_comment")
-public class PostCommentEntity {
+@EntityListeners(AuditingEntityListener.class)
+public class PostCommentEntity extends BaseAuditEntity{
 	@Id
 	@Tsid
 	private Long id;

@@ -9,19 +9,20 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegistrationShopRequest {
+public class RegistrationArtistRequest {
 
 	@NotEmpty
-	private String shopName;
+	private String bankAccount;
 
-	private String shopImageUrl;
+	@NotEmpty
+	private String bankName;
 
 	@NotNull
-	private Integer shopWardId;
+	private Integer wardId;
 
 	@NotEmpty
-	private String shopAddress;
+	private String address;
 
 	@NotEmpty
-	private String shopPhone;
+	private String phone;
 }

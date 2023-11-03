@@ -8,4 +8,6 @@ public interface AccountService {
 	Account getUserById(Long id);
 
 	AccountProfile getUserProfile(Long id);
+
+	AccountProfile updateProfile(Long id, AccountProfile profile);
 }

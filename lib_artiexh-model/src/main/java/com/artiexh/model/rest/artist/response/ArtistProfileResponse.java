@@ -33,7 +33,11 @@ public class ArtistProfileResponse {
 
 	private Ward shopWard;
 
-	private String shopAddress;
+	private String address;
 
-	private String shopPhone;
+	private String phone;
+
+	private String bankAccount;
+
+	private String bankName;
 }

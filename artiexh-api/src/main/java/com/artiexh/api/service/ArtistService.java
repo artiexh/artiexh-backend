@@ -3,6 +3,7 @@ package com.artiexh.api.service;
 import com.artiexh.data.jpa.entity.OrderEntity;
 import com.artiexh.model.domain.Post;
 import com.artiexh.model.rest.PageResponse;
+import com.artiexh.model.rest.artist.request.UpdateArtistProfileRequest;
 import com.artiexh.model.rest.artist.response.ArtistProfileResponse;
 import com.artiexh.model.rest.artist.response.ShopOrderResponse;
 import com.artiexh.model.rest.artist.response.ShopOrderResponsePage;
@@ -30,4 +31,6 @@ public interface ArtistService {
 												UpdateShippingOrderRequest updateShippingOrderRequest);
 
 	Page<Post> getArtistPost(Long artistId, Pageable pageable);
+
+	ArtistProfileResponse updateArtistProfile(Long artistId, UpdateArtistProfileRequest request);
 }

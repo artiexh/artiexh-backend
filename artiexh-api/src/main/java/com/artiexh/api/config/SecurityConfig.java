@@ -68,6 +68,7 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.GET, Endpoint.Shop.ROOT + "/{username}/campaign").permitAll()
 				.requestMatchers(HttpMethod.GET, Endpoint.ProviderCategory.ROOT + "/**").permitAll()
 				.requestMatchers(HttpMethod.GET, Endpoint.Artist.ROOT + "/**").permitAll()
+				.requestMatchers(HttpMethod.GET, Endpoint.Post.ROOT + "/**").permitAll()
 				.requestMatchers(HttpMethod.GET, Endpoint.Marketplace.ROOT + "/**").permitAll()
 				.anyRequest().authenticated()
 			)

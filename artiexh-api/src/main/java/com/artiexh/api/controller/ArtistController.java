@@ -9,15 +9,14 @@ import com.artiexh.model.mapper.PostMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.artist.filter.ProductPageFilter;
+import com.artiexh.model.rest.artist.request.UpdateArtistProfileRequest;
 import com.artiexh.model.rest.artist.response.ArtistProfileResponse;
 import com.artiexh.model.rest.artist.response.ShopOrderResponse;
 import com.artiexh.model.rest.artist.response.ShopOrderResponsePage;
-import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import com.artiexh.model.rest.order.request.OrderPageFilter;
 import com.artiexh.model.rest.order.request.UpdateShippingOrderRequest;
 import com.artiexh.model.rest.post.PostDetail;
 import com.artiexh.model.rest.product.response.ProductResponse;
-import com.artiexh.model.rest.artist.filter.ArtistCampaignFilter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +43,18 @@ public class ArtistController {
 			return artistService.getProfile(username);
 		} catch (EntityNotFoundException ex) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+		}
+	}
+
+	@PutMapping("/profile")
+	public ArtistProfileResponse updateProfile(
+		Authentication authentication,
+		@RequestBody @Valid UpdateArtistProfileRequest artistProfile) {
+		try {
+			Long id = (Long) authentication.getPrincipal();
+			return artistService.updateArtistProfile(id, artistProfile);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(ErrorCode.USER_NOT_FOUND.getCode(), ErrorCode.USER_NOT_FOUND.getMessage(), ex);
 		}
 	}
 

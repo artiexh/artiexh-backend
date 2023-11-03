@@ -6,12 +6,10 @@ import com.artiexh.api.service.AccountService;
 import com.artiexh.model.domain.Account;
 import com.artiexh.model.rest.account.AccountProfile;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RequiredArgsConstructor
@@ -31,6 +29,18 @@ public class AccountController {
 	public AccountProfile getProfile(@PathVariable Long id) {
 		try {
 			return accountService.getUserProfile(id);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(ErrorCode.USER_NOT_FOUND.getCode(), ErrorCode.USER_NOT_FOUND.getMessage(), ex);
+		}
+	}
+
+	@PutMapping("/profile")
+	public AccountProfile updateProfile(
+		Authentication authentication,
+		@RequestBody @Valid AccountProfile accountProfile) {
+		try {
+			Long id = (Long) authentication.getPrincipal();
+			return accountService.updateProfile(id, accountProfile);
 		} catch (EntityNotFoundException ex) {
 			throw new ResponseStatusException(ErrorCode.USER_NOT_FOUND.getCode(), ErrorCode.USER_NOT_FOUND.getMessage(), ex);
 		}

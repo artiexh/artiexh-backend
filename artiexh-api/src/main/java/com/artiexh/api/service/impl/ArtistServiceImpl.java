@@ -18,6 +18,7 @@ import com.artiexh.model.mapper.OrderMapper;
 import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.mapper.SubscriptionMapper;
 import com.artiexh.model.rest.PageResponse;
+import com.artiexh.model.rest.artist.request.UpdateArtistProfileRequest;
 import com.artiexh.model.rest.artist.response.ArtistProfileResponse;
 import com.artiexh.model.rest.artist.response.ShopOrderResponse;
 import com.artiexh.model.rest.artist.response.ShopOrderResponsePage;
@@ -179,19 +180,19 @@ public class ArtistServiceImpl implements ArtistService {
 		} else {
 			orderBuilder
 				.pickName(orderEntity.getShop().getDisplayName()) // artist display name
-				.pickAddress(orderEntity.getShop().getShopAddress())
+				.pickAddress(orderEntity.getShop().getAddress())
 				.pickProvince(orderEntity.getShop().getShopWard().getDistrict().getProvince().getFullName())
 				.pickDistrict(orderEntity.getShop().getShopWard().getDistrict().getFullName())
 				.pickWard(orderEntity.getShop().getShopWard().getFullName())
-				.pickTel(orderEntity.getShop().getShopPhone())
-				.pickTel(orderEntity.getShop().getShopPhone())
+				.pickTel(orderEntity.getShop().getPhone())
+				.pickTel(orderEntity.getShop().getPhone())
 				.pickEmail(orderEntity.getShop().getEmail());
 			orderEntity.setPickName(orderEntity.getShop().getDisplayName());
-			orderEntity.setPickAddress(orderEntity.getShop().getShopAddress());
+			orderEntity.setPickAddress(orderEntity.getShop().getAddress());
 			orderEntity.setPickProvince(orderEntity.getShop().getShopWard().getDistrict().getProvince().getFullName());
 			orderEntity.setPickDistrict(orderEntity.getShop().getShopWard().getDistrict().getFullName());
 			orderEntity.setPickWard(orderEntity.getShop().getShopWard().getFullName());
-			orderEntity.setPickTel(orderEntity.getShop().getShopPhone());
+			orderEntity.setPickTel(orderEntity.getShop().getPhone());
 			orderEntity.setPickEmail(orderEntity.getShop().getEmail());
 		}
 
@@ -263,5 +264,23 @@ public class ArtistServiceImpl implements ArtistService {
 			throw new EntityNotFoundException("Arist id: " + artistId + " not existed");
 		}
 		return postService.getAllPost(artistId, pageable);
+	}
+
+	@Override
+	@Transactional
+	public ArtistProfileResponse updateArtistProfile(Long artistId, UpdateArtistProfileRequest request) {
+		ArtistEntity entity = artistRepository.findById(artistId).orElseThrow(EntityNotFoundException::new);
+
+		entity.setBankAccount(request.getBankAccount());
+		entity.setBankName(request.getBankName());
+		entity.setAddress(request.getAddress());
+		entity.setShopWard(WardEntity.builder().id(request.getWardId()).build());
+		entity.setPhone(request.getPhone());
+
+		artistRepository.save(entity);
+
+		ArtistProfileResponse profile = artistMapper.entityToProfileResponse(entity);
+		profile.setNumOfSubscriptions(subscriptionRepository.countByUserId(entity.getId()));
+		return profile;
 	}
 }

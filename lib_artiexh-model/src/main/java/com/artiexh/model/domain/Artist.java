@@ -16,5 +16,9 @@ import java.util.Set;
 public class Artist extends User {
 	private Set<Product> products;
 	private Set<Subscription> subscriptionsFrom;
-	private String shopName;
+	private String bankAccount;
+	private String bankName;
+	private String phone;
+	private String address;
+	private Ward ward;
 }
