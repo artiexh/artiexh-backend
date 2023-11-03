@@ -10,6 +10,7 @@ import com.artiexh.data.jpa.repository.CustomProductTagRepository;
 import com.artiexh.data.jpa.repository.MediaRepository;
 import com.artiexh.data.jpa.repository.ProductVariantRepository;
 import com.artiexh.model.mapper.CustomProductMapper;
+import com.artiexh.model.mapper.ProductAttachMapper;
 import com.artiexh.model.rest.customproduct.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class CustomProductServiceImpl implements CustomProductService {
 	private final CustomProductTagRepository customProductTagRepository;
 	private final CustomProductMapper customProductMapper;
 	private final MediaRepository mediaRepository;
+	private final ProductAttachMapper productAttachMapper;
 
 	@Override
 	@Transactional
@@ -61,6 +63,10 @@ public class CustomProductServiceImpl implements CustomProductService {
 		if (!entity.getVariant().getId().equals(item.getVariantId())) {
 			throw new IllegalArgumentException("Cannot change variant");
 		}
+
+		entity.getAttaches().clear();
+		Set<ProductAttachEntity> attaches = item.getAttaches().stream().map(productAttachMapper::domainToEntity).collect(Collectors.toSet());
+		entity.getAttaches().addAll(attaches);
 
 		entity.setName(item.getName());
 		entity.getImageSet().clear();

@@ -12,13 +12,12 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.checkerframework.checker.regex.qual.Regex;
 
 import java.time.Instant;
 import java.util.List;
@@ -78,4 +77,8 @@ public class ProductTemplateInfo {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@Schema(allOf = ProductCategoryResponse.class)
 	private ProductCategoryResponse category;
+
+	@Size(max = 20)
+	@NotBlank
+	private String code;
 }
