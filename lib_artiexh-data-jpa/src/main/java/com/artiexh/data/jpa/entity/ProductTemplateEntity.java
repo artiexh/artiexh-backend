@@ -5,6 +5,7 @@ import com.artiexh.data.jpa.entity.embededmodel.OptionConfig;
 import io.hypersistence.utils.hibernate.id.Tsid;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -80,4 +81,7 @@ public class ProductTemplateEntity extends BaseAuditEntity {
 	@ManyToOne
 	@JoinColumn(name = "category_id")
 	private ProductCategoryEntity category;
+
+	@Column(name = "code", length = 20)
+	private String code;
 }

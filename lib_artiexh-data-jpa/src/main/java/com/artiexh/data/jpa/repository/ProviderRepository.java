@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -25,4 +26,6 @@ public interface ProviderRepository extends JpaRepository<ProviderEntity, String
 		left join ProductVariantProviderEntity config on provider.businessCode = config.id.businessCode
 		where config.id.productVariantId in :variantIds""")
 	Set<ProviderEntity> findAllByProductVariantIds(Set<Long> variantIds);
+
+	int countByBusinessCodeIn(Set<String> businessCode);
 }

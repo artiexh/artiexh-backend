@@ -4,12 +4,10 @@ import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.ProductTemplateService;
 import com.artiexh.api.service.ProductVariantService;
 import com.artiexh.data.jpa.entity.*;
-import com.artiexh.data.jpa.repository.MediaRepository;
-import com.artiexh.data.jpa.repository.OptionValueRepository;
-import com.artiexh.data.jpa.repository.ProductOptionRepository;
-import com.artiexh.data.jpa.repository.ProductTemplateRepository;
+import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.ProductTemplate;
 import com.artiexh.model.domain.ProductVariant;
+import com.artiexh.model.domain.Provider;
 import com.artiexh.model.mapper.CycleAvoidingMappingContext;
 import com.artiexh.model.mapper.ProductTemplateMapper;
 import com.artiexh.model.mapper.ProviderMapper;
@@ -21,6 +19,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +29,7 @@ public class ProductTemplateServiceImpl implements ProductTemplateService {
 	private final ProductTemplateRepository productTemplateRepository;
 	private final ProductOptionRepository productOptionRepository;
 	private final OptionValueRepository optionValueRepository;
+	private final ProviderRepository providerRepository;
 	private final MediaRepository mediaRepository;
 	private final ProviderMapper providerMapper;
 	private final ProductVariantService variantService;
@@ -37,6 +37,11 @@ public class ProductTemplateServiceImpl implements ProductTemplateService {
 	@Override
 	@Transactional
 	public ProductTemplate create(ProductTemplate product) {
+		Set<String> businessCodes = product.getProviders().stream().map(Provider::getBusinessCode).collect(Collectors.toSet());
+		if (businessCodes.size() != providerRepository.countByBusinessCodeIn(businessCodes)) {
+			throw new IllegalArgumentException(ErrorCode.PROVIDER_NOT_FOUND.getMessage());
+		}
+
 		ProductTemplateEntity entity = productTemplateMapper.domainToEntity(product);
 
 		entity.setHasVariant(false);
@@ -61,6 +66,11 @@ public class ProductTemplateServiceImpl implements ProductTemplateService {
 	@Override
 	@Transactional
 	public ProductTemplate update(ProductTemplate product) {
+		Set<String> businessCodes = product.getProviders().stream().map(Provider::getBusinessCode).collect(Collectors.toSet());
+		if (businessCodes.size() != providerRepository.countByBusinessCodeIn(businessCodes)) {
+			throw new IllegalArgumentException(ErrorCode.PROVIDER_NOT_FOUND.getMessage());
+		}
+
 		ProductTemplateEntity entity = productTemplateRepository.findById(product.getId())
 			.orElseThrow(EntityNotFoundException::new);
 
