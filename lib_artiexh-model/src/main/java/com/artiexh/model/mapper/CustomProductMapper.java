@@ -34,13 +34,13 @@ public interface CustomProductMapper {
 	@Mapping(target = "variant.id", source = "variantId")
 	@Mapping(target = "artist.id", source = "artistId")
 	@Mapping(target = "tags", ignore = true)
-	@Mapping(target = "modelThumbnail", source = "modelThumbnailId", qualifiedByName = "idToEntity")
+	@Mapping(target = "modelThumbnail", ignore = true)
 	CustomProductEntity generalRequestToEntity(CustomProductGeneralRequest detail);
 
 	@Mapping(target = "variant.id", source = "variantId")
 	@Mapping(target = "artist.id", source = "artistId")
 	@Mapping(target = "tags", ignore = true)
-	@Mapping(target = "modelThumbnail", source = "modelThumbnailId", qualifiedByName = "idToEntity")
+	@Mapping(target = "modelThumbnail", ignore = true)
 	@Mapping(target = "imageSet", ignore = true)
 	CustomProductEntity designRequestToEntity(CustomProductDesignRequest detail);
 
