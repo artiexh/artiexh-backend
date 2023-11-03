@@ -17,6 +17,9 @@ import com.artiexh.model.mapper.UserMapper;
 import com.artiexh.model.rest.account.AccountProfile;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,5 +86,11 @@ public class AccountServiceImpl implements AccountService {
 		AccountProfile profile = userMapper.entityToAccountProfile((UserEntity) entity);
 		profile.setNumOfSubscriptions(subscriptionRepository.countByUserId(entity.getId()));
 		return profile;
+	}
+
+	@Override
+	public Page<Account> getAll(Specification<AccountEntity> specification, Pageable pageable) {
+		Page<AccountEntity> accounts = accountRepository.findAll(specification, pageable);
+		return accounts.map(accountMapper::entityToDomain);
 	}
 }
