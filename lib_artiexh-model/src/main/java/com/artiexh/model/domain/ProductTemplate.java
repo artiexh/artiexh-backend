@@ -43,4 +43,6 @@ public class ProductTemplate {
 	private ProductCategory category;
 
 	private Set<ProductAttach> attaches;
+
+	private String code;
 }
