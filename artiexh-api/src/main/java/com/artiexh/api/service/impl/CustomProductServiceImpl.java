@@ -41,6 +41,7 @@ public class CustomProductServiceImpl implements CustomProductService {
 			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.VARIANT_NOT_FOUND.getMessage() + item.getVariantId()));
 
 		CustomProductEntity entity = customProductMapper.generalRequestToEntity(item);
+		entity.setModelThumbnail(validateModelThumbnail(item.getModelThumbnailId(), item.getArtistId()));
 		entity.setVariant(variant);
 		entity.setCategory(variant.getProductTemplate().getCategory());
 
@@ -63,11 +64,7 @@ public class CustomProductServiceImpl implements CustomProductService {
 
 		entity.setName(item.getName());
 		entity.getImageSet().clear();
-		if (item.getModelThumbnailId() != null) {
-			entity.setModelThumbnail(MediaEntity.builder().id(item.getModelThumbnailId()).build());
-		} else {
-			entity.setModelThumbnail(null);
-		}
+		entity.setModelThumbnail(validateModelThumbnail(item.getModelThumbnailId(), item.getArtistId()));
 		entity.setDescription(item.getDescription());
 		entity.setMaxItemPerOrder(item.getMaxItemPerOrder());
 		entity.getTags().clear();
@@ -93,6 +90,7 @@ public class CustomProductServiceImpl implements CustomProductService {
 		);
 
 		CustomProductEntity entity = customProductMapper.designRequestToEntity(item);
+		entity.setModelThumbnail(validateModelThumbnail(item.getModelThumbnailId(), item.getArtistId()));
 		entity.setVariant(variant);
 		entity.setCategory(variant.getProductTemplate().getCategory());
 		entity.setImageSet(imageSetEntity);
@@ -119,19 +117,21 @@ public class CustomProductServiceImpl implements CustomProductService {
 
 		entity.setName(item.getName());
 		entity.setCombinationCode(item.getCombinationCode());
-
 		entity.getImageSet().clear();
 		if (item.getImageSet() != null) {
 			entity.getImageSet().addAll(imageSetEntity);
 		}
-
-		if (item.getModelThumbnailId() != null) {
-			entity.setModelThumbnail(MediaEntity.builder().id(item.getModelThumbnailId()).build());
-		} else {
-			entity.setModelThumbnail(null);
-		}
+		entity.setModelThumbnail(validateModelThumbnail(item.getModelThumbnailId(), item.getArtistId()));
 
 		return customProductMapper.entityToDesignResponse(customProductRepository.save(entity));
+	}
+
+	private MediaEntity validateModelThumbnail(Long id, Long artistId) {
+		if (id != null) {
+			return mediaRepository.findByIdAndOwnerId(id, artistId)
+				.orElseThrow(() -> new IllegalArgumentException("You not own media " + id));
+		}
+		return null;
 	}
 
 	private List<CustomProductTagEntity> saveCustomProductTag(Long customProductId, Set<String> tags) {

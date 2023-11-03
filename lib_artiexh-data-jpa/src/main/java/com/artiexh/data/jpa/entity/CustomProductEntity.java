@@ -54,7 +54,7 @@ public class CustomProductEntity extends BaseAuditEntity {
 	@JoinColumn(name = "custom_product_id", updatable = false)
 	private Set<CustomProductTagEntity> tags = new LinkedHashSet<>();
 
-	@OneToOne(orphanRemoval = true, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@OneToOne
 	@JoinColumn(name = "model_thumbnail_id")
 	private MediaEntity modelThumbnail;
 
