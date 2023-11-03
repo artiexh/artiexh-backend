@@ -3,7 +3,6 @@ package com.artiexh.api.controller;
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.CustomProductService;
-import com.artiexh.model.mapper.CustomProductMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.customproduct.*;
@@ -23,7 +22,6 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping(path = Endpoint.CustomProduct.ROOT)
 public class CustomProductController {
 	private final CustomProductService customProductService;
-	private final CustomProductMapper customProductMapper;
 
 	@PostMapping("/general")
 	@PreAuthorize("hasAuthority('ARTIST')")
