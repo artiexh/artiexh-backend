@@ -2,6 +2,7 @@ package com.artiexh.api.service.campaign;
 
 import com.artiexh.data.jpa.entity.CampaignEntity;
 import com.artiexh.model.rest.campaign.request.CampaignRequest;
+import com.artiexh.model.rest.campaign.request.CreatePublicCampaignRequest;
 import com.artiexh.model.rest.campaign.request.PublishProductRequest;
 import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
 import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
@@ -18,6 +19,8 @@ import java.util.Set;
 public interface CampaignService {
 
 	CampaignDetailResponse createCampaign(Long ownerId, CampaignRequest request);
+
+	CampaignDetailResponse createPublicCampaign(Long createdBy, CreatePublicCampaignRequest request);
 
 	CampaignDetailResponse updateCampaign(Long ownerId, CampaignRequest request);
 

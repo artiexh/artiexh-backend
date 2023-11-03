@@ -10,10 +10,7 @@ import com.artiexh.model.mapper.CampaignMapper;
 import com.artiexh.model.mapper.ProductInCampaignMapper;
 import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.mapper.ProviderMapper;
-import com.artiexh.model.rest.campaign.request.CampaignRequest;
-import com.artiexh.model.rest.campaign.request.ProductInCampaignRequest;
-import com.artiexh.model.rest.campaign.request.PublishProductRequest;
-import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
+import com.artiexh.model.rest.campaign.request.*;
 import com.artiexh.model.rest.campaign.response.*;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
@@ -89,6 +86,32 @@ public class CampaignServiceImpl implements CampaignService {
 
 		campaignEntity.setProductInCampaigns(savedProductInCampaigns);
 		campaignEntity.setCampaignHistories(Set.of(createCampaignHistoryEntity));
+		return buildCampaignDetailResponse(campaignEntity);
+	}
+
+	@Override
+	@Transactional
+	public CampaignDetailResponse createPublicCampaign(Long createdBy, CreatePublicCampaignRequest request) {
+		ArtistEntity ownerEntity = artistRepository.getReferenceById(request.getArtistId());
+		AccountEntity account = accountRepository.getReferenceById(createdBy);
+
+		CampaignEntity campaignEntity = CampaignEntity.builder()
+			.owner(ownerEntity)
+			.status(CampaignStatus.DRAFT.getByteValue())
+			.name(request.getName())
+			.type(CampaignType.PUBLIC.getByteValue())
+			.createdBy(account)
+			.build();
+		campaignRepository.save(campaignEntity);
+
+		CampaignHistoryEntity campaignHistory = CampaignHistoryEntity.builder()
+			.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())
+			.action(CampaignHistoryAction.CREATE.getByteValue())
+			.updatedBy(account.getUsername())
+			.build();
+//		campaignHistoryRepository.save(campaignHistory);
+
+		campaignEntity.setCampaignHistories(Set.of(campaignHistory));
 		return buildCampaignDetailResponse(campaignEntity);
 	}
 
