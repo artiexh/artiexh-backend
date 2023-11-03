@@ -72,14 +72,14 @@ public class MarketplaceController {
 		}
 	}
 
-	@GetMapping("/artist/{id}/campaign")
+	@GetMapping("/artist/{username}/campaign")
 	public PageResponse<CampaignResponse> getArtistCampaign(
-		@PathVariable long id,
+		@PathVariable String username,
 		@ParameterObject @Valid PaginationAndSortingRequest pagination,
 		@ParameterObject @Valid ArtistCampaignFilter filter
 	) {
 		try {
-			filter.setId(id);
+			filter.setUsername(username);
 			Page<CampaignResponse> campaignPage = campaignService.getAllCampaigns(filter.getSpecification(), pagination.getPageable());
 			return new PageResponse<>(campaignPage);
 		} catch (EntityNotFoundException ex) {

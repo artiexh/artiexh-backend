@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.time.Instant;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,4 +24,8 @@ public class PostCommentDetail {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@Schema(allOf = {AccountProfile.class})
 	private AccountProfile owner;
+
+	private Instant createdDate;
+
+	private Instant modifiedDate;
 }
