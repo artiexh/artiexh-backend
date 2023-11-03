@@ -25,12 +25,24 @@ public class CampaignResponse {
 	private Boolean isPublished;
 	private Instant from;
 	private Instant to;
+	private Creator createdBy;
 
 
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class Owner {
+		@JsonSerialize(using = ToStringSerializer.class)
+		private String id;
+		private String username;
+		private String displayName;
+		private String avatarUrl;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class Creator {
 		@JsonSerialize(using = ToStringSerializer.class)
 		private String id;
 		private String username;

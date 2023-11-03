@@ -9,6 +9,7 @@ import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.artist.filter.ArtistCampaignFilter;
 import com.artiexh.model.rest.campaign.request.CampaignRequestFilter;
+import com.artiexh.model.rest.campaign.request.CreatePublicCampaignRequest;
 import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import com.artiexh.model.rest.campaign.response.ProductInCampaignResponse;
@@ -21,11 +22,10 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RequiredArgsConstructor
@@ -42,6 +42,16 @@ public class MarketplaceController {
 															   @ParameterObject CampaignRequestFilter filter) {
 		var response = campaignService.getAllCampaigns(filter.getMarketPlaceSpecification(), paginationAndSortingRequest.getPageable());
 		return new PageResponse<>(response);
+	}
+
+	@PostMapping("/campaign")
+	@PreAuthorize("hasAnyAuthority('STAFF','ADMIN')")
+	public CampaignDetailResponse createPublicCampaign(
+		Authentication authentication,
+		@RequestBody @Valid CreatePublicCampaignRequest request
+	) {
+		long createdBy = (long) authentication.getPrincipal();
+		return campaignService.createPublicCampaign(createdBy, request);
 	}
 
 	@GetMapping("/campaign/{id}")
