@@ -4,13 +4,20 @@ import com.artiexh.data.jpa.entity.AccountEntity;
 import com.artiexh.model.domain.CampaignType;
 import com.artiexh.model.domain.Role;
 import jakarta.persistence.criteria.Predicate;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class AccountFilter {
 	private Role role;
 	private String username;

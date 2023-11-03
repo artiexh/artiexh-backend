@@ -68,4 +68,8 @@ public class CampaignEntity {
 
 	@Column(name = "`to`")
 	private Instant to;
+
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "created_by", nullable = false)
+	private AccountEntity createdBy;
 }
