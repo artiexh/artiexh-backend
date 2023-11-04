@@ -13,6 +13,7 @@ import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
 import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignProviderResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
+import com.artiexh.model.rest.campaign.response.ProductInCampaignDetailResponse;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -169,6 +170,22 @@ public class CampaignController {
 			return campaignService.publishProduct(campaignId, request);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
+	}
+
+	@GetMapping("/{id}/product/{product-id}")
+	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN','STAFF')")
+	public ProductInCampaignDetailResponse getProductInCampaign(Authentication authentication,
+																@PathVariable("product-id") Long productId,
+																@PathVariable Long id) {
+		try {
+			return campaignService.getProductInCampaign(id, productId);
+		} catch (UsernameNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ex.getMessage(), ex);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, ex.getMessage(), ex);
 		}
 	}
 

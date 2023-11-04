@@ -5,10 +5,7 @@ import com.artiexh.model.rest.campaign.request.CampaignRequest;
 import com.artiexh.model.rest.campaign.request.CreatePublicCampaignRequest;
 import com.artiexh.model.rest.campaign.request.PublishProductRequest;
 import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
-import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
-import com.artiexh.model.rest.campaign.response.CampaignResponse;
-import com.artiexh.model.rest.campaign.response.ProductInCampaignResponse;
-import com.artiexh.model.rest.campaign.response.PublishedCampaignDetailResponse;
+import com.artiexh.model.rest.campaign.response.*;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,4 +34,6 @@ public interface CampaignService {
 	Set<ProductResponse> publishProduct(Long campaignId, Set<PublishProductRequest> request);
 
 	Page<ProductInCampaignResponse> getAllProductCampaign(Long campaignId, Pageable pageable);
+
+	ProductInCampaignDetailResponse getProductInCampaign(Long campaignId, Long productId);
 }

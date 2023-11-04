@@ -3,6 +3,7 @@ package com.artiexh.model.mapper;
 import com.artiexh.data.jpa.entity.ProductInCampaignEntity;
 import com.artiexh.model.domain.ProductInCampaign;
 import com.artiexh.model.rest.campaign.request.ProductInCampaignRequest;
+import com.artiexh.model.rest.campaign.response.ProductInCampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.ProductInCampaignResponse;
 import org.mapstruct.*;
 
@@ -32,6 +33,12 @@ public interface ProductInCampaignMapper {
 	@Mapping(target = "customProduct", qualifiedByName = "customProductEntityToGeneralResponse")
 	@Mapping(target = "providerConfig", ignore = true)
 	ProductInCampaignResponse entityToResponse(ProductInCampaignEntity product);
+
+	@Mapping(target = "price.amount", source = "priceAmount")
+	@Mapping(target = "price.unit", source = "priceUnit")
+	@Mapping(target = "customProduct", qualifiedByName = "customProductEntityToDetailResponse")
+	@Mapping(target = "providerConfig", ignore = true)
+	ProductInCampaignDetailResponse entityToDetailResponse(ProductInCampaignEntity product);
 
 	@IterableMapping(qualifiedByName = "entityToResponse")
 	Set<ProductInCampaignResponse> entityToResponse(Set<ProductInCampaignEntity> product);
