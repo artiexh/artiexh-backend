@@ -16,7 +16,6 @@ import java.util.Set;
 public interface CustomProductMapper {
 	@Mapping(target = "artist", source = "artistId", qualifiedByName = "idToDomain")
 	@Mapping(target = "variant", source = "variantId", qualifiedByName = "idToDomain")
-	@Mapping(target = "modelThumbnail", source = "modelThumbnailId", qualifiedByName = "idToDomain")
 	CustomProduct detailToDomain(CustomProductGeneralRequest detail);
 
 	CustomProductGeneralRequest domainToDetail(CustomProduct item);
