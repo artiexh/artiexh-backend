@@ -47,7 +47,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Override
 	@Transactional
-	public CampaignDetailResponse createCampaign(Long ownerId, CampaignRequest request) {
+	public CampaignDetailResponse createCampaign(Long ownerId, ArtistCampaignRequest request) {
 		ArtistEntity ownerEntity = artistRepository.getReferenceById(ownerId);
 		validateCampaignTypeWithRole(ownerEntity, request);
 		validateCreateCustomProductRequest(ownerEntity, request.getProviderId(), request.getProducts());
@@ -117,7 +117,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Override
 	@Transactional
-	public CampaignDetailResponse updateCampaign(Long ownerId, CampaignRequest request) {
+	public CampaignDetailResponse updateCampaign(Long ownerId, ArtistCampaignRequest request) {
 		ArtistEntity ownerEntity = artistRepository.getReferenceById(ownerId);
 		validateCampaignTypeWithRole(ownerEntity, request);
 
@@ -199,7 +199,7 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 	}
 
-	private void validateCampaignTypeWithRole(ArtistEntity ownerEntity, CampaignRequest request) {
+	private void validateCampaignTypeWithRole(ArtistEntity ownerEntity, ArtistCampaignRequest request) {
 		Role role = Role.fromValue(ownerEntity.getRole());
 		CampaignType type = request.getType();
 
@@ -408,7 +408,7 @@ public class CampaignServiceImpl implements CampaignService {
 			case APPROVED -> staffApproveCampaign(campaignEntity, accountEntity, request.getMessage());
 			case REJECTED -> staffRejectCampaign(campaignEntity, accountEntity, request.getMessage());
 			case MANUFACTURING -> staffStartManufactureCampaign(campaignEntity, accountEntity, request.getMessage());
-			case DONE -> staffFinishManufactureCampaign(campaignEntity, accountEntity, request.getMessage());
+			case MANUFACTURED -> staffFinishManufactureCampaign(campaignEntity, accountEntity, request.getMessage());
 			default ->
 				throw new IllegalArgumentException("You can only update campaign to status REQUEST_CHANGE, APPROVED or REJECTED");
 		};
@@ -520,14 +520,14 @@ public class CampaignServiceImpl implements CampaignService {
 															String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.APPROVED.getByteValue()
 			&& campaignEntity.getStatus() != CampaignStatus.MANUFACTURING.getByteValue()) {
-			throw new IllegalArgumentException("You can only update campaign from APPROVED or MANUFACTURING to DONE");
+			throw new IllegalArgumentException("You can only update campaign from APPROVED or MANUFACTURING to MANUFACTURED");
 		}
 
-		campaignEntity.setStatus(CampaignStatus.DONE.getByteValue());
+		campaignEntity.setStatus(CampaignStatus.MANUFACTURED.getByteValue());
 		campaignEntity.getCampaignHistories().add(
 			CampaignHistoryEntity.builder()
 				.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())
-				.action(CampaignHistoryAction.DONE.getByteValue())
+				.action(CampaignHistoryAction.MANUFACTURED.getByteValue())
 				.message(message)
 				.updatedBy(accountEntity.getUsername())
 				.build()
