@@ -47,7 +47,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Override
 	@Transactional
-	public CampaignDetailResponse createCampaign(Long ownerId, CampaignRequest request) {
+	public CampaignDetailResponse createCampaign(Long ownerId, ArtistCampaignRequest request) {
 		ArtistEntity ownerEntity = artistRepository.getReferenceById(ownerId);
 		validateCampaignTypeWithRole(ownerEntity, request);
 		validateCreateCustomProductRequest(ownerEntity, request.getProviderId(), request.getProducts());
@@ -117,7 +117,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Override
 	@Transactional
-	public CampaignDetailResponse updateCampaign(Long ownerId, CampaignRequest request) {
+	public CampaignDetailResponse updateCampaign(Long ownerId, ArtistCampaignRequest request) {
 		ArtistEntity ownerEntity = artistRepository.getReferenceById(ownerId);
 		validateCampaignTypeWithRole(ownerEntity, request);
 
@@ -199,7 +199,7 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 	}
 
-	private void validateCampaignTypeWithRole(ArtistEntity ownerEntity, CampaignRequest request) {
+	private void validateCampaignTypeWithRole(ArtistEntity ownerEntity, ArtistCampaignRequest request) {
 		Role role = Role.fromValue(ownerEntity.getRole());
 		CampaignType type = request.getType();
 

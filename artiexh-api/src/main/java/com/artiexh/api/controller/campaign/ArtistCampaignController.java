@@ -6,7 +6,7 @@ import com.artiexh.api.service.provider.ProviderService;
 import com.artiexh.model.domain.Role;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
-import com.artiexh.model.rest.campaign.request.CampaignRequest;
+import com.artiexh.model.rest.campaign.request.ArtistCampaignRequest;
 import com.artiexh.model.rest.campaign.request.CampaignRequestFilter;
 import com.artiexh.model.rest.campaign.request.PublishProductRequest;
 import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
@@ -34,9 +34,9 @@ import java.util.Set;
 import static com.artiexh.model.domain.CampaignStatus.ALLOWED_ADMIN_VIEW_STATUS;
 
 @RestController
-@RequestMapping(Endpoint.Campaign.ROOT)
+@RequestMapping(Endpoint.ArtistCampaign.ROOT)
 @RequiredArgsConstructor
-public class CampaignController {
+public class ArtistCampaignController {
 	private final CampaignService campaignService;
 	private final ProviderService providerService;
 	@Value("${artiexh.security.admin.id}")
@@ -45,7 +45,7 @@ public class CampaignController {
 	@PostMapping
 	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN','STAFF')")
 	public CampaignDetailResponse createCampaign(Authentication authentication,
-												 @RequestBody @Validated CampaignRequest request) {
+												 @RequestBody @Validated ArtistCampaignRequest request) {
 		var role = extractRole(authentication)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has no role"));
 		long ownerId = role == Role.STAFF ? rootAdminId : (long) authentication.getPrincipal();
@@ -61,7 +61,7 @@ public class CampaignController {
 	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN','STAFF')")
 	public CampaignDetailResponse updateCampaign(Authentication authentication,
 												 @PathVariable Long id,
-												 @RequestBody @Validated CampaignRequest request) {
+												 @RequestBody @Validated ArtistCampaignRequest request) {
 		var role = extractRole(authentication)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has no role"));
 		long ownerId = role == Role.STAFF ? rootAdminId : (long) authentication.getPrincipal();

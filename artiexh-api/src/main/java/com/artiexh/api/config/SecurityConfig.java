@@ -64,7 +64,7 @@ public class SecurityConfig {
 					Endpoint.Product.ROOT + Endpoint.Product.PRODUCT_DETAIL,
 					Endpoint.Product.ROOT + Endpoint.Product.SUGGESTION).permitAll()
 				.requestMatchers(HttpMethod.GET, Endpoint.Shop.ROOT + "/**").permitAll()
-				.requestMatchers(HttpMethod.GET, Endpoint.Campaign.ROOT + "/{id}/product").permitAll()
+				.requestMatchers(HttpMethod.GET, Endpoint.ArtistCampaign.ROOT + "/{id}/product").permitAll()
 				.requestMatchers(HttpMethod.GET, Endpoint.Shop.ROOT + "/{username}/campaign").permitAll()
 				.requestMatchers(HttpMethod.GET, Endpoint.ProviderCategory.ROOT + "/**").permitAll()
 				.requestMatchers(HttpMethod.GET, Endpoint.Artist.ROOT + "/**").permitAll()
