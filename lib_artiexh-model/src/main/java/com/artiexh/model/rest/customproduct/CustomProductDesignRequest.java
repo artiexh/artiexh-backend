@@ -16,6 +16,7 @@ import java.util.Set;
 @Builder
 public class CustomProductDesignRequest {
 
+	@JsonIgnore
 	private Long id;
 
 	@NotNull
