@@ -1,6 +1,6 @@
-package com.artiexh.api.exception;
+package com.artiexh.api.base.exception;
 
-public class IllegalAccessException extends RuntimeException{
+public class IllegalAccessException extends RuntimeException {
 	public IllegalAccessException() {
 		super();
 	}

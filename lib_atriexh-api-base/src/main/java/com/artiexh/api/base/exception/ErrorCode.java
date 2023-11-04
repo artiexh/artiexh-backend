@@ -1,4 +1,4 @@
-package com.artiexh.api.exception;
+package com.artiexh.api.base.exception;
 
 import org.springframework.http.HttpStatus;
 
