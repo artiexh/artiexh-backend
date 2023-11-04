@@ -180,12 +180,8 @@ public class CampaignController {
 																@PathVariable Long id) {
 		try {
 			return campaignService.getProductInCampaign(id, productId);
-		} catch (UsernameNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ex.getMessage(), ex);
 		} catch (EntityNotFoundException ex) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
-		} catch (IllegalArgumentException ex) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN, ex.getMessage(), ex);
 		}
 	}
 
