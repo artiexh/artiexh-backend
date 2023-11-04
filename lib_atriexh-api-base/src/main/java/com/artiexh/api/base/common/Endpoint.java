@@ -170,8 +170,13 @@ public final class Endpoint {
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
-	public static class Campaign {
-		public static final String ROOT = PREFIX + "/campaign";
+	public static class ArtistCampaign {
+		public static final String ROOT = PREFIX + "/artist-campaign";
+	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class PublicCampaign {
+		public static final String ROOT = PREFIX + "/public-campaign";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)

@@ -13,7 +13,7 @@ public enum CampaignStatus {
 	REQUEST_CHANGE(3),
 	REJECTED(4),
 	MANUFACTURING(5),
-	DONE(6);
+	MANUFACTURED(6);
 
 	public static final Set<CampaignStatus> ALLOWED_ADMIN_VIEW_STATUS = Set.of(
 		CampaignStatus.WAITING,
@@ -21,7 +21,7 @@ public enum CampaignStatus {
 		CampaignStatus.REQUEST_CHANGE,
 		CampaignStatus.REJECTED,
 		CampaignStatus.MANUFACTURING,
-		CampaignStatus.DONE
+		CampaignStatus.MANUFACTURED
 	);
 
 	private final int value;

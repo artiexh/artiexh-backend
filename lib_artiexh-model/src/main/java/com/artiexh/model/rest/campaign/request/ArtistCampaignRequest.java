@@ -15,7 +15,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CampaignRequest {
+public class ArtistCampaignRequest {
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long id;
