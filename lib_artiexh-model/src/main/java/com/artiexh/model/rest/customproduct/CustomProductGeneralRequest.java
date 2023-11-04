@@ -33,8 +33,6 @@ public class CustomProductGeneralRequest {
 
 	private Set<String> tags = Set.of();
 
-	private Long modelThumbnailId;
-
 	private Integer maxItemPerOrder;
 
 	@Valid

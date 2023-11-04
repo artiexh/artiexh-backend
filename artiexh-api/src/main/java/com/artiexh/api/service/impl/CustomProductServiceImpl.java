@@ -43,7 +43,6 @@ public class CustomProductServiceImpl implements CustomProductService {
 			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.VARIANT_NOT_FOUND.getMessage() + item.getVariantId()));
 
 		CustomProductEntity entity = customProductMapper.generalRequestToEntity(item);
-		entity.setModelThumbnail(validateModelThumbnail(item.getModelThumbnailId(), item.getArtistId()));
 		entity.setVariant(variant);
 		entity.setCategory(variant.getProductTemplate().getCategory());
 
@@ -70,7 +69,6 @@ public class CustomProductServiceImpl implements CustomProductService {
 
 		entity.setName(item.getName());
 		entity.getImageSet().clear();
-		entity.setModelThumbnail(validateModelThumbnail(item.getModelThumbnailId(), item.getArtistId()));
 		entity.setDescription(item.getDescription());
 		entity.setMaxItemPerOrder(item.getMaxItemPerOrder());
 		entity.getTags().clear();
