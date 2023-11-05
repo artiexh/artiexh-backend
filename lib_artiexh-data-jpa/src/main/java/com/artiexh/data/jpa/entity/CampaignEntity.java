@@ -58,7 +58,11 @@ public class CampaignEntity {
 
 	@Builder.Default
 	@Column(name = "is_published", nullable = false)
-	private Boolean isPublished = false;
+	private Boolean isPrePublished = false;
+
+	@Builder.Default
+	@Column(name = "is_finalized", nullable = false)
+	private Boolean isFinalized = false;
 
 	@Column(name = "type", nullable = false)
 	private Byte type;

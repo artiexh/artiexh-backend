@@ -24,6 +24,12 @@ public enum CampaignStatus {
 		CampaignStatus.MANUFACTURED
 	);
 
+	public static final Set<CampaignStatus> ALLOWED_PUBLISHED_STATUS = Set.of(
+		CampaignStatus.APPROVED,
+		CampaignStatus.MANUFACTURING,
+		CampaignStatus.MANUFACTURED
+	);
+
 	private final int value;
 
 	CampaignStatus(int value) {

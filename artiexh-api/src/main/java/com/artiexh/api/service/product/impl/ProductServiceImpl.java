@@ -3,6 +3,7 @@ package com.artiexh.api.service.product.impl;
 import com.artiexh.api.service.product.JpaProductService;
 import com.artiexh.api.service.product.OpenSearchProductService;
 import com.artiexh.api.service.product.ProductService;
+import com.artiexh.data.jpa.entity.ProductInCampaignEntity;
 import com.artiexh.model.domain.Product;
 import com.artiexh.model.domain.ProductSuggestion;
 import lombok.RequiredArgsConstructor;
@@ -36,10 +37,10 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Product create(long artistId, Product product) {
+	public Product create(long artistId, Product product, ProductInCampaignEntity productInCampaign) {
 		Product result;
 		try {
-			result = jpaProductService.create(artistId, product);
+			result = jpaProductService.create(artistId, product, productInCampaign);
 			openSearchProductService.save(result);
 		} catch (Exception e) {
 			log.warn("Insert product to db fail", e);

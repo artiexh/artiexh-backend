@@ -1,10 +1,7 @@
 package com.artiexh.api.service.campaign;
 
 import com.artiexh.data.jpa.entity.CampaignEntity;
-import com.artiexh.model.rest.campaign.request.ArtistCampaignRequest;
-import com.artiexh.model.rest.campaign.request.CreatePublicCampaignRequest;
-import com.artiexh.model.rest.campaign.request.PublishProductRequest;
-import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
+import com.artiexh.model.rest.campaign.request.*;
 import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import com.artiexh.model.rest.campaign.response.ProductInCampaignResponse;
@@ -34,7 +31,8 @@ public interface CampaignService {
 
 	CampaignResponse reviewCampaign(Long staffId, UpdateCampaignStatusRequest request);
 
-	Set<ProductResponse> publishProduct(Long campaignId, Set<PublishProductRequest> request);
+	Set<ProductResponse> finalizeProduct(Long campaignId, Set<FinalizeProductRequest> request);
 
+	void staffPublishProductCampaign(Long campaignId, boolean isPrePublished, Long userId);
 	Page<ProductInCampaignResponse> getAllProductCampaign(Long campaignId, Pageable pageable);
 }
