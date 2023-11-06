@@ -1,11 +1,11 @@
 package com.artiexh.api.service.campaign;
 
 import com.artiexh.data.jpa.entity.CampaignEntity;
-import com.artiexh.model.rest.campaign.request.CampaignRequest;
-import com.artiexh.model.rest.campaign.request.CreatePublicCampaignRequest;
-import com.artiexh.model.rest.campaign.request.PublishProductRequest;
-import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
-import com.artiexh.model.rest.campaign.response.*;
+import com.artiexh.model.rest.campaign.request.*;
+import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
+import com.artiexh.model.rest.campaign.response.CampaignResponse;
+import com.artiexh.model.rest.campaign.response.ProductInCampaignResponse;
+import com.artiexh.model.rest.campaign.response.PublishedCampaignDetailResponse;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,11 +15,11 @@ import java.util.Set;
 
 public interface CampaignService {
 
-	CampaignDetailResponse createCampaign(Long ownerId, CampaignRequest request);
+	CampaignDetailResponse createCampaign(Long ownerId, ArtistCampaignRequest request);
 
 	CampaignDetailResponse createPublicCampaign(Long createdBy, CreatePublicCampaignRequest request);
 
-	CampaignDetailResponse updateCampaign(Long ownerId, CampaignRequest request);
+	CampaignDetailResponse updateCampaign(Long ownerId, ArtistCampaignRequest request);
 
 	Page<CampaignResponse> getAllCampaigns(Specification<CampaignEntity> specification, Pageable pageable);
 
@@ -31,8 +31,9 @@ public interface CampaignService {
 
 	CampaignResponse reviewCampaign(Long staffId, UpdateCampaignStatusRequest request);
 
-	Set<ProductResponse> publishProduct(Long campaignId, Set<PublishProductRequest> request);
+	Set<ProductResponse> finalizeProduct(Long campaignId, Set<FinalizeProductRequest> request);
 
+	void staffPublishProductCampaign(Long campaignId, boolean isPrePublished, Long userId);
 	Page<ProductInCampaignResponse> getAllProductCampaign(Long campaignId, Pageable pageable);
 
 	ProductInCampaignDetailResponse getProductInCampaign(Long campaignId, Long productId);

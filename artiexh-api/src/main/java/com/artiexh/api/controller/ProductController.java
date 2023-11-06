@@ -66,18 +66,6 @@ public class ProductController {
 		return productMapper.domainToProductResponse(product);
 	}
 
-	@PostMapping
-	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
-	public ProductResponse create(Authentication authentication, @RequestBody @Valid CreateProductRequest productRequest) {
-		long userId = (long) authentication.getPrincipal();
-		try {
-			Product createdProduct = productService.create(userId, productMapper.createProductRequestToProduct(productRequest));
-			return productMapper.domainToProductResponse(createdProduct);
-		} catch (IllegalArgumentException ex) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
-		}
-	}
-
 	@PutMapping(path = Endpoint.Product.PRODUCT_DETAIL)
 	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
 	public ProductResponse update(Authentication authentication, @PathVariable("id") long id, @RequestBody @Valid UpdateProductRequest request) {

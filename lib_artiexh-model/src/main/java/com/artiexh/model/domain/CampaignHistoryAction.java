@@ -11,7 +11,7 @@ public enum CampaignHistoryAction {
 	REJECT(5),
 	CANCEL(6),
 	MANUFACTURING(7),
-	DONE(8),
+	MANUFACTURED(8),
 	PUBLISHED(9);
 
 	private final int value;
@@ -29,7 +29,7 @@ public enum CampaignHistoryAction {
 			case 5 -> REJECT;
 			case 6 -> CANCEL;
 			case 7 -> MANUFACTURING;
-			case 8 -> DONE;
+			case 8 -> MANUFACTURED;
 			case 9 -> PUBLISHED;
 			default -> throw new IllegalArgumentException("Unknown CampaignHistoryAction value: " + value);
 		};

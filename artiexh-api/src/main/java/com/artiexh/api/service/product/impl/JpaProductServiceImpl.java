@@ -66,7 +66,7 @@ public class JpaProductServiceImpl implements JpaProductService {
 
 	@Override
 	@Transactional
-	public Product create(long artistId, Product product) {
+	public Product create(long artistId, Product product, ProductInCampaignEntity productInCampaign) {
 		ArtistEntity artistEntity = artistRepository.findById(artistId)
 			.orElseThrow(() -> new IllegalArgumentException("Artist not valid"));
 
@@ -87,19 +87,25 @@ public class JpaProductServiceImpl implements JpaProductService {
 		productEntity.setTags(tagEntities);
 		productEntity.setBundleItems(bundleItems);
 
-		if (product.getProductInCampaign() == null) {
-			productEntity.setShop(artistEntity);
-		} else {
-			ArtistEntity adminShop = artistRepository.findById(rootAdminId)
-				.orElseThrow(() -> new IllegalArgumentException("Admin shop is not configured"));
+//		if (product.getProductInCampaign() == null) {
+//			productEntity.setShop(artistEntity);
+//		} else {
+//			ArtistEntity adminShop = artistRepository.findById(rootAdminId)
+//				.orElseThrow(() -> new IllegalArgumentException("Admin shop is not configured"));
+//
+//			ProductInCampaignEntity campaignProduct = productInCampaignRepository.findById(product.getProductInCampaign().getId())
+//				.orElseThrow(() -> new IllegalArgumentException("Custom product is not found"));
+//
+//			productEntity.setShop(adminShop);
+//			productEntity.setProductInCampaignId(campaignProduct.getId());
+//			productEntity.setCampaignId(campaignProduct.getCampaign().getId());
+//		}
+		ArtistEntity adminShop = artistRepository.findById(rootAdminId)
+			.orElseThrow(() -> new IllegalArgumentException("Admin shop is not configured"));
 
-			ProductInCampaignEntity campaignProduct = productInCampaignRepository.findById(product.getProductInCampaign().getId())
-				.orElseThrow(() -> new IllegalArgumentException("Custom product is not found"));
-
-			productEntity.setShop(adminShop);
-			productEntity.setProductInCampaignId(campaignProduct.getId());
-			productEntity.setCampaignId(campaignProduct.getCampaign().getId());
-		}
+		productEntity.setShop(adminShop);
+		productEntity.setProductInCampaignId(productInCampaign.getId());
+		productEntity.setCampaignId(productInCampaign.getCampaign().getId());
 
 		ProductEntity savedProductEntity = productRepository.save(productEntity);
 
