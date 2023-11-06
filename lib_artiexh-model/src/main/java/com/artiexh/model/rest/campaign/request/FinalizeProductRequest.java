@@ -39,10 +39,6 @@ public class FinalizeProductRequest {
 	@NotNull
 	private ProductType type;
 
-	@NotNull
-	@Min(0)
-	private Long remainingQuantity;
-
 	@Min(0)
 	private Integer maxItemsPerOrder;
 
@@ -60,6 +56,8 @@ public class FinalizeProductRequest {
 	@Min(0)
 	private Float weight;
 
+	@NotNull
+	@Min(0)
 	private Integer quantity;
 
 	//private Set<Long> bundleItems;
