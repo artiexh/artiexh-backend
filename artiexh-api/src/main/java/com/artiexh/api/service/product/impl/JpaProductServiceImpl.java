@@ -87,19 +87,6 @@ public class JpaProductServiceImpl implements JpaProductService {
 		productEntity.setTags(tagEntities);
 		productEntity.setBundleItems(bundleItems);
 
-//		if (product.getProductInCampaign() == null) {
-//			productEntity.setShop(artistEntity);
-//		} else {
-//			ArtistEntity adminShop = artistRepository.findById(rootAdminId)
-//				.orElseThrow(() -> new IllegalArgumentException("Admin shop is not configured"));
-//
-//			ProductInCampaignEntity campaignProduct = productInCampaignRepository.findById(product.getProductInCampaign().getId())
-//				.orElseThrow(() -> new IllegalArgumentException("Custom product is not found"));
-//
-//			productEntity.setShop(adminShop);
-//			productEntity.setProductInCampaignId(campaignProduct.getId());
-//			productEntity.setCampaignId(campaignProduct.getCampaign().getId());
-//		}
 		ArtistEntity adminShop = artistRepository.findById(rootAdminId)
 			.orElseThrow(() -> new IllegalArgumentException("Admin shop is not configured"));
 
