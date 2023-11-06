@@ -4,7 +4,8 @@ import com.artiexh.data.jpa.entity.ProductAttachEntity;
 import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.opensearch.model.ProductDocument;
 import com.artiexh.model.domain.*;
-import com.artiexh.model.rest.campaign.request.PublishProductRequest;
+import com.artiexh.model.rest.campaign.request.FinalizeProductRequest;
+import com.artiexh.model.rest.campaign.request.UnPublishedProduct;
 import com.artiexh.model.rest.product.request.CreateProductRequest;
 import com.artiexh.model.rest.product.request.UpdateProductRequest;
 import com.artiexh.model.rest.product.response.ProductResponse;
@@ -102,10 +103,14 @@ public interface ProductMapper {
 	@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemsToProductSet")
 	Product createProductRequestToProduct(CreateProductRequest createProductRequest);
 
-	@Mapping(target = "category.id", source = "categoryId")
 	@Mapping(target = "productInCampaign.id", source = "productInCampaignId")
-	@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemsToProductSet")
-	Product publishProductRequestToProduct(PublishProductRequest publishProductRequest);
+	//@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemsToProductSet")
+	Product publishProductRequestToProduct(FinalizeProductRequest productRequest);
+
+	@Mapping(target = "productInCampaign.id", source = "id")
+	@Mapping(target = "category", source = "customProduct.category")
+	@Mapping(target = "tags", source = "customProduct.tags")
+	Product productInCampaignToProduct(ProductInCampaign productInCampaign);
 
 	@Named("bundleItemsToProductSet")
 	default Set<Product> bundleItemsToProductSet(Set<Long> bundleItems) {

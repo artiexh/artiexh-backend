@@ -2,14 +2,12 @@ package com.artiexh.api.service.campaign.impl;
 
 import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.campaign.CampaignService;
+import com.artiexh.api.service.campaign.ProductInCampaignService;
 import com.artiexh.api.service.product.ProductService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.*;
-import com.artiexh.model.mapper.CampaignMapper;
-import com.artiexh.model.mapper.ProductInCampaignMapper;
-import com.artiexh.model.mapper.ProductMapper;
-import com.artiexh.model.mapper.ProviderMapper;
+import com.artiexh.model.mapper.*;
 import com.artiexh.model.rest.campaign.request.*;
 import com.artiexh.model.rest.campaign.response.*;
 import com.artiexh.model.rest.product.response.ProductResponse;
@@ -44,7 +42,9 @@ public class CampaignServiceImpl implements CampaignService {
 	private final ProductMapper productMapper;
 	private final ProviderMapper providerMapper;
 	private final ArtistRepository artistRepository;
-
+	private final ProductInCampaignService productInCampaignService;
+	private final ProductTagMapper productTagMapper;
+	private final ProductCategoryMapper productCategoryMapper;
 	@Override
 	@Transactional
 	public CampaignDetailResponse createCampaign(Long ownerId, ArtistCampaignRequest request) {
@@ -283,7 +283,7 @@ public class CampaignServiceImpl implements CampaignService {
 		CampaignEntity campaignEntity = campaignRepository.findById(campaignId)
 			.orElseThrow(EntityNotFoundException::new);
 
-		if (!Boolean.TRUE.equals(campaignEntity.getIsPublished())) {
+		if (!Boolean.TRUE.equals(campaignEntity.getIsPrePublished())) {
 			throw new IllegalArgumentException(ErrorCode.CAMPAIGN_UNPUBLISHED.getMessage());
 		}
 
@@ -538,22 +538,22 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Override
 	@Transactional
-	public Set<ProductResponse> publishProduct(Long campaignId, Set<PublishProductRequest> products) {
+	public Set<ProductResponse> finalizeProduct(Long campaignId, Set<FinalizeProductRequest> request) {
 		CampaignEntity campaign = campaignRepository.findById(campaignId).orElseThrow(EntityNotFoundException::new);
 
-		if (!campaign.getStatus().equals(CampaignStatus.APPROVED.getByteValue())) {
-			throw new IllegalArgumentException("You can only publish product after campaign's status is APPROVED");
+		if (!CampaignStatus.ALLOWED_PUBLISHED_STATUS.contains(CampaignStatus.fromValue(campaign.getStatus()))) {
+			throw new IllegalArgumentException("You can only finalized product after campaign is approved and not finished");
 		}
 
-		if (Boolean.TRUE.equals(campaign.getIsPublished())) {
-			throw new IllegalArgumentException("Product in this campaign is published");
+		if (Boolean.TRUE.equals(campaign.getIsFinalized())) {
+			throw new IllegalArgumentException("Product in this campaign is finalized");
 		}
 
 		Set<Long> productCampaignIds = campaign.getProductInCampaigns().stream()
 			.map(ProductInCampaignEntity::getId)
 			.collect(Collectors.toSet());
-		Set<Long> productIds = products.stream()
-			.map(PublishProductRequest::getProductInCampaignId)
+		Set<Long> productIds = request.stream()
+			.map(FinalizeProductRequest::getProductInCampaignId)
 			.collect(Collectors.toSet());
 
 		if (!productCampaignIds.equals(productIds)) {
@@ -561,14 +561,29 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 
 		Set<ProductResponse> productResponses = new HashSet<>();
-		for (PublishProductRequest unpublishedProduct : products) {
-			Product product = productMapper.publishProductRequestToProduct(unpublishedProduct);
+		for (FinalizeProductRequest finalizeProductRequest : request) {
+			ProductInCampaignEntity productInCampaign =
+				productInCampaignRepository.findById(finalizeProductRequest.getProductInCampaignId())
+					.orElseThrow(() -> new IllegalArgumentException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + finalizeProductRequest.getProductInCampaignId()));
 
-			product = productService.create(campaign.getOwner().getId(), product);
+			//Update ProductInCampaign
+
+			if (campaign.getStatus().byteValue() == CampaignStatus.APPROVED.getByteValue()) {
+				ProductInCampaign uncommittedProduct = productInCampaignMapper.requestToDomain(finalizeProductRequest);
+				productInCampaignService.update(productInCampaign, uncommittedProduct);
+			}
+
+			//Product product = productMapper.productInCampaignToProduct(uncommittedProduct);
+			Product product = productMapper.publishProductRequestToProduct(finalizeProductRequest);
+			product.setTags(productInCampaign.getCustomProduct().getTags().stream().map(productTagMapper::entityToDomain).collect(Collectors.toSet()));
+			product.setCategory(productCategoryMapper.entityToDomain(productInCampaign.getCustomProduct().getCategory()));
+
+			product = productService.create(campaign.getOwner().getId(), product, productInCampaign);
 			productResponses.add(productMapper.domainToProductResponse(product));
 		}
 
-		staffPublishProductCampaign(campaign, "");
+		campaign.setIsFinalized(true);
+		campaignRepository.save(campaign);
 
 		return productResponses;
 	}
@@ -578,21 +593,40 @@ public class CampaignServiceImpl implements CampaignService {
 		return productInCampaignRepository.findAllByCampaignId(campaignId, pageable).map(productInCampaignMapper::entityToResponse);
 	}
 
-	private void staffPublishProductCampaign(CampaignEntity campaignEntity, String message) {
-		if (campaignEntity.getStatus() != CampaignStatus.APPROVED.getByteValue()) {
-			throw new IllegalArgumentException("You can only update campaign from APPROVED to PUBLISHED");
+	@Override
+	public ProductInCampaignDetailResponse getProductInCampaign(Long campaignId, Long productId) {
+		ProductInCampaignEntity campaignProduct = productInCampaignRepository.findAllByCampaignIdAndId(campaignId, productId)
+			.orElseThrow(EntityNotFoundException::new);
+		return productInCampaignMapper.entityToDetailResponse(campaignProduct);
+	}
+
+	@Override
+	@Transactional
+	public void staffPublishProductCampaign(Long campaignId, boolean isPrePublished, Long userId) {
+		CampaignEntity campaign = campaignRepository.findById(campaignId).orElseThrow(EntityNotFoundException::new);
+		if (!CampaignStatus.ALLOWED_PUBLISHED_STATUS.contains(CampaignStatus.fromValue(campaign.getStatus()))) {
+			throw new IllegalArgumentException("You can only publish product after campaign is approved and not finished");
 		}
 
-		campaignEntity.setIsPublished(true);
-		campaignEntity.getCampaignHistories().add(
+		String message = "";
+		if (Boolean.FALSE.equals(campaign.getIsPrePublished())) {
+			message = "Campaign " + campaignId + " was successfully pre-published";
+		} else {
+			throw new IllegalArgumentException("Campaign was already pre-published");
+		}
+
+		AccountEntity updatedBy = accountRepository.findById(userId).orElseThrow();
+
+		campaign.setIsPrePublished(isPrePublished);
+		campaign.getCampaignHistories().add(
 			CampaignHistoryEntity.builder()
-				.id(CampaignHistoryId.builder().campaignId(campaignEntity.getId()).build())
+				.id(CampaignHistoryId.builder().campaignId(campaign.getId()).build())
 				.action(CampaignHistoryAction.PUBLISHED.getByteValue())
 				.message(message)
+				.updatedBy(updatedBy.getUsername())
 				.build()
 		);
-
-		campaignRepository.save(campaignEntity);
+		campaignRepository.save(campaign);
 	}
 
 }

@@ -17,7 +17,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PublishProductRequest {
+public class UnPublishedProduct {
 	@NotNull
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long productInCampaignId;
