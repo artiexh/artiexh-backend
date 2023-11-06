@@ -60,5 +60,7 @@ public class FinalizeProductRequest {
 	@Min(0)
 	private Float weight;
 
+	private Integer quantity;
+
 	//private Set<Long> bundleItems;
 }

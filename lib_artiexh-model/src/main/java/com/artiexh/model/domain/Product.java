@@ -1,6 +1,7 @@
 package com.artiexh.model.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -34,4 +35,6 @@ public class Product {
 	private Set<Product> bundleItems;
 	private ProductInCampaign productInCampaign;
 	private Campaign campaign;
+	@Builder.Default
+	private Boolean isPrivate = false;
 }

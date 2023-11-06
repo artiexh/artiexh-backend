@@ -37,7 +37,7 @@ public class GetAllProductFilter {
 
 	public Query getQuery() {
 		var boolQuery = new BoolQueryBuilder().should(new TermsQueryBuilder("status", List.of(ProductStatus.PRE_ORDER.getValue(), ProductStatus.AVAILABLE.getValue()))).minimumShouldMatch(1);
-
+		boolQuery.must(new TermQueryBuilder("isPrivate", false));
 		if (username != null) {
 			boolQuery.must(new TermQueryBuilder("owner.username", username));
 		}
