@@ -593,6 +593,14 @@ public class CampaignServiceImpl implements CampaignService {
 		return productInCampaignRepository.findAllByCampaignId(campaignId, pageable).map(productInCampaignMapper::entityToResponse);
 	}
 
+	@Override
+	public ProductInCampaignDetailResponse getProductInCampaign(Long campaignId, Long productId) {
+		ProductInCampaignEntity campaignProduct = productInCampaignRepository.findAllByCampaignIdAndId(campaignId, productId)
+			.orElseThrow(EntityNotFoundException::new);
+		return productInCampaignMapper.entityToDetailResponse(campaignProduct);
+	}
+
+	@Override
 	@Transactional
 	public void staffPublishProductCampaign(Long campaignId, boolean isPrePublished, Long userId) {
 		CampaignEntity campaign = campaignRepository.findById(campaignId).orElseThrow(EntityNotFoundException::new);
