@@ -10,7 +10,7 @@ import com.artiexh.data.jpa.repository.CustomProductTagRepository;
 import com.artiexh.data.jpa.repository.MediaRepository;
 import com.artiexh.data.jpa.repository.ProductVariantRepository;
 import com.artiexh.model.mapper.CustomProductMapper;
-import com.artiexh.model.mapper.MediaMapper;
+import com.artiexh.model.mapper.ProductAttachMapper;
 import com.artiexh.model.rest.customproduct.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +33,8 @@ public class CustomProductServiceImpl implements CustomProductService {
 	private final ProductVariantRepository variantRepository;
 	private final CustomProductTagRepository customProductTagRepository;
 	private final CustomProductMapper customProductMapper;
-	private final MediaMapper mediaMapper;
 	private final MediaRepository mediaRepository;
+	private final ProductAttachMapper productAttachMapper;
 
 	@Override
 	@Transactional
@@ -63,13 +63,12 @@ public class CustomProductServiceImpl implements CustomProductService {
 			throw new IllegalArgumentException("Cannot change variant");
 		}
 
+		entity.getAttaches().clear();
+		Set<ProductAttachEntity> attaches = item.getAttaches().stream().map(productAttachMapper::domainToEntity).collect(Collectors.toSet());
+		entity.getAttaches().addAll(attaches);
+
 		entity.setName(item.getName());
 		entity.getImageSet().clear();
-		if (item.getModelThumbnailId() != null) {
-			entity.setModelThumbnail(MediaEntity.builder().id(item.getModelThumbnailId()).build());
-		} else {
-			entity.setModelThumbnail(null);
-		}
 		entity.setDescription(item.getDescription());
 		entity.setMaxItemPerOrder(item.getMaxItemPerOrder());
 		entity.getTags().clear();
@@ -95,6 +94,7 @@ public class CustomProductServiceImpl implements CustomProductService {
 		);
 
 		CustomProductEntity entity = customProductMapper.designRequestToEntity(item);
+		entity.setModelThumbnail(validateModelThumbnail(item.getModelThumbnailId(), item.getArtistId()));
 		entity.setVariant(variant);
 		entity.setCategory(variant.getProductTemplate().getCategory());
 		entity.setImageSet(imageSetEntity);
@@ -121,19 +121,21 @@ public class CustomProductServiceImpl implements CustomProductService {
 
 		entity.setName(item.getName());
 		entity.setCombinationCode(item.getCombinationCode());
-
 		entity.getImageSet().clear();
 		if (item.getImageSet() != null) {
 			entity.getImageSet().addAll(imageSetEntity);
 		}
-
-		if (item.getModelThumbnailId() != null) {
-			entity.setModelThumbnail(MediaEntity.builder().id(item.getModelThumbnailId()).build());
-		} else {
-			entity.setModelThumbnail(null);
-		}
+		entity.setModelThumbnail(validateModelThumbnail(item.getModelThumbnailId(), item.getArtistId()));
 
 		return customProductMapper.entityToDesignResponse(customProductRepository.save(entity));
+	}
+
+	private MediaEntity validateModelThumbnail(Long id, Long artistId) {
+		if (id != null) {
+			return mediaRepository.findByIdAndOwnerId(id, artistId)
+				.orElseThrow(() -> new IllegalArgumentException("You not own media " + id));
+		}
+		return null;
 	}
 
 	private List<CustomProductTagEntity> saveCustomProductTag(Long customProductId, Set<String> tags) {

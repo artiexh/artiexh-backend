@@ -19,6 +19,7 @@ import com.artiexh.model.mapper.CampaignOrderMapper;
 import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.mapper.SubscriptionMapper;
 import com.artiexh.model.rest.PageResponse;
+import com.artiexh.model.rest.artist.request.UpdateArtistProfileRequest;
 import com.artiexh.model.rest.artist.response.ArtistProfileResponse;
 import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponse;
 import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponsePage;
@@ -101,5 +102,23 @@ public class ArtistServiceImpl implements ArtistService {
 			throw new EntityNotFoundException("Arist id: " + artistId + " not existed");
 		}
 		return postService.getAllPost(artistId, pageable);
+	}
+
+	@Override
+	@Transactional
+	public ArtistProfileResponse updateArtistProfile(Long artistId, UpdateArtistProfileRequest request) {
+		ArtistEntity entity = artistRepository.findById(artistId).orElseThrow(EntityNotFoundException::new);
+
+		entity.setBankAccount(request.getBankAccount());
+		entity.setBankName(request.getBankName());
+		entity.setAddress(request.getAddress());
+		entity.setShopWard(WardEntity.builder().id(request.getWardId()).build());
+		entity.setPhone(request.getPhone());
+
+		artistRepository.save(entity);
+
+		ArtistProfileResponse profile = artistMapper.entityToProfileResponse(entity);
+		profile.setNumOfSubscriptions(subscriptionRepository.countByUserId(entity.getId()));
+		return profile;
 	}
 }

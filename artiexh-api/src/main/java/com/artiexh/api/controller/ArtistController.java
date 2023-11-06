@@ -8,7 +8,10 @@ import com.artiexh.model.mapper.PostMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.artist.filter.ProductPageFilter;
+import com.artiexh.model.rest.artist.request.UpdateArtistProfileRequest;
 import com.artiexh.model.rest.artist.response.ArtistProfileResponse;
+import com.artiexh.model.rest.artist.response.ShopOrderResponse;
+import com.artiexh.model.rest.artist.response.ShopOrderResponsePage;
 import com.artiexh.model.rest.order.request.OrderPageFilter;
 import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponse;
 import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponsePage;
@@ -41,6 +44,18 @@ public class ArtistController {
 			return artistService.getProfile(username);
 		} catch (EntityNotFoundException ex) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+		}
+	}
+
+	@PutMapping("/profile")
+	public ArtistProfileResponse updateProfile(
+		Authentication authentication,
+		@RequestBody @Valid UpdateArtistProfileRequest artistProfile) {
+		try {
+			Long id = (Long) authentication.getPrincipal();
+			return artistService.updateArtistProfile(id, artistProfile);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(ErrorCode.USER_NOT_FOUND.getCode(), ErrorCode.USER_NOT_FOUND.getMessage(), ex);
 		}
 	}
 

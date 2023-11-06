@@ -4,7 +4,6 @@ import com.artiexh.data.jpa.entity.CampaignEntity;
 import com.artiexh.model.domain.CampaignStatus;
 import com.artiexh.model.domain.CampaignType;
 import jakarta.persistence.criteria.Predicate;
-import jakarta.validation.ConstraintViolationException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,8 +29,6 @@ public class CampaignRequestFilter {
 	public Specification<CampaignEntity> getSpecification() {
 		return ((root, query, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
-
-			predicates.add(builder.equal(root.get("isPublished"), true));
 
 			if (status != null && !status.isEmpty()) {
 				predicates.add(root.get("status").in(

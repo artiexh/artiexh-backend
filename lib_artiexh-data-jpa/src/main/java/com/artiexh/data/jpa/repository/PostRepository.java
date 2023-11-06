@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PostRepository extends JpaRepository<PostEntity, Long> {
-	Page<PostEntity> findAllByOwnerId(Long ownerId, Pageable pageable);
+	Page<PostEntity> findAllByOwnerUsername(String username, Pageable pageable);
 
 	@Modifying
 	@Query("update PostEntity post set post.numOfComments = post.numOfComments + 1 where post.id = :postId")

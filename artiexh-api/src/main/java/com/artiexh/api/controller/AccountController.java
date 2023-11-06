@@ -4,14 +4,18 @@ import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.service.AccountService;
 import com.artiexh.model.domain.Account;
+import com.artiexh.model.rest.PageResponse;
+import com.artiexh.model.rest.PaginationAndSortingRequest;
+import com.artiexh.model.rest.account.AccountFilter;
 import com.artiexh.model.rest.account.AccountProfile;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RequiredArgsConstructor
@@ -36,4 +40,24 @@ public class AccountController {
 		}
 	}
 
+	@PutMapping("/profile")
+	public AccountProfile updateProfile(
+		Authentication authentication,
+		@RequestBody @Valid AccountProfile accountProfile) {
+		try {
+			Long id = (Long) authentication.getPrincipal();
+			return accountService.updateProfile(id, accountProfile);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(ErrorCode.USER_NOT_FOUND.getCode(), ErrorCode.USER_NOT_FOUND.getMessage(), ex);
+		}
+	}
+
+	@GetMapping
+	@PreAuthorize("hasAnyAuthority('STAFF','ADMIN')")
+	public PageResponse<Account> getAll(
+		@ParameterObject @Valid PaginationAndSortingRequest pagination,
+		@ParameterObject @Valid AccountFilter accountFilter
+	) {
+		return new PageResponse<>(accountService.getAll(accountFilter.getSpecification(), pagination.getPageable()));
+	}
 }

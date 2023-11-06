@@ -9,9 +9,7 @@ import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.artist.filter.ArtistCampaignFilter;
 import com.artiexh.model.rest.campaign.request.CampaignRequestFilter;
-import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
-import com.artiexh.model.rest.campaign.response.ProductInCampaignResponse;
 import com.artiexh.model.rest.campaign.response.PublishedCampaignDetailResponse;
 import com.artiexh.model.rest.product.request.GetCampaignProductFilter;
 import com.artiexh.model.rest.product.response.ProductResponse;
@@ -37,6 +35,7 @@ public class MarketplaceController {
 	private final ProductService productService;
 
 	private final ProductMapper productMapper;
+
 	@GetMapping("/campaign")
 	public PageResponse<CampaignResponse> getAllPublicCampaign(@ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
 															   @ParameterObject CampaignRequestFilter filter) {
@@ -72,14 +71,14 @@ public class MarketplaceController {
 		}
 	}
 
-	@GetMapping("/artist/{id}/campaign")
+	@GetMapping("/artist/{username}/campaign")
 	public PageResponse<CampaignResponse> getArtistCampaign(
-		@PathVariable long id,
+		@PathVariable String username,
 		@ParameterObject @Valid PaginationAndSortingRequest pagination,
 		@ParameterObject @Valid ArtistCampaignFilter filter
 	) {
 		try {
-			filter.setId(id);
+			filter.setUsername(username);
 			Page<CampaignResponse> campaignPage = campaignService.getAllCampaigns(filter.getSpecification(), pagination.getPageable());
 			return new PageResponse<>(campaignPage);
 		} catch (EntityNotFoundException ex) {

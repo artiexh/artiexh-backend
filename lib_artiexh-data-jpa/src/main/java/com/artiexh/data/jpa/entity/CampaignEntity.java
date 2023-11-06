@@ -58,7 +58,11 @@ public class CampaignEntity {
 
 	@Builder.Default
 	@Column(name = "is_published", nullable = false)
-	private Boolean isPublished = false;
+	private Boolean isPrePublished = false;
+
+	@Builder.Default
+	@Column(name = "is_finalized", nullable = false)
+	private Boolean isFinalized = false;
 
 	@Column(name = "type", nullable = false)
 	private Byte type;
@@ -68,4 +72,8 @@ public class CampaignEntity {
 
 	@Column(name = "`to`")
 	private Instant to;
+
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "created_by", nullable = false)
+	private AccountEntity createdBy;
 }

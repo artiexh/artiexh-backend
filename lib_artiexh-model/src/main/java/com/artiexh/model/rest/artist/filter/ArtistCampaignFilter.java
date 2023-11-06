@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.Instant;
@@ -21,7 +22,9 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class ArtistCampaignFilter {
 	@JsonIgnore
-	private long id;
+	private Long id;
+	@JsonIgnore
+	private String username;
 	private CampaignType campaignType;
 	private Instant from = Instant.now();
 	private Instant to;
@@ -30,7 +33,14 @@ public class ArtistCampaignFilter {
 		return (root, query, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			predicates.add(builder.equal(root.get("isPublished"), true));
-			predicates.add(builder.equal(root.get("owner").get("id"), id));
+			if (id != null) {
+				predicates.add(builder.equal(root.get("owner").get("id"), id));
+			}
+
+			if (StringUtils.isNotBlank(username)) {
+				predicates.add(builder.equal(root.join("owner").get("username"), username));
+			}
+
 			if (campaignType != null) {
 				predicates.add(builder.equal(root.get("type"), campaignType.getByteValue()));
 			}

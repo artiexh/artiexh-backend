@@ -28,7 +28,6 @@ public class UpdateProductVariantDetail {
 	@Valid
 	private Set<ProductVariantDetail.ProviderConfig> providerConfigs;
 
-	@NotEmpty
 	@Valid
 	private List<VariantCombination> variantCombinations;
 }

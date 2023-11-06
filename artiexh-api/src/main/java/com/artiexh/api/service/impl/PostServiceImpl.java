@@ -15,6 +15,7 @@ import com.artiexh.model.mapper.PostCommentMapper;
 import com.artiexh.model.mapper.PostMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -44,8 +45,19 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public Page<Post> getAllPost(Long userId, Pageable pageable) {
-		Page<PostEntity> posts = postRepository.findAllByOwnerId(userId, pageable);
+	public Page<Post> getAllPost(String username, Pageable pageable) {
+		Page<PostEntity> posts;
+		if (StringUtils.isNotBlank(username)) {
+			posts = postRepository.findAllByOwnerUsername(username, pageable);
+		} else {
+			posts = postRepository.findAll(pageable);
+		}
+		return posts.map(postMapper::entityToDomain);
+	}
+
+	@Override
+	public Page<Post> getAllPost(Long artistId, Pageable pageable) {
+		Page<PostEntity> posts = postRepository.findAll(pageable);
 		return posts.map(postMapper::entityToDomain);
 	}
 
