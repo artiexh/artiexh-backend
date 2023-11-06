@@ -111,7 +111,7 @@ public class OrderServiceImpl implements OrderService {
 			);
 			return createdOrder;
 		} catch (Exception ex) {
-			rollbackShopProductQuantity(cartItemEntities);
+			rollbackProductQuantity(cartItemEntities);
 			throw ex;
 		}
 	}
@@ -168,10 +168,10 @@ public class OrderServiceImpl implements OrderService {
 				throw new IllegalArgumentException("Exceed max items per order for product id: " + cartItemEntity.getProduct().getId());
 			}
 
-			if (cartItemEntity.getQuantity() > cartItemEntity.getProduct().getRemainingQuantity()) {
+			if (cartItemEntity.getQuantity() > (cartItemEntity.getProduct().getQuantity() - cartItemEntity.getProduct().getSoldQuantity())) {
 				throw new IllegalArgumentException("Not enough quantity for product id: " + cartItemEntity.getProduct().getId());
 			} else {
-				cartItemEntity.getProduct().setRemainingQuantity(cartItemEntity.getProduct().getRemainingQuantity() - cartItemEntity.getQuantity());
+				cartItemEntity.getProduct().setSoldQuantity(cartItemEntity.getProduct().getSoldQuantity() + cartItemEntity.getQuantity());
 			}
 		}
 
@@ -258,11 +258,11 @@ public class OrderServiceImpl implements OrderService {
 		return savedOrderEntity;
 	}
 
-	private void rollbackShopProductQuantity(List<CartItemEntity> cartItemEntities) {
+	private void rollbackProductQuantity(List<CartItemEntity> cartItemEntities) {
 		Set<ProductEntity> productEntities = cartItemEntities.stream()
 			.map(cartItemEntity -> {
 				ProductEntity productEntity = cartItemEntity.getProduct();
-				productEntity.setRemainingQuantity(productEntity.getRemainingQuantity() + cartItemEntity.getQuantity());
+				productEntity.setSoldQuantity(productEntity.getSoldQuantity() + cartItemEntity.getQuantity());
 				return productEntity;
 			})
 			.collect(Collectors.toSet());

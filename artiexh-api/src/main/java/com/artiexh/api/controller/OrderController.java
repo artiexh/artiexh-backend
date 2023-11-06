@@ -25,7 +25,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import reactor.core.publisher.Mono;
 
 import java.net.URI;
 
@@ -54,11 +53,11 @@ public class OrderController {
 
 	@GetMapping(Endpoint.Order.SHIPPING_FEE)
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
-	public Mono<ShipFeeResponse.ShipFee> getShippingFee(Authentication authentication,
-														@ParameterObject @Valid GetShippingFeeRequest request) {
+	public ShipFeeResponse.ShipFee getShippingFee(Authentication authentication,
+												  @ParameterObject @Valid GetShippingFeeRequest request) {
 		var userId = (Long) authentication.getPrincipal();
 		try {
-			return campaignOrderService.getShippingFee(userId, request);
+			return campaignOrderService.getShippingFee(userId, request).block();
 		} catch (ArtiexhConfigException ex) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
 		} catch (IllegalArgumentException ex) {

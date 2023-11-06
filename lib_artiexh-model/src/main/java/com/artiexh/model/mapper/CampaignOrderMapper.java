@@ -37,6 +37,7 @@ public interface CampaignOrderMapper {
 
 	AdminCampaignOrderResponse entityToUserResponse(CampaignOrderEntity entity);
 
+	@Mapping(target = "currentTransaction", ignore = true)
 	@Named("domainToUserResponse")
 	UserCampaignOrderResponse domainToUserResponse(CampaignOrder campaignOrder);
 
@@ -61,7 +62,7 @@ public interface CampaignOrderMapper {
 	@Mapping(target = "price.amount", source = "product.price.amount")
 	@Mapping(target = "description", source = "product.description")
 	@Mapping(target = "type", source = "product.type")
-	@Mapping(target = "remainingQuantity", source = "product.remainingQuantity")
+	@Mapping(target = "remainingQuantity", expression = "java(order.getProduct().getQuantity() - order.getProduct().getSoldQuantity())")
 	@Mapping(target = "maxItemsPerOrder", source = "product.maxItemsPerOrder")
 	@Mapping(target = "deliveryType", source = "product.deliveryType")
 	OrderDetailResponse domainToOrderDetailResponse(OrderDetail order);
@@ -74,7 +75,7 @@ public interface CampaignOrderMapper {
 	@Mapping(target = "price.amount", source = "product.priceAmount")
 	@Mapping(target = "description", source = "product.description")
 	@Mapping(target = "type", source = "product.type")
-	@Mapping(target = "remainingQuantity", source = "product.remainingQuantity")
+	@Mapping(target = "remainingQuantity", expression = "java(entity.getProduct().getQuantity() - entity.getProduct().getSoldQuantity())")
 	@Mapping(target = "maxItemsPerOrder", source = "product.maxItemsPerOrder")
 	@Mapping(target = "deliveryType", source = "product.deliveryType")
 	OrderDetailResponse entityToOrderDetailResponse(OrderDetailEntity entity);

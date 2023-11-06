@@ -1,7 +1,6 @@
 package com.artiexh.model.rest.order.user.response;
 
 import com.artiexh.model.domain.OrderStatus;
-import com.artiexh.model.domain.PaymentMethod;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -23,8 +22,6 @@ public class UserCampaignOrderResponsePage {
 	private CampaignResponse campaign;
 
 	private String note;
-
-	private PaymentMethod paymentMethod;
 
 	private OrderStatus status;
 

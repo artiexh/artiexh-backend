@@ -18,6 +18,7 @@ public class Order {
 	private OrderTransaction currentTransaction;
 	private Set<CampaignOrder> campaignOrders;
 	private PaymentMethod paymentMethod;
+	private String deliveryName;
 	private String deliveryAddress;
 	private String deliveryWard;
 	private String deliveryDistrict;
