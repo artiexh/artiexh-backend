@@ -7,6 +7,7 @@ import com.artiexh.api.service.product.ProductService;
 import com.artiexh.data.jpa.entity.ArtistEntity;
 import com.artiexh.data.jpa.entity.CampaignOrderEntity;
 import com.artiexh.data.jpa.entity.SubscriptionEntity;
+import com.artiexh.data.jpa.entity.WardEntity;
 import com.artiexh.data.jpa.repository.ArtistRepository;
 import com.artiexh.data.jpa.repository.CampaignOrderRepository;
 import com.artiexh.data.jpa.repository.OrderHistoryRepository;

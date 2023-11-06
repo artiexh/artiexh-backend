@@ -10,8 +10,6 @@ import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.artist.filter.ProductPageFilter;
 import com.artiexh.model.rest.artist.request.UpdateArtistProfileRequest;
 import com.artiexh.model.rest.artist.response.ArtistProfileResponse;
-import com.artiexh.model.rest.artist.response.ShopOrderResponse;
-import com.artiexh.model.rest.artist.response.ShopOrderResponsePage;
 import com.artiexh.model.rest.order.request.OrderPageFilter;
 import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponse;
 import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponsePage;
@@ -25,10 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RequiredArgsConstructor
