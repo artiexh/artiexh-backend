@@ -577,6 +577,9 @@ public class CampaignServiceImpl implements CampaignService {
 			Product product = productMapper.publishProductRequestToProduct(finalizeProductRequest);
 			product.setTags(productInCampaign.getCustomProduct().getTags().stream().map(productTagMapper::entityToDomain).collect(Collectors.toSet()));
 			product.setCategory(productCategoryMapper.entityToDomain(productInCampaign.getCustomProduct().getCategory()));
+			if (campaign.getType().byteValue() == CampaignType.PRIVATE.getByteValue()) {
+				product.setIsPrivate(true);
+			}
 
 			product = productService.create(campaign.getOwner().getId(), product, productInCampaign);
 			productResponses.add(productMapper.domainToProductResponse(product));

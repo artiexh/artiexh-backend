@@ -1,9 +1,11 @@
 package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
+import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.product.ProductService;
 import com.artiexh.model.domain.Product;
+import com.artiexh.model.domain.ProductSuggestion;
 import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
@@ -11,7 +13,9 @@ import com.artiexh.model.rest.artist.filter.ArtistCampaignFilter;
 import com.artiexh.model.rest.campaign.request.CampaignRequestFilter;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import com.artiexh.model.rest.campaign.response.PublishedCampaignDetailResponse;
+import com.artiexh.model.rest.product.request.GetAllProductFilter;
 import com.artiexh.model.rest.product.request.GetCampaignProductFilter;
+import com.artiexh.model.rest.product.request.SuggestionFilter;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -45,7 +49,6 @@ public class MarketplaceController {
 
 	@GetMapping("/campaign/{id}")
 	public PublishedCampaignDetailResponse getDetail(
-		@ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
 		@PathVariable Long id) {
 		try {
 			return campaignService.getCampaignDetail(id);
@@ -84,5 +87,40 @@ public class MarketplaceController {
 		} catch (EntityNotFoundException ex) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
 		}
+	}
+
+	@GetMapping("/product")
+	public PageResponse<ProductResponse> getInPage(
+			@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
+			@ParameterObject @Valid GetAllProductFilter filter
+	) {
+		Page<Product> productPage = productService.getInPage(
+				filter.getQuery(),
+				paginationAndSortingRequest.getPageable()
+		);
+		return new PageResponse<>(productMapper.productPageToProductResponsePage(productPage));
+	}
+
+	@GetMapping("/product/{id}")
+	public ProductResponse getDetail(@PathVariable("id") long id) {
+		Product product;
+		try {
+			product = productService.getDetail(id);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(ErrorCode.PRODUCT_NOT_FOUND.getCode(), ErrorCode.PRODUCT_NOT_FOUND.getMessage(), ex);
+		}
+		return productMapper.domainToProductResponse(product);
+	}
+
+	@GetMapping("/product/suggestion")
+	public PageResponse<ProductSuggestion> getSuggestionInPage(
+			@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
+			@ParameterObject @Valid SuggestionFilter filter
+	) {
+		Page<ProductSuggestion> suggestionPage = productService.getSuggestionInPage(
+				filter.getQuery(),
+				paginationAndSortingRequest.getPageable()
+		);
+		return new PageResponse<>(suggestionPage);
 	}
 }
