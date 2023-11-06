@@ -21,27 +21,32 @@ public class OrderTransactionEntity {
 	@Tsid
 	@Column(name = "id", nullable = false)
 	private Long id;
-	private String transactionNo;
 
-	@Column(name = "order_group_id", nullable = false)
-	private Long orderGroupId;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "order_group_id", updatable = false, insertable = false)
-	private OrderGroupEntity orderGroup;
-
-	private BigDecimal priceAmount;
-
+	@Column(name = "bank_code")
 	private String bankCode;
 
+	@Column(name = "card_type")
 	private String cardType;
 
+	@Column(name = "order_info")
 	private String orderInfo;
 
+	@Column(name = "pay_date")
 	private Instant payDate;
 
+	@Column(name = "price_amount", precision = 38, scale = 2)
+	private BigDecimal priceAmount;
+
+	@Column(name = "response_code")
 	private String responseCode;
 
+	@Column(name = "transaction_no")
+	private String transactionNo;
+
+	@Column(name = "transaction_status")
 	private String transactionStatus;
+
+	@Column(name = "order_id")
+	private Long orderId;
 
 }

@@ -44,7 +44,7 @@ public final class Endpoint {
 		public static final String ROOT = PREFIX + "/user";
 		public static final String ADDRESS = "/address";
 		public static final String ORDER = "/order";
-		public static final String ORDER_SHOP = "/order-shop";
+		public static final String CAMPAIGN_ORDER = "/campaign-order";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -189,6 +189,12 @@ public final class Endpoint {
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Marketplace {
 		public static final String ROOT = PREFIX + "/marketplace";
+	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Admin {
+		public static final String ROOT = PREFIX + "/admin";
+		public static final String CAMPAIGN_ORDER = "/campaign-order";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)

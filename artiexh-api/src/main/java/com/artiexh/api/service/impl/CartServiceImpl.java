@@ -1,6 +1,6 @@
 package com.artiexh.api.service.impl;
 
-import com.artiexh.api.exception.ErrorCode;
+import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.service.CartService;
 import com.artiexh.data.jpa.entity.CartEntity;
 import com.artiexh.data.jpa.entity.CartItemEntity;

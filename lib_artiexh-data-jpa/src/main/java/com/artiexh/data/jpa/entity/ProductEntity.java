@@ -59,8 +59,8 @@ public class ProductEntity {
 	@Column(name = "type", nullable = false)
 	private Byte type;
 
-	@Column(name = "remaining_quantity", columnDefinition = "INT UNSIGNED not null")
-	private Long remainingQuantity;
+	@Column(name = "quantity", columnDefinition = "INT UNSIGNED not null")
+	private Long quantity;
 
 	@Column(name = "max_items_per_order", columnDefinition = "INT UNSIGNED")
 	private Long maxItemsPerOrder;
@@ -108,7 +108,7 @@ public class ProductEntity {
 	@OneToOne()
 	@JoinColumn(
 		name = "campaign_id",
-		referencedColumnName= "id",
+		referencedColumnName = "id",
 		updatable = false,
 		insertable = false
 	)
@@ -116,4 +116,9 @@ public class ProductEntity {
 
 	@Column(name = "campaign_id")
 	private Long campaignId;
+
+	@Builder.Default
+	@Column(name = "sold_quantity", nullable = false)
+	private Integer soldQuantity = 0;
+
 }

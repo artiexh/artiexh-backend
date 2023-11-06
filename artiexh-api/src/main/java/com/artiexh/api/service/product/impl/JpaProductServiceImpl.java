@@ -49,7 +49,7 @@ public class JpaProductServiceImpl implements JpaProductService {
 			product.setThumbnailUrl(thumbnailUrl);
 
 			var entity = entities.get(product.getId());
-			product.setRemainingQuantity(entity.getRemainingQuantity());
+			product.setQuantity(entity.getQuantity());
 			product.getOwner().setAvatarUrl(entity.getOwner().getAvatarUrl());
 			product.setDescription(entity.getDescription());
 		}

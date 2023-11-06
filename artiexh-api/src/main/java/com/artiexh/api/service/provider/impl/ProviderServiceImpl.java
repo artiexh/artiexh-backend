@@ -1,6 +1,6 @@
 package com.artiexh.api.service.provider.impl;
 
-import com.artiexh.api.exception.ErrorCode;
+import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.service.provider.ProviderService;
 import com.artiexh.data.jpa.entity.CustomProductEntity;
 import com.artiexh.data.jpa.entity.ProductVariantEntity;
