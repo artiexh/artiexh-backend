@@ -22,7 +22,7 @@ public class CampaignResponse {
 	private String description;
 	private String thumbnailUrl;
 	private CampaignType type;
-	private Boolean isPublished;
+	private Boolean isPrePublished;
 	private Instant from;
 	private Instant to;
 	private Creator createdBy;

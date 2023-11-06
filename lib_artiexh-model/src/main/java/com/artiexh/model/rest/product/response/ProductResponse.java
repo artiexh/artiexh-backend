@@ -25,7 +25,8 @@ public class ProductResponse {
 	private Money price;
 	private float averageRate;
 	private ProductType type;
-	private long remainingQuantity;
+	private long quantity;
+	private long soldQuantity;
 	private Owner owner;
 	private Instant publishDatetime;
 	private String description;
