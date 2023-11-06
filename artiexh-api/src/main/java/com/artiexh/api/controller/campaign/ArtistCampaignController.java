@@ -6,16 +6,11 @@ import com.artiexh.api.service.provider.ProviderService;
 import com.artiexh.model.domain.Role;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
-import com.artiexh.model.rest.campaign.request.ArtistCampaignRequest;
-import com.artiexh.model.rest.campaign.request.CampaignRequestFilter;
-import com.artiexh.model.rest.campaign.request.PublishProductRequest;
-import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
+import com.artiexh.model.rest.campaign.request.*;
 import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignProviderResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
-import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -158,17 +153,6 @@ public class ArtistCampaignController {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, ex.getMessage(), ex);
-		}
-	}
-
-	@PostMapping("/{id}/published-product")
-	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
-	public Set<ProductResponse> publishProduct(@PathVariable("id") Long campaignId,
-											   @RequestBody @Valid Set<PublishProductRequest> request) {
-		try {
-			return campaignService.publishProduct(campaignId, request);
-		} catch (IllegalArgumentException ex) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		}
 	}
 

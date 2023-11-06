@@ -1,0 +1,48 @@
+package com.artiexh.api.controller.campaign;
+
+import com.artiexh.api.base.common.Endpoint;
+import com.artiexh.api.service.campaign.CampaignService;
+import com.artiexh.model.rest.campaign.request.FinalizeProductRequest;
+import com.artiexh.model.rest.product.response.ProductResponse;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Set;
+
+@RestController
+@RequestMapping(Endpoint.Campaign.ROOT)
+@RequiredArgsConstructor
+public class CampaignController {
+	private final CampaignService campaignService;
+	@PostMapping("/{id}/finalize-product")
+	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
+	public Set<ProductResponse> finalizeProduct(@PathVariable("id") Long campaignId,
+												@RequestBody @Valid Set<FinalizeProductRequest> request) {
+		try {
+			return campaignService.finalizeProduct(campaignId, request);
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+		}
+	}
+
+	@PostMapping("/{id}/pre-publish-product")
+	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
+	public void prePublishProduct(Authentication authentication, @PathVariable("id") Long campaignId) {
+		try {
+			long staffId = (long) authentication.getPrincipal();
+			campaignService.staffPublishProductCampaign(campaignId, true, staffId);
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+		}
+	}
+}

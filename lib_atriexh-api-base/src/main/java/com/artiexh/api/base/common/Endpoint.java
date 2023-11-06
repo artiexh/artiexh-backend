@@ -190,4 +190,9 @@ public final class Endpoint {
 	public static class Marketplace {
 		public static final String ROOT = PREFIX + "/marketplace";
 	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Campaign {
+		public static final String ROOT = PREFIX + "/campaign";
+	}
 }
