@@ -1,7 +1,7 @@
 package com.artiexh.model.rest.order.request;
 
-import com.artiexh.data.jpa.entity.OrderEntity;
-import com.artiexh.model.domain.OrderStatus;
+import com.artiexh.data.jpa.entity.CampaignOrderEntity;
+import com.artiexh.model.domain.CampaignOrderStatus;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -21,22 +21,27 @@ import java.util.function.Function;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderPageFilter {
-	private OrderStatus status;
+	private CampaignOrderStatus status;
 	private Instant from;
 	private Instant to;
 
-	public Specification<OrderEntity> getSpecificationForArtist(Long shopId) {
-		return getSpecification(root -> root.get("shop").get("id"), shopId);
+	public Specification<CampaignOrderEntity> getSpecificationForArtist(Long shopId) {
+		return getSpecification(root -> root.get("campaign").get("owner").get("id"), shopId);
 	}
 
-	public Specification<OrderEntity> getSpecificationForUser(Long userId) {
-		return getSpecification(root -> root.get("orderGroup").get("user").get("id"), userId);
+	public Specification<CampaignOrderEntity> getSpecificationForUser(Long userId) {
+		return getSpecification(root -> root.get("order").get("user").get("id"), userId);
 	}
 
-	private Specification<OrderEntity> getSpecification(Function<Root<OrderEntity>, Path<Long>> identifier, Long id) {
+	private Specification<CampaignOrderEntity> getSpecification(Function<Root<CampaignOrderEntity>, Path<Long>> identifier,
+																Long id) {
+		return getSpecification()
+			.and((root, query, builder) -> builder.equal(identifier.apply(root), id));
+	}
+
+	public Specification<CampaignOrderEntity> getSpecification() {
 		return (root, cQuery, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
-			predicates.add(builder.equal(identifier.apply(root), id));
 			if (status != null) {
 				predicates.add(builder.equal(root.get("status"), status.getByteValue()));
 			}

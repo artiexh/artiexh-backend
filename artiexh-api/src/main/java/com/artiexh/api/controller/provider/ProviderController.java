@@ -1,7 +1,7 @@
 package com.artiexh.api.controller.provider;
 
 import com.artiexh.api.base.common.Endpoint;
-import com.artiexh.api.exception.ErrorCode;
+import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.service.provider.ProviderService;
 import com.artiexh.model.domain.Provider;
 import com.artiexh.model.mapper.ProviderMapper;

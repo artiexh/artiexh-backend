@@ -1,6 +1,6 @@
 package com.artiexh.model.rest.order.request;
 
-import com.artiexh.model.domain.OrderStatus;
+import com.artiexh.model.domain.CampaignOrderStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,5 +14,5 @@ import lombok.Setter;
 public class UpdateOrderStatusRequest {
 	private String message;
 	@NotNull
-	private OrderStatus status;
+	private CampaignOrderStatus status;
 }

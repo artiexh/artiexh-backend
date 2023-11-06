@@ -1,27 +1,24 @@
 package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
-import com.artiexh.api.base.common.Endpoint.Order;
-import com.artiexh.api.exception.ErrorCode;
-import com.artiexh.api.exception.IllegalAccessException;
-import com.artiexh.api.service.OrderGroupService;
+import com.artiexh.api.base.exception.ArtiexhConfigException;
+import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.exception.IllegalAccessException;
+import com.artiexh.api.service.CampaignOrderService;
 import com.artiexh.api.service.OrderService;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
-import com.artiexh.model.domain.OrderGroup;
+import com.artiexh.model.domain.Order;
 import com.artiexh.model.domain.Role;
-import com.artiexh.model.mapper.OrderGroupMapper;
-import com.artiexh.model.rest.order.request.CheckoutRequest;
-import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
-import com.artiexh.model.rest.order.request.PaymentQueryProperties;
-import com.artiexh.model.rest.order.request.UpdateOrderStatusRequest;
+import com.artiexh.model.mapper.OrderMapper;
+import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
+import com.artiexh.model.rest.order.request.*;
 import com.artiexh.model.rest.order.response.PaymentResponse;
-import com.artiexh.model.rest.user.UserOrderGroupResponse;
+import com.artiexh.model.rest.order.user.response.UserOrderResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,33 +32,34 @@ import java.net.URI;
 @RestController
 @RequestMapping(Endpoint.Order.ROOT)
 public class OrderController {
-
 	private final OrderService orderService;
-	private final OrderGroupService orderGroupService;
-	private final OrderGroupMapper orderGroupMapper;
-	private final StringRedisTemplate redisTemplate;
+	private final CampaignOrderService campaignOrderService;
+	private final OrderMapper orderMapper;
 
 	@PostMapping(Endpoint.Order.CHECKOUT)
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
-	public UserOrderGroupResponse checkout(Authentication authentication,
-										   @RequestBody @Valid CheckoutRequest request) {
+	public UserOrderResponse checkout(Authentication authentication,
+									  @RequestBody @Valid CheckoutRequest request) {
 		var userId = (Long) authentication.getPrincipal();
 		try {
-
-			OrderGroup orderGroup = orderGroupService.checkout(userId, request);
-			return orderGroupMapper.domainToUserResponse(orderGroup);
+			Order order = orderService.checkout(userId, request);
+			return orderMapper.domainToUserResponse(order);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+		} catch (UnsupportedOperationException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, ex.getMessage());
 		}
 	}
 
-	@GetMapping(Order.SHIPPING_FEE)
+	@GetMapping(Endpoint.Order.SHIPPING_FEE)
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
 	public ShipFeeResponse.ShipFee getShippingFee(Authentication authentication,
 												  @ParameterObject @Valid GetShippingFeeRequest request) {
 		var userId = (Long) authentication.getPrincipal();
 		try {
-			return orderService.getShippingFee(userId, request.getAddressId(), request);
+			return campaignOrderService.getShippingFee(userId, request).block();
+		} catch (ArtiexhConfigException ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
 		}
@@ -81,7 +79,7 @@ public class OrderController {
 				ip = request.getRemoteAddr();
 			}
 			return PaymentResponse.builder()
-				.paymentUrl(orderGroupService.payment(
+				.paymentUrl(orderService.payment(
 						id,
 						PaymentQueryProperties.builder().vnp_IpAddr(ip).build(),
 						userId,
@@ -98,11 +96,27 @@ public class OrderController {
 
 	@GetMapping(Endpoint.Order.PAYMENT_RETURN)
 	public ResponseEntity<Void> confirmUrl(@ParameterObject PaymentQueryProperties paymentQueryProperties) {
-		orderGroupService.confirmPayment(paymentQueryProperties);
-		String confirmUrl =
-			redisTemplate.boundValueOps("payment_confirm_url_" + paymentQueryProperties.getVnp_TxnRef()).getAndDelete();
+		var confirmUrl = orderService.confirmPayment(paymentQueryProperties);
 		URI uri = URI.create(confirmUrl + "/" + paymentQueryProperties.getVnp_TxnRef());
 		return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
+	}
+
+	@PatchMapping("/{id}/shipping")
+	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
+	public AdminCampaignOrderResponse updateOrderToShippingStatus(
+		@PathVariable Long id,
+		@RequestBody @Valid UpdateShippingOrderRequest updateShippingOrderRequest,
+		Authentication authentication
+	) {
+		try {
+			return campaignOrderService.updateShippingOrderStatus(id, updateShippingOrderRequest);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.ORDER_NOT_FOUND.getMessage(), exception);
+		} catch (IllegalArgumentException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
+		} catch (ArtiexhConfigException ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		}
 	}
 
 	@PatchMapping("/{id}/status")
@@ -114,16 +128,17 @@ public class OrderController {
 		try {
 			var userId = (Long) authentication.getPrincipal();
 			switch (request.getStatus()) {
-				case CANCELED -> orderService.cancelOrder(id, request.getMessage(), userId);
+				case CANCELED -> campaignOrderService.cancelOrder(id, request.getMessage(), userId);
 				case REFUNDED -> {
 					boolean isAdmin = authentication.getAuthorities().stream()
 						.anyMatch(r -> r.getAuthority().equals(Role.ADMIN.name()) || r.getAuthority().equals(Role.STAFF.name()));
 					if (!isAdmin) {
 						throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only Admin or Staff can update order's status REFUNDED");
 					}
-					orderService.refundOrder(id, userId);
+					campaignOrderService.refundOrder(id, userId);
 				}
-				default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can just update order's status REFUNDED or CANCELED ");
+				default ->
+					throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can just update order's status REFUNDED or CANCELED ");
 			}
 			return ResponseEntity.ok().build();
 		} catch (IllegalArgumentException ex) {
@@ -133,6 +148,5 @@ public class OrderController {
 		} catch (IllegalAccessException ex) {
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, ex.getMessage(), ex);
 		}
-
 	}
 }

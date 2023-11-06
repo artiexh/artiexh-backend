@@ -35,6 +35,6 @@ public class UserEntity extends AccountEntity {
 
 	@Builder.Default
 	@OneToMany(mappedBy = "user")
-	private Set<OrderGroupEntity> orderGroups = new LinkedHashSet<>();
+	private Set<OrderEntity> orderGroups = new LinkedHashSet<>();
 
 }
