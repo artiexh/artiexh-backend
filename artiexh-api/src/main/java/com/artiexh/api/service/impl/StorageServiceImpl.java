@@ -5,10 +5,10 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PresignedUrlDownloadRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
+import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.utils.S3Util;
 import com.artiexh.api.config.S3ConfigurationProperties;
-import com.artiexh.api.exception.ErrorCode;
 import com.artiexh.api.service.StorageService;
-import com.artiexh.api.utils.S3Util;
 import com.artiexh.data.jpa.entity.AccountEntity;
 import com.artiexh.data.jpa.entity.MediaEntity;
 import com.artiexh.data.jpa.repository.AccountRepository;
@@ -119,7 +119,7 @@ public class StorageServiceImpl implements StorageService {
 			fileName = media.getFileName();
 		} else {
 			MediaEntity media = mediaRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-            fileName = media.getFileName();
+			fileName = media.getFileName();
 		}
 
 		URL url = new URL(S3Util.getPresignedString(s3Config.getRegion(), s3Config.getPrivateBucketName(), s3Config.getAccessKey(), s3Config.getSecretKey(), fileName, false));

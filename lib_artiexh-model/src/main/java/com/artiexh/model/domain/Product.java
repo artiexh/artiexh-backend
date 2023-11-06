@@ -22,7 +22,8 @@ public class Product {
 	private ProductCategory category;
 	private String description;
 	private ProductType type;
-	private Long remainingQuantity;
+	private Long quantity;
+	private Long soldQuantity;
 	private Long maxItemsPerOrder;
 	private DeliveryType deliveryType;
 	private Float averageRate;

@@ -2,61 +2,62 @@ package com.artiexh.data.jpa.entity;
 
 import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Getter
 @Setter
-@SuperBuilder(toBuilder = true)
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "`order`")
 @EntityListeners(AuditingEntityListener.class)
 public class OrderEntity extends BaseAuditEntity {
-
 	@Id
 	@Tsid
 	@Column(name = "id", nullable = false)
 	private Long id;
 
+	@Column(name = "created_date", nullable = false)
+	private Instant createdDate;
+
+	@Column(name = "modified_date")
+	private Instant modifiedDate;
+
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "shop_id", nullable = false)
-	private ArtistEntity shop;
+	@JoinColumn(name = "user_id", nullable = false)
+	private UserEntity user;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "order_group_id", insertable = false, updatable = false)
-	private OrderGroupEntity orderGroup;
+	@Column(name = "payment_method", nullable = false)
+	private Byte paymentMethod;
 
-	@Column(name = "note")
-	private String note;
+	@Column(name = "delivery_address")
+	private String deliveryAddress;
 
-	@Column(name = "status", nullable = false)
-	private Byte status;
+	@Column(name = "delivery_ward")
+	private String deliveryWard;
 
-	@Builder.Default
-	@OneToMany
-	@JoinColumn(name = "order_id")
-	private Set<OrderDetailEntity> orderDetails = new LinkedHashSet<>();
+	@Column(name = "delivery_district")
+	private String deliveryDistrict;
 
-	@Builder.Default
-	@OneToMany
-	@JoinColumn(name = "order_id")
-	private Set<OrderHistoryEntity> orderHistories = new LinkedHashSet<>();
+	@Column(name = "delivery_province")
+	private String deliveryProvince;
 
-	@Column(name = "order_group_id")
-	private Long orderGroupId;
+	@Column(name = "delivery_country")
+	private String deliveryCountry;
 
-	@Column(name = "shipping_fee", nullable = false)
-	private BigDecimal shippingFee;
+	@Column(name = "delivery_tel", length = 15)
+	private String deliveryTel;
 
-	@Column(name = "shipping_label")
-	private String shippingLabel;
+	@Column(name = "delivery_email", length = 254)
+	private String deliveryEmail;
 
 	@Column(name = "pick_address")
 	private String pickAddress;
@@ -105,5 +106,18 @@ public class OrderEntity extends BaseAuditEntity {
 
 	@Column(name = "return_email")
 	private String returnEmail;
+
+	@Builder.Default
+	@OneToMany(mappedBy = "order")
+	private Set<CampaignOrderEntity> campaignOrders = new LinkedHashSet<>();
+
+	@Builder.Default
+	@OneToMany
+	@JoinColumn(name = "order_id")
+	private Set<OrderTransactionEntity> orderTransactions = new LinkedHashSet<>();
+
+	@Size(max = 255)
+	@Column(name = "delivery_name")
+	private String deliveryName;
 
 }

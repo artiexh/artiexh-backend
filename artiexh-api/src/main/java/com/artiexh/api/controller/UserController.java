@@ -1,15 +1,18 @@
 package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
-import com.artiexh.api.exception.ErrorCode;
+import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.service.UserAddressService;
 import com.artiexh.api.service.UserService;
 import com.artiexh.model.domain.UserAddress;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
-import com.artiexh.model.rest.order.request.OrderGroupPageFilter;
+import com.artiexh.model.rest.order.filter.OrderFilter;
 import com.artiexh.model.rest.order.request.OrderPageFilter;
-import com.artiexh.model.rest.user.*;
+import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponse;
+import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponsePage;
+import com.artiexh.model.rest.order.user.response.UserOrderResponse;
+import com.artiexh.model.rest.user.UserAddressRequest;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -105,24 +108,28 @@ public class UserController {
 
 	@GetMapping(Endpoint.User.ORDER)
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
-	public PageResponse<UserOrderGroupResponsePage> getAllOrderGroup(
+	public PageResponse<UserOrderResponse> getAllOrder(
 		Authentication authentication,
 		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
-		@ParameterObject @Valid OrderGroupPageFilter filter
+		@ParameterObject @Valid OrderFilter filter
 	) {
 		long userId = (long) authentication.getPrincipal();
-		return userService.getOrderGroupInPage(filter.getSpecificationForUser(userId), paginationAndSortingRequest.getPageable());
+		var userOrdersPage = userService.getOrderInPage(
+			filter.getSpecificationForUser(userId),
+			paginationAndSortingRequest.getPageable()
+		);
+		return new PageResponse<>(userOrdersPage);
 	}
 
 	@GetMapping(Endpoint.User.ORDER + "/{id}")
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
-	public UserOrderGroupResponse getOrderGroupById(
+	public UserOrderResponse getOrderById(
 		@PathVariable Long id,
 		Authentication authentication
 	) {
 		try {
 			long userId = (long) authentication.getPrincipal();
-			return userService.getOrderGroupById(id, userId);
+			return userService.getOrderById(id, userId);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(ErrorCode.ORDER_NOT_FOUND.getCode(), ErrorCode.ORDER_NOT_FOUND.getMessage(), exception);
 		} catch (IllegalArgumentException exception) {
@@ -130,14 +137,14 @@ public class UserController {
 		}
 	}
 
-	@GetMapping(Endpoint.User.ORDER_SHOP)
+	@GetMapping(Endpoint.User.CAMPAIGN_ORDER)
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
-	public PageResponse<UserOrderResponsePage> getAllOrder(Authentication authentication,
-														   @ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
-														   @ParameterObject @Valid OrderPageFilter filter) {
+	public PageResponse<UserCampaignOrderResponsePage> getAllOrder(Authentication authentication,
+																   @ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
+																   @ParameterObject @Valid OrderPageFilter filter) {
 		try {
 			long userId = (long) authentication.getPrincipal();
-			var userOrdersPage = userService.getOrderInPage(
+			var userOrdersPage = userService.getCampaignOrderInPage(
 				filter.getSpecificationForUser(userId),
 				paginationAndSortingRequest.getPageable()
 			);
@@ -149,13 +156,13 @@ public class UserController {
 		}
 	}
 
-	@GetMapping(Endpoint.User.ORDER_SHOP + "/{id}")
+	@GetMapping(Endpoint.User.CAMPAIGN_ORDER + "/{id}")
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
-	public UserOrderResponse getOrderDetail(Authentication authentication,
-											@PathVariable Long id) {
+	public UserCampaignOrderResponse getOrderDetail(Authentication authentication,
+													@PathVariable Long id) {
 		try {
 			long userId = (long) authentication.getPrincipal();
-			return userService.getOrderById(id, userId);
+			return userService.getCampaignOrderById(id, userId);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(ErrorCode.ORDER_IS_INVALID.getCode(), ErrorCode.ORDER_IS_INVALID.getMessage(), exception);
 		}

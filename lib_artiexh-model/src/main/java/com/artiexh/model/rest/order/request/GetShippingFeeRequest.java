@@ -17,9 +17,6 @@ public class GetShippingFeeRequest {
 	private Long addressId;
 
 	@NotNull
-	private Long shopId;
-
-	@NotNull
 	private Integer totalWeight;
 
 	private Integer value;

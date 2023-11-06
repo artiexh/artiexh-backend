@@ -3,7 +3,7 @@ package com.artiexh.api.controller;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.S3Object;
 import com.artiexh.api.base.common.Endpoint;
-import com.artiexh.api.exception.ErrorCode;
+import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.service.StorageService;
 import com.artiexh.model.domain.Role;
 import com.artiexh.model.rest.media.FileResponseList;
