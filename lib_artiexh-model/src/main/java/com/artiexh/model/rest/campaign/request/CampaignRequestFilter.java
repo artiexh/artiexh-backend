@@ -52,7 +52,7 @@ public class CampaignRequestFilter {
 		return ((root, query, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
 
-			predicates.add(builder.equal(root.get("isPublished"), true));
+			predicates.add(builder.or(builder.equal(root.get("isPrePublished"), true)));
 
 			if (campaignType != null && CampaignType.MARKETPLACE_VIEW_TYPE.contains(campaignType)) {
 				predicates.add(builder.equal(root.get("type"), campaignType.getByteValue()));
@@ -82,6 +82,7 @@ public class CampaignRequestFilter {
 	}
 
 	public Specification<CampaignEntity> getMarketPlaceSpecification() {
-		return Specification.where(getSpecification()).and(getProgressPublishedCampaign());
+		return Specification.where(getSpecification())
+			.and(getProgressPublishedCampaign());
 	}
 }

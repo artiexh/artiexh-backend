@@ -31,41 +31,6 @@ public class ProductController {
 	private final ProductService productService;
 	private final ProductMapper productMapper;
 
-	@GetMapping
-	public PageResponse<ProductResponse> getInPage(
-		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
-		@ParameterObject @Valid GetAllProductFilter filter
-	) {
-		Page<Product> productPage = productService.getInPage(
-			filter.getQuery(),
-			paginationAndSortingRequest.getPageable()
-		);
-		return new PageResponse<>(productMapper.productPageToProductResponsePage(productPage));
-	}
-
-	@GetMapping(Endpoint.Product.SUGGESTION)
-	public PageResponse<ProductSuggestion> getSuggestionInPage(
-		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
-		@ParameterObject @Valid SuggestionFilter filter
-	) {
-		Page<ProductSuggestion> suggestionPage = productService.getSuggestionInPage(
-			filter.getQuery(),
-			paginationAndSortingRequest.getPageable()
-		);
-		return new PageResponse<>(suggestionPage);
-	}
-
-	@GetMapping(path = Endpoint.Product.PRODUCT_DETAIL)
-	public ProductResponse getDetail(@PathVariable("id") long id) {
-		Product product;
-		try {
-			product = productService.getDetail(id);
-		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(ErrorCode.PRODUCT_NOT_FOUND.getCode(), ErrorCode.PRODUCT_NOT_FOUND.getMessage(), ex);
-		}
-		return productMapper.domainToProductResponse(product);
-	}
-
 	@PutMapping(path = Endpoint.Product.PRODUCT_DETAIL)
 	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
 	public ProductResponse update(Authentication authentication, @PathVariable("id") long id, @RequestBody @Valid UpdateProductRequest request) {
