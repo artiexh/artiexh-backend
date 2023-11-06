@@ -600,10 +600,6 @@ public class CampaignServiceImpl implements CampaignService {
 		return productInCampaignMapper.entityToDetailResponse(campaignProduct);
 	}
 
-	private void staffPublishProductCampaign(CampaignEntity campaignEntity, String message) {
-		if (campaignEntity.getStatus() != CampaignStatus.APPROVED.getByteValue()) {
-
-			throw new IllegalArgumentException("You can only update campaign from APPROVED to PUBLISHED");
 	@Override
 	@Transactional
 	public void staffPublishProductCampaign(Long campaignId, boolean isPrePublished, Long userId) {

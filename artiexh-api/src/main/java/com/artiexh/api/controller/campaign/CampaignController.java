@@ -3,6 +3,7 @@ package com.artiexh.api.controller.campaign;
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.model.rest.campaign.request.FinalizeProductRequest;
+import com.artiexh.model.rest.campaign.response.ProductInCampaignDetailResponse;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -41,6 +42,17 @@ public class CampaignController {
 			campaignService.staffPublishProductCampaign(campaignId, true, staffId);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+		}
+	}
+
+	@GetMapping("/{id}/product/{product-id}")
+	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN','STAFF')")
+	public ProductInCampaignDetailResponse getProductInCampaign(@PathVariable("product-id") Long productId,
+																@PathVariable Long id) {
+		try {
+			return campaignService.getProductInCampaign(id, productId);
 		} catch (EntityNotFoundException ex) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
 		}
