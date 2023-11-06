@@ -34,7 +34,7 @@ public class ProductDocument {
 	@Field(name = "campaignId", type = FieldType.Long)
 	private Long campaignId;
 	@Field(name = "isPrivate", type = FieldType.Boolean)
-	private Long isPrivate;
+	private Boolean isPrivate;
 	@Data
 	public static class Money {
 		@Field(name = "amount", type = FieldType.Float)
