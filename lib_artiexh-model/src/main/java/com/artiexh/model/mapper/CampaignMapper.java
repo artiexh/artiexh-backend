@@ -37,7 +37,10 @@ public interface CampaignMapper {
 	default CampaignStatus campaignStatusFrom(byte value) {
 		return CampaignStatus.fromValue(value);
 	}
-
+	
+	default Byte toValue(CampaignType type) {
+		return type.getByteValue();
+	}
 	default CampaignType campaignTypeFrom(byte value) {
 		return CampaignType.fromValue(value);
 	}

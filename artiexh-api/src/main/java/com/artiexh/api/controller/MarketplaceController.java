@@ -89,6 +89,21 @@ public class MarketplaceController {
 		}
 	}
 
+	@GetMapping("/artist/{username}/product")
+	public PageResponse<ProductResponse> getArtistProduct(
+			@PathVariable String username,
+			@ParameterObject @Valid PaginationAndSortingRequest pagination,
+			@ParameterObject @Valid GetAllProductFilter filter
+	) {
+		try {
+			filter.setUsername(username);
+			Page<Product> productPage = productService.getInPage(filter.getQuery(), pagination.getPageable());
+			return new PageResponse<>(productMapper.productPageToProductResponsePage(productPage));
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+		}
+	}
+
 	@GetMapping("/product")
 	public PageResponse<ProductResponse> getInPage(
 			@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
