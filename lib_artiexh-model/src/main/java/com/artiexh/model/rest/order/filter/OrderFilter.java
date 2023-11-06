@@ -1,7 +1,7 @@
-package com.artiexh.model.rest.order.request;
+package com.artiexh.model.rest.order.filter;
 
+import com.artiexh.data.jpa.entity.CampaignOrderEntity;
 import com.artiexh.data.jpa.entity.OrderEntity;
-import com.artiexh.data.jpa.entity.OrderGroupEntity;
 import com.artiexh.model.domain.OrderStatus;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
@@ -19,18 +19,18 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderGroupPageFilter {
+public class OrderFilter {
 
 	private OrderStatus status;
 	private Instant from;
 	private Instant to;
 
-	public Specification<OrderGroupEntity> getSpecificationForUser(Long userId) {
+	public Specification<OrderEntity> getSpecificationForUser(Long userId) {
 		return (root, cQuery, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			predicates.add(builder.equal(root.get("user").get("id"), userId));
 			if (status != null) {
-				Join<OrderEntity, OrderGroupEntity> orderJoin = root.join("orders");
+				Join<CampaignOrderEntity, OrderEntity> orderJoin = root.join("campaignOrders");
 				predicates.add(builder.equal(orderJoin.get("status"), status.getByteValue()));
 			}
 			if (from != null) {

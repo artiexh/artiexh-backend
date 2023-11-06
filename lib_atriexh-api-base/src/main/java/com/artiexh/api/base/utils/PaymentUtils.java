@@ -1,4 +1,4 @@
-package com.artiexh.api.utils;
+package com.artiexh.api.base.utils;
 
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;

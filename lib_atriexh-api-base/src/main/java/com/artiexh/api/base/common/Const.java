@@ -8,9 +8,11 @@ public final class Const {
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static final class SystemConfigKey {
-		public static final String ARTIEXH_ADDRESS = "artiexh.address";
-		public static final String ARTIEXH_WARD_ID = "artiexh.ward.id";
-		public static final String ARTIEXH_PHONE = "artiexh.phone";
+		public static final String ARTIEXH_PICK_ADDRESS = "artiexh.pick.address";
+		public static final String ARTIEXH_PICK_WARD_ID = "artiexh.pick.ward.id";
+		public static final String ARTIEXH_PICK_PHONE = "artiexh.pick.phone";
+		public static final String ARTIEXH_PICK_EMAIL = "artiexh.pick.email";
+		public static final String ARTIEXH_PICK_NAME = "artiexh.pick.name";
 	}
 
 }

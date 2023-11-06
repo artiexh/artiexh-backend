@@ -1,4 +1,4 @@
-package com.artiexh.api.utils;
+package com.artiexh.api.base.utils;
 
 import java.net.URL;
 import java.util.Date;
@@ -43,7 +43,7 @@ public class AWS4SignerForQueryParameterAuth extends AWS4SignerBase {
 		String hostHeader = endpointUrl.getHost();
 		int port = endpointUrl.getPort();
 		if (port > -1) {
-			hostHeader.concat(":" + Integer.toString(port));
+			hostHeader.concat(":" + port);
 		}
 		headers.put("Host", hostHeader);
 
@@ -86,15 +86,14 @@ public class AWS4SignerForQueryParameterAuth extends AWS4SignerBase {
 		byte[] signature = sign(stringToSign, kSigning, "HmacSHA256");
 
 		// form up the authorization parameters for the caller to place in the query string
-		StringBuilder authString = new StringBuilder();
 
-		authString.append("X-Amz-Algorithm=" + queryParameters.get("X-Amz-Algorithm"));
-		authString.append("&X-Amz-Credential=" + queryParameters.get("X-Amz-Credential"));
-		authString.append("&X-Amz-Date=" + queryParameters.get("X-Amz-Date"));
-		authString.append("&X-Amz-Expires=" + queryParameters.get("X-Amz-Expires"));
-		authString.append("&X-Amz-SignedHeaders=" + queryParameters.get("X-Amz-SignedHeaders"));
-		authString.append("&X-Amz-Signature=" + BinaryUtils.toHex(signature));
+		String authString = "X-Amz-Algorithm=" + queryParameters.get("X-Amz-Algorithm") +
+			"&X-Amz-Credential=" + queryParameters.get("X-Amz-Credential") +
+			"&X-Amz-Date=" + queryParameters.get("X-Amz-Date") +
+			"&X-Amz-Expires=" + queryParameters.get("X-Amz-Expires") +
+			"&X-Amz-SignedHeaders=" + queryParameters.get("X-Amz-SignedHeaders") +
+			"&X-Amz-Signature=" + BinaryUtils.toHex(signature);
 
-		return authString.toString();
+		return authString;
 	}
 }

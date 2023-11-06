@@ -5,9 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.List;
 import java.util.Set;
 
 @Data
@@ -18,17 +15,16 @@ public class Order {
 	private Long id;
 	private User user;
 	private UserAddress shippingAddress;
-	private Shop shop;
-	private BigDecimal shippingFee;
-	private String note;
+	private OrderTransaction currentTransaction;
+	private Set<CampaignOrder> campaignOrders;
 	private PaymentMethod paymentMethod;
-	private OrderStatus status;
-	private Set<OrderDetail> orderDetails;
-	private Instant modifiedDate;
-	private Instant createdDate;
-	private List<OrderHistory> orderHistories;
-	private String shippingLabel;
-	private Long orderId;
+	private String deliveryAddress;
+	private String deliveryWard;
+	private String deliveryDistrict;
+	private String deliveryProvince;
+	private String deliveryCountry;
+	private String deliveryTel;
+	private String deliveryEmail;
 	private String pickAddress;
 	private String pickWard;
 	private String pickDistrict;

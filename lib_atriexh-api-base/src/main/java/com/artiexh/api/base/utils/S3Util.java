@@ -1,4 +1,4 @@
-package com.artiexh.api.utils;
+package com.artiexh.api.base.utils;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -50,7 +50,7 @@ public class S3Util {
 			awsSecretKey);
 
 		// build the presigned url to incorporate the authorization elements as query parameters
-		return endpointUrl.toString() + "?" + authorizationQueryParameters;
+		return endpointUrl + "?" + authorizationQueryParameters;
 	}
 
 	public static String generateFileName(MultipartFile multiPart) {

@@ -1,4 +1,4 @@
-package com.artiexh.api.utils;
+package com.artiexh.api.base.utils;
 
 import java.util.Locale;
 

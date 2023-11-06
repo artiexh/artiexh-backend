@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -35,6 +36,15 @@ public class SystemConfigServiceImpl implements SystemConfigService {
 	}
 
 	@Override
+	public <X extends Throwable> String getOrThrow(String key, Supplier<? extends X> exceptionSupplier) throws X {
+		if (!configs.containsKey(key)) {
+			throw exceptionSupplier.get();
+		} else {
+			return configs.get(key);
+		}
+	}
+
+	@Override
 	@Transactional
 	public void set(String key, String value) {
 		set(key, value, null);
@@ -52,7 +62,7 @@ public class SystemConfigServiceImpl implements SystemConfigService {
 	@Transactional(readOnly = true)
 	public void reload() {
 		configs.clear();
-		configs.putAll(repository.streamAll().collect(Collectors.toMap(
+		configs.putAll(repository.findAll().stream().collect(Collectors.toMap(
 			SystemConfigEntity::getKey,
 			SystemConfigEntity::getValue
 		)));

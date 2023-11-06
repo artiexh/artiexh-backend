@@ -1,6 +1,6 @@
 package com.artiexh.api.service.impl;
 
-import com.artiexh.api.exception.ErrorCode;
+import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.service.CustomProductService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;

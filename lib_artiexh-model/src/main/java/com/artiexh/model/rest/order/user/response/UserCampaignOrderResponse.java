@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.user;
+package com.artiexh.model.rest.order.user.response;
 
 import com.artiexh.model.domain.OrderHistory;
 import com.artiexh.model.domain.UserAddress;
@@ -17,7 +17,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserOrderResponse extends UserOrderResponsePage {
+public class UserCampaignOrderResponse extends UserCampaignOrderResponsePage {
 	private Set<OrderDetailResponse> orderDetails;
 	private BigDecimal shippingFee;
 	private OrderTransactionResponse currentTransaction;

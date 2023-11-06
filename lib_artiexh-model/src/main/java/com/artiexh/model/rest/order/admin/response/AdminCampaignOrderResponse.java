@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.artist.response;
+package com.artiexh.model.rest.order.admin.response;
 
 import com.artiexh.model.domain.OrderHistory;
 import com.artiexh.model.rest.order.response.OrderDetailResponse;
@@ -14,7 +14,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ShopOrderResponse extends ShopOrderResponsePage {
+public class AdminCampaignOrderResponse extends AdminCampaignOrderResponsePage {
 	private Set<OrderDetailResponse> orderDetails;
 	private List<OrderHistory> orderHistories;
 	private String shippingLabel;

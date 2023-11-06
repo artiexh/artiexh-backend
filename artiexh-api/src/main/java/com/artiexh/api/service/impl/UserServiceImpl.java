@@ -1,57 +1,58 @@
 package com.artiexh.api.service.impl;
 
-import com.artiexh.api.exception.ErrorCode;
-import com.artiexh.api.service.OrderGroupService;
+import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.service.CampaignOrderService;
 import com.artiexh.api.service.OrderService;
 import com.artiexh.api.service.UserService;
+import com.artiexh.data.jpa.entity.CampaignOrderEntity;
 import com.artiexh.data.jpa.entity.OrderEntity;
-import com.artiexh.data.jpa.entity.OrderGroupEntity;
-import com.artiexh.model.domain.OrderGroup;
-import com.artiexh.model.mapper.OrderGroupMapper;
+import com.artiexh.model.domain.Order;
+import com.artiexh.model.mapper.CampaignOrderMapper;
 import com.artiexh.model.mapper.OrderMapper;
-import com.artiexh.model.rest.PageResponse;
-import com.artiexh.model.rest.user.UserOrderGroupResponse;
-import com.artiexh.model.rest.user.UserOrderGroupResponsePage;
-import com.artiexh.model.rest.user.UserOrderResponse;
-import com.artiexh.model.rest.user.UserOrderResponsePage;
+import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponse;
+import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponsePage;
+import com.artiexh.model.rest.order.user.response.UserOrderResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+	private final CampaignOrderService campaignOrderService;
 	private final OrderService orderService;
-	private final OrderGroupService orderGroupService;
+	private final CampaignOrderMapper campaignOrderMapper;
 	private final OrderMapper orderMapper;
-	private final OrderGroupMapper orderGroupMapper;
-
-	@Override
-	public UserOrderGroupResponse getOrderGroupById(Long id, Long userId) {
-		OrderGroup order = orderGroupService.getById(id);
-		if (!order.getUser().getId().equals(userId)) {
-			throw new IllegalArgumentException(ErrorCode.ORDER_IS_INVALID.getMessage());
-		}
-		return orderGroupMapper.domainToUserResponse(order);
-	}
-
-	@Override
-	public PageResponse<UserOrderGroupResponsePage> getOrderGroupInPage(Specification<OrderGroupEntity> specification, Pageable pageable) {
-		Page<OrderGroup> orderPage = orderGroupService.getInPage(specification, pageable);
-		return new PageResponse<>(orderPage.map(orderGroupMapper::domainToUserResponsePage));
-	}
-
-	@Override
-	public Page<UserOrderResponsePage> getOrderInPage(Specification<OrderEntity> specification, Pageable pageable) {
-		return orderService.getOrderInPage(specification, pageable)
-			.map(orderMapper::domainToUserResponsePage);
-	}
 
 	@Override
 	public UserOrderResponse getOrderById(Long id, Long userId) {
-		var userOrder = orderService.getOrderByIdAndUserId(id, userId);
-		return orderMapper.domainToUserResponse(userOrder);
+		Order order = orderService.getById(id);
+		if (!order.getUser().getId().equals(userId)) {
+			throw new IllegalArgumentException(ErrorCode.ORDER_IS_INVALID.getMessage());
+		}
+		return orderMapper.domainToUserResponse(order);
+	}
+
+	@Override
+	public Page<UserOrderResponse> getOrderInPage(Specification<OrderEntity> specification, Pageable pageable) {
+		return orderService.getInPage(specification, pageable)
+			.map(orderMapper::domainToUserResponse);
+	}
+
+	@Override
+	public Page<UserCampaignOrderResponsePage> getCampaignOrderInPage(Specification<CampaignOrderEntity> specification,
+																	  Pageable pageable) {
+		return campaignOrderService.getCampaignOrderInPage(specification, pageable)
+			.map(campaignOrderMapper::domainToUserResponsePage);
+	}
+
+	@Override
+	public UserCampaignOrderResponse getCampaignOrderById(Long id, Long userId) {
+		var userOrder = campaignOrderService.getOrderByIdAndUserId(id, userId);
+		return campaignOrderMapper.domainToUserResponse(userOrder);
 	}
 }

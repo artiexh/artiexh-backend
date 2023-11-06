@@ -23,6 +23,6 @@ public class CheckoutRequest {
 
 	@NotEmpty
 	@Valid
-	private Set<CheckoutShop> shops;
+	private Set<CheckoutCampaign> campaigns;
 
 }

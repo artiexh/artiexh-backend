@@ -1,7 +1,6 @@
-package com.artiexh.model.rest.user;
+package com.artiexh.model.rest.order.user.response;
 
 import com.artiexh.model.domain.PaymentMethod;
-import com.artiexh.model.domain.UserAddress;
 import com.artiexh.model.rest.transaction.OrderTransactionResponse;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -16,11 +15,18 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserOrderGroupResponsePage {
+public class UserOrderResponse {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
-	private Set<UserOrderResponsePage> orders;
-	private UserAddress shippingAddress;
+	private Set<UserCampaignOrderResponse> campaignOrders;
 	private OrderTransactionResponse currentTransaction;
 	private PaymentMethod paymentMethod;
+	private String deliveryAddress;
+	private String deliveryWard;
+	private String deliveryDistrict;
+	private String deliveryProvince;
+	private String deliveryCountry;
+	private String deliveryTel;
+	private String deliveryEmail;
+	private String deliveryName;
 }

@@ -1,9 +1,8 @@
-package com.artiexh.model.rest.artist.response;
+package com.artiexh.model.rest.order.user.response;
 
 import com.artiexh.model.domain.OrderStatus;
 import com.artiexh.model.domain.PaymentMethod;
-import com.artiexh.model.domain.User;
-import com.artiexh.model.domain.UserAddress;
+import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
@@ -11,20 +10,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShopOrderResponsePage {
+public class UserCampaignOrderResponsePage {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 
-	private User user;
-
-	private UserAddress shippingAddress;
+	private CampaignResponse campaign;
 
 	private String note;
 
@@ -36,5 +32,6 @@ public class ShopOrderResponsePage {
 
 	private Instant createdDate;
 
-	private BigDecimal shippingFee;
+	@JsonSerialize(using = ToStringSerializer.class)
+	private Long orderId;
 }

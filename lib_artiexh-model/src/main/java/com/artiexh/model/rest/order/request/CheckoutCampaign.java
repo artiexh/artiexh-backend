@@ -12,10 +12,10 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CheckoutShop {
+public class CheckoutCampaign {
 
 	@NotNull
-	private Long shopId;
+	private Long campaignId;
 
 	private String note;
 

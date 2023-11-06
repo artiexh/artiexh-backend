@@ -1,4 +1,4 @@
-package com.artiexh.api.utils;
+package com.artiexh.api.base.utils;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;

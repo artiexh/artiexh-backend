@@ -1,4 +1,4 @@
-package com.artiexh.api.utils;
+package com.artiexh.api.base.utils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -6,6 +6,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @Slf4j
@@ -36,23 +37,16 @@ public class HttpUtils {
 	}
 
 	public static String executeHttpRequest(HttpURLConnection connection) {
-		try {
-			// Get Response
-			InputStream is;
-			try {
-				is = connection.getInputStream();
-			} catch (IOException e) {
-				is = connection.getErrorStream();
-			}
+		InputStream is = getInputStream(connection);
 
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+		try (BufferedReader rd = new BufferedReader(new InputStreamReader(is))) {
+			// Get Response
 			String line;
-			StringBuffer response = new StringBuffer();
+			StringBuilder response = new StringBuilder();
 			while ((line = rd.readLine()) != null) {
 				response.append(line);
 				response.append('\r');
 			}
-			rd.close();
 			return response.toString();
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Request failed. " + e.getMessage(), e);
@@ -60,6 +54,14 @@ public class HttpUtils {
 			if (connection != null) {
 				connection.disconnect();
 			}
+		}
+	}
+
+	private static InputStream getInputStream(HttpURLConnection connection) {
+		try {
+			return connection.getInputStream();
+		} catch (IOException e) {
+			return connection.getErrorStream();
 		}
 	}
 
@@ -88,11 +90,7 @@ public class HttpUtils {
 
 	public static String urlEncode(String url, boolean keepPathSlash) {
 		String encoded;
-		try {
-			encoded = URLEncoder.encode(url, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalArgumentException("UTF-8 encoding is not supported.", e);
-		}
+		encoded = URLEncoder.encode(url, StandardCharsets.UTF_8);
 		if (keepPathSlash) {
 			encoded = encoded.replace("%2F", "/");
 		}

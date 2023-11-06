@@ -1,7 +1,7 @@
 package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
-import com.artiexh.api.exception.ErrorCode;
+import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.service.ProductVariantService;
 import com.artiexh.data.jpa.repository.ProductVariantRepository;
 import com.artiexh.data.jpa.repository.VariantCombinationRepository;

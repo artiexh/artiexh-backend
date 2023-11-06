@@ -1,6 +1,6 @@
 package com.artiexh.api.service.campaign.impl;
 
-import com.artiexh.api.exception.ErrorCode;
+import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.product.ProductService;
 import com.artiexh.data.jpa.entity.*;
