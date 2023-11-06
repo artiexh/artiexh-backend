@@ -38,14 +38,11 @@ public class GetAllProductFilter {
 	private String username;
 
 	public Query getQuery() {
-//		var boolQuery = new BoolQueryBuilder().must(new TermsQueryBuilder("status", List.of(ProductStatus.PRE_ORDER.getValue(), ProductStatus.AVAILABLE.getValue()))).minimumShouldMatch(1);
 		var publicProductQuery = new BoolQueryBuilder()
 			.should(new TermsQueryBuilder("campaign.type", List.of(CampaignType.PUBLIC.getByteValue(), CampaignType.SHARE.getByteValue()))).minimumShouldMatch(1);
 		var activeProductQuery = new BoolQueryBuilder()
 			.should(new TermsQueryBuilder("status", List.of(ProductStatus.PRE_ORDER.getByteValue(), ProductStatus.AVAILABLE.getByteValue()))).minimumShouldMatch(1);
 		var boolQuery = new BoolQueryBuilder();
-//		boolQuery.must(new TermsQueryBuilder("campaign.type", List.of(CampaignType.PUBLIC.getValue(), CampaignType.SHARE.getValue()))).minimumShouldMatch(1);
-//		boolQuery.should(new TermsQueryBuilder("status", List.of(ProductStatus.PRE_ORDER.getValue(), ProductStatus.AVAILABLE.getValue()))).minimumShouldMatch(1);
 		boolQuery.must(publicProductQuery);
 		boolQuery.must(activeProductQuery);
 		if (username != null) {
