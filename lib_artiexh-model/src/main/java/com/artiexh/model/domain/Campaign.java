@@ -22,13 +22,13 @@ public class Campaign {
 
 	private String description;
 
-	private Boolean isPublished;
+	private Boolean isPrePublished;
 
 	private String thumbnailUrl;
 
 	private String content;
 
-	private CampaignType campaignType;
+	private CampaignType type;
 
 	private Instant from;
 

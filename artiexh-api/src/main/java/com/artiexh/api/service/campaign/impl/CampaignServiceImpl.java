@@ -577,9 +577,6 @@ public class CampaignServiceImpl implements CampaignService {
 			Product product = productMapper.publishProductRequestToProduct(finalizeProductRequest);
 			product.setTags(productInCampaign.getCustomProduct().getTags().stream().map(productTagMapper::entityToDomain).collect(Collectors.toSet()));
 			product.setCategory(productCategoryMapper.entityToDomain(productInCampaign.getCustomProduct().getCategory()));
-			if (campaign.getType().byteValue() == CampaignType.PRIVATE.getByteValue()) {
-				product.setIsPrivate(true);
-			}
 
 			product = productService.create(campaign.getOwner().getId(), product, productInCampaign);
 			productResponses.add(productMapper.domainToProductResponse(product));
@@ -621,6 +618,7 @@ public class CampaignServiceImpl implements CampaignService {
 		AccountEntity updatedBy = accountRepository.findById(userId).orElseThrow();
 
 		campaign.setIsPrePublished(isPrePublished);
+		//TODO: Update product in OpenSearch
 		campaign.getCampaignHistories().add(
 			CampaignHistoryEntity.builder()
 				.id(CampaignHistoryId.builder().campaignId(campaign.getId()).build())

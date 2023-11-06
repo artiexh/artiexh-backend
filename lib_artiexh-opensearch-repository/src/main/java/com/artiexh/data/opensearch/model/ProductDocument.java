@@ -33,7 +33,7 @@ public class ProductDocument {
 	private Float averageRate;
 	@Field(name = "tags", type = FieldType.Keyword)
 	private String[] tags;
-	@Field(name = "campaignId", type = FieldType.Nested)
+	@Field(name = "campaign", type = FieldType.Nested)
 	private Campaign campaign;
 	@Data
 	public static class Money {
@@ -121,8 +121,8 @@ public class ProductDocument {
 	public static class Campaign {
 		@Field(name = "id", type = FieldType.Long)
 		private Long id;
-		@Field(name = "isPrivate", type = FieldType.Boolean)
-		private String isPrivate;
+		@Field(name = "type", type = FieldType.Byte)
+		private Byte type;
 		@Field(name = "isPrePublished", type = FieldType.Boolean)
 		private Boolean isPrePublished;
 		@Field(name = "from", type = FieldType.Date, format = {DateFormat.date_time})

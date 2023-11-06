@@ -36,6 +36,6 @@ public class Product {
 	private Set<Product> bundleItems;
 	private ProductInCampaign productInCampaign;
 	private Campaign campaign;
-	@Builder.Default
-	private Boolean isPrivate = false;
+//	@Builder.Default
+//	private Boolean isPrivate = false;
 }

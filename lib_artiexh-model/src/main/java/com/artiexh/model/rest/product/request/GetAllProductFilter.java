@@ -1,5 +1,6 @@
 package com.artiexh.model.rest.product.request;
 
+import com.artiexh.model.domain.CampaignType;
 import com.artiexh.model.domain.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +38,16 @@ public class GetAllProductFilter {
 	private String username;
 
 	public Query getQuery() {
-		var boolQuery = new BoolQueryBuilder().should(new TermsQueryBuilder("status", List.of(ProductStatus.PRE_ORDER.getValue(), ProductStatus.AVAILABLE.getValue()))).minimumShouldMatch(1);
-		boolQuery.must(new TermQueryBuilder("isPrivate", false));
+//		var boolQuery = new BoolQueryBuilder().must(new TermsQueryBuilder("status", List.of(ProductStatus.PRE_ORDER.getValue(), ProductStatus.AVAILABLE.getValue()))).minimumShouldMatch(1);
+		var publicProductQuery = new BoolQueryBuilder()
+			.should(new TermsQueryBuilder("campaign.type", List.of(CampaignType.PUBLIC.getByteValue(), CampaignType.SHARE.getByteValue()))).minimumShouldMatch(1);
+		var activeProductQuery = new BoolQueryBuilder()
+			.should(new TermsQueryBuilder("status", List.of(ProductStatus.PRE_ORDER.getByteValue(), ProductStatus.AVAILABLE.getByteValue()))).minimumShouldMatch(1);
+		var boolQuery = new BoolQueryBuilder();
+//		boolQuery.must(new TermsQueryBuilder("campaign.type", List.of(CampaignType.PUBLIC.getValue(), CampaignType.SHARE.getValue()))).minimumShouldMatch(1);
+//		boolQuery.should(new TermsQueryBuilder("status", List.of(ProductStatus.PRE_ORDER.getValue(), ProductStatus.AVAILABLE.getValue()))).minimumShouldMatch(1);
+		boolQuery.must(publicProductQuery);
+		boolQuery.must(activeProductQuery);
 		if (username != null) {
 			boolQuery.must(new TermQueryBuilder("owner.username", username));
 		}
@@ -71,12 +81,20 @@ public class GetAllProductFilter {
 			boolQuery.filter(tagQuery.minimumShouldMatch(1));
 		}
 
-		var queryBuilder = new NativeSearchQueryBuilder().withFilter(boolQuery);
+		var dateQuery = new BoolQueryBuilder()
+			.must(new RangeQueryBuilder("campaign.from").lte(Instant.now()))
+			.must(new RangeQueryBuilder("campaign.to").gte(Instant.now()));
+
+		var publishedProductFilter = new BoolQueryBuilder()
+			.should(new TermQueryBuilder("campaign.isPrePublished", true))
+			.should(dateQuery)
+			.minimumShouldMatch(1);
+
+		var queryBuilder = new NativeSearchQueryBuilder().withQuery(boolQuery).withFilter(publishedProductFilter);
 
 		if (StringUtils.hasText(keyword)) {
 			Map<String, Float> fields = new HashMap<>();
-			fields.put("name", 4f);
-			fields.put("shop.shopName", 3f);
+			fields.put("name", 3f);
 			fields.put("owner.displayName", 2f);
 			fields.put("owner.username", 1f);
 			new QueryStringQueryBuilder("*" + keyword + "*").fuzziness(Fuzziness.AUTO).fields(fields);
