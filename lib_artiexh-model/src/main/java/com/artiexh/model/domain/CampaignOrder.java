@@ -19,7 +19,7 @@ public class CampaignOrder {
 	private Campaign campaign;
 	private BigDecimal shippingFee;
 	private String note;
-	private OrderStatus status;
+	private CampaignOrderStatus status;
 	private Set<OrderDetail> orderDetails;
 	private Instant modifiedDate;
 	private Instant createdDate;

@@ -101,7 +101,7 @@ public class OrderController {
 		return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
 	}
 
-	@PatchMapping(Endpoint.Artist.ARTIST_ORDER + "/{id}/shipping")
+	@PatchMapping("/{id}/shipping")
 	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
 	public AdminCampaignOrderResponse updateOrderToShippingStatus(
 		@PathVariable Long id,
@@ -109,8 +109,7 @@ public class OrderController {
 		Authentication authentication
 	) {
 		try {
-			long userId = (long) authentication.getPrincipal();
-			return campaignOrderService.updateShippingOrderStatus(userId, id, updateShippingOrderRequest);
+			return campaignOrderService.updateShippingOrderStatus(id, updateShippingOrderRequest);
 		} catch (EntityNotFoundException exception) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.ORDER_NOT_FOUND.getMessage(), exception);
 		} catch (IllegalArgumentException exception) {

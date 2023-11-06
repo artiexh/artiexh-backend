@@ -15,7 +15,7 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long>, JpaSp
 	@Query(nativeQuery = true,
 		value = """
 			SELECT co.id as orderId, sum(p.price_amount * od.quantity) + co.shipping_fee as orderAmount, p.price_unit as priceUnit, o.user_id as ownerId, co.status as status
-			from `campaignOrder` o
+			from `order` o
 			inner join campaign_order co on o.id = co.order_id
 			inner join order_detail od on co.id = od.campaign_order_id
 			inner join product p on od.product_id = p.id

@@ -84,7 +84,7 @@ public class OrderServiceImpl implements OrderService {
 			.orElseThrow(() -> new IllegalArgumentException("User not existed"));
 
 		var address = getUserAddressEntity(userId, checkoutRequest.getAddressId());
-		OrderStatus status = OrderStatus.PAYING;
+		CampaignOrderStatus status = CampaignOrderStatus.PAYING;
 
 		List<CartItemEntity> cartItemEntities = validateCampaignProductAndReduceQuantity(
 			userId,
@@ -179,7 +179,7 @@ public class OrderServiceImpl implements OrderService {
 		return cartItemEntities;
 	}
 
-	private OrderEntity createOrder(UserEntity userEntity, UserAddressEntity address, OrderStatus status,
+	private OrderEntity createOrder(UserEntity userEntity, UserAddressEntity address, CampaignOrderStatus status,
 									Set<CheckoutCampaign> campaigns, List<CartItemEntity> cartItemEntities,
 									PaymentMethod paymentMethod) {
 		String artiexhPickAddress = systemConfigService.getOrThrow(
@@ -294,7 +294,7 @@ public class OrderServiceImpl implements OrderService {
 			throw new EntityNotFoundException();
 		}
 
-		if (!userId.equals(bills.get(0).getOwnerId()) || !bills.get(0).getStatus().equals(OrderStatus.PAYING.getByteValue())) {
+		if (!userId.equals(bills.get(0).getOwnerId()) || !bills.get(0).getStatus().equals(CampaignOrderStatus.PAYING.getByteValue())) {
 			throw new IllegalArgumentException(ErrorCode.ORDER_IS_INVALID.getMessage());
 		}
 

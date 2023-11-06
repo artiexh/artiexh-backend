@@ -3,8 +3,8 @@ package com.artiexh.model.mapper;
 import com.artiexh.data.jpa.entity.CampaignOrderEntity;
 import com.artiexh.data.jpa.entity.OrderDetailEntity;
 import com.artiexh.model.domain.CampaignOrder;
+import com.artiexh.model.domain.CampaignOrderStatus;
 import com.artiexh.model.domain.OrderDetail;
-import com.artiexh.model.domain.OrderStatus;
 import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
 import com.artiexh.model.rest.order.response.OrderDetailResponse;
 import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponse;
@@ -80,11 +80,11 @@ public interface CampaignOrderMapper {
 	@Mapping(target = "deliveryType", source = "product.deliveryType")
 	OrderDetailResponse entityToOrderDetailResponse(OrderDetailEntity entity);
 
-	default Integer toValue(OrderStatus status) {
+	default Integer toValue(CampaignOrderStatus status) {
 		return status.getValue();
 	}
 
-	default OrderStatus toOrderStatus(Integer value) {
-		return OrderStatus.fromValue(value);
+	default CampaignOrderStatus toOrderStatus(Integer value) {
+		return CampaignOrderStatus.fromValue(value);
 	}
 }

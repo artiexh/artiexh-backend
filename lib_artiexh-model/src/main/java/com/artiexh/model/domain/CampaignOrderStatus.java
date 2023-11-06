@@ -3,7 +3,7 @@ package com.artiexh.model.domain;
 import lombok.Getter;
 
 @Getter
-public enum OrderStatus {
+public enum CampaignOrderStatus {
 	PAYING(0),
 	PREPARING(1),
 	SHIPPING(2),
@@ -13,11 +13,11 @@ public enum OrderStatus {
 
 	private final int value;
 
-	OrderStatus(int value) {
+	CampaignOrderStatus(int value) {
 		this.value = value;
 	}
 
-	public static OrderStatus fromValue(int value) {
+	public static CampaignOrderStatus fromValue(int value) {
 		return switch (value) {
 			case 0 -> PAYING;
 			case 1 -> PREPARING;

@@ -2,7 +2,7 @@ package com.artiexh.model.rest.order.filter;
 
 import com.artiexh.data.jpa.entity.CampaignOrderEntity;
 import com.artiexh.data.jpa.entity.OrderEntity;
-import com.artiexh.model.domain.OrderStatus;
+import com.artiexh.model.domain.CampaignOrderStatus;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
@@ -21,7 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderFilter {
 
-	private OrderStatus status;
+	private CampaignOrderStatus status;
 	private Instant from;
 	private Instant to;
 

@@ -18,8 +18,8 @@ import com.artiexh.ghtk.client.model.shipfee.ShipFeeRequest;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
 import com.artiexh.ghtk.client.service.GhtkOrderService;
 import com.artiexh.model.domain.CampaignOrder;
+import com.artiexh.model.domain.CampaignOrderStatus;
 import com.artiexh.model.domain.OrderHistoryStatus;
-import com.artiexh.model.domain.OrderStatus;
 import com.artiexh.model.domain.Role;
 import com.artiexh.model.mapper.CampaignOrderMapper;
 import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
@@ -136,14 +136,14 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 
 	@Transactional
 	@Override
-	public AdminCampaignOrderResponse updateShippingOrderStatus(Long artistId, Long orderId,
+	public AdminCampaignOrderResponse updateShippingOrderStatus(Long orderId,
 																UpdateShippingOrderRequest updateShippingOrderRequest) {
-		CampaignOrderEntity campaignOrderEntity = campaignOrderRepository.findByIdAndCampaignOwnerId(orderId, artistId).orElseThrow(
-			() -> new IllegalArgumentException("OrderId " + orderId + " is not belongs to artist " + artistId));
+		CampaignOrderEntity campaignOrderEntity = campaignOrderRepository.findById(orderId).orElseThrow(
+			() -> new IllegalArgumentException("campaignOrderId " + orderId + " not found"));
 
-		if (campaignOrderEntity.getStatus() != OrderStatus.PREPARING.getByteValue()) {
+		if (campaignOrderEntity.getStatus() != CampaignOrderStatus.PREPARING.getByteValue()) {
 			throw new IllegalArgumentException(
-				"Cannot update order status from " + OrderStatus.fromValue(campaignOrderEntity.getStatus()) + " to SHIPPING");
+				"Cannot update order status from " + CampaignOrderStatus.fromValue(campaignOrderEntity.getStatus()) + " to SHIPPING");
 		}
 
 		OrderEntity orderEntity = campaignOrderEntity.getOrder();
@@ -173,7 +173,6 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 			.tel(campaignOrderEntity.getOrder().getDeliveryTel())
 			.email(campaignOrderEntity.getOrder().getDeliveryEmail())
 			.note(updateShippingOrderRequest.getNote())
-			.weightOption("gram")
 			.tags(updateShippingOrderRequest.getTags());
 
 		if (updateShippingOrderRequest.getValue() != null) {
@@ -211,7 +210,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 			throw new IllegalArgumentException("Create ghtk order failed: " + ghtkCreateOrderResponse.getMessage());
 		}
 
-		campaignOrderEntity.setStatus(OrderStatus.SHIPPING.getByteValue());
+		campaignOrderEntity.setStatus(CampaignOrderStatus.SHIPPING.getByteValue());
 		campaignOrderEntity.setShippingLabel(ghtkCreateOrderResponse.getOrder().getLabel());
 		campaignOrderRepository.save(campaignOrderEntity);
 
@@ -235,11 +234,11 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 			account.getRole() != Role.STAFF.getByteValue())) {
 			throw new IllegalAccessException(ErrorCode.ORDER_STATUS_NOT_ALLOWED.getMessage());
 		}
-		if (order.getStatus() != OrderStatus.PAYING.getByteValue() &&
-			order.getStatus() != OrderStatus.PREPARING.getByteValue()) {
+		if (order.getStatus() != CampaignOrderStatus.PAYING.getByteValue() &&
+			order.getStatus() != CampaignOrderStatus.PREPARING.getByteValue()) {
 			throw new IllegalArgumentException("Order can not be canceled if order's status are not PAYING or PREPARING");
 		}
-		order.setStatus(OrderStatus.CANCELED.getByteValue());
+		order.setStatus(CampaignOrderStatus.CANCELED.getByteValue());
 		//TODO: revert campaign product quantity
 		campaignOrderRepository.save(order);
 
@@ -259,10 +258,10 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	@Override
 	public void refundOrder(Long orderId, Long updatedBy) {
 		CampaignOrderEntity order = campaignOrderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
-		if (!order.getStatus().equals(OrderStatus.CANCELED.getByteValue())) {
+		if (!order.getStatus().equals(CampaignOrderStatus.CANCELED.getByteValue())) {
 			throw new IllegalArgumentException("Order can not be refunded before CANCELED");
 		}
-		order.setStatus(OrderStatus.REFUNDED.getByteValue());
+		order.setStatus(CampaignOrderStatus.REFUNDED.getByteValue());
 		campaignOrderRepository.save(order);
 
 		//TODO: update field updatedBy for history

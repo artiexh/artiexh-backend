@@ -1,6 +1,6 @@
 package com.artiexh.model.rest.order.user.response;
 
-import com.artiexh.model.domain.OrderStatus;
+import com.artiexh.model.domain.CampaignOrderStatus;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -23,7 +23,7 @@ public class UserCampaignOrderResponsePage {
 
 	private String note;
 
-	private OrderStatus status;
+	private CampaignOrderStatus status;
 
 	private Instant modifiedDate;
 

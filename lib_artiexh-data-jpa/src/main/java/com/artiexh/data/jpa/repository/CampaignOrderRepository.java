@@ -16,10 +16,11 @@ public interface CampaignOrderRepository extends JpaRepository<CampaignOrderEnti
 
 	Optional<CampaignOrderEntity> findByIdAndCampaignOwnerId(Long orderId, Long artistId);
 
+
 	Optional<CampaignOrderEntity> findByIdAndOrderUserId(Long orderId, Long userId);
 
 	@Modifying(flushAutomatically = true)
-	@Query("update CampaignOrderEntity set status = cast(1 as byte) where order = :id")
+	@Query("update CampaignOrderEntity set status = cast(1 as byte) where order.id = :id")
 	void updatePayment(@Param("id") Long id);
 
 	Set<CampaignOrderEntity> getAllByOrderId(Long orderId);

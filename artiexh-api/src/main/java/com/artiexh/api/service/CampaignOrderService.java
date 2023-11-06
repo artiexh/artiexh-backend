@@ -28,7 +28,7 @@ public interface CampaignOrderService {
 
 	Mono<ShipFeeResponse.ShipFee> getShippingFee(Long userId, GetShippingFeeRequest request);
 
-	AdminCampaignOrderResponse updateShippingOrderStatus(Long artistId, Long orderId,
+	AdminCampaignOrderResponse updateShippingOrderStatus(Long orderId,
 														 UpdateShippingOrderRequest updateShippingOrderRequest);
 
 	void cancelOrder(Long orderId, String message, Long updatedBy);

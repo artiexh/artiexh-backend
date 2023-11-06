@@ -1,7 +1,7 @@
 package com.artiexh.model.rest.order.request;
 
 import com.artiexh.data.jpa.entity.CampaignOrderEntity;
-import com.artiexh.model.domain.OrderStatus;
+import com.artiexh.model.domain.CampaignOrderStatus;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -21,7 +21,7 @@ import java.util.function.Function;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderPageFilter {
-	private OrderStatus status;
+	private CampaignOrderStatus status;
 	private Instant from;
 	private Instant to;
 

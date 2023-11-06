@@ -1,6 +1,6 @@
 package com.artiexh.model.rest.order.admin.response;
 
-import com.artiexh.model.domain.OrderStatus;
+import com.artiexh.model.domain.CampaignOrderStatus;
 import com.artiexh.model.domain.PaymentMethod;
 import com.artiexh.model.domain.User;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -27,7 +27,7 @@ public class AdminCampaignOrderResponsePage {
 
 	private PaymentMethod paymentMethod;
 
-	private OrderStatus status;
+	private CampaignOrderStatus status;
 
 	private Instant modifiedDate;
 
