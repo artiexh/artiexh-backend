@@ -60,6 +60,11 @@ public class ArtistServiceImpl implements ArtistService {
 	}
 
 	@Override
+	public Page<ArtistProfileResponse> getAllProfile(Pageable pageable) {
+		return artistRepository.findAll(pageable).map(artistMapper::entityToProfileResponse);
+	}
+
+	@Override
 	public ArtistProfileResponse getProfile(String username) {
 		ArtistEntity artistEntity = artistRepository.findByUsername(username)
 			.orElseThrow(() -> new EntityNotFoundException("Artist: " + username + " not found"));

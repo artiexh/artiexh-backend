@@ -2,14 +2,17 @@ package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.service.ArtistService;
 import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.product.ProductService;
 import com.artiexh.model.domain.Product;
 import com.artiexh.model.domain.ProductSuggestion;
+import com.artiexh.model.mapper.ArtistMapper;
 import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.artist.filter.ArtistCampaignFilter;
+import com.artiexh.model.rest.artist.response.ArtistProfileResponse;
 import com.artiexh.model.rest.campaign.request.CampaignRequestFilter;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import com.artiexh.model.rest.campaign.response.PublishedCampaignDetailResponse;
@@ -39,6 +42,10 @@ public class MarketplaceController {
 	private final ProductService productService;
 
 	private final ProductMapper productMapper;
+
+	private final ArtistService artistService;
+
+	private final ArtistMapper artistMapper;
 
 	@GetMapping("/campaign")
 	public PageResponse<CampaignResponse> getAllPublicCampaign(@ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
@@ -137,5 +144,15 @@ public class MarketplaceController {
 				paginationAndSortingRequest.getPageable()
 		);
 		return new PageResponse<>(suggestionPage);
+	}
+
+	@GetMapping("/artist")
+	public PageResponse<ArtistProfileResponse> getInPage(
+			@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest
+	) {
+		Page<ArtistProfileResponse> profiles = artistService.getAllProfile(
+				paginationAndSortingRequest.getPageable()
+		);
+		return new PageResponse<>(profiles);
 	}
 }
