@@ -35,7 +35,7 @@ public class GetCampaignProductFilter {
 		var boolQuery = new BoolQueryBuilder().should(new TermsQueryBuilder("status", List.of(ProductStatus.PRE_ORDER.getValue(), ProductStatus.AVAILABLE.getValue()))).minimumShouldMatch(1);
 
 		if (campaignId != null) {
-			boolQuery.must(new TermQueryBuilder("campaignId", campaignId));
+			boolQuery.must(new TermQueryBuilder("campaign.id", campaignId));
 		}
 
 		if (minPrice != null) {
