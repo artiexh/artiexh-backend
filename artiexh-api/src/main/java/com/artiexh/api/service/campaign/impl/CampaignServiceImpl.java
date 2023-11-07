@@ -621,7 +621,7 @@ public class CampaignServiceImpl implements CampaignService {
 		AccountEntity updatedBy = accountRepository.findById(userId).orElseThrow();
 
 		campaign.setIsPrePublished(isPrePublished);
-		//TODO: Update product in OpenSearch
+
 		campaign.getCampaignHistories().add(
 			CampaignHistoryEntity.builder()
 				.id(CampaignHistoryId.builder().campaignId(campaign.getId()).build())
@@ -631,8 +631,8 @@ public class CampaignServiceImpl implements CampaignService {
 				.build()
 		);
 		campaignRepository.save(campaign);
-
-		openSearchProductService.prePublishedProduct(campaignId);
+		//TODO: Update product in OpenSearch
+		//openSearchProductService.prePublishedProduct(campaignId);
 	}
 
 }

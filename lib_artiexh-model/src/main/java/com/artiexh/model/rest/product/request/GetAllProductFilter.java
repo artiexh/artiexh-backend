@@ -100,4 +100,9 @@ public class GetAllProductFilter {
 
 		return queryBuilder.build();
 	}
+
+	public Query matchAllQuery() {
+		var queryBuilder = new NativeSearchQueryBuilder().withQuery(new MatchAllQueryBuilder());
+		return queryBuilder.build();
+	}
 }

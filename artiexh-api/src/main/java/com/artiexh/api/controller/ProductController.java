@@ -16,8 +16,11 @@ import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.opensearch.data.client.orhlc.NativeSearchQueryBuilder;
+import org.opensearch.index.query.MatchAllQueryBuilder;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -58,20 +61,20 @@ public class ProductController {
 		}
 	}
 
-	@GetMapping("/product")
+	@GetMapping()
 	@PreAuthorize("hasAnyAuthority('STAFF', 'ADMIN', 'ARTIST')")
 	public PageResponse<ProductResponse> getInPage(
-		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
-		@ParameterObject @Valid GetAllProductFilter filter
+		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest
 	) {
+		GetAllProductFilter filter = new GetAllProductFilter();
 		Page<Product> productPage = productService.getInPage(
-			filter.getQuery(),
+			filter.matchAllQuery(),
 			paginationAndSortingRequest.getPageable()
 		);
 		return new PageResponse<>(productMapper.productPageToProductResponsePage(productPage));
 	}
 
-	@GetMapping("/product/{id}")
+	@GetMapping("/{id}")
 	@PreAuthorize("hasAnyAuthority('STAFF', 'ADMIN', 'ARTIST')")
 	public ProductResponse getDetail(@PathVariable("id") long id) {
 		Product product;
