@@ -56,12 +56,7 @@ public class CustomProductServiceImpl implements CustomProductService {
 	@Override
 	@Transactional
 	public CustomProductGeneralResponse updateGeneral(CustomProductGeneralRequest item) {
-		CustomProductEntity entity = customProductRepository.findById(item.getId())
-			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + item.getId()));
-
-		if (!entity.getVariant().getId().equals(item.getVariantId())) {
-			throw new IllegalArgumentException("Cannot change variant");
-		}
+		CustomProductEntity entity = getOldCustomProductEntity(item.getId(), item.getVariantId());
 
 		entity.getAttaches().clear();
 		Set<ProductAttachEntity> attaches = item.getAttaches().stream().map(productAttachMapper::domainToEntity).collect(Collectors.toSet());
@@ -105,12 +100,7 @@ public class CustomProductServiceImpl implements CustomProductService {
 	@Override
 	@Transactional
 	public CustomProductDesignResponse updateDesign(CustomProductDesignRequest item) {
-		CustomProductEntity entity = customProductRepository.findById(item.getId())
-			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + item.getId()));
-
-		if (!entity.getVariant().getId().equals(item.getVariantId())) {
-			throw new IllegalArgumentException("Cannot change variant");
-		}
+		CustomProductEntity entity = getOldCustomProductEntity(item.getId(), item.getVariantId());
 
 		var imageSetEntity = validateImageSet(
 			item.getArtistId(),
@@ -128,6 +118,21 @@ public class CustomProductServiceImpl implements CustomProductService {
 		entity.setModelThumbnail(validateModelThumbnail(item.getModelThumbnailId(), item.getArtistId()));
 
 		return customProductMapper.entityToDesignResponse(customProductRepository.save(entity));
+	}
+
+	private CustomProductEntity getOldCustomProductEntity(Long id, Long variantId) {
+		CustomProductEntity entity = customProductRepository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + id));
+
+		if (entity.getCampaignLock() != null) {
+			throw new IllegalArgumentException("customProduct is locked by campaign " + entity.getCampaignLock());
+		}
+
+		if (!entity.getVariant().getId().equals(variantId)) {
+			throw new IllegalArgumentException("Cannot change variant");
+		}
+
+		return entity;
 	}
 
 	private MediaEntity validateModelThumbnail(Long id, Long artistId) {
