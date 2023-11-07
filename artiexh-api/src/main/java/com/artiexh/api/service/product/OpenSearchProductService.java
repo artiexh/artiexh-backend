@@ -20,4 +20,6 @@ public interface OpenSearchProductService {
 
 	void delete(long productId);
 
+	boolean prePublishedProduct(Long campaignId);
+
 }

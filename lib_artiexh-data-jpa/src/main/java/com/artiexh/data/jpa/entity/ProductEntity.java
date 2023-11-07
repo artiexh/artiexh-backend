@@ -119,6 +119,6 @@ public class ProductEntity {
 
 	@Builder.Default
 	@Column(name = "sold_quantity", nullable = false)
-	private Integer soldQuantity = 0;
+	private Long soldQuantity = 0L;
 
 }
