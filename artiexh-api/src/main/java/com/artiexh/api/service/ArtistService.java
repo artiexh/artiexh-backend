@@ -17,6 +17,8 @@ public interface ArtistService {
 
 	ArtistProfileResponse getProfile(long id);
 
+	Page<ArtistProfileResponse> getAllProfile(Pageable pageable);
+
 	ArtistProfileResponse getProfile(String username);
 
 	PageResponse<ProductResponse> getAllProducts(Query query, Pageable pageable);
