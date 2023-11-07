@@ -3,6 +3,7 @@ package com.artiexh.api.service.campaign.impl;
 import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.campaign.ProductInCampaignService;
+import com.artiexh.api.service.product.OpenSearchProductService;
 import com.artiexh.api.service.product.ProductService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.*;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
