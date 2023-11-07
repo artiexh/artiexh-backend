@@ -57,4 +57,29 @@ public class ProductController {
 			throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, ex.getMessage(), ex);
 		}
 	}
+
+	@GetMapping("/product")
+	@PreAuthorize("hasAnyAuthority('STAFF', 'ADMIN', 'ARTIST')")
+	public PageResponse<ProductResponse> getInPage(
+		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
+		@ParameterObject @Valid GetAllProductFilter filter
+	) {
+		Page<Product> productPage = productService.getInPage(
+			filter.getQuery(),
+			paginationAndSortingRequest.getPageable()
+		);
+		return new PageResponse<>(productMapper.productPageToProductResponsePage(productPage));
+	}
+
+	@GetMapping("/product/{id}")
+	@PreAuthorize("hasAnyAuthority('STAFF', 'ADMIN', 'ARTIST')")
+	public ProductResponse getDetail(@PathVariable("id") long id) {
+		Product product;
+		try {
+			product = productService.getDetail(id);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(ErrorCode.PRODUCT_NOT_FOUND.getCode(), ErrorCode.PRODUCT_NOT_FOUND.getMessage(), ex);
+		}
+		return productMapper.domainToProductResponse(product);
+	}
 }
