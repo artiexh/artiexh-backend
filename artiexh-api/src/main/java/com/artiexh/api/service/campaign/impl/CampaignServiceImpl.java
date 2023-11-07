@@ -47,6 +47,7 @@ public class CampaignServiceImpl implements CampaignService {
 	private final ProductInCampaignService productInCampaignService;
 	private final ProductTagMapper productTagMapper;
 	private final ProductCategoryMapper productCategoryMapper;
+	private final OpenSearchProductService openSearchProductService;
 	@Override
 	@Transactional
 	public CampaignDetailResponse createCampaign(Long ownerId, ArtistCampaignRequest request) {
@@ -630,6 +631,8 @@ public class CampaignServiceImpl implements CampaignService {
 				.build()
 		);
 		campaignRepository.save(campaign);
+
+		openSearchProductService.prePublishedProduct(campaignId);
 	}
 
 }
