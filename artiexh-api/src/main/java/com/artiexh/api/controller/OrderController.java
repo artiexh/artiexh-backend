@@ -13,7 +13,7 @@ import com.artiexh.model.mapper.OrderMapper;
 import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
 import com.artiexh.model.rest.order.request.*;
 import com.artiexh.model.rest.order.response.PaymentResponse;
-import com.artiexh.model.rest.order.user.response.UserOrderResponse;
+import com.artiexh.model.rest.order.user.response.DetailUserOrderResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -38,12 +38,12 @@ public class OrderController {
 
 	@PostMapping(Endpoint.Order.CHECKOUT)
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
-	public UserOrderResponse checkout(Authentication authentication,
-									  @RequestBody @Valid CheckoutRequest request) {
+	public DetailUserOrderResponse checkout(Authentication authentication,
+											@RequestBody @Valid CheckoutRequest request) {
 		var userId = (Long) authentication.getPrincipal();
 		try {
 			Order order = orderService.checkout(userId, request);
-			return orderMapper.domainToUserResponse(order);
+			return orderMapper.domainToUserDetailResponse(order);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
 		} catch (UnsupportedOperationException ex) {
@@ -105,8 +105,7 @@ public class OrderController {
 	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
 	public AdminCampaignOrderResponse updateOrderToShippingStatus(
 		@PathVariable Long id,
-		@RequestBody @Valid UpdateShippingOrderRequest updateShippingOrderRequest,
-		Authentication authentication
+		@RequestBody @Valid UpdateShippingOrderRequest updateShippingOrderRequest
 	) {
 		try {
 			return campaignOrderService.updateShippingOrderStatus(id, updateShippingOrderRequest);

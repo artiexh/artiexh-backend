@@ -15,7 +15,7 @@ import java.time.Instant;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserCampaignOrderResponsePage {
+public class CampaignOrderResponsePage {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 
@@ -28,7 +28,4 @@ public class UserCampaignOrderResponsePage {
 	private Instant modifiedDate;
 
 	private Instant createdDate;
-
-	@JsonSerialize(using = ToStringSerializer.class)
-	private Long orderId;
 }

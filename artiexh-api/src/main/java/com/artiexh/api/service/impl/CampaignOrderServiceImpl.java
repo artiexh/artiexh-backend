@@ -23,9 +23,9 @@ import com.artiexh.model.domain.OrderHistoryStatus;
 import com.artiexh.model.domain.Role;
 import com.artiexh.model.mapper.CampaignOrderMapper;
 import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
-import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponsePage;
 import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
 import com.artiexh.model.rest.order.request.UpdateShippingOrderRequest;
+import com.artiexh.model.rest.order.user.response.CampaignOrderResponsePage;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -59,7 +59,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	public Page<CampaignOrder> getCampaignOrderInPage(Specification<CampaignOrderEntity> specification, Pageable pageable) {
 		Page<CampaignOrderEntity> entities = campaignOrderRepository.findAll(specification, pageable);
 		return entities.map(order -> {
-			CampaignOrder domain = campaignOrderMapper.entityToResponseDomain(order);
+			CampaignOrder domain = campaignOrderMapper.entityToDomain(order);
 			return domain;
 		});
 	}
@@ -67,15 +67,15 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	@Override
 	public CampaignOrder getCampaignOrderById(Long orderId) {
 		CampaignOrderEntity order = campaignOrderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
-		CampaignOrder domain = campaignOrderMapper.entityToResponseDomain(order);
+		CampaignOrder domain = campaignOrderMapper.entityToDomain(order);
 		return domain;
 	}
 
 	@Override
-	public Page<AdminCampaignOrderResponsePage> getAdminCampaignOrderInPage(Specification<CampaignOrderEntity> specification,
-																			Pageable pageable) {
+	public Page<CampaignOrderResponsePage> getAdminCampaignOrderInPage(Specification<CampaignOrderEntity> specification,
+																	   Pageable pageable) {
 		return campaignOrderRepository.findAll(specification, pageable)
-			.map(campaignOrderMapper::entityToUserResponse);
+			.map(campaignOrderMapper::entityToUserResponsePage);
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	public CampaignOrder getOrderByIdAndOwner(Long orderId, Long artistId) {
 		CampaignOrderEntity order = campaignOrderRepository.findByIdAndCampaignOwnerId(orderId, artistId)
 			.orElseThrow(EntityNotFoundException::new);
-		CampaignOrder domain = campaignOrderMapper.entityToResponseDomain(order);
+		CampaignOrder domain = campaignOrderMapper.entityToDomain(order);
 		return domain;
 	}
 
@@ -97,7 +97,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	public CampaignOrder getOrderByIdAndUserId(Long orderId, Long userId) {
 		CampaignOrderEntity order = campaignOrderRepository.findByIdAndOrderUserId(orderId, userId)
 			.orElseThrow(EntityNotFoundException::new);
-		CampaignOrder domain = campaignOrderMapper.entityToResponseDomain(order);
+		CampaignOrder domain = campaignOrderMapper.entityToDomain(order);
 		return domain;
 	}
 

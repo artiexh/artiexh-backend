@@ -25,5 +25,5 @@ public class CampaignOrder {
 	private Instant createdDate;
 	private List<OrderHistory> orderHistories;
 	private String shippingLabel;
-	private Long orderId;
+	private Order order;
 }
