@@ -1,12 +1,15 @@
 package com.artiexh.model.rest.order.admin.response;
 
 import com.artiexh.model.domain.OrderHistory;
+import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import com.artiexh.model.rest.order.response.OrderDetailResponse;
+import com.artiexh.model.rest.order.user.response.CampaignOrderResponsePage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
@@ -14,24 +17,11 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AdminCampaignOrderResponse extends AdminCampaignOrderResponsePage {
+public class AdminCampaignOrderResponse extends CampaignOrderResponsePage {
+	private CampaignResponse.Owner user;
 	private Set<OrderDetailResponse> orderDetails;
+	private BigDecimal shippingFee;
 	private List<OrderHistory> orderHistories;
 	private String shippingLabel;
-	private String pickAddress;
-	private String pickWard;
-	private String pickDistrict;
-	private String pickProvince;
-	private String pickCountry;
-	private String pickTel;
-	private String pickName;
-	private String pickEmail;
-	private String returnAddress;
-	private String returnWard;
-	private String returnDistrict;
-	private String returnProvince;
-	private String returnCountry;
-	private String returnTel;
-	private String returnName;
-	private String returnEmail;
+	private AdminOrderResponse order;
 }

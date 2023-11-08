@@ -11,7 +11,14 @@ import java.util.Set;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {MediaMapper.class, ArtistMapper.class, ProductVariantMapper.class, DateTimeMapper.class, ProductAttachMapper.class}
+	uses = {
+		MediaMapper.class,
+		ArtistMapper.class,
+		ProductVariantMapper.class,
+		DateTimeMapper.class,
+		ProductAttachMapper.class,
+		ProductTemplateMapper.class
+	}
 )
 public interface CustomProductMapper {
 	@Mapping(target = "artist", source = "artistId", qualifiedByName = "idToDomain")
@@ -48,14 +55,17 @@ public interface CustomProductMapper {
 	@Mapping(target = "variant", qualifiedByName = "entityToBasicDomain")
 	CustomProduct entityToDomain(CustomProductEntity entity);
 
+	@Mapping(target = "variant.productTemplate.modelFileId", source = "variant.productTemplate.modelFile.id")
 	CustomProductResponse entityToGetAllResponse(CustomProductEntity entity);
 
 	@Named("customProductEntityToGeneralResponse")
+	@Mapping(target = "variant.productTemplate.modelFileId", source = "variant.productTemplate.modelFile.id")
 	CustomProductGeneralResponse entityToGeneralResponse(CustomProductEntity entity);
 
 	CustomProductDesignResponse entityToDesignResponse(CustomProductEntity entity);
 
 	@Named("customProductEntityToDetailResponse")
+	@Mapping(target = "variant.productTemplate.modelFileId", source = "variant.productTemplate.modelFile.id")
 	CustomProductDetailResponse entityToDetailResponse(CustomProductEntity entity);
 
 	@Named("variantCombinationEntityToDomain")

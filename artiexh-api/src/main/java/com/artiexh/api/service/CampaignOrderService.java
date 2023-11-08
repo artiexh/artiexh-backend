@@ -4,9 +4,9 @@ import com.artiexh.data.jpa.entity.CampaignOrderEntity;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
 import com.artiexh.model.domain.CampaignOrder;
 import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
-import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponsePage;
 import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
 import com.artiexh.model.rest.order.request.UpdateShippingOrderRequest;
+import com.artiexh.model.rest.order.user.response.CampaignOrderResponsePage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,7 +18,7 @@ public interface CampaignOrderService {
 
 	CampaignOrder getCampaignOrderById(Long orderId);
 
-	Page<AdminCampaignOrderResponsePage> getAdminCampaignOrderInPage(Specification<CampaignOrderEntity> query, Pageable pageable);
+	Page<CampaignOrderResponsePage> getAdminCampaignOrderInPage(Specification<CampaignOrderEntity> query, Pageable pageable);
 
 	AdminCampaignOrderResponse getAdminCampaignOrderById(Long orderId);
 

@@ -8,6 +8,7 @@ import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import com.artiexh.model.rest.campaign.response.PublishedCampaignDetailResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
@@ -16,6 +17,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 )
 public interface CampaignMapper {
 
+	@Named("entityToResponse")
 	CampaignResponse entityToResponse(CampaignEntity entity);
 
 	CampaignResponse domainToResponse(Campaign domain);
@@ -23,6 +25,7 @@ public interface CampaignMapper {
 	@Mapping(target = "campaignHistories", ignore = true)
 	Campaign entityToDomain(CampaignEntity entity);
 
+	@Named("entityToDetailResponse")
 	@Mapping(target = "products", source = "productInCampaigns")
 	@Mapping(target = "provider", ignore = true)
 	CampaignDetailResponse entityToDetailResponse(CampaignEntity entity);
@@ -37,10 +40,11 @@ public interface CampaignMapper {
 	default CampaignStatus campaignStatusFrom(byte value) {
 		return CampaignStatus.fromValue(value);
 	}
-	
+
 	default Byte toValue(CampaignType type) {
 		return type.getByteValue();
 	}
+
 	default CampaignType campaignTypeFrom(byte value) {
 		return CampaignType.fromValue(value);
 	}
