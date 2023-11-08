@@ -22,8 +22,8 @@ import com.artiexh.model.mapper.SubscriptionMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.artist.request.UpdateArtistProfileRequest;
 import com.artiexh.model.rest.artist.response.ArtistProfileResponse;
-import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponse;
-import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponsePage;
+import com.artiexh.model.rest.order.user.response.CampaignOrderResponsePage;
+import com.artiexh.model.rest.order.user.response.UserUserCampaignOrderDetailResponse;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -85,14 +85,14 @@ public class ArtistServiceImpl implements ArtistService {
 	}
 
 	@Override
-	public UserCampaignOrderResponse getOrderById(Long orderId, Long artistId) {
+	public UserUserCampaignOrderDetailResponse getOrderById(Long orderId, Long artistId) {
 		CampaignOrder campaignOrder = campaignOrderService.getOrderByIdAndOwner(orderId, artistId);
-		return campaignOrderMapper.domainToUserResponse(campaignOrder);
+		return campaignOrderMapper.domainToUserDetailResponse(campaignOrder);
 	}
 
 	@Override
-	public PageResponse<UserCampaignOrderResponsePage> getAllOrder(Specification<CampaignOrderEntity> specification,
-																   Pageable pageable) {
+	public PageResponse<CampaignOrderResponsePage> getAllOrder(Specification<CampaignOrderEntity> specification,
+															   Pageable pageable) {
 		Page<CampaignOrder> orderPage = campaignOrderService.getCampaignOrderInPage(specification, pageable);
 		return new PageResponse<>(orderPage.map(campaignOrderMapper::domainToUserResponsePage));
 	}

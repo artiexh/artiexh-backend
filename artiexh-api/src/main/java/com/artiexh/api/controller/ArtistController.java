@@ -11,8 +11,8 @@ import com.artiexh.model.rest.artist.filter.ProductPageFilter;
 import com.artiexh.model.rest.artist.request.UpdateArtistProfileRequest;
 import com.artiexh.model.rest.artist.response.ArtistProfileResponse;
 import com.artiexh.model.rest.order.request.OrderPageFilter;
-import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponse;
-import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponsePage;
+import com.artiexh.model.rest.order.user.response.CampaignOrderResponsePage;
+import com.artiexh.model.rest.order.user.response.UserUserCampaignOrderDetailResponse;
 import com.artiexh.model.rest.post.PostDetail;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
@@ -68,7 +68,7 @@ public class ArtistController {
 
 	@GetMapping(Endpoint.Artist.ARTIST_ORDER)
 	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
-	public PageResponse<UserCampaignOrderResponsePage> getAllOrder(
+	public PageResponse<CampaignOrderResponsePage> getAllOrder(
 		Authentication authentication,
 		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
 		@ParameterObject @Valid OrderPageFilter filter
@@ -79,7 +79,7 @@ public class ArtistController {
 
 	@GetMapping(Endpoint.Artist.ARTIST_ORDER + "/{id}")
 	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
-	public UserCampaignOrderResponse getOrderById(
+	public UserUserCampaignOrderDetailResponse getOrderById(
 		@PathVariable Long id,
 		Authentication authentication
 	) {

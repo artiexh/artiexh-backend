@@ -9,9 +9,10 @@ import com.artiexh.data.jpa.entity.OrderEntity;
 import com.artiexh.model.domain.Order;
 import com.artiexh.model.mapper.CampaignOrderMapper;
 import com.artiexh.model.mapper.OrderMapper;
-import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponse;
-import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponsePage;
+import com.artiexh.model.rest.order.user.response.CampaignOrderResponsePage;
+import com.artiexh.model.rest.order.user.response.DetailUserOrderResponse;
 import com.artiexh.model.rest.order.user.response.UserOrderResponse;
+import com.artiexh.model.rest.order.user.response.UserUserCampaignOrderDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,12 +30,12 @@ public class UserServiceImpl implements UserService {
 	private final OrderMapper orderMapper;
 
 	@Override
-	public UserOrderResponse getOrderById(Long id, Long userId) {
+	public DetailUserOrderResponse getOrderById(Long id, Long userId) {
 		Order order = orderService.getById(id);
 		if (!order.getUser().getId().equals(userId)) {
 			throw new IllegalArgumentException(ErrorCode.ORDER_IS_INVALID.getMessage());
 		}
-		return orderMapper.domainToUserResponse(order);
+		return orderMapper.domainToUserDetailResponse(order);
 	}
 
 	@Override
@@ -44,15 +45,15 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Page<UserCampaignOrderResponsePage> getCampaignOrderInPage(Specification<CampaignOrderEntity> specification,
-																	  Pageable pageable) {
+	public Page<CampaignOrderResponsePage> getCampaignOrderInPage(Specification<CampaignOrderEntity> specification,
+																  Pageable pageable) {
 		return campaignOrderService.getCampaignOrderInPage(specification, pageable)
 			.map(campaignOrderMapper::domainToUserResponsePage);
 	}
 
 	@Override
-	public UserCampaignOrderResponse getCampaignOrderById(Long id, Long userId) {
+	public UserUserCampaignOrderDetailResponse getCampaignOrderById(Long id, Long userId) {
 		var userOrder = campaignOrderService.getOrderByIdAndUserId(id, userId);
-		return campaignOrderMapper.domainToUserResponse(userOrder);
+		return campaignOrderMapper.domainToUserDetailResponse(userOrder);
 	}
 }

@@ -8,6 +8,7 @@ import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import com.artiexh.model.rest.campaign.response.PublishedCampaignDetailResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
@@ -16,13 +17,16 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 )
 public interface CampaignMapper {
 
+	@Named("entityToResponse")
 	CampaignResponse entityToResponse(CampaignEntity entity);
 
 	CampaignResponse domainToResponse(Campaign domain);
 
+	@Mapping(target = "campaignType", source = "type")
 	@Mapping(target = "campaignHistories", ignore = true)
 	Campaign entityToDomain(CampaignEntity entity);
 
+	@Named("entityToDetailResponse")
 	@Mapping(target = "products", source = "productInCampaigns")
 	@Mapping(target = "provider", ignore = true)
 	CampaignDetailResponse entityToDetailResponse(CampaignEntity entity);

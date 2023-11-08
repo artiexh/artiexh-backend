@@ -9,9 +9,10 @@ import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.order.filter.OrderFilter;
 import com.artiexh.model.rest.order.request.OrderPageFilter;
-import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponse;
-import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponsePage;
+import com.artiexh.model.rest.order.user.response.CampaignOrderResponsePage;
+import com.artiexh.model.rest.order.user.response.DetailUserOrderResponse;
 import com.artiexh.model.rest.order.user.response.UserOrderResponse;
+import com.artiexh.model.rest.order.user.response.UserUserCampaignOrderDetailResponse;
 import com.artiexh.model.rest.user.UserAddressRequest;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -123,7 +124,7 @@ public class UserController {
 
 	@GetMapping(Endpoint.User.ORDER + "/{id}")
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
-	public UserOrderResponse getOrderById(
+	public DetailUserOrderResponse getOrderById(
 		@PathVariable Long id,
 		Authentication authentication
 	) {
@@ -139,9 +140,9 @@ public class UserController {
 
 	@GetMapping(Endpoint.User.CAMPAIGN_ORDER)
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
-	public PageResponse<UserCampaignOrderResponsePage> getAllOrder(Authentication authentication,
-																   @ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
-																   @ParameterObject @Valid OrderPageFilter filter) {
+	public PageResponse<CampaignOrderResponsePage> getAllOrder(Authentication authentication,
+															   @ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
+															   @ParameterObject @Valid OrderPageFilter filter) {
 		try {
 			long userId = (long) authentication.getPrincipal();
 			var userOrdersPage = userService.getCampaignOrderInPage(
@@ -158,8 +159,8 @@ public class UserController {
 
 	@GetMapping(Endpoint.User.CAMPAIGN_ORDER + "/{id}")
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
-	public UserCampaignOrderResponse getOrderDetail(Authentication authentication,
-													@PathVariable Long id) {
+	public UserUserCampaignOrderDetailResponse getOrderDetail(Authentication authentication,
+															  @PathVariable Long id) {
 		try {
 			long userId = (long) authentication.getPrincipal();
 			return userService.getCampaignOrderById(id, userId);

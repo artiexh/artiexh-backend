@@ -7,8 +7,9 @@ import com.artiexh.model.domain.CampaignOrderStatus;
 import com.artiexh.model.domain.OrderDetail;
 import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
 import com.artiexh.model.rest.order.response.OrderDetailResponse;
+import com.artiexh.model.rest.order.user.response.CampaignOrderResponsePage;
 import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponse;
-import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponsePage;
+import com.artiexh.model.rest.order.user.response.UserUserCampaignOrderDetailResponse;
 import org.mapstruct.*;
 
 import java.util.Set;
@@ -23,23 +24,28 @@ import java.util.Set;
 		OrderTransactionMapper.class,
 		AddressMapper.class,
 		OrderHistoryMapper.class,
-		DateTimeMapper.class
+		DateTimeMapper.class,
+		OrderMapper.class
 	}
 )
 public interface CampaignOrderMapper {
 
-	@Mapping(target = "orderId", source = "order.id")
 	CampaignOrder entityToResponseDomain(CampaignOrderEntity entity);
 
 	@Mapping(target = "createdDate", ignore = true)
 	@Mapping(target = "modifiedDate", ignore = true)
 	CampaignOrderEntity orderToOrderEntity(CampaignOrder campaignOrder);
 
+	@Mapping(target = "user", source = "order.user")
+	@Mapping(target = "campaign", source = "campaign", qualifiedByName = "entityToResponse")
+	@Mapping(target = "order", source = "order", qualifiedByName = "entityToAdminResponse")
 	AdminCampaignOrderResponse entityToUserResponse(CampaignOrderEntity entity);
 
-	@Mapping(target = "currentTransaction", ignore = true)
 	@Named("domainToUserResponse")
 	UserCampaignOrderResponse domainToUserResponse(CampaignOrder campaignOrder);
+
+	@Named("domainToUserDetailResponse")
+	UserUserCampaignOrderDetailResponse domainToUserDetailResponse(CampaignOrder campaignOrder);
 
 	@IterableMapping(qualifiedByName = "domainToUserResponse")
 	@Named("domainsToUserResponses")
@@ -47,11 +53,11 @@ public interface CampaignOrderMapper {
 
 
 	@Named("domainToUserResponsePage")
-	UserCampaignOrderResponse domainToUserResponsePage(CampaignOrder campaignOrder);
+	CampaignOrderResponsePage domainToUserResponsePage(CampaignOrder campaignOrder);
 
 	@IterableMapping(qualifiedByName = "domainToUserResponsePage")
 	@Named("domainsToUserResponsePages")
-	Set<UserCampaignOrderResponsePage> domainsToUserResponsePages(Set<CampaignOrder> campaignOrders);
+	Set<CampaignOrderResponsePage> domainsToUserResponsePages(Set<CampaignOrder> campaignOrders);
 
 
 	@Mapping(target = "id", source = "product.id")
