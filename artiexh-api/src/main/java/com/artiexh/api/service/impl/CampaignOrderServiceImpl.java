@@ -59,7 +59,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	public Page<CampaignOrder> getCampaignOrderInPage(Specification<CampaignOrderEntity> specification, Pageable pageable) {
 		Page<CampaignOrderEntity> entities = campaignOrderRepository.findAll(specification, pageable);
 		return entities.map(order -> {
-			CampaignOrder domain = campaignOrderMapper.entityToResponseDomain(order);
+			CampaignOrder domain = campaignOrderMapper.entityToDomain(order);
 			return domain;
 		});
 	}
@@ -67,7 +67,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	@Override
 	public CampaignOrder getCampaignOrderById(Long orderId) {
 		CampaignOrderEntity order = campaignOrderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
-		CampaignOrder domain = campaignOrderMapper.entityToResponseDomain(order);
+		CampaignOrder domain = campaignOrderMapper.entityToDomain(order);
 		return domain;
 	}
 
@@ -75,7 +75,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	public Page<CampaignOrderResponsePage> getAdminCampaignOrderInPage(Specification<CampaignOrderEntity> specification,
 																	   Pageable pageable) {
 		return campaignOrderRepository.findAll(specification, pageable)
-			.map(campaignOrderMapper::entityToUserResponse);
+			.map(campaignOrderMapper::entityToUserResponsePage);
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	public CampaignOrder getOrderByIdAndOwner(Long orderId, Long artistId) {
 		CampaignOrderEntity order = campaignOrderRepository.findByIdAndCampaignOwnerId(orderId, artistId)
 			.orElseThrow(EntityNotFoundException::new);
-		CampaignOrder domain = campaignOrderMapper.entityToResponseDomain(order);
+		CampaignOrder domain = campaignOrderMapper.entityToDomain(order);
 		return domain;
 	}
 
@@ -97,7 +97,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	public CampaignOrder getOrderByIdAndUserId(Long orderId, Long userId) {
 		CampaignOrderEntity order = campaignOrderRepository.findByIdAndOrderUserId(orderId, userId)
 			.orElseThrow(EntityNotFoundException::new);
-		CampaignOrder domain = campaignOrderMapper.entityToResponseDomain(order);
+		CampaignOrder domain = campaignOrderMapper.entityToDomain(order);
 		return domain;
 	}
 

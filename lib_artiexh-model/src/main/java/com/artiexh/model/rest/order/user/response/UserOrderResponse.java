@@ -1,7 +1,6 @@
 package com.artiexh.model.rest.order.user.response;
 
 import com.artiexh.model.domain.PaymentMethod;
-import com.artiexh.model.rest.transaction.OrderTransactionResponse;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
@@ -16,7 +15,6 @@ import lombok.Setter;
 public class UserOrderResponse {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
-	private OrderTransactionResponse currentTransaction;
 	private PaymentMethod paymentMethod;
 	private String deliveryAddress;
 	private String deliveryWard;

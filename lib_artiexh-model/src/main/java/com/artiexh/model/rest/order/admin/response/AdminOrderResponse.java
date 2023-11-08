@@ -16,8 +16,8 @@ import lombok.Setter;
 public class AdminOrderResponse {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
-	private OrderTransactionResponse currentTransaction;
 	private PaymentMethod paymentMethod;
+	private OrderTransactionResponse currentTransaction;
 	private String deliveryAddress;
 	private String deliveryWard;
 	private String deliveryDistrict;

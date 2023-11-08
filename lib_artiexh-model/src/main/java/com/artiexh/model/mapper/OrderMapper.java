@@ -22,6 +22,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 		AddressMapper.class})
 public interface OrderMapper {
 	@Mapping(target = "user", qualifiedByName = "entityToBasicUser")
+	@Mapping(target = "campaignOrders", source = "campaignOrders", qualifiedByName = "entityToDomainWithoutOrder")
 	Order entityToDomain(OrderEntity entity);
 
 	@Named("domainToResponse")
@@ -33,6 +34,7 @@ public interface OrderMapper {
 	@Named("entityToResponse")
 	UserOrderResponse entityToUserResponse(OrderEntity order);
 
+	@Mapping(target = "currentTransaction", source = "orderTransactions", qualifiedByName = "getCurrentTransaction")
 	@Named("entityToAdminResponse")
 	AdminOrderResponse entityToAdminResponse(OrderEntity order);
 

@@ -30,7 +30,11 @@ import java.util.Set;
 )
 public interface CampaignOrderMapper {
 
-	CampaignOrder entityToResponseDomain(CampaignOrderEntity entity);
+	CampaignOrder entityToDomain(CampaignOrderEntity entity);
+
+	@Named("entityToDomainWithoutOrder")
+	@Mapping(target = "order", ignore = true)
+	CampaignOrder entityToDomainWithoutOrder(CampaignOrderEntity entity);
 
 	@Mapping(target = "createdDate", ignore = true)
 	@Mapping(target = "modifiedDate", ignore = true)
@@ -51,6 +55,7 @@ public interface CampaignOrderMapper {
 	@Named("domainsToUserResponses")
 	Set<UserCampaignOrderResponse> domainsToUserResponses(Set<CampaignOrder> campaignOrders);
 
+	CampaignOrderResponsePage entityToUserResponsePage(CampaignOrderEntity campaignOrder);
 
 	@Named("domainToUserResponsePage")
 	CampaignOrderResponsePage domainToUserResponsePage(CampaignOrder campaignOrder);
