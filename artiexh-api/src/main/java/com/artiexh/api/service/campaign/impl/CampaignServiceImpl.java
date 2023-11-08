@@ -3,6 +3,7 @@ package com.artiexh.api.service.campaign.impl;
 import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.campaign.ProductInCampaignService;
+import com.artiexh.api.service.product.OpenSearchProductService;
 import com.artiexh.api.service.product.ProductService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.*;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,6 +47,7 @@ public class CampaignServiceImpl implements CampaignService {
 	private final ProductInCampaignService productInCampaignService;
 	private final ProductTagMapper productTagMapper;
 	private final ProductCategoryMapper productCategoryMapper;
+	private final OpenSearchProductService openSearchProductService;
 	@Override
 	@Transactional
 	public CampaignDetailResponse createCampaign(Long ownerId, ArtistCampaignRequest request) {
@@ -577,9 +580,6 @@ public class CampaignServiceImpl implements CampaignService {
 			Product product = productMapper.publishProductRequestToProduct(finalizeProductRequest);
 			product.setTags(productInCampaign.getCustomProduct().getTags().stream().map(productTagMapper::entityToDomain).collect(Collectors.toSet()));
 			product.setCategory(productCategoryMapper.entityToDomain(productInCampaign.getCustomProduct().getCategory()));
-			if (campaign.getType().byteValue() == CampaignType.PRIVATE.getByteValue()) {
-				product.setIsPrivate(true);
-			}
 
 			product = productService.create(campaign.getOwner().getId(), product, productInCampaign);
 			productResponses.add(productMapper.domainToProductResponse(product));
@@ -621,6 +621,7 @@ public class CampaignServiceImpl implements CampaignService {
 		AccountEntity updatedBy = accountRepository.findById(userId).orElseThrow();
 
 		campaign.setIsPrePublished(isPrePublished);
+
 		campaign.getCampaignHistories().add(
 			CampaignHistoryEntity.builder()
 				.id(CampaignHistoryId.builder().campaignId(campaign.getId()).build())
@@ -630,6 +631,8 @@ public class CampaignServiceImpl implements CampaignService {
 				.build()
 		);
 		campaignRepository.save(campaign);
+		//TODO: Update product in OpenSearch
+		//openSearchProductService.prePublishedProduct(campaignId);
 	}
 
 }

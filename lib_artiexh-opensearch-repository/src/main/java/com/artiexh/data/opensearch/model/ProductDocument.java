@@ -2,11 +2,13 @@ package com.artiexh.data.opensearch.model;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 @Data
 @Document(indexName = "product")
@@ -31,10 +33,8 @@ public class ProductDocument {
 	private Float averageRate;
 	@Field(name = "tags", type = FieldType.Keyword)
 	private String[] tags;
-	@Field(name = "campaignId", type = FieldType.Long)
-	private Long campaignId;
-	@Field(name = "isPrivate", type = FieldType.Boolean)
-	private Boolean isPrivate;
+	@Field(name = "campaign", type = FieldType.Nested)
+	private Campaign campaign;
 	@Data
 	public static class Money {
 		@Field(name = "amount", type = FieldType.Float)
@@ -115,5 +115,19 @@ public class ProductDocument {
 		private Long id;
 		@Field(name = "name", type = FieldType.Keyword)
 		private String name;
+	}
+
+	@Data
+	public static class Campaign {
+		@Field(name = "id", type = FieldType.Long)
+		private Long id;
+		@Field(name = "type", type = FieldType.Byte)
+		private Byte type;
+		@Field(name = "isPrePublished", type = FieldType.Boolean)
+		private Boolean isPrePublished;
+		@Field(name = "from", type = FieldType.Date, format = {DateFormat.date_time})
+		private Instant from;
+		@Field(name = "to", type = FieldType.Date, format = {DateFormat.date_time})
+		private Instant to;
 	}
 }

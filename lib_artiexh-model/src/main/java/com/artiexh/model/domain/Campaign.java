@@ -28,7 +28,7 @@ public class Campaign {
 
 	private String content;
 
-	private CampaignType campaignType;
+	private CampaignType type;
 
 	private Instant from;
 

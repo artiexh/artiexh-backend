@@ -52,6 +52,7 @@ public class JpaProductServiceImpl implements JpaProductService {
 			product.setQuantity(entity.getQuantity());
 			product.getOwner().setAvatarUrl(entity.getOwner().getAvatarUrl());
 			product.setDescription(entity.getDescription());
+			product.setSoldQuantity(entity.getSoldQuantity());
 		}
 
 		return productPage;
