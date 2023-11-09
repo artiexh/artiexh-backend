@@ -20,7 +20,7 @@ public interface ShopMapper {
 	Shop requestToDomain(RegistrationArtistRequest request);
 
 	@Named("basicShopInfo")
-	@Mapping(target = "owner", source = ".", qualifiedByName = "basicArtistInfo")
+	//@Mapping(target = "owner", source = ".", qualifiedByName = "basicArtistInfo")
 	Shop entityToDomain(ArtistEntity entity);
 
 	@Mapping(target = "ward", source = "shopWard")
