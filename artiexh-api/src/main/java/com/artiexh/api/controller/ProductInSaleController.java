@@ -4,23 +4,17 @@ import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.service.product.ProductService;
 import com.artiexh.model.domain.Product;
-import com.artiexh.model.domain.ProductSuggestion;
 import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
-import com.artiexh.model.rest.product.request.CreateProductRequest;
 import com.artiexh.model.rest.product.request.GetAllProductFilter;
-import com.artiexh.model.rest.product.request.SuggestionFilter;
 import com.artiexh.model.rest.product.request.UpdateProductRequest;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.opensearch.data.client.orhlc.NativeSearchQueryBuilder;
-import org.opensearch.index.query.MatchAllQueryBuilder;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
-import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -30,7 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = Endpoint.Product.ROOT)
-public class ProductController {
+public class ProductInSaleController {
 	private final ProductService productService;
 	private final ProductMapper productMapper;
 

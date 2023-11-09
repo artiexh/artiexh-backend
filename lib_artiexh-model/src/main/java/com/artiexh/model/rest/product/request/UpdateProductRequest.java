@@ -37,7 +37,7 @@ public class UpdateProductRequest {
 
 	@NotNull
 	@Min(0)
-	private Long remainingQuantity;
+	private Long quantity;
 
 	private Integer maxItemsPerOrder;
 

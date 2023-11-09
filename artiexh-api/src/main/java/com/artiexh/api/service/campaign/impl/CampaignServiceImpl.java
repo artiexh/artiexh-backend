@@ -4,7 +4,7 @@ import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.campaign.ProductInCampaignService;
 import com.artiexh.api.service.product.OpenSearchProductService;
-import com.artiexh.api.service.product.ProductService;
+import com.artiexh.api.service.product.ProductInventoryService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.*;
@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,8 +39,8 @@ public class CampaignServiceImpl implements CampaignService {
 	private final AccountRepository accountRepository;
 	private final ProductInCampaignMapper productInCampaignMapper;
 	private final CampaignMapper campaignMapper;
-	private final ProductService productService;
-	private final ProductMapper productMapper;
+	private final ProductInventoryService productService;
+	private final ProductInventoryMapper productMapper;
 	private final ProviderMapper providerMapper;
 	private final ArtistRepository artistRepository;
 	private final ProductInCampaignService productInCampaignService;
@@ -577,9 +576,10 @@ public class CampaignServiceImpl implements CampaignService {
 			}
 
 			//Product product = productMapper.productInCampaignToProduct(uncommittedProduct);
-			Product product = productMapper.publishProductRequestToProduct(finalizeProductRequest);
+			ProductInventory product = productMapper.finalizeProductRequestToProduct(finalizeProductRequest);
 			product.setTags(productInCampaign.getCustomProduct().getTags().stream().map(productTagMapper::entityToDomain).collect(Collectors.toSet()));
 			product.setCategory(productCategoryMapper.entityToDomain(productInCampaign.getCustomProduct().getCategory()));
+			product.setQuantity(0L);
 
 			product = productService.create(campaign.getOwner().getId(), product, productInCampaign);
 			productResponses.add(productMapper.domainToProductResponse(product));

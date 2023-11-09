@@ -1,19 +1,16 @@
 package com.artiexh.model.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
+import lombok.*;
 
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Product {
-	private Long id;
+public class ProductInventory {
+	private String productCode;
 	private Artist owner;
 	private ProductStatus status;
 	private String name;
@@ -23,7 +20,6 @@ public class Product {
 	private String description;
 	private ProductType type;
 	private Long quantity;
-	private Long soldQuantity;
 	private Long maxItemsPerOrder;
 	private DeliveryType deliveryType;
 	private Float averageRate;
@@ -32,10 +28,8 @@ public class Product {
 	private Set<ProductAttach> attaches;
 	private Shop shop;
 	private Float weight;
-	private Set<Product> bundles;
-	private Set<Product> bundleItems;
+//	private Set<Product> bundles;
+//	private Set<Product> bundleItems;
 	private ProductInCampaign productInCampaign;
-	private Campaign campaign;
-//	@Builder.Default
-//	private Boolean isPrivate = false;
+//	private Campaign campaign;
 }

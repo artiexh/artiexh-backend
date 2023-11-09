@@ -14,10 +14,7 @@ import lombok.NoArgsConstructor;
 public class Shop {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
-	private String shopName;
-	private String shopImageUrl;
 	private String shopAddress;
 	private Ward shopWard;
-	private Artist owner;
 	private String shopPhone;
 }

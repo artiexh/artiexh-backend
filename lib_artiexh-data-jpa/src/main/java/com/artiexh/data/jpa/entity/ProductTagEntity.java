@@ -31,6 +31,12 @@ public class ProductTagEntity {
 		inverseJoinColumns = @JoinColumn(name = "product_id"))
 	private Set<ProductEntity> products;
 
+	@ManyToMany
+	@JoinTable(name = "product_tag_mapping",
+		joinColumns = @JoinColumn(name = "tag_id"),
+		inverseJoinColumns = @JoinColumn(name = "product_code"))
+	private Set<ProductInventoryEntity> productInventories;
+
 	@Override
 	public final boolean equals(Object o) {
 		if (this == o) return true;
