@@ -31,9 +31,50 @@ public class ProductEntity {
 	@JoinColumn(name = "owner_id", nullable = false)
 	private ArtistEntity owner;
 
+	@Column(name = "price_amount", nullable = false)
+	private BigDecimal priceAmount;
+
+	@Column(name = "price_unit", nullable = false, length = 3)
+	private String priceUnit;
+
+	@Column(name = "quantity", columnDefinition = "INT UNSIGNED not null")
+	private Long quantity;
+
+	@Builder.Default
+	@ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@JoinTable(name = "product_bundle_mapping",
+		joinColumns = @JoinColumn(name = "product_id"),
+		inverseJoinColumns = @JoinColumn(name = "bundle_id"))
+	private Set<ProductEntity> bundles = new LinkedHashSet<>();
+
+	@OneToOne()
+	@JoinColumn(
+		name = "campaign_sale_id",
+		referencedColumnName = "id",
+		updatable = false,
+		insertable = false
+	)
+	private CampaignEntity campaign;
+
+	@Column(name = "campaign_id")
+	private Long campaignId;
+
+	@Builder.Default
+	@Column(name = "sold_quantity", nullable = false)
+	private Long soldQuantity = 0L;
+
+	@OneToOne(orphanRemoval = true,
+		fetch = FetchType.LAZY
+	)
+	@JoinColumn(name = "product_in_campaign_id", updatable = false, insertable = false)
+	private ProductInCampaignEntity productInCampaign;
+
+	@Column(name = "product_in_campaign_id")
+	private Long productInCampaignId;
+
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JoinColumn(name = "shop_id", nullable = false)
+	@JoinColumn(name = "created_by", nullable = false)
 	private ArtistEntity shop;
 
 	@Column(name = "status", nullable = false)
@@ -41,12 +82,6 @@ public class ProductEntity {
 
 	@Column(name = "name", nullable = false)
 	private String name;
-
-	@Column(name = "price_amount", nullable = false)
-	private BigDecimal priceAmount;
-
-	@Column(name = "price_unit", nullable = false, length = 3)
-	private String priceUnit;
 
 	@ManyToOne(optional = false)
 	@OnDelete(action = OnDeleteAction.CASCADE)
@@ -58,9 +93,6 @@ public class ProductEntity {
 
 	@Column(name = "type", nullable = false)
 	private Byte type;
-
-	@Column(name = "quantity", columnDefinition = "INT UNSIGNED not null")
-	private Long quantity;
 
 	@Column(name = "max_items_per_order", columnDefinition = "INT UNSIGNED")
 	private Long maxItemsPerOrder;
@@ -94,31 +126,4 @@ public class ProductEntity {
 		joinColumns = @JoinColumn(name = "bundle_id"),
 		inverseJoinColumns = @JoinColumn(name = "product_id"))
 	private Set<ProductEntity> bundleItems = new LinkedHashSet<>();
-
-	@Builder.Default
-	@ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-	@JoinTable(name = "product_bundle_mapping",
-		joinColumns = @JoinColumn(name = "product_id"),
-		inverseJoinColumns = @JoinColumn(name = "bundle_id"))
-	private Set<ProductEntity> bundles = new LinkedHashSet<>();
-
-	@Column(name = "product_in_campaign_id")
-	private Long productInCampaignId;
-
-	@OneToOne()
-	@JoinColumn(
-		name = "campaign_id",
-		referencedColumnName = "id",
-		updatable = false,
-		insertable = false
-	)
-	private CampaignEntity campaign;
-
-	@Column(name = "campaign_id")
-	private Long campaignId;
-
-	@Builder.Default
-	@Column(name = "sold_quantity", nullable = false)
-	private Long soldQuantity = 0L;
-
 }

@@ -34,6 +34,7 @@ public abstract class ArtistMapper {
 	public abstract AccountProfile entityToAccountProfile(ArtistEntity userEntity);
 
 	@Mapping(target = "shoppingCart", ignore = true)
+	@Mapping(target = "products", ignore = true)
 	public abstract Artist entityToDomain(ArtistEntity userEntity);
 
 	abstract ArtistEntity domainToEntity(Artist user);

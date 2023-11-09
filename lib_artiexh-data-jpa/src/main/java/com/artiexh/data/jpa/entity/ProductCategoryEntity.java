@@ -16,7 +16,7 @@ import java.util.Set;
 public class ProductCategoryEntity {
 
 	@OneToMany(mappedBy = "category")
-	private Set<ProductEntity> product;
+	private Set<ProductInventoryEntity> product;
 	@Id
 	@Tsid
 	@Column(name = "id", nullable = false)
