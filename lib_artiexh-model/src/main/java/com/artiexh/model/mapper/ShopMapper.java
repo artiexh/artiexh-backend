@@ -1,5 +1,6 @@
 package com.artiexh.model.mapper;
 
+import com.artiexh.data.jpa.entity.AccountEntity;
 import com.artiexh.data.jpa.entity.ArtistEntity;
 import com.artiexh.model.domain.Shop;
 import com.artiexh.model.rest.address.AddressResponse;
@@ -22,6 +23,8 @@ public interface ShopMapper {
 	@Named("basicShopInfo")
 	//@Mapping(target = "owner", source = ".", qualifiedByName = "basicArtistInfo")
 	Shop entityToDomain(ArtistEntity entity);
+		//@Mapping(target = "owner", source = ".", qualifiedByName = "basicArtistInfo")
+	Shop entityToDomain(AccountEntity entity);
 
 	@Mapping(target = "ward", source = "shopWard")
 	@Mapping(target = "address", source = "address")

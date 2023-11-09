@@ -55,6 +55,11 @@ public final class Endpoint {
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class ProductInventory {
+		public static final String ROOT = PREFIX + "/product-inventory";
+	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class ProductInSale {
 		public static final String ROOT = PREFIX + "/product-in-sale";
 		public static final String PRODUCT_DETAIL = "/{id}";

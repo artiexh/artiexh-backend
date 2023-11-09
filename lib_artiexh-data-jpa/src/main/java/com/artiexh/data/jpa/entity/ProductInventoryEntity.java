@@ -78,7 +78,8 @@ public class ProductInventoryEntity {
 	private Byte[] paymentMethods;
 
 	@ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-	@JoinTable(name = "product_tag_mapping", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
+	@JoinTable(name = "product_tag_mapping",
+		joinColumns = @JoinColumn(name = "product_code"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
 	private Set<ProductTagEntity> tags;
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})

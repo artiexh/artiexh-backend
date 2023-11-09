@@ -18,6 +18,9 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FinalizeProductRequest {
+	@NotEmpty
+	@Size(max = 20)
+	private String productCode;
 	@NotNull
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long productInCampaignId;

@@ -9,7 +9,6 @@ import com.artiexh.data.jpa.repository.ProductTagRepository;
 import com.artiexh.model.domain.*;
 import com.artiexh.model.mapper.ProductInventoryMapper;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ProductInventoryServiceImpl implements ProductInventoryService {
 	private final ProductInventoryRepository productRepository;
 	private final ArtistRepository artistRepository;
@@ -45,6 +46,7 @@ public class ProductInventoryServiceImpl implements ProductInventoryService {
 	}
 
 	@Override
+	@Transactional
 	public ProductInventory update(ProductInventory product) {
 		ProductInventoryEntity productEntity = productRepository.findById(product.getProductCode()).orElseThrow(EntityNotFoundException::new);
 

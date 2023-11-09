@@ -18,7 +18,8 @@ import java.util.Set;
 public class ProductResponse {
 
 	@JsonSerialize(using = ToStringSerializer.class)
-	private String id;
+	private Long id;
+	private String productCode;
 	private String name;
 	private String thumbnailUrl;
 	private ProductStatus status;

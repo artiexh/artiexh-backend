@@ -23,7 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = Endpoint.Product.ROOT)
+@RequestMapping(path = Endpoint.ProductInventory.ROOT)
 public class ProductInventoryController {
 	private final ProductInventoryService productInventoryService;
 	private final ProductInventoryMapper productInventoryMapper;

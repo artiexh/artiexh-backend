@@ -1,14 +1,14 @@
 package com.artiexh.model.mapper;
 
+import com.artiexh.data.jpa.entity.ProductAttachEntity;
 import com.artiexh.data.jpa.entity.ProductInventoryEntity;
 import com.artiexh.model.domain.*;
 import com.artiexh.model.rest.campaign.request.FinalizeProductRequest;
 import com.artiexh.model.rest.product.request.UpdateProductRequest;
 import com.artiexh.model.rest.product.response.ProductResponse;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
+
+import java.util.Set;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
@@ -29,14 +29,12 @@ public interface ProductInventoryMapper {
 	@Mapping(target = "price.amount", source = "priceAmount")
 	@Mapping(target = "thumbnailUrl", source = "attaches", qualifiedByName = "getProductThumbnailUrl")
 	@Mapping(target = "owner", qualifiedByName = "basicArtistInfo")
-	@Mapping(target = "createdBy", qualifiedByName = "basicShopInfo")
-	@Mapping(target = "bundles", source = "bundles", qualifiedByName = "bundleEntitiesToDomains")
+	//@Mapping(target = "bundles", source = "bundles", qualifiedByName = "bundleEntitiesToDomains")
 	//@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemEntitiesToDomains")
-	@Mapping(target = "productInCampaign.id", source = "productInCampaignId")
 	ProductInventory entityToDomain(ProductInventoryEntity productEntity);
 
 	@Mapping(target = "category.id", source = "categoryId")
-	@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemsToProductSet")
+	//@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemsToProductSet")
 	ProductInventory updateProductRequestToProduct(UpdateProductRequest updateProductRequest);
 
 	ProductResponse domainToProductResponse(ProductInventory product);
@@ -44,13 +42,12 @@ public interface ProductInventoryMapper {
 	@Mapping(target = "priceUnit", source = "price.unit")
 	@Mapping(target = "priceAmount", source = "price.amount")
 	@Mapping(target = "averageRate", constant = "0f")
-	@Mapping(target = "productInCampaignId", source = "productInCampaign.id")
 	ProductInventoryEntity domainToEntity(ProductInventory product);
 
 	@Mapping(target = "priceUnit", source = "price.unit")
 	@Mapping(target = "priceAmount", source = "price.amount")
 	@Mapping(target = "averageRate", constant = "0f")
-	@Mapping(target = "productInCampaignId", ignore = true)
+	@Mapping(target = "productInCampaign", ignore = true)
 	@Mapping(target = "productCode", ignore = true)
 	@Mapping(target = "owner", ignore = true)
 	@Mapping(target = "shop", ignore = true)
@@ -89,5 +86,14 @@ public interface ProductInventoryMapper {
 
 	default DeliveryType toDeliveryType(Integer value) {
 		return DeliveryType.fromValue(value);
+	}
+
+	@Named("getProductThumbnailUrl")
+	default String getThumbnailUrl(Set<ProductAttachEntity> productAttachEntities) {
+		return productAttachEntities.stream()
+			.filter(attachEntity -> attachEntity.getType() == ProductAttachType.THUMBNAIL.getValue())
+			.findFirst()
+			.map(ProductAttachEntity::getUrl)
+			.orElse(null);
 	}
 }
