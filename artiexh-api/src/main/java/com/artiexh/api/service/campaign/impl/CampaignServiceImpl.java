@@ -284,10 +284,6 @@ public class CampaignServiceImpl implements CampaignService {
 		CampaignEntity campaignEntity = campaignRepository.findById(campaignId)
 			.orElseThrow(EntityNotFoundException::new);
 
-		if (!Boolean.TRUE.equals(campaignEntity.getIsPrePublished())) {
-			throw new IllegalArgumentException(ErrorCode.CAMPAIGN_UNPUBLISHED.getMessage());
-		}
-
 		PublishedCampaignDetailResponse result = campaignMapper.entityToPublishedCampaignDetailResponse(campaignEntity);
 
 		if (campaignEntity.getProviderId() != null) {
@@ -617,36 +613,6 @@ public class CampaignServiceImpl implements CampaignService {
 		ProductInCampaignEntity campaignProduct = productInCampaignRepository.findAllByCampaignIdAndId(campaignId, productId)
 			.orElseThrow(EntityNotFoundException::new);
 		return productInCampaignMapper.entityToDetailResponse(campaignProduct);
-	}
-
-	@Override
-	@Transactional
-	public void staffPublishProductCampaign(Long campaignId, boolean isPrePublished, Long userId) {
-		CampaignEntity campaign = campaignRepository.findById(campaignId).orElseThrow(EntityNotFoundException::new);
-		if (!CampaignStatus.ALLOWED_PUBLISHED_STATUS.contains(CampaignStatus.fromValue(campaign.getStatus()))) {
-			throw new IllegalArgumentException("You can only publish product after campaign is approved and not finished");
-		}
-
-		String message = "";
-		if (Boolean.FALSE.equals(campaign.getIsPrePublished())) {
-			message = "Campaign " + campaignId + " was successfully pre-published";
-		} else {
-			throw new IllegalArgumentException("Campaign was already pre-published");
-		}
-
-		AccountEntity updatedBy = accountRepository.findById(userId).orElseThrow();
-
-		campaign.setIsPrePublished(isPrePublished);
-
-		campaign.getCampaignHistories().add(
-			CampaignHistoryEntity.builder()
-				.id(CampaignHistoryId.builder().campaignId(campaign.getId()).build())
-				.action(CampaignHistoryAction.PUBLISHED.getByteValue())
-				.message(message)
-				.updatedBy(updatedBy.getUsername())
-				.build()
-		);
-		campaignRepository.save(campaign);
 	}
 
 }

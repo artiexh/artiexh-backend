@@ -37,6 +37,8 @@ public interface CampaignMapper {
 	@Mapping(target = "campaignId", source = "id.campaignId")
 	CampaignHistory campaignHistoryEntityToCampaignHistory(CampaignHistoryEntity entity);
 
+	ProductSource entityToSourceDomain(CampaignEntity campaign);
+
 	default CampaignStatus campaignStatusFrom(byte value) {
 		return CampaignStatus.fromValue(value);
 	}

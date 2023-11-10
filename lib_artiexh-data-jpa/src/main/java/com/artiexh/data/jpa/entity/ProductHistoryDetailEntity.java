@@ -1,10 +1,7 @@
 package com.artiexh.data.jpa.entity;
 
 import com.artiexh.data.jpa.entity.embededmodel.ProductHistoryEntityDetailId;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -20,4 +17,8 @@ public class ProductHistoryDetailEntity {
 	private ProductHistoryEntityDetailId id;
 
 	private Long quantity;
+
+	@ManyToOne
+	@JoinColumn(name = "product_code", updatable = false, insertable = false)
+	private ProductInventoryEntity productInventory;
 }

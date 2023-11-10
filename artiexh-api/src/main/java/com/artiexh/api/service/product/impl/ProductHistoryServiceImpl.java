@@ -1,14 +1,23 @@
 package com.artiexh.api.service.product.impl;
 
 import com.artiexh.api.service.product.ProductHistoryService;
+import com.artiexh.data.jpa.entity.CampaignEntity;
 import com.artiexh.data.jpa.entity.ProductHistoryDetailEntity;
 import com.artiexh.data.jpa.entity.ProductHistoryEntity;
 import com.artiexh.data.jpa.entity.embededmodel.ProductHistoryEntityDetailId;
+import com.artiexh.data.jpa.repository.CampaignRepository;
+import com.artiexh.model.domain.ProductHistory;
 import com.artiexh.model.domain.ProductInventoryQuantity;
 import com.artiexh.data.jpa.repository.ProductHistoryRepository;
 import com.artiexh.model.domain.ProductHistoryAction;
 import com.artiexh.model.domain.SourceCategory;
+import com.artiexh.model.mapper.CampaignMapper;
+import com.artiexh.model.mapper.ProductHistoryMapper;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,8 +27,12 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class ProductHistoryServiceImpl implements ProductHistoryService {
 	private final ProductHistoryRepository productHistoryRepository;
+	private final ProductHistoryMapper productHistoryMapper;
+	private final CampaignRepository campaignRepository;
+	private final CampaignMapper campaignMapper;
 	@Override
 	@Transactional
 	public void create(ProductHistoryAction action, Long sourceId, SourceCategory sourceCategory, Set<ProductInventoryQuantity> productQuantities) {
@@ -27,7 +40,7 @@ public class ProductHistoryServiceImpl implements ProductHistoryService {
 		ProductHistoryEntity productHistory = ProductHistoryEntity.builder()
 			.action(action.getByteValue())
 			.sourceId(sourceId)
-			.sourceCategory(sourceCategory == null ? null : sourceCategory.getByteValue())
+			.sourceCategory(sourceCategory.getByteValue())
 			.productHistoryDetails(productHistoryDetails)
 			.build();
 		productHistoryRepository.save(productHistory);
@@ -41,5 +54,30 @@ public class ProductHistoryServiceImpl implements ProductHistoryService {
 				.quantity(product.getQuantity())
 				.build())
 			.collect(Collectors.toSet()));
+	}
+
+	@Override
+	public Page<ProductHistory> getInPage(Pageable pageable, Specification<ProductHistoryEntity> specification) {
+		Page<ProductHistoryEntity> productHistoryPage = productHistoryRepository.findAll(specification, pageable);
+		return productHistoryPage.map(productHistoryMapper::entityToDomainWithoutProductHistoryDetail);
+	}
+
+	@Override
+	public ProductHistory getById(Long id) {
+		ProductHistoryEntity productHistory = productHistoryRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+		ProductHistory result = productHistoryMapper.entityToDomain(productHistory);
+		if (productHistory.getSourceId() != null) {
+			switch (SourceCategory.fromValue(productHistory.getSourceCategory())) {
+				case CAMPAIGN_SALE -> {
+					//TODO: Query campaign sale
+					CampaignEntity campaign;
+				}
+				case CAMPAIGN_REQUEST -> {
+					CampaignEntity campaign = campaignRepository.findById(productHistory.getSourceId()).orElse(null);
+					result.setProductSource(campaignMapper.entityToSourceDomain(campaign));
+				}
+			}
+		}
+		return result;
 	}
 }

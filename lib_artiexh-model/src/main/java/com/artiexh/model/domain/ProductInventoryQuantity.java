@@ -1,5 +1,7 @@
 package com.artiexh.model.domain;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -8,6 +10,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductInventoryQuantity {
+	@NotBlank
 	private String productCode;
+	@NotNull
 	private Long quantity;
 }

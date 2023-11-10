@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum SourceCategory {
 	CAMPAIGN_SALE(1),
-	CAMPAIGN_REQUEST(2);
+	CAMPAIGN_REQUEST(2),
+	ORTHER(0);
 	private final int value;
 
 	public static SourceCategory fromValue(int value) {

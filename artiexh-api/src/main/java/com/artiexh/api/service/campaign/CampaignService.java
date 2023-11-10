@@ -31,7 +31,6 @@ public interface CampaignService {
 
 	Set<ProductResponse> finalizeProduct(Long campaignId, Set<FinalizeProductRequest> request);
 
-	void staffPublishProductCampaign(Long campaignId, boolean isPrePublished, Long userId);
 	Page<ProductInCampaignResponse> getAllProductCampaign(Long campaignId, Pageable pageable);
 
 	ProductInCampaignDetailResponse getProductInCampaign(Long campaignId, Long productId);

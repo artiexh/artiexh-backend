@@ -213,4 +213,9 @@ public final class Endpoint {
 	public static class Campaign {
 		public static final String ROOT = PREFIX + "/campaign";
 	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class ProductHistory {
+		public static final String ROOT = PREFIX + "/product-history";
+	}
 }

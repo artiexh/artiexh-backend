@@ -2,10 +2,7 @@ package com.artiexh.data.jpa.entity;
 
 import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -27,8 +24,9 @@ public class ProductHistoryEntity extends BaseAuditEntity {
 	@Column(name = "id", nullable = false)
 	private Long id;
 
-	@Column(name = "source_category")
-	private Byte sourceCategory;
+	@Column(name = "source_category", nullable = false)
+	@Builder.Default
+	private Byte sourceCategory = 0;
 
 	@Column(name = "action", nullable = false)
 	private Byte action;
