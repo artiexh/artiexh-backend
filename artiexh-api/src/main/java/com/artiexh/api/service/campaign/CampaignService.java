@@ -1,6 +1,7 @@
 package com.artiexh.api.service.campaign;
 
 import com.artiexh.data.jpa.entity.CampaignEntity;
+import com.artiexh.model.domain.ProductInventoryQuantity;
 import com.artiexh.model.rest.campaign.request.*;
 import com.artiexh.model.rest.campaign.response.*;
 import com.artiexh.model.rest.product.response.ProductResponse;
@@ -34,4 +35,9 @@ public interface CampaignService {
 	Page<ProductInCampaignResponse> getAllProductCampaign(Long campaignId, Pageable pageable);
 
 	ProductInCampaignDetailResponse getProductInCampaign(Long campaignId, Long productId);
+
+	void staffFinishManufactureCampaign(Set<ProductInventoryQuantity> productInventoryQuantities,
+										Long campaignId,
+										Long staffId,
+										String message);
 }

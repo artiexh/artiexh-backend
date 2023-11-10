@@ -2,6 +2,8 @@ package com.artiexh.api.controller.campaign;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.campaign.CampaignService;
+import com.artiexh.data.jpa.entity.ProductHistoryEntity;
+import com.artiexh.model.domain.ProductInventoryQuantity;
 import com.artiexh.model.rest.campaign.request.FinalizeProductRequest;
 import com.artiexh.model.rest.campaign.response.ProductInCampaignDetailResponse;
 import com.artiexh.model.rest.product.response.ProductResponse;
@@ -34,12 +36,16 @@ public class CampaignController {
 		}
 	}
 
-	@PostMapping("/{id}/pre-publish-product")
+	@PostMapping("/{id}/publish-to-product-inventory")
 	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
-	public void prePublishProduct(Authentication authentication, @PathVariable("id") Long campaignId) {
+	public void publishProduct(
+		Authentication authentication,
+		@PathVariable("id") Long campaignId,
+		@RequestBody @Valid Set<ProductInventoryQuantity> productQuantities
+	) {
 		try {
 			long staffId = (long) authentication.getPrincipal();
-			campaignService.staffPublishProductCampaign(campaignId, true, staffId);
+			campaignService.staffFinishManufactureCampaign(productQuantities, campaignId, staffId, null);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		} catch (EntityNotFoundException ex) {
