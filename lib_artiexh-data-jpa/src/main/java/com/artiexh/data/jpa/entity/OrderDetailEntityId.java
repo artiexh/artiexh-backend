@@ -17,7 +17,7 @@ public class OrderDetailEntityId implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 426241825757468637L;
 	private Long campaignOrder;
-	private Long product;
+	private String product;
 
 	@Override
 	public boolean equals(Object o) {

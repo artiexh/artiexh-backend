@@ -21,7 +21,8 @@ import java.util.Set;
 		ShopMapper.class,
 		ProductInCampaignMapper.class,
 		CustomProductMapper.class,
-		CampaignMapper.class
+		CampaignMapper.class,
+		CampaignTypeMapper.class
 	}
 )
 public interface ProductInventoryMapper {
@@ -29,12 +30,12 @@ public interface ProductInventoryMapper {
 	@Mapping(target = "price.amount", source = "priceAmount")
 	@Mapping(target = "thumbnailUrl", source = "attaches", qualifiedByName = "getProductThumbnailUrl")
 	@Mapping(target = "owner", qualifiedByName = "basicArtistInfo")
-	//@Mapping(target = "bundles", source = "bundles", qualifiedByName = "bundleEntitiesToDomains")
-	//@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemEntitiesToDomains")
+		//@Mapping(target = "bundles", source = "bundles", qualifiedByName = "bundleEntitiesToDomains")
+		//@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemEntitiesToDomains")
 	ProductInventory entityToDomain(ProductInventoryEntity productEntity);
 
 	@Mapping(target = "category.id", source = "categoryId")
-	//@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemsToProductSet")
+		//@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemsToProductSet")
 	ProductInventory updateProductRequestToProduct(UpdateProductRequest updateProductRequest);
 
 	ProductResponse domainToProductResponse(ProductInventory product);

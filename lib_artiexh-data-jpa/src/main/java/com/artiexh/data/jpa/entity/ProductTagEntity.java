@@ -28,8 +28,8 @@ public class ProductTagEntity {
 	@ManyToMany
 	@JoinTable(name = "product_tag_mapping",
 		joinColumns = @JoinColumn(name = "tag_id"),
-		inverseJoinColumns = @JoinColumn(name = "product_id"))
-	private Set<ProductEntity> products;
+		inverseJoinColumns = @JoinColumn(name = "product_code"))
+	private Set<ProductInventoryEntity> products;
 
 	@ManyToMany
 	@JoinTable(name = "product_tag_mapping",

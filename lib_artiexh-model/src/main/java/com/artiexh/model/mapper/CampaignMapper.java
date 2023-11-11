@@ -13,7 +13,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {ProductInCampaignMapper.class, ProviderMapper.class}
+	uses = {ProductInCampaignMapper.class, ProviderMapper.class, CampaignTypeMapper.class}
 )
 public interface CampaignMapper {
 
@@ -41,14 +41,6 @@ public interface CampaignMapper {
 
 	default CampaignStatus campaignStatusFrom(byte value) {
 		return CampaignStatus.fromValue(value);
-	}
-
-	default Byte toValue(CampaignType type) {
-		return type.getByteValue();
-	}
-
-	default CampaignType campaignTypeFrom(byte value) {
-		return CampaignType.fromValue(value);
 	}
 
 	default byte campaignStatusTo(CampaignStatus status) {

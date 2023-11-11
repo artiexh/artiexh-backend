@@ -25,7 +25,8 @@ import java.util.Set;
 		AddressMapper.class,
 		OrderHistoryMapper.class,
 		DateTimeMapper.class,
-		OrderMapper.class
+		OrderMapper.class,
+		CampaignTypeMapper.class
 	}
 )
 public interface CampaignOrderMapper {
@@ -65,30 +66,30 @@ public interface CampaignOrderMapper {
 	Set<CampaignOrderResponsePage> domainsToUserResponsePages(Set<CampaignOrder> campaignOrders);
 
 
-	@Mapping(target = "id", source = "product.id")
-	@Mapping(target = "status", source = "product.status")
-	@Mapping(target = "price.unit", source = "product.price.unit")
-	@Mapping(target = "name", source = "product.name")
-	@Mapping(target = "thumbnailUrl", source = "product.thumbnailUrl")
-	@Mapping(target = "price.amount", source = "product.price.amount")
-	@Mapping(target = "description", source = "product.description")
-	@Mapping(target = "type", source = "product.type")
-	@Mapping(target = "remainingQuantity", expression = "java(order.getProduct().getQuantity() - order.getProduct().getSoldQuantity())")
-	@Mapping(target = "maxItemsPerOrder", source = "product.maxItemsPerOrder")
-	@Mapping(target = "deliveryType", source = "product.deliveryType")
+	//	@Mapping(target = "id", source = "product.id")
+//	@Mapping(target = "status", source = "product.status")
+//	@Mapping(target = "price.unit", source = "product.price.unit")
+//	@Mapping(target = "name", source = "product.name")
+//	@Mapping(target = "thumbnailUrl", source = "product.thumbnailUrl")
+//	@Mapping(target = "price.amount", source = "product.price.amount")
+//	@Mapping(target = "description", source = "product.description")
+//	@Mapping(target = "type", source = "product.type")
+//	@Mapping(target = "remainingQuantity", expression = "java(order.getProduct().getQuantity() - order.getProduct().getSoldQuantity())")
+//	@Mapping(target = "maxItemsPerOrder", source = "product.maxItemsPerOrder")
+//	@Mapping(target = "deliveryType", source = "product.deliveryType")
 	OrderDetailResponse domainToOrderDetailResponse(OrderDetail order);
 
-	@Mapping(target = "id", source = "product.id")
-	@Mapping(target = "status", source = "product.status")
-	@Mapping(target = "price.unit", source = "product.priceUnit")
-	@Mapping(target = "name", source = "product.name")
-	@Mapping(target = "thumbnailUrl", source = "product.attaches", qualifiedByName = "getProductThumbnailUrl")
-	@Mapping(target = "price.amount", source = "product.priceAmount")
-	@Mapping(target = "description", source = "product.description")
-	@Mapping(target = "type", source = "product.type")
-	@Mapping(target = "remainingQuantity", expression = "java(entity.getProduct().getQuantity() - entity.getProduct().getSoldQuantity())")
-	@Mapping(target = "maxItemsPerOrder", source = "product.maxItemsPerOrder")
-	@Mapping(target = "deliveryType", source = "product.deliveryType")
+	//	@Mapping(target = "id", source = "product.id")
+//	@Mapping(target = "status", source = "product.status")
+//	@Mapping(target = "price.unit", source = "product.priceUnit")
+//	@Mapping(target = "name", source = "product.name")
+//	@Mapping(target = "thumbnailUrl", source = "product.attaches", qualifiedByName = "getProductThumbnailUrl")
+//	@Mapping(target = "price.amount", source = "product.priceAmount")
+//	@Mapping(target = "description", source = "product.description")
+//	@Mapping(target = "type", source = "product.type")
+//	@Mapping(target = "remainingQuantity", expression = "java(entity.getProduct().getQuantity() - entity.getProduct().getSoldQuantity())")
+//	@Mapping(target = "maxItemsPerOrder", source = "product.maxItemsPerOrder")
+//	@Mapping(target = "deliveryType", source = "product.deliveryType")
 	OrderDetailResponse entityToOrderDetailResponse(OrderDetailEntity entity);
 
 	default Integer toValue(CampaignOrderStatus status) {

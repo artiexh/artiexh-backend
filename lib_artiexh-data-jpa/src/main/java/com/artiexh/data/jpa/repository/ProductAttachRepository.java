@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface ProductAttachRepository extends JpaRepository<ProductAttachEntity, Long> {
 
-	@Query("select a.url from ProductEntity p inner join p.attaches a where p.id = :productId and a.type = 1")
+	@Query("select a.url from ProductInventoryEntity p inner join p.attaches a where p.productCode = :productId and a.type = 1")
 	Optional<String> findThumbnailByProductId(long productId);
 
 }

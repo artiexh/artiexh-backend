@@ -1,0 +1,36 @@
+package com.artiexh.model.rest.marketplace.response;
+
+import com.artiexh.model.domain.*;
+import com.artiexh.model.rest.artist.response.OwnerResponse;
+import com.artiexh.model.rest.product.response.ProductCategoryResponse;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Set;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProductInSaleCampaignResponse {
+	private String productCode;
+	private String name;
+	private String thumbnailUrl;
+	private ProductStatus status;
+	private Money price;
+	private float averageRate;
+	private ProductType type;
+	private long quantity;
+	private long soldQuantity;
+	private OwnerResponse owner;
+	private String description;
+	private Integer maxItemsPerOrder;
+	private DeliveryType deliveryType;
+	private Set<String> tags;
+	private Set<ProductAttach> attaches;
+	private ProductCategoryResponse category;
+	private Set<PaymentMethod> paymentMethods;
+	private Float weight;
+}
