@@ -1,26 +1,41 @@
 package com.artiexh.api.service.marketplace.impl;
 
 import com.artiexh.api.service.marketplace.JpaProductService;
-import com.artiexh.api.service.marketplace.OpenSearchProductService;
 import com.artiexh.api.service.marketplace.ProductService;
+import com.artiexh.api.service.productinventory.ProductInventoryOpenSearchService;
 import com.artiexh.data.jpa.entity.ProductEntity;
+import com.artiexh.data.jpa.entity.ProductEntityId;
+import com.artiexh.data.jpa.repository.ArtistRepository;
+import com.artiexh.model.domain.Product;
+import com.artiexh.model.domain.ProductSuggestion;
+import com.artiexh.model.rest.marketplace.filter.ProductPageFilter;
+import com.artiexh.model.rest.marketplace.response.ProductResponse;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
-	private final OpenSearchProductService openSearchProductService;
+	private final ArtistRepository artistRepository;
 	private final JpaProductService jpaProductService;
+	private final ProductInventoryOpenSearchService productInventoryOpenSearchService;
 
 	@Override
-	public ProductEntity create(ProductEntity entity) {
-		ProductEntity result;
+	public Product create(ProductEntity entity) {
+		Product result;
 		try {
 			result = jpaProductService.create(entity);
-			openSearchProductService.create(result);
+			productInventoryOpenSearchService.updateSaveCampaign(
+				result.getProductInventory().getProductCode(),
+				result.getPrice(),
+				result.getCampaignSale()
+			);
 		} catch (Exception e) {
 			log.warn("Insert product to db fail", e);
 			throw e;
@@ -28,11 +43,33 @@ public class ProductServiceImpl implements ProductService {
 		return result;
 	}
 
-//	@Override
-//	public Page<ProductSuggestion> getSuggestionInPage(Query query, Pageable pageable) {
-//		return openSearchProductService.getSuggestionInPage(query, pageable);
-//	}
-//
+	@Override
+	public Page<ProductResponse> getAll(Pageable pageable, Query query) {
+		Page<ProductEntityId> idPage = productInventoryOpenSearchService.getAll(pageable, query)
+			.map(document -> new ProductEntityId(document.getProductCode(), document.getCampaign().getId()));
+		return jpaProductService.getByProductInventoryId(idPage, pageable);
+	}
+
+	@Override
+	public ProductResponse getByCampaignIdAndProductCode(long id, String productCode) {
+		return jpaProductService.getById(new ProductEntityId(productCode, id));
+	}
+
+	@Override
+	public Page<ProductResponse> getAllByArtist(String artistUsername, Pageable pageable, ProductPageFilter filter) {
+		if (artistRepository.existsByUsername(artistUsername)) {
+			filter.setArtistUsername(artistUsername);
+			return getAll(pageable, filter.getQuery());
+		} else {
+			throw new EntityNotFoundException("Artist not found");
+		}
+	}
+
+	@Override
+	public Page<ProductSuggestion> getSuggestionInPage(Query query, Pageable pageable) {
+		return productInventoryOpenSearchService.getSuggestionInPage(query, pageable);
+	}
+
 //	@Override
 //	public Page<Product> getInPage(Query query, Pageable pageable) {
 //		var productPage = openSearchProductService.getInPage(query, pageable);

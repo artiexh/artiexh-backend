@@ -59,8 +59,10 @@ public interface ProductInventoryMapper {
 	ProductInventory finalizeProductRequestToProduct(FinalizeProductRequest request);
 
 
-	@Mapping(target = "campaign", source = "productInCampaign.campaign")
+	@Mapping(target = "campaign", ignore = true)
 	ProductInventoryDocument domainToDocument(ProductInventory product);
+
+	ProductInventoryDocument.Campaign campaignToCampaignDocument(CampaignSale campaign);
 
 	default Integer toValue(ProductStatus status) {
 		return status.getValue();

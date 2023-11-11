@@ -1,6 +1,7 @@
 package com.artiexh.api.service.marketplace;
 
 import com.artiexh.data.jpa.entity.CampaignSaleEntity;
+import com.artiexh.model.rest.marketplace.filter.SaleCampaignFilter;
 import com.artiexh.model.rest.marketplace.request.SaleCampaignRequest;
 import com.artiexh.model.rest.marketplace.response.SaleCampaignDetailResponse;
 import com.artiexh.model.rest.marketplace.response.SaleCampaignResponse;
@@ -15,4 +16,8 @@ public interface SaleCampaignService {
 	Page<SaleCampaignResponse> getAll(Pageable pageable, Specification<CampaignSaleEntity> specification);
 
 	SaleCampaignDetailResponse getDetail(Long id);
+
+	Page<SaleCampaignResponse> getAllByArtist(String artistUsername,
+											  Pageable pageable,
+											  SaleCampaignFilter filter);
 }

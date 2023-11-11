@@ -1,9 +1,9 @@
 package com.artiexh.model.mapper;
 
-import com.artiexh.data.jpa.entity.ProductAttachEntity;
 import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.model.domain.*;
 import com.artiexh.model.rest.marketplace.response.ProductInSaleCampaignResponse;
+import com.artiexh.model.rest.marketplace.response.ProductResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -17,11 +17,18 @@ import java.util.Set;
 		ProductCategoryMapper.class,
 		ProductTagMapper.class,
 		ArtistMapper.class,
-		ProductAttachMapper.class
+		ProductAttachMapper.class,
+		ProductInventoryMapper.class,
+		CampaignTypeMapper.class
 	}
 )
 public interface ProductMapper {
 
+	@Mapping(target = "price.amount", source = "priceAmount")
+	@Mapping(target = "price.unit", source = "priceUnit")
+	Product entityToDomain(ProductEntity entity);
+
+	@Named("entityToProductInSaleResponse")
 	@Mapping(target = "productCode", source = "productInventory.productCode")
 	@Mapping(target = "name", source = "productInventory.name")
 	@Mapping(target = "thumbnailUrl", source = "productInventory.attaches", qualifiedByName = "getProductThumbnailUrl")
@@ -42,12 +49,52 @@ public interface ProductMapper {
 	@Mapping(target = "weight", source = "productInventory.weight")
 	ProductInSaleCampaignResponse entityToProductInSaleResponse(ProductEntity entity);
 
+	@Mapping(target = "productCode", source = "productInventory.productCode")
+	@Mapping(target = "name", source = "productInventory.name")
+	@Mapping(target = "thumbnailUrl", source = "productInventory.attaches", qualifiedByName = "getProductThumbnailUrl")
+	@Mapping(target = "status", source = "productInventory.status")
+	@Mapping(target = "averageRate", source = "productInventory.averageRate")
+	@Mapping(target = "type", source = "productInventory.type")
+	@Mapping(target = "quantity", source = "productInventory.quantity")
+	@Mapping(target = "owner", source = "productInventory.owner")
+	@Mapping(target = "description", source = "productInventory.description")
+	@Mapping(target = "maxItemsPerOrder", source = "productInventory.maxItemsPerOrder")
+	@Mapping(target = "deliveryType", source = "productInventory.deliveryType")
+	@Mapping(target = "tags", source = "productInventory.tags")
+	@Mapping(target = "attaches", source = "productInventory.attaches")
+	@Mapping(target = "category", source = "productInventory.category")
+	@Mapping(target = "paymentMethods", source = "productInventory.paymentMethods")
+	@Mapping(target = "weight", source = "productInventory.weight")
+	ProductInSaleCampaignResponse domainToProductInSaleResponse(Product domain);
+
+	@Named("entityToProductResponse")
+	@Mapping(target = "productCode", source = "productInventory.productCode")
+	@Mapping(target = "name", source = "productInventory.name")
+	@Mapping(target = "thumbnailUrl", source = "productInventory.attaches", qualifiedByName = "getProductThumbnailUrl")
+	@Mapping(target = "status", source = "productInventory.status")
+	@Mapping(target = "price.unit", source = "priceUnit")
+	@Mapping(target = "price.amount", source = "priceAmount")
+	@Mapping(target = "averageRate", source = "productInventory.averageRate")
+	@Mapping(target = "type", source = "productInventory.type")
+	@Mapping(target = "quantity", source = "productInventory.quantity")
+	@Mapping(target = "owner", source = "productInventory.owner")
+	@Mapping(target = "description", source = "productInventory.description")
+	@Mapping(target = "maxItemsPerOrder", source = "productInventory.maxItemsPerOrder")
+	@Mapping(target = "deliveryType", source = "productInventory.deliveryType")
+	@Mapping(target = "tags", source = "productInventory.tags")
+	@Mapping(target = "attaches", source = "productInventory.attaches")
+	@Mapping(target = "category", source = "productInventory.category")
+	@Mapping(target = "paymentMethods", source = "productInventory.paymentMethods")
+	@Mapping(target = "weight", source = "productInventory.weight")
+	@Mapping(target = "saleCampaign", source = "campaignSale")
+	ProductResponse entityToProductResponse(ProductEntity entity);
+
 	@Named("getProductThumbnailUrl")
-	default String getThumbnailUrl(Set<ProductAttachEntity> productAttachEntities) {
-		return productAttachEntities.stream()
-			.filter(attachEntity -> attachEntity.getType() == ProductAttachType.THUMBNAIL.getValue())
+	default String getThumbnailUrl(Set<ProductAttach> productAttaches) {
+		return productAttaches.stream()
+			.filter(attach -> attach.getType() == ProductAttachType.THUMBNAIL)
 			.findFirst()
-			.map(ProductAttachEntity::getUrl)
+			.map(ProductAttach::getUrl)
 			.orElse(null);
 	}
 
@@ -146,11 +193,19 @@ public interface ProductMapper {
 		return ProductStatus.fromValue(value);
 	}
 
+	default ProductStatus toProductStatus(Byte value) {
+		return ProductStatus.fromValue(value);
+	}
+
 	default Integer toValue(ProductType type) {
 		return type.getValue();
 	}
 
 	default ProductType toProductType(Integer value) {
+		return ProductType.fromValue(value);
+	}
+
+	default ProductType toProductType(Byte value) {
 		return ProductType.fromValue(value);
 	}
 
@@ -162,6 +217,10 @@ public interface ProductMapper {
 		return PaymentMethod.fromValue(value);
 	}
 
+	default PaymentMethod toPaymentMethod(Byte value) {
+		return PaymentMethod.fromValue(value);
+	}
+
 	default Integer toValue(DeliveryType type) {
 		return type.getValue();
 	}
@@ -169,4 +228,9 @@ public interface ProductMapper {
 	default DeliveryType toDeliveryType(Integer value) {
 		return DeliveryType.fromValue(value);
 	}
+
+	default DeliveryType toDeliveryType(Byte value) {
+		return DeliveryType.fromValue(value);
+	}
+
 }

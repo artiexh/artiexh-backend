@@ -2,19 +2,25 @@ package com.artiexh.api.service.marketplace.impl;
 
 import com.artiexh.api.service.marketplace.JpaProductService;
 import com.artiexh.data.jpa.entity.ProductEntity;
+import com.artiexh.data.jpa.entity.ProductEntityId;
 import com.artiexh.data.jpa.repository.*;
+import com.artiexh.model.domain.Product;
 import com.artiexh.model.mapper.AddressMapper;
 import com.artiexh.model.mapper.ProductMapper;
+import com.artiexh.model.rest.marketplace.response.ProductResponse;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Slf4j
 public class JpaProductServiceImpl implements JpaProductService {
 	private final ArtistRepository artistRepository;
 	private final ProductCategoryRepository productCategoryRepository;
@@ -29,8 +35,21 @@ public class JpaProductServiceImpl implements JpaProductService {
 
 	@Override
 	@Transactional
-	public ProductEntity create(ProductEntity productEntity) {
-		return productRepository.save(productEntity);
+	public Product create(ProductEntity productEntity) {
+		return productMapper.entityToDomain(productRepository.save(productEntity));
+	}
+
+	@Override
+	public Page<ProductResponse> getByProductInventoryId(Page<ProductEntityId> idPage, Pageable pageable) {
+		return productRepository.findByIdIn(idPage.toSet(), pageable)
+			.map(productMapper::entityToProductResponse);
+	}
+
+	@Override
+	public ProductResponse getById(ProductEntityId id) {
+		return productRepository.findById(id)
+			.map(productMapper::entityToProductResponse)
+			.orElseThrow(() -> new EntityNotFoundException("Product not found"));
 	}
 
 //	public Page<Product> fillProductPage(Page<Product> productPage) {

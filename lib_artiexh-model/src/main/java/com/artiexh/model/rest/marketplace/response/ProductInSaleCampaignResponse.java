@@ -4,14 +4,14 @@ import com.artiexh.model.domain.*;
 import com.artiexh.model.rest.artist.response.OwnerResponse;
 import com.artiexh.model.rest.product.response.ProductCategoryResponse;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductInSaleCampaignResponse {

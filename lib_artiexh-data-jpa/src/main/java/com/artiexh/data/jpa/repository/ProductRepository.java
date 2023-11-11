@@ -1,12 +1,19 @@
 package com.artiexh.data.jpa.repository;
 
 import com.artiexh.data.jpa.entity.ProductEntity;
+import com.artiexh.data.jpa.entity.ProductEntityId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+
 @Repository
-public interface ProductRepository extends JpaRepository<ProductEntity, Long>, JpaSpecificationExecutor<ProductEntity> {
+public interface ProductRepository extends JpaRepository<ProductEntity, ProductEntityId>, JpaSpecificationExecutor<ProductEntity> {
+
+	Page<ProductEntity> findByIdIn(Collection<ProductEntityId> id, Pageable pageable);
 
 //	@Modifying
 //	@Query("update ProductEntity entity set entity.status = cast(1 as byte) where entity.id = :id")

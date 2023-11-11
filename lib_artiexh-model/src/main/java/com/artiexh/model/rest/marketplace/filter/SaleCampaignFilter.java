@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.marketplace.request;
+package com.artiexh.model.rest.marketplace.filter;
 
 import com.artiexh.data.jpa.entity.CampaignSaleEntity;
 import com.artiexh.model.domain.CampaignType;
@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class SaleCampaignFilter {
 	private String ownerId;
+	private String username;
 	private CampaignType campaignType;
 	private Instant from = Instant.now();
 	private Instant to;
@@ -31,6 +32,10 @@ public class SaleCampaignFilter {
 
 			if (ownerId != null) {
 				predicates.add(builder.equal(root.get("owner").get("id"), ownerId));
+			}
+
+			if (username != null) {
+				predicates.add(builder.equal(root.get("owner").get("username"), username));
 			}
 
 			if (to != null) {
