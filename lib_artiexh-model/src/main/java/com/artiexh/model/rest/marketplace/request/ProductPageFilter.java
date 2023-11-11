@@ -41,7 +41,6 @@ public class ProductPageFilter {
 			statuses = new LinkedHashSet<>();
 		}
 		statuses.add(ProductStatus.AVAILABLE);
-		statuses.add(ProductStatus.PRE_ORDER);
 		for (ProductStatus status : statuses) {
 			boolQuery.should(new TermQueryBuilder("status", status.getValue()));
 		}

@@ -591,7 +591,7 @@ public class CampaignServiceImpl implements CampaignService {
 			ProductInventory product = productMapper.finalizeProductRequestToProduct(finalizeProductRequest);
 			product.setTags(productInCampaign.getCustomProduct().getTags().stream().map(productTagMapper::entityToDomain).collect(Collectors.toSet()));
 			product.setCategory(productCategoryMapper.entityToDomain(productInCampaign.getCustomProduct().getCategory()));
-			product.setQuantity(0L);
+			product.setPaymentMethods(Set.of(PaymentMethod.VN_PAY.getByteValue()));
 
 			product = productService.create(campaign.getOwner().getId(), product, productInCampaign);
 			productResponses.add(productMapper.domainToProductResponse(product));

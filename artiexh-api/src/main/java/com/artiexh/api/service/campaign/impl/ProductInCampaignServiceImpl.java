@@ -20,8 +20,6 @@ public class ProductInCampaignServiceImpl implements ProductInCampaignService {
 	@Transactional
 	public ProductInCampaign update(ProductInCampaignEntity productInCampaign, ProductInCampaign product) {
 
-		productInCampaign.setQuantity(product.getQuantity());
-		productInCampaign.setWeight(product.getWeight());
 		productInCampaign.setPriceAmount(product.getPrice().getAmount());
 
 		productInCampaignRepository.save(productInCampaign);

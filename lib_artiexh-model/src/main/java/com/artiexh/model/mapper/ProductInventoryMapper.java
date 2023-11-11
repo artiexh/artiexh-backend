@@ -55,6 +55,10 @@ public interface ProductInventoryMapper {
 	ProductInventoryEntity domainToEntity(ProductInventory product, @MappingTarget ProductInventoryEntity productInventoryEntity);
 
 	@Mapping(target = "productInCampaign.id", source = "productInCampaignId")
+	@Mapping(target = "status", constant ="AVAILABLE" )
+	@Mapping(target = "deliveryType", constant = "SHIP")
+	@Mapping(target = "weight", constant = "0F")
+	@Mapping(target = "quantity", constant = "0L")
 	ProductInventory finalizeProductRequestToProduct(FinalizeProductRequest request);
 
 	default Integer toValue(ProductStatus status) {
