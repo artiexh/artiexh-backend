@@ -86,9 +86,9 @@ public class ProductInventoryEntity {
 	@JoinColumn(name = "product_id")
 	private Set<ProductAttachEntity> attaches;
 
-	@NotNull
+	@Builder.Default
 	@Column(name = "weight", nullable = false)
-	private Float weight;
+	private Float weight = 0F;
 
 //	@Builder.Default
 //	@ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
