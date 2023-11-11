@@ -14,7 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @SuperBuilder
 public class Artist extends User {
-	private Set<Product> products;
+	private Set<ProductInventory> products;
 	private Set<Subscription> subscriptionsFrom;
 	private String bankAccount;
 	private String bankName;

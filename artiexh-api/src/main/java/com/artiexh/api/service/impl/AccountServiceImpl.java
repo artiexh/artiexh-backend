@@ -42,12 +42,12 @@ public class AccountServiceImpl implements AccountService {
 				case ADMIN -> accountMapper.entityToDomain(accountEntity);
 				case USER -> {
 					User user = userMapper.entityToBasicUser((UserEntity) accountEntity);
-					user.setCartItemCount(cartItemRepository.countAllByCartId(id));
+					//user.setCartItemCount(cartItemRepository.countAllByCartId(id));
 					yield user;
 				}
 				case ARTIST -> {
 					Artist artist = artistMapper.basicArtistInfo((ArtistEntity) accountEntity);
-					artist.setCartItemCount(cartItemRepository.countAllByCartId(id));
+					//artist.setCartItemCount(cartItemRepository.countAllByCartId(id));
 					yield artist;
 				}
 				default -> null;

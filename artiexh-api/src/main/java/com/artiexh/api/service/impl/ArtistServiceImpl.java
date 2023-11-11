@@ -5,33 +5,24 @@ import com.artiexh.api.service.CampaignOrderService;
 import com.artiexh.api.service.PostService;
 import com.artiexh.api.service.product.ProductService;
 import com.artiexh.data.jpa.entity.ArtistEntity;
-import com.artiexh.data.jpa.entity.CampaignOrderEntity;
 import com.artiexh.data.jpa.entity.SubscriptionEntity;
 import com.artiexh.data.jpa.entity.WardEntity;
 import com.artiexh.data.jpa.repository.ArtistRepository;
 import com.artiexh.data.jpa.repository.CampaignOrderRepository;
 import com.artiexh.data.jpa.repository.OrderHistoryRepository;
 import com.artiexh.data.jpa.repository.SubscriptionRepository;
-import com.artiexh.model.domain.CampaignOrder;
 import com.artiexh.model.domain.Post;
-import com.artiexh.model.domain.Product;
 import com.artiexh.model.mapper.ArtistMapper;
 import com.artiexh.model.mapper.CampaignOrderMapper;
 import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.mapper.SubscriptionMapper;
-import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.artist.request.UpdateArtistProfileRequest;
 import com.artiexh.model.rest.artist.response.ArtistProfileResponse;
-import com.artiexh.model.rest.order.user.response.CampaignOrderResponsePage;
-import com.artiexh.model.rest.order.user.response.UserUserCampaignOrderDetailResponse;
-import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.query.Query;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,24 +74,24 @@ public class ArtistServiceImpl implements ArtistService {
 		return result;
 	}
 
-	@Override
-	public PageResponse<ProductResponse> getAllProducts(Query query, Pageable pageable) {
-		Page<Product> productPage = productService.getInPage(query, pageable);
-		return new PageResponse<>(productMapper.productPageToProductResponsePage(productPage));
-	}
+//	@Override
+//	public PageResponse<ProductResponse> getAllProducts(Query query, Pageable pageable) {
+//		Page<Product> productPage = productService.getInPage(query, pageable);
+//		return new PageResponse<>(productMapper.productPageToProductResponsePage(productPage));
+//	}
 
-	@Override
-	public UserUserCampaignOrderDetailResponse getOrderById(Long orderId, Long artistId) {
-		CampaignOrder campaignOrder = campaignOrderService.getOrderByIdAndOwner(orderId, artistId);
-		return campaignOrderMapper.domainToUserDetailResponse(campaignOrder);
-	}
-
-	@Override
-	public PageResponse<CampaignOrderResponsePage> getAllOrder(Specification<CampaignOrderEntity> specification,
-															   Pageable pageable) {
-		Page<CampaignOrder> orderPage = campaignOrderService.getCampaignOrderInPage(specification, pageable);
-		return new PageResponse<>(orderPage.map(campaignOrderMapper::domainToUserResponsePage));
-	}
+//	@Override
+//	public UserUserCampaignOrderDetailResponse getOrderById(Long orderId, Long artistId) {
+//		CampaignOrder campaignOrder = campaignOrderService.getOrderByIdAndOwner(orderId, artistId);
+//		return campaignOrderMapper.domainToUserDetailResponse(campaignOrder);
+//	}
+//
+//	@Override
+//	public PageResponse<CampaignOrderResponsePage> getAllOrder(Specification<CampaignOrderEntity> specification,
+//															   Pageable pageable) {
+//		Page<CampaignOrder> orderPage = campaignOrderService.getCampaignOrderInPage(specification, pageable);
+//		return new PageResponse<>(orderPage.map(campaignOrderMapper::domainToUserResponsePage));
+//	}
 
 	@Override
 	public Page<Post> getArtistPost(Long artistId, Pageable pageable) {

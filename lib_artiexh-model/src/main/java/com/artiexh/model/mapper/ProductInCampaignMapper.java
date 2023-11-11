@@ -5,14 +5,13 @@ import com.artiexh.model.domain.ProductInCampaign;
 import com.artiexh.model.rest.campaign.request.FinalizeProductRequest;
 import com.artiexh.model.rest.campaign.request.ProductInCampaignRequest;
 import com.artiexh.model.rest.campaign.response.ProductInCampaignDetailResponse;
-import com.artiexh.model.rest.campaign.request.UnPublishedProduct;
 import com.artiexh.model.rest.campaign.response.ProductInCampaignResponse;
 import org.mapstruct.*;
 
 import java.util.Set;
 
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	uses = {ProductAttachMapper.class, CustomProductMapper.class, ArtistMapper.class, CampaignMapper.class, DateTimeMapper.class})
+	uses = {ProductAttachMapper.class, CustomProductMapper.class, ArtistMapper.class, CampaignMapper.class, DateTimeMapper.class, CampaignTypeMapper.class})
 public interface ProductInCampaignMapper {
 
 	@Mapping(target = "id", ignore = true)
