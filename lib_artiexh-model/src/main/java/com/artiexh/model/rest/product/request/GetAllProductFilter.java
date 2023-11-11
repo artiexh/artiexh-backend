@@ -41,7 +41,7 @@ public class GetAllProductFilter {
 		var publicProductQuery = new BoolQueryBuilder()
 			.should(new TermsQueryBuilder("campaign.type", List.of(CampaignType.PUBLIC.getByteValue(), CampaignType.SHARE.getByteValue()))).minimumShouldMatch(1);
 		var activeProductQuery = new BoolQueryBuilder()
-			.should(new TermsQueryBuilder("status", List.of(ProductStatus.PRE_ORDER.getByteValue(), ProductStatus.AVAILABLE.getByteValue()))).minimumShouldMatch(1);
+			.should(new TermsQueryBuilder("status", List.of( ProductStatus.AVAILABLE.getByteValue()))).minimumShouldMatch(1);
 		var boolQuery = new BoolQueryBuilder();
 		boolQuery.must(publicProductQuery);
 		boolQuery.must(activeProductQuery);
