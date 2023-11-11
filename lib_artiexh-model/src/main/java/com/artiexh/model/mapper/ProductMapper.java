@@ -2,78 +2,45 @@ package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.ProductAttachEntity;
 import com.artiexh.data.jpa.entity.ProductEntity;
-import com.artiexh.data.opensearch.model.ProductDocument;
 import com.artiexh.model.domain.*;
-import com.artiexh.model.rest.campaign.request.FinalizeProductRequest;
-import com.artiexh.model.rest.campaign.request.UnPublishedProduct;
-import com.artiexh.model.rest.product.request.CreateProductRequest;
-import com.artiexh.model.rest.product.request.UpdateProductRequest;
-import com.artiexh.model.rest.product.response.ProductResponse;
-import org.mapstruct.*;
-import org.springframework.data.domain.Page;
+import com.artiexh.model.rest.marketplace.response.ProductInSaleCampaignResponse;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
 	uses = {
-		AccountMapper.class,
 		ProductCategoryMapper.class,
 		ProductTagMapper.class,
 		ArtistMapper.class,
-		ProductAttachMapper.class,
-		ShopMapper.class,
-		ProductInCampaignMapper.class,
-		CustomProductMapper.class,
-		CampaignMapper.class
+		ProductAttachMapper.class
 	}
 )
 public interface ProductMapper {
 
-	default Page<ProductResponse> productPageToProductResponsePage(Page<Product> productPage) {
-		return productPage.map(this::domainToProductResponse);
-	}
-
-	ProductResponse domainToProductResponse(Product product);
-
+	@Mapping(target = "productCode", source = "productInventory.productCode")
+	@Mapping(target = "name", source = "productInventory.name")
+	@Mapping(target = "thumbnailUrl", source = "productInventory.attaches", qualifiedByName = "getProductThumbnailUrl")
+	@Mapping(target = "status", source = "productInventory.status")
 	@Mapping(target = "price.unit", source = "priceUnit")
 	@Mapping(target = "price.amount", source = "priceAmount")
-	@Mapping(target = "thumbnailUrl", source = "attaches", qualifiedByName = "getProductThumbnailUrl")
-	@Mapping(target = "owner", qualifiedByName = "basicArtistInfo")
-	@Mapping(target = "shop", qualifiedByName = "basicShopInfo")
-	@Mapping(target = "bundles", source = "bundles", qualifiedByName = "bundleEntitiesToDomains")
-	@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemEntitiesToDomains")
-	@Mapping(target = "productInCampaign.id", source = "productInCampaignId")
-	Product entityToDomain(ProductEntity productEntity);
-
-	@Named("bundleEntitiesToDomains")
-	@IterableMapping(qualifiedByName = "bundleEntityToDomain")
-	Set<Product> bundleEntitiesToDomains(Set<ProductEntity> productEntities);
-
-	@Named("bundleEntityToDomain")
-	@Mapping(target = "price.unit", source = "priceUnit")
-	@Mapping(target = "price.amount", source = "priceAmount")
-	@Mapping(target = "thumbnailUrl", source = "attaches", qualifiedByName = "getProductThumbnailUrl")
-	@Mapping(target = "owner", qualifiedByName = "basicArtistInfo")
-	@Mapping(target = "shop", qualifiedByName = "basicShopInfo")
-	@Mapping(target = "bundleItems", ignore = true)
-	@Mapping(target = "productInCampaign.id", source = "productInCampaignId")
-	Product bundleEntityToDomain(ProductEntity productEntity);
-
-	@Named("bundleItemEntitiesToDomains")
-	@IterableMapping(qualifiedByName = "bundleItemEntityToDomain")
-	Set<Product> bundleItemEntitiesToDomains(Set<ProductEntity> productEntities);
-
-	@Named("bundleItemEntityToDomain")
-	@Mapping(target = "price.unit", source = "priceUnit")
-	@Mapping(target = "price.amount", source = "priceAmount")
-	@Mapping(target = "thumbnailUrl", source = "attaches", qualifiedByName = "getProductThumbnailUrl")
-	@Mapping(target = "owner", qualifiedByName = "basicArtistInfo")
-	@Mapping(target = "shop", qualifiedByName = "basicShopInfo")
-	@Mapping(target = "bundles", ignore = true)
-	@Mapping(target = "productInCampaign.id", source = "productInCampaignId")
-	Product bundleItemEntityToDomain(ProductEntity productEntity);
+	@Mapping(target = "averageRate", source = "productInventory.averageRate")
+	@Mapping(target = "type", source = "productInventory.type")
+	@Mapping(target = "quantity", source = "productInventory.quantity")
+	@Mapping(target = "owner", source = "productInventory.owner")
+	@Mapping(target = "description", source = "productInventory.description")
+	@Mapping(target = "maxItemsPerOrder", source = "productInventory.maxItemsPerOrder")
+	@Mapping(target = "deliveryType", source = "productInventory.deliveryType")
+	@Mapping(target = "tags", source = "productInventory.tags")
+	@Mapping(target = "attaches", source = "productInventory.attaches")
+	@Mapping(target = "category", source = "productInventory.category")
+	@Mapping(target = "paymentMethods", source = "productInventory.paymentMethods")
+	@Mapping(target = "weight", source = "productInventory.weight")
+	ProductInSaleCampaignResponse entityToProductInSaleResponse(ProductEntity entity);
 
 	@Named("getProductThumbnailUrl")
 	default String getThumbnailUrl(Set<ProductAttachEntity> productAttachEntities) {
@@ -84,47 +51,92 @@ public interface ProductMapper {
 			.orElse(null);
 	}
 
-	@Mapping(target = "priceUnit", source = "price.unit")
-	@Mapping(target = "priceAmount", source = "price.amount")
-	@Mapping(target = "averageRate", constant = "0f")
-	@Mapping(target = "productInCampaignId", source = "productInCampaign.id")
-	ProductEntity domainToEntity(Product product);
+//	default Page<ProductResponse> productPageToProductResponsePage(Page<Product> productPage) {
+//		return productPage.map(this::domainToProductResponse);
+//	}
+//
+//	ProductResponse domainToProductResponse(Product product);
 
-	Product documentToDomain(ProductDocument productDocument);
 
-	ProductDocument domainToDocument(Product product);
+	//	@Mapping(target = "price.unit", source = "priceUnit")
+//	@Mapping(target = "price.amount", source = "priceAmount")
+//	@Mapping(target = "thumbnailUrl", source = "attaches", qualifiedByName = "getProductThumbnailUrl")
+//	@Mapping(target = "owner", qualifiedByName = "basicArtistInfo")
+//	@Mapping(target = "shop", qualifiedByName = "basicShopInfo")
+//	@Mapping(target = "bundles", source = "bundles", qualifiedByName = "bundleEntitiesToDomains")
+//	@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemEntitiesToDomains")
+//	@Mapping(target = "productInCampaign.id", source = "productInCampaignId")
+//	Product entityToDomain(ProductEntity productEntity);
 
-	@Mapping(target = "price.unit", source = "priceUnit")
-	@Mapping(target = "price.amount", source = "priceAmount")
-	ProductDocument entityToDocument(ProductEntity productEntity);
+//	@Named("bundleEntitiesToDomains")
+//	@IterableMapping(qualifiedByName = "bundleEntityToDomain")
+//	Set<Product> bundleEntitiesToDomains(Set<ProductEntity> productEntities);
 
-	@Mapping(target = "category.id", source = "categoryId")
-	@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemsToProductSet")
-	Product createProductRequestToProduct(CreateProductRequest createProductRequest);
+//	@Named("bundleEntityToDomain")
+//	@Mapping(target = "price.unit", source = "priceUnit")
+//	@Mapping(target = "price.amount", source = "priceAmount")
+//	@Mapping(target = "thumbnailUrl", source = "attaches", qualifiedByName = "getProductThumbnailUrl")
+//	@Mapping(target = "owner", qualifiedByName = "basicArtistInfo")
+//	@Mapping(target = "shop", qualifiedByName = "basicShopInfo")
+//	@Mapping(target = "bundleItems", ignore = true)
+//	@Mapping(target = "productInCampaign.id", source = "productInCampaignId")
+//	Product bundleEntityToDomain(ProductEntity productEntity);
 
-	@Mapping(target = "productInCampaign.id", source = "productInCampaignId")
-	//@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemsToProductSet")
-	Product publishProductRequestToProduct(FinalizeProductRequest productRequest);
+//	@Named("bundleItemEntitiesToDomains")
+//	@IterableMapping(qualifiedByName = "bundleItemEntityToDomain")
+//	Set<Product> bundleItemEntitiesToDomains(Set<ProductEntity> productEntities);
 
-	@Mapping(target = "productInCampaign.id", source = "id")
-	@Mapping(target = "category", source = "customProduct.category")
-	@Mapping(target = "tags", source = "customProduct.tags")
-	Product productInCampaignToProduct(ProductInCampaign productInCampaign);
+//	@Named("bundleItemEntityToDomain")
+//	@Mapping(target = "price.unit", source = "priceUnit")
+//	@Mapping(target = "price.amount", source = "priceAmount")
+//	@Mapping(target = "thumbnailUrl", source = "attaches", qualifiedByName = "getProductThumbnailUrl")
+//	@Mapping(target = "owner", qualifiedByName = "basicArtistInfo")
+//	@Mapping(target = "shop", qualifiedByName = "basicShopInfo")
+//	@Mapping(target = "bundles", ignore = true)
+//	@Mapping(target = "productInCampaign.id", source = "productInCampaignId")
+//	Product bundleItemEntityToDomain(ProductEntity productEntity);
 
-	@Named("bundleItemsToProductSet")
-	default Set<Product> bundleItemsToProductSet(Set<Long> bundleItems) {
-		if (bundleItems == null) {
-			return null;
-		}
+	//	@Mapping(target = "priceUnit", source = "price.unit")
+//	@Mapping(target = "priceAmount", source = "price.amount")
+//	@Mapping(target = "averageRate", constant = "0f")
+//	@Mapping(target = "productInCampaignId", source = "productInCampaign.id")
+//	ProductEntity domainToEntity(Product product);
+//
+//	Product documentToDomain(ProductDocument productDocument);
+//
+//	ProductDocument domainToDocument(Product product);
 
-		return bundleItems.stream()
-			.map(id -> Product.builder().id(id).build())
-			.collect(Collectors.toSet());
-	}
+//	@Mapping(target = "price.unit", source = "priceUnit")
+//	@Mapping(target = "price.amount", source = "priceAmount")
+//	ProductDocument entityToDocument(ProductEntity productEntity);
 
-	@Mapping(target = "category.id", source = "categoryId")
-	@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemsToProductSet")
-	Product updateProductRequestToProduct(UpdateProductRequest updateProductRequest);
+	//	@Mapping(target = "category.id", source = "categoryId")
+//	@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemsToProductSet")
+//	Product createProductRequestToProduct(CreateProductRequest createProductRequest);
+//
+//	@Mapping(target = "productInCampaign.id", source = "productInCampaignId")
+//		//@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemsToProductSet")
+//	Product publishProductRequestToProduct(FinalizeProductRequest productRequest);
+//
+//	@Mapping(target = "productInCampaign.id", source = "id")
+//	@Mapping(target = "category", source = "customProduct.category")
+//	@Mapping(target = "tags", source = "customProduct.tags")
+//	Product productInCampaignToProduct(ProductInCampaign productInCampaign);
+//
+//	@Named("bundleItemsToProductSet")
+//	default Set<Product> bundleItemsToProductSet(Set<Long> bundleItems) {
+//		if (bundleItems == null) {
+//			return null;
+//		}
+//
+//		return bundleItems.stream()
+//			.map(id -> Product.builder().id(id).build())
+//			.collect(Collectors.toSet());
+//	}
+//
+//	@Mapping(target = "category.id", source = "categoryId")
+//	@Mapping(target = "bundleItems", source = "bundleItems", qualifiedByName = "bundleItemsToProductSet")
+//	Product updateProductRequestToProduct(UpdateProductRequest updateProductRequest);
 
 	default Integer toValue(ProductStatus status) {
 		return status.getValue();

@@ -3,11 +3,11 @@ package com.artiexh.api.controller;
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.service.product.ProductInventoryService;
-import com.artiexh.model.domain.Product;
 import com.artiexh.model.domain.ProductInventory;
 import com.artiexh.model.mapper.ProductInventoryMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
+import com.artiexh.model.rest.product.request.UpdateProductQuantitiesRequest;
 import com.artiexh.model.rest.product.request.UpdateProductRequest;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
@@ -40,6 +40,20 @@ public class ProductInventoryController {
 		try {
 			ProductInventory updatedProduct = productInventoryService.update(product);
 			return productInventoryMapper.domainToProductResponse(updatedProduct);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(ErrorCode.PRODUCT_NOT_FOUND.getCode(), ErrorCode.PRODUCT_NOT_FOUND.getMessage(), ex);
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
+	}
+
+	@PutMapping()
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+	public void updateQuantities(
+		Authentication authentication,
+		@RequestBody @Valid UpdateProductQuantitiesRequest request) {
+		try {
+			productInventoryService.updateQuantities(request);
 		} catch (EntityNotFoundException ex) {
 			throw new ResponseStatusException(ErrorCode.PRODUCT_NOT_FOUND.getCode(), ErrorCode.PRODUCT_NOT_FOUND.getMessage(), ex);
 		} catch (IllegalArgumentException ex) {

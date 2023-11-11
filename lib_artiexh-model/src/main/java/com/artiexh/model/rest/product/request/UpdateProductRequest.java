@@ -35,10 +35,6 @@ public class UpdateProductRequest {
 	@NotNull
 	private ProductType type;
 
-	@NotNull
-	@Min(0)
-	private Long quantity;
-
 	private Integer maxItemsPerOrder;
 
 	@NotNull

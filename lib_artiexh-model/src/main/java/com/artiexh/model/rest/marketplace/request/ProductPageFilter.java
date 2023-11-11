@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.artist.filter;
+package com.artiexh.model.rest.marketplace.request;
 
 import com.artiexh.model.domain.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;

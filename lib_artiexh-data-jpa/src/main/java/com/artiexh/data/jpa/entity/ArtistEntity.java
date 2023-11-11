@@ -21,11 +21,7 @@ public class ArtistEntity extends UserEntity {
 
 	@OneToMany(mappedBy = "owner")
 	@ToString.Exclude
-	private Set<ProductEntity> products;
-
-	@OneToMany(mappedBy = "shop")
-	@ToString.Exclude
-	private Set<ProductEntity> shopProducts;
+	private Set<ProductInventoryEntity> products;
 
 	@Column(name = "bank_account")
 	private String bankAccount;

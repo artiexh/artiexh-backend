@@ -24,9 +24,8 @@ public class OrderDetailEntity {
 
 	@Id
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JoinColumn(name = "product_id", nullable = false)
-	private ProductEntity product;
+	@JoinColumn(name = "product_code", nullable = false)
+	private ProductInventoryEntity product;
 
 	@NotNull
 	@Column(name = "quantity", nullable = false)

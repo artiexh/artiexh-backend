@@ -3,7 +3,6 @@ package com.artiexh.api.service.campaign.impl;
 import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.campaign.ProductInCampaignService;
-import com.artiexh.api.service.product.OpenSearchProductService;
 import com.artiexh.api.service.product.ProductInventoryService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.*;
@@ -46,7 +45,7 @@ public class CampaignServiceImpl implements CampaignService {
 	private final ProductInCampaignService productInCampaignService;
 	private final ProductTagMapper productTagMapper;
 	private final ProductCategoryMapper productCategoryMapper;
-	private final OpenSearchProductService openSearchProductService;
+	private final ProductInventoryService productInventoryService;
 	@Override
 	@Transactional
 	public CampaignDetailResponse createCampaign(Long ownerId, ArtistCampaignRequest request) {
@@ -285,10 +284,6 @@ public class CampaignServiceImpl implements CampaignService {
 		CampaignEntity campaignEntity = campaignRepository.findById(campaignId)
 			.orElseThrow(EntityNotFoundException::new);
 
-		if (!Boolean.TRUE.equals(campaignEntity.getIsPrePublished())) {
-			throw new IllegalArgumentException(ErrorCode.CAMPAIGN_UNPUBLISHED.getMessage());
-		}
-
 		PublishedCampaignDetailResponse result = campaignMapper.entityToPublishedCampaignDetailResponse(campaignEntity);
 
 		if (campaignEntity.getProviderId() != null) {
@@ -410,7 +405,7 @@ public class CampaignServiceImpl implements CampaignService {
 			case APPROVED -> staffApproveCampaign(campaignEntity, accountEntity, request.getMessage());
 			case REJECTED -> staffRejectCampaign(campaignEntity, accountEntity, request.getMessage());
 			case MANUFACTURING -> staffStartManufactureCampaign(campaignEntity, accountEntity, request.getMessage());
-			case MANUFACTURED -> staffFinishManufactureCampaign(campaignEntity, accountEntity, request.getMessage());
+			//case MANUFACTURED -> staffFinishManufactureCampaign(campaignEntity, accountEntity, request.getMessage());
 			default ->
 				throw new IllegalArgumentException("You can only update campaign to status REQUEST_CHANGE, APPROVED or REJECTED");
 		};
@@ -517,9 +512,16 @@ public class CampaignServiceImpl implements CampaignService {
 		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
 	}
 
-	private CampaignResponse staffFinishManufactureCampaign(CampaignEntity campaignEntity,
-															AccountEntity accountEntity,
-															String message) {
+	@Override
+	@Transactional
+	public void staffFinishManufactureCampaign(Set<ProductInventoryQuantity> productInventoryQuantities,
+											   Long campaignId,
+											   Long staffId,
+											   String message) {
+		var campaignEntity = campaignRepository.findById(campaignId)
+			.orElseThrow(() -> new EntityNotFoundException("campaignId " + campaignId + " not valid"));
+
+		AccountEntity accountEntity = accountRepository.getReferenceById(staffId);
 		if (campaignEntity.getStatus() != CampaignStatus.APPROVED.getByteValue()
 			&& campaignEntity.getStatus() != CampaignStatus.MANUFACTURING.getByteValue()) {
 			throw new IllegalArgumentException("You can only update campaign from APPROVED or MANUFACTURING to MANUFACTURED");
@@ -535,7 +537,17 @@ public class CampaignServiceImpl implements CampaignService {
 				.build()
 		);
 
-		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
+		campaignEntity = campaignRepository.save(campaignEntity);
+
+		productInventoryService.updateQuantityFromCampaignRequest(
+			campaignEntity.getProductInCampaigns().stream()
+				.map(ProductInCampaignEntity::getId)
+				.collect(Collectors.toSet()),
+			campaignEntity.getId(),
+			productInventoryQuantities
+		);
+
+		campaignMapper.entityToResponse(campaignEntity);
 	}
 
 	@Override
@@ -601,38 +613,6 @@ public class CampaignServiceImpl implements CampaignService {
 		ProductInCampaignEntity campaignProduct = productInCampaignRepository.findAllByCampaignIdAndId(campaignId, productId)
 			.orElseThrow(EntityNotFoundException::new);
 		return productInCampaignMapper.entityToDetailResponse(campaignProduct);
-	}
-
-	@Override
-	@Transactional
-	public void staffPublishProductCampaign(Long campaignId, boolean isPrePublished, Long userId) {
-		CampaignEntity campaign = campaignRepository.findById(campaignId).orElseThrow(EntityNotFoundException::new);
-		if (!CampaignStatus.ALLOWED_PUBLISHED_STATUS.contains(CampaignStatus.fromValue(campaign.getStatus()))) {
-			throw new IllegalArgumentException("You can only publish product after campaign is approved and not finished");
-		}
-
-		String message = "";
-		if (Boolean.FALSE.equals(campaign.getIsPrePublished())) {
-			message = "Campaign " + campaignId + " was successfully pre-published";
-		} else {
-			throw new IllegalArgumentException("Campaign was already pre-published");
-		}
-
-		AccountEntity updatedBy = accountRepository.findById(userId).orElseThrow();
-
-		campaign.setIsPrePublished(isPrePublished);
-
-		campaign.getCampaignHistories().add(
-			CampaignHistoryEntity.builder()
-				.id(CampaignHistoryId.builder().campaignId(campaign.getId()).build())
-				.action(CampaignHistoryAction.PUBLISHED.getByteValue())
-				.message(message)
-				.updatedBy(updatedBy.getUsername())
-				.build()
-		);
-		campaignRepository.save(campaign);
-		//TODO: Update product in OpenSearch
-		//openSearchProductService.prePublishedProduct(campaignId);
 	}
 
 }

@@ -4,25 +4,18 @@ import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.ShopService;
 import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.product.ProductService;
-import com.artiexh.model.domain.Product;
 import com.artiexh.model.domain.Shop;
 import com.artiexh.model.mapper.CampaignMapper;
 import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.address.AddressResponse;
-import com.artiexh.model.rest.campaign.response.CampaignResponse;
-import com.artiexh.model.rest.product.request.GetAllProductFilter;
-import com.artiexh.model.rest.product.response.ProductResponse;
-import com.artiexh.model.rest.artist.filter.ArtistCampaignFilter;
 import com.artiexh.model.rest.shop.ShopPageFilter;
-import com.artiexh.model.rest.shop.ShopProductFilter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -70,22 +63,22 @@ public class ShopController {
 		}
 	}
 
-	@GetMapping("/{username}/product")
-	public PageResponse<ProductResponse> getShopProduct(@PathVariable String username,
-														@ParameterObject @Valid GetAllProductFilter filter,
-														@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest) {
-		try {
-			filter.setUsername(username);
-			Page<Product> productPage = shopService.getShopProduct(
-				username,
-				filter.getQuery(),
-				paginationAndSortingRequest.getPageable()
-			);
-			return new PageResponse<>(productMapper.productPageToProductResponsePage(productPage));
-		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
-		}
-	}
+//	@GetMapping("/{username}/product")
+//	public PageResponse<ProductResponse> getShopProduct(@PathVariable String username,
+//														@ParameterObject @Valid GetAllProductFilter filter,
+//														@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest) {
+//		try {
+//			filter.setUsername(username);
+//			Page<Product> productPage = shopService.getShopProduct(
+//				username,
+//				filter.getQuery(),
+//				paginationAndSortingRequest.getPageable()
+//			);
+//			return new PageResponse<>(productMapper.productPageToProductResponsePage(productPage));
+//		} catch (EntityNotFoundException ex) {
+//			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+//		}
+//	}
 
 	@GetMapping("/arty-shop")
 	public Shop getArtyShop() {
@@ -96,16 +89,16 @@ public class ShopController {
 		}
 	}
 
-	@GetMapping("/arty-shop/product")
-	public PageResponse<ProductResponse> getArtyShopProduct(
-		@ParameterObject @Valid ShopProductFilter filter,
-		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest
-	) {
-		filter.setShopId(rootAdminId);
-		Page<Product> productPage = productService.getInPage(
-			filter.getQuery(),
-			paginationAndSortingRequest.getPageable()
-		);
-		return new PageResponse<>(productMapper.productPageToProductResponsePage(productPage));
-	}
+//	@GetMapping("/arty-shop/product")
+//	public PageResponse<ProductResponse> getArtyShopProduct(
+//		@ParameterObject @Valid ShopProductFilter filter,
+//		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest
+//	) {
+//		filter.setShopId(rootAdminId);
+//		Page<Product> productPage = productService.getInPage(
+//			filter.getQuery(),
+//			paginationAndSortingRequest.getPageable()
+//		);
+//		return new PageResponse<>(productMapper.productPageToProductResponsePage(productPage));
+//	}
 }

@@ -19,7 +19,10 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 		ProductAttachMapper.class,
 		ShopMapper.class,
 		PasswordMapper.class,
-		AddressMapper.class
+		AddressMapper.class,
+		CustomProductMapper.class,
+		CampaignMapper.class,
+		CampaignTypeMapper.class
 	}
 )
 public abstract class ArtistMapper {

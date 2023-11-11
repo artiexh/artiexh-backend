@@ -7,21 +7,15 @@ import com.artiexh.model.domain.Post;
 import com.artiexh.model.mapper.PostMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
-import com.artiexh.model.rest.artist.filter.ProductPageFilter;
 import com.artiexh.model.rest.artist.request.UpdateArtistProfileRequest;
 import com.artiexh.model.rest.artist.response.ArtistProfileResponse;
-import com.artiexh.model.rest.order.request.OrderPageFilter;
-import com.artiexh.model.rest.order.user.response.CampaignOrderResponsePage;
-import com.artiexh.model.rest.order.user.response.UserUserCampaignOrderDetailResponse;
 import com.artiexh.model.rest.post.PostDetail;
-import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -54,42 +48,42 @@ public class ArtistController {
 		}
 	}
 
-	@GetMapping(Endpoint.Artist.ARTIST_PRODUCT)
-	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
-	public PageResponse<ProductResponse> getAllProduct(
-		Authentication authentication,
-		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
-		@ParameterObject @Valid ProductPageFilter filter
-	) {
-		long userId = (long) authentication.getPrincipal();
-		filter.setArtistId(userId);
-		return artistService.getAllProducts(filter.getQuery(), paginationAndSortingRequest.getPageable());
-	}
+//	@GetMapping(Endpoint.Artist.ARTIST_PRODUCT)
+//	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
+//	public PageResponse<ProductResponse> getAllProduct(
+//		Authentication authentication,
+//		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
+//		@ParameterObject @Valid ProductPageFilter filter
+//	) {
+//		long userId = (long) authentication.getPrincipal();
+//		filter.setArtistId(userId);
+//		return artistService.getAllProducts(filter.getQuery(), paginationAndSortingRequest.getPageable());
+//	}
 
-	@GetMapping(Endpoint.Artist.ARTIST_ORDER)
-	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
-	public PageResponse<CampaignOrderResponsePage> getAllOrder(
-		Authentication authentication,
-		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
-		@ParameterObject @Valid OrderPageFilter filter
-	) {
-		long userId = (long) authentication.getPrincipal();
-		return artistService.getAllOrder(filter.getSpecificationForArtist(userId), paginationAndSortingRequest.getPageable());
-	}
+//	@GetMapping(Endpoint.Artist.ARTIST_ORDER)
+//	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
+//	public PageResponse<CampaignOrderResponsePage> getAllOrder(
+//		Authentication authentication,
+//		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
+//		@ParameterObject @Valid OrderPageFilter filter
+//	) {
+//		long userId = (long) authentication.getPrincipal();
+//		return artistService.getAllOrder(filter.getSpecificationForArtist(userId), paginationAndSortingRequest.getPageable());
+//	}
 
-	@GetMapping(Endpoint.Artist.ARTIST_ORDER + "/{id}")
-	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
-	public UserUserCampaignOrderDetailResponse getOrderById(
-		@PathVariable Long id,
-		Authentication authentication
-	) {
-		try {
-			long userId = (long) authentication.getPrincipal();
-			return artistService.getOrderById(id, userId);
-		} catch (EntityNotFoundException exception) {
-			throw new ResponseStatusException(ErrorCode.ORDER_IS_INVALID.getCode(), ErrorCode.ORDER_IS_INVALID.getMessage(), exception);
-		}
-	}
+//	@GetMapping(Endpoint.Artist.ARTIST_ORDER + "/{id}")
+//	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
+//	public UserUserCampaignOrderDetailResponse getOrderById(
+//		@PathVariable Long id,
+//		Authentication authentication
+//	) {
+//		try {
+//			long userId = (long) authentication.getPrincipal();
+//			return artistService.getOrderById(id, userId);
+//		} catch (EntityNotFoundException exception) {
+//			throw new ResponseStatusException(ErrorCode.ORDER_IS_INVALID.getCode(), ErrorCode.ORDER_IS_INVALID.getMessage(), exception);
+//		}
+//	}
 
 	@GetMapping(Endpoint.Artist.ARTIST_POST)
 	public PageResponse<PostDetail> getArtistPost(@PathVariable long id,
