@@ -3,7 +3,7 @@ package com.artiexh.api.controller;
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.ShopService;
 import com.artiexh.api.service.campaign.CampaignService;
-import com.artiexh.api.service.product.ProductService;
+import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.model.domain.Shop;
 import com.artiexh.model.mapper.CampaignMapper;
 import com.artiexh.model.mapper.ProductMapper;

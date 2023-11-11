@@ -1,9 +1,9 @@
-package com.artiexh.api.service.product;
+package com.artiexh.api.service.productinventory;
 
 import com.artiexh.data.jpa.entity.ProductHistoryEntity;
 import com.artiexh.model.domain.ProductHistory;
-import com.artiexh.model.domain.ProductInventoryQuantity;
 import com.artiexh.model.domain.ProductHistoryAction;
+import com.artiexh.model.domain.ProductInventoryQuantity;
 import com.artiexh.model.domain.SourceCategory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -2,14 +2,13 @@ package com.artiexh.data.jpa.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.Hibernate;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -19,13 +18,12 @@ import java.util.Objects;
 @AllArgsConstructor
 @Embeddable
 public class ProductEntityId implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 762299777384907757L;
-	@Size(max = 20)
-	@NotNull
+
 	@Column(name = "product_code", nullable = false, length = 20)
 	private String productCode;
 
-	@NotNull
 	@Column(name = "campaign_sale_id", nullable = false)
 	private Long campaignSaleId;
 

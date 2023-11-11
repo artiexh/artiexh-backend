@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.marketplace.request;
+package com.artiexh.model.rest.marketplace.filter;
 
 import com.artiexh.model.domain.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -28,20 +28,28 @@ public class ProductPageFilter {
 	private BigDecimal minPrice;
 	private BigDecimal maxPrice;
 	private Float averageRate;
-	private Integer provinceId;
 	private Integer categoryId;
 	@JsonIgnore
 	private Long artistId;
+	@JsonIgnore
+	private String artistUsername;
 	private Set<ProductStatus> statuses;
 
 	public Query getQuery() {
-		var boolQuery = new BoolQueryBuilder().must(new TermQueryBuilder("owner.id", artistId));
+		var boolQuery = new BoolQueryBuilder();
+
+		if (artistId != null) {
+			boolQuery.must(new TermQueryBuilder("owner.id", artistId));
+		}
+
+		if (artistUsername != null) {
+			boolQuery.must(new TermQueryBuilder("owner.username", artistUsername));
+		}
 
 		if (statuses == null) {
 			statuses = new LinkedHashSet<>();
 		}
 		statuses.add(ProductStatus.AVAILABLE);
-		statuses.add(ProductStatus.PRE_ORDER);
 		for (ProductStatus status : statuses) {
 			boolQuery.should(new TermQueryBuilder("status", status.getValue()));
 		}
@@ -59,14 +67,10 @@ public class ProductPageFilter {
 		if (categoryId != null) {
 			boolQuery.must(new TermQueryBuilder("category.id", categoryId));
 		}
-		if (provinceId != null) {
-			boolQuery.must(new TermQueryBuilder("owner.province.id", provinceId));
-		}
 
 		var queryBuilder = new NativeSearchQueryBuilder().withFilter(boolQuery);
 
 		if (StringUtils.hasText(keyword)) {
-
 			queryBuilder.withQuery(new MultiMatchQueryBuilder(keyword, "name").fuzziness(Fuzziness.AUTO));
 		}
 

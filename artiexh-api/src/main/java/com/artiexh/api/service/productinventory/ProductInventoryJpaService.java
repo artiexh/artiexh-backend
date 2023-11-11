@@ -1,4 +1,4 @@
-package com.artiexh.api.service.product;
+package com.artiexh.api.service.productinventory;
 
 import com.artiexh.data.jpa.entity.ProductInCampaignEntity;
 import com.artiexh.data.jpa.entity.ProductInventoryEntity;
@@ -11,11 +11,15 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Set;
 
-public interface ProductInventoryService {
+public interface ProductInventoryJpaService {
 	Page<ProductInventory> getInPage(Specification<ProductInventoryEntity> specification, Pageable pageable);
+
 	ProductInventory getDetail(String productCode);
+
 	ProductInventory update(ProductInventory product);
+
 	void updateQuantities(UpdateProductQuantitiesRequest productQuantity);
+
 	ProductInventory create(Long ownerId, ProductInventory product, ProductInCampaignEntity productInCampaign);
 
 	void updateQuantityFromCampaignRequest(Set<Long> productInCampaignIds, Long sourceId, Set<ProductInventoryQuantity> productQuantities);

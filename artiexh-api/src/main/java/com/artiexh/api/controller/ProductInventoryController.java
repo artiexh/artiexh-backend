@@ -2,7 +2,7 @@ package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.base.exception.ErrorCode;
-import com.artiexh.api.service.product.ProductInventoryService;
+import com.artiexh.api.service.productinventory.ProductInventoryService;
 import com.artiexh.model.domain.ProductInventory;
 import com.artiexh.model.mapper.ProductInventoryMapper;
 import com.artiexh.model.rest.PageResponse;
@@ -27,6 +27,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class ProductInventoryController {
 	private final ProductInventoryService productInventoryService;
 	private final ProductInventoryMapper productInventoryMapper;
+
 	@PutMapping(path = "{product-code}")
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
 	public ProductResponse update(
@@ -64,7 +65,7 @@ public class ProductInventoryController {
 	@GetMapping
 	public PageResponse<ProductResponse> getInPage(
 		@ParameterObject @Valid PaginationAndSortingRequest pagination
-		){
+	) {
 		Page<ProductInventory> product = productInventoryService.getInPage(null, pagination.getPageable());
 		return new PageResponse<>(product.map(productInventoryMapper::domainToProductResponse));
 	}
@@ -72,7 +73,7 @@ public class ProductInventoryController {
 	@GetMapping("{product-code}")
 	public ProductResponse getDetail(
 		@PathVariable("product-code") String productCode
-		){
+	) {
 		try {
 			ProductInventory product = productInventoryService.getDetail(productCode);
 			return productInventoryMapper.domainToProductResponse(product);

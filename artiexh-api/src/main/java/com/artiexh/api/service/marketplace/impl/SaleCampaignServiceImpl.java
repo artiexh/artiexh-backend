@@ -1,13 +1,16 @@
 package com.artiexh.api.service.marketplace.impl;
 
+import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.api.service.marketplace.SaleCampaignService;
 import com.artiexh.data.jpa.entity.CampaignSaleEntity;
 import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.jpa.entity.ProductEntityId;
+import com.artiexh.data.jpa.repository.ArtistRepository;
 import com.artiexh.data.jpa.repository.CampaignSaleRepository;
 import com.artiexh.data.jpa.repository.ProductInventoryRepository;
-import com.artiexh.data.jpa.repository.ProductRepository;
 import com.artiexh.model.mapper.CampaignSaleMapper;
+import com.artiexh.model.mapper.ProductMapper;
+import com.artiexh.model.rest.marketplace.filter.SaleCampaignFilter;
 import com.artiexh.model.rest.marketplace.request.ProductInSaleRequest;
 import com.artiexh.model.rest.marketplace.request.SaleCampaignRequest;
 import com.artiexh.model.rest.marketplace.response.SaleCampaignDetailResponse;
@@ -29,8 +32,10 @@ import java.util.stream.Collectors;
 public class SaleCampaignServiceImpl implements SaleCampaignService {
 	private final CampaignSaleRepository campaignSaleRepository;
 	private final ProductInventoryRepository productInventoryRepository;
-	private final ProductRepository productRepository;
+	private final ArtistRepository artistRepository;
 	private final CampaignSaleMapper campaignSaleMapper;
+	private final ProductMapper productMapper;
+	private final ProductService productService;
 
 	@Override
 	@Transactional
@@ -54,16 +59,20 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.createdBy(creatorId)
 			.build());
 
-		request.getProducts().stream()
-			.map(productRequest -> productRepository.save(ProductEntity.builder()
+		var result = campaignSaleMapper.entityToDetailDomain(entity);
+
+		var products = request.getProducts().stream()
+			.map(productRequest -> productService.create(ProductEntity.builder()
 				.id(new ProductEntityId(productRequest.getProductCode(), entity.getId()))
 				.priceAmount(productRequest.getPrice().getAmount())
 				.priceUnit(productRequest.getPrice().getUnit())
 				.build()
 			))
-			.forEach(entity.getProducts()::add);
+			.map(productMapper::domainToProductInSaleResponse)
+			.collect(Collectors.toSet());
+		result.setProducts(products);
 
-		return campaignSaleMapper.entityToDetailDomain(entity);
+		return result;
 	}
 
 	private void validateProductsRequest(Set<ProductInSaleRequest> productRequests) {
@@ -93,5 +102,16 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 		return campaignSaleRepository.findById(id)
 			.map(campaignSaleMapper::entityToDetailDomain)
 			.orElseThrow(() -> new EntityNotFoundException("Sale campaign not found"));
+	}
+
+	@Override
+	public Page<SaleCampaignResponse> getAllByArtist(String artistUsername,
+													 Pageable pageable,
+													 SaleCampaignFilter filter) {
+		if (!artistRepository.existsByUsername(artistUsername)) {
+			throw new EntityNotFoundException("Artist not found");
+		}
+		filter.setUsername(artistUsername);
+		return getAll(pageable, filter.getMarketplaceSpecification());
 	}
 }

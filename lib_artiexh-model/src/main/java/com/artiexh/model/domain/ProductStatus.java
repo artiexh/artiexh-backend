@@ -6,7 +6,6 @@ import lombok.Getter;
 public enum ProductStatus {
 	DELETED(-1),
 	NOT_AVAILABLE(0),
-	PRE_ORDER(1),
 	AVAILABLE(2);
 
 	private final int value;

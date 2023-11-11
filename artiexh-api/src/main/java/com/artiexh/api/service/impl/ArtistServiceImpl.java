@@ -3,7 +3,7 @@ package com.artiexh.api.service.impl;
 import com.artiexh.api.service.ArtistService;
 import com.artiexh.api.service.CampaignOrderService;
 import com.artiexh.api.service.PostService;
-import com.artiexh.api.service.product.ProductService;
+import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.data.jpa.entity.ArtistEntity;
 import com.artiexh.data.jpa.entity.SubscriptionEntity;
 import com.artiexh.data.jpa.entity.WardEntity;
