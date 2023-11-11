@@ -32,7 +32,7 @@ public class GetCampaignProductFilter {
 	private Long campaignId;
 
 	public Query getQuery() {
-		var boolQuery = new BoolQueryBuilder().should(new TermsQueryBuilder("status", List.of(ProductStatus.PRE_ORDER.getValue(), ProductStatus.AVAILABLE.getValue()))).minimumShouldMatch(1);
+		var boolQuery = new BoolQueryBuilder().should(new TermsQueryBuilder("status", List.of(ProductStatus.AVAILABLE.getValue()))).minimumShouldMatch(1);
 
 		if (campaignId != null) {
 			boolQuery.must(new TermQueryBuilder("campaign.id", campaignId));

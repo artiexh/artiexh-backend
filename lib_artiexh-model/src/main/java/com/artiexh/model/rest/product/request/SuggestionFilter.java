@@ -28,7 +28,7 @@ public class SuggestionFilter {
 		var boolQuery = new BoolQueryBuilder()
 			.should(new TermsQueryBuilder(
 				"status",
-				List.of(ProductStatus.PRE_ORDER.getValue(), ProductStatus.AVAILABLE.getValue())
+				List.of(ProductStatus.AVAILABLE.getValue())
 			))
 			.minimumShouldMatch(1);
 

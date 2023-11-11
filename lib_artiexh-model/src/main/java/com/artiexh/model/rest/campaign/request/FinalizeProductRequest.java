@@ -25,8 +25,8 @@ public class FinalizeProductRequest {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long productInCampaignId;
 
-	@NotNull
-	private ProductStatus status;
+//	@NotNull
+//	private ProductStatus status;
 
 	@NotBlank
 	@Size(max = 255)
@@ -45,23 +45,23 @@ public class FinalizeProductRequest {
 	@Min(0)
 	private Integer maxItemsPerOrder;
 
-	@NotNull
-	private DeliveryType deliveryType;
+//	@NotNull
+//	private DeliveryType deliveryType;
 
-	@NotEmpty
-	private Set<PaymentMethod> paymentMethods;
+//	@NotEmpty
+//	private Set<PaymentMethod> paymentMethods;
 
 	@NotNull
 	@Valid
 	private Set<ProductAttach> attaches;
 
-	@NotNull
-	@Min(0)
-	private Float weight;
+//	@NotNull
+//	@Min(0)
+//	private Float weight;
 
-	@NotNull
-	@Min(0)
-	private Integer quantity;
+//	@NotNull
+//	@Min(0)
+//	private Integer quantity;
 
 	//private Set<Long> bundleItems;
 }
