@@ -1,15 +1,15 @@
-package com.artiexh.api.service.product.impl;
+package com.artiexh.api.service.productinventory.impl;
 
-import com.artiexh.api.service.product.ProductHistoryService;
+import com.artiexh.api.service.productinventory.ProductHistoryService;
 import com.artiexh.data.jpa.entity.CampaignEntity;
 import com.artiexh.data.jpa.entity.ProductHistoryDetailEntity;
 import com.artiexh.data.jpa.entity.ProductHistoryEntity;
 import com.artiexh.data.jpa.entity.embededmodel.ProductHistoryEntityDetailId;
 import com.artiexh.data.jpa.repository.CampaignRepository;
-import com.artiexh.model.domain.ProductHistory;
-import com.artiexh.model.domain.ProductInventoryQuantity;
 import com.artiexh.data.jpa.repository.ProductHistoryRepository;
+import com.artiexh.model.domain.ProductHistory;
 import com.artiexh.model.domain.ProductHistoryAction;
+import com.artiexh.model.domain.ProductInventoryQuantity;
 import com.artiexh.model.domain.SourceCategory;
 import com.artiexh.model.mapper.CampaignMapper;
 import com.artiexh.model.mapper.ProductHistoryMapper;
@@ -33,6 +33,7 @@ public class ProductHistoryServiceImpl implements ProductHistoryService {
 	private final ProductHistoryMapper productHistoryMapper;
 	private final CampaignRepository campaignRepository;
 	private final CampaignMapper campaignMapper;
+
 	@Override
 	@Transactional
 	public void create(ProductHistoryAction action, Long sourceId, SourceCategory sourceCategory, Set<ProductInventoryQuantity> productQuantities) {

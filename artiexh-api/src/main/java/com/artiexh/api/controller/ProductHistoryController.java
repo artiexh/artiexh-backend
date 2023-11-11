@@ -1,7 +1,7 @@
 package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
-import com.artiexh.api.service.product.ProductHistoryService;
+import com.artiexh.api.service.productinventory.ProductHistoryService;
 import com.artiexh.model.domain.ProductHistory;
 import com.artiexh.model.mapper.ProductHistoryMapper;
 import com.artiexh.model.rest.PageResponse;
@@ -9,7 +9,6 @@ import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.producthistory.ProductHistoryFilter;
 import com.artiexh.model.rest.producthistory.ProductHistoryPageResponse;
 import com.artiexh.model.rest.producthistory.ProductHistoryResponse;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,19 +27,19 @@ import org.springframework.web.server.ResponseStatusException;
 public class ProductHistoryController {
 	private final ProductHistoryService productHistoryService;
 	private final ProductHistoryMapper productHistoryMapper;
+
 	@GetMapping
 	public PageResponse<ProductHistoryPageResponse> getInPage(
 		@ParameterObject @Valid PaginationAndSortingRequest pagination,
 		@ParameterObject ProductHistoryFilter filter
-		) {
+	) {
 		Page<ProductHistory> productHistoryPage = productHistoryService.getInPage(pagination.getPageable(), filter.getSpecification());
 		return new PageResponse<>(productHistoryPage.map(productHistoryMapper::domainToPageResponse));
 	}
 
 	@GetMapping("{id}")
 	public ProductHistoryResponse getById(
-		@PathVariable("id") Long id)
-	{
+		@PathVariable("id") Long id) {
 		try {
 			ProductHistory productHistory = productHistoryService.getById(id);
 			return productHistoryMapper.domainToResponse(productHistory);

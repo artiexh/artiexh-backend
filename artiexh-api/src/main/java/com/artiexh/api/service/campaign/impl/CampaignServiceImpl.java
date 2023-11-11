@@ -3,7 +3,7 @@ package com.artiexh.api.service.campaign.impl;
 import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.campaign.ProductInCampaignService;
-import com.artiexh.api.service.product.ProductInventoryService;
+import com.artiexh.api.service.productinventory.ProductInventoryJpaService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.*;
@@ -38,14 +38,15 @@ public class CampaignServiceImpl implements CampaignService {
 	private final AccountRepository accountRepository;
 	private final ProductInCampaignMapper productInCampaignMapper;
 	private final CampaignMapper campaignMapper;
-	private final ProductInventoryService productService;
+	private final ProductInventoryJpaService productService;
 	private final ProductInventoryMapper productMapper;
 	private final ProviderMapper providerMapper;
 	private final ArtistRepository artistRepository;
 	private final ProductInCampaignService productInCampaignService;
 	private final ProductTagMapper productTagMapper;
 	private final ProductCategoryMapper productCategoryMapper;
-	private final ProductInventoryService productInventoryService;
+	private final ProductInventoryJpaService productInventoryJpaService;
+
 	@Override
 	@Transactional
 	public CampaignDetailResponse createCampaign(Long ownerId, ArtistCampaignRequest request) {
@@ -539,7 +540,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 		campaignEntity = campaignRepository.save(campaignEntity);
 
-		productInventoryService.updateQuantityFromCampaignRequest(
+		productInventoryJpaService.updateQuantityFromCampaignRequest(
 			campaignEntity.getProductInCampaigns().stream()
 				.map(ProductInCampaignEntity::getId)
 				.collect(Collectors.toSet()),

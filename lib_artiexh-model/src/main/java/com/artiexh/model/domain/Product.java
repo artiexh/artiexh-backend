@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class Product {
+	private ProductInventory productInventory;
+	private CampaignSale campaignSale;
 	private Money price;
-	private String description;
 	private Long quantity;
 	private Long soldQuantity;
 }

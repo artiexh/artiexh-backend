@@ -5,8 +5,6 @@ import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.model.mapper.CampaignMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
-import com.artiexh.model.rest.artist.filter.ArtistCampaignFilter;
-import com.artiexh.model.rest.campaign.request.CampaignRequestFilter;
 import com.artiexh.model.rest.campaign.request.CreatePublicCampaignRequest;
 import com.artiexh.model.rest.campaign.request.PublicCampaignFilter;
 import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
@@ -40,7 +38,7 @@ public class PublicCampaignController {
 	public PageResponse<CampaignResponse> getPublicCampaign(
 		@ParameterObject @Valid PaginationAndSortingRequest pagination,
 		@ParameterObject @Valid PublicCampaignFilter filter
-		) {
+	) {
 
 		return new PageResponse<>(campaignService.getAllCampaigns(filter.getSpecification(), pagination.getPageable()));
 	}

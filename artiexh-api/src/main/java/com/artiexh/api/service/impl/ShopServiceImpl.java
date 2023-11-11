@@ -1,7 +1,7 @@
 package com.artiexh.api.service.impl;
 
 import com.artiexh.api.service.ShopService;
-import com.artiexh.api.service.product.ProductService;
+import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.data.jpa.entity.ArtistEntity;
 import com.artiexh.data.jpa.repository.ArtistRepository;
 import com.artiexh.model.domain.Shop;

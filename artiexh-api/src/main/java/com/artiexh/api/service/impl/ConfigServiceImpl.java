@@ -1,7 +1,6 @@
 package com.artiexh.api.service.impl;
 
 import com.artiexh.api.service.ConfigService;
-import com.artiexh.api.service.product.OpenSearchProductService;
 import com.artiexh.data.jpa.entity.CampaignEntity;
 import com.artiexh.data.jpa.entity.CustomProductEntity;
 import com.artiexh.data.jpa.entity.ProductInCampaignEntity;
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ConfigServiceImpl implements ConfigService {
 	private final ProductRepository productRepository;
-	private final OpenSearchProductService openSearchProductService;
 	private final ProductMapper productMapper;
 	private final ProductInCampaignRepository productInCampaignRepository;
 
