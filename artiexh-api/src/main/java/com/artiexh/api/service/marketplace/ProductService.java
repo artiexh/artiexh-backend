@@ -1,6 +1,9 @@
-package com.artiexh.api.service.product;
+package com.artiexh.api.service.marketplace;
+
+import com.artiexh.data.jpa.entity.ProductEntity;
 
 public interface ProductService {
+	ProductEntity create(ProductEntity entity);
 //	Page<ProductSuggestion> getSuggestionInPage(Query query, Pageable pageable);
 //
 //	Page<Product> getInPage(Query query, Pageable pageable);

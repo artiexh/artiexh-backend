@@ -1,6 +1,10 @@
-package com.artiexh.api.service.product;
+package com.artiexh.api.service.marketplace;
+
+import com.artiexh.data.jpa.entity.ProductEntity;
+import com.artiexh.data.opensearch.model.ProductInventoryDocument;
 
 public interface OpenSearchProductService {
+	ProductInventoryDocument create(ProductEntity entity);
 //	Page<ProductSuggestion> getSuggestionInPage(Query query, Pageable pageable);
 //
 //	Page<Product> getInPage(Query query, Pageable pageable);

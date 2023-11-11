@@ -1,7 +1,7 @@
 package com.artiexh.api.service.impl;
 
 import com.artiexh.api.service.ConfigService;
-import com.artiexh.api.service.product.OpenSearchProductService;
+import com.artiexh.api.service.marketplace.OpenSearchProductService;
 import com.artiexh.data.jpa.entity.CampaignEntity;
 import com.artiexh.data.jpa.entity.CustomProductEntity;
 import com.artiexh.data.jpa.entity.ProductInCampaignEntity;

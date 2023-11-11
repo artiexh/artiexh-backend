@@ -11,14 +11,12 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 @Data
-@Document(indexName = "product")
-public class ProductDocument {
+@Document(indexName = "product-inventory")
+public class ProductInventoryDocument {
 	@Id
-	private Long id;
+	private String productCode;
 	@Field(name = "owner", type = FieldType.Object)
 	private Owner owner;
-	@Field(name = "shop", type = FieldType.Object)
-	private Shop shop;
 	@Field(name = "status", type = FieldType.Byte)
 	private Byte status;
 	@Field(name = "name", type = FieldType.Text)
@@ -35,6 +33,7 @@ public class ProductDocument {
 	private String[] tags;
 	@Field(name = "campaign", type = FieldType.Nested)
 	private Campaign campaign;
+
 	@Data
 	public static class Money {
 		@Field(name = "amount", type = FieldType.Float)
@@ -51,18 +50,8 @@ public class ProductDocument {
 		private String username;
 		@Field(name = "displayName", type = FieldType.Text)
 		private String displayName;
-	}
-
-	@Data
-	public static class Shop {
-		@Field(name = "id", type = FieldType.Long)
-		private Long id;
-		@Field(name = "shopName", type = FieldType.Text)
-		private String shopName;
-		@Field(name = "shopWard", type = FieldType.Object)
-		private Ward shopWard;
-		@Field(name = "shopAddress", type = FieldType.Keyword)
-		private String shopAddress;
+		@Field(name = "ward", type = FieldType.Object)
+		private Ward ward;
 	}
 
 	@Data
@@ -123,11 +112,11 @@ public class ProductDocument {
 		private Long id;
 		@Field(name = "type", type = FieldType.Byte)
 		private Byte type;
-		@Field(name = "isPrePublished", type = FieldType.Boolean)
-		private Boolean isPrePublished;
-		@Field(name = "from", type = FieldType.Date, format = {DateFormat.date_time})
-		private Instant from;
-		@Field(name = "to", type = FieldType.Date, format = {DateFormat.date_time})
-		private Instant to;
+		@Field(name = "order_from", type = FieldType.Date, format = {DateFormat.date_time})
+		private Instant orderFrom;
+		@Field(name = "order_to", type = FieldType.Date, format = {DateFormat.date_time})
+		private Instant orderTo;
+		@Field(name = "public_date", type = FieldType.Date, format = {DateFormat.date_time})
+		private Instant publicDate;
 	}
 }

@@ -1,6 +1,7 @@
-package com.artiexh.api.service.product.impl;
+package com.artiexh.api.service.marketplace.impl;
 
-import com.artiexh.api.service.product.JpaProductService;
+import com.artiexh.api.service.marketplace.JpaProductService;
+import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.mapper.AddressMapper;
 import com.artiexh.model.mapper.ProductMapper;
@@ -25,6 +26,12 @@ public class JpaProductServiceImpl implements JpaProductService {
 	private final AddressMapper addressMapper;
 	@Value("${artiexh.security.admin.id}")
 	private Long rootAdminId;
+
+	@Override
+	@Transactional
+	public ProductEntity create(ProductEntity productEntity) {
+		return productRepository.save(productEntity);
+	}
 
 //	public Page<Product> fillProductPage(Page<Product> productPage) {
 //		// get missing fields from db: thumbnailUrl, remainingQuantity, owner.avatarUrl, description

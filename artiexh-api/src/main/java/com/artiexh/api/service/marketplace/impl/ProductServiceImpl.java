@@ -1,8 +1,9 @@
-package com.artiexh.api.service.product.impl;
+package com.artiexh.api.service.marketplace.impl;
 
-import com.artiexh.api.service.product.JpaProductService;
-import com.artiexh.api.service.product.OpenSearchProductService;
-import com.artiexh.api.service.product.ProductService;
+import com.artiexh.api.service.marketplace.JpaProductService;
+import com.artiexh.api.service.marketplace.OpenSearchProductService;
+import com.artiexh.api.service.marketplace.ProductService;
+import com.artiexh.data.jpa.entity.ProductEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,19 @@ import org.springframework.stereotype.Service;
 public class ProductServiceImpl implements ProductService {
 	private final OpenSearchProductService openSearchProductService;
 	private final JpaProductService jpaProductService;
+
+	@Override
+	public ProductEntity create(ProductEntity entity) {
+		ProductEntity result;
+		try {
+			result = jpaProductService.create(entity);
+			openSearchProductService.create(result);
+		} catch (Exception e) {
+			log.warn("Insert product to db fail", e);
+			throw e;
+		}
+		return result;
+	}
 
 //	@Override
 //	public Page<ProductSuggestion> getSuggestionInPage(Query query, Pageable pageable) {

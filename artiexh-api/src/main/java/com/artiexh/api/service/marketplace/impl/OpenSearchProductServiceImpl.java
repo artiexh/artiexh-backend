@@ -1,6 +1,8 @@
-package com.artiexh.api.service.product.impl;
+package com.artiexh.api.service.marketplace.impl;
 
-import com.artiexh.api.service.product.OpenSearchProductService;
+import com.artiexh.api.service.marketplace.OpenSearchProductService;
+import com.artiexh.data.jpa.entity.ProductEntity;
+import com.artiexh.data.opensearch.model.ProductInventoryDocument;
 import com.artiexh.model.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
@@ -11,6 +13,13 @@ import org.springframework.stereotype.Service;
 public class OpenSearchProductServiceImpl implements OpenSearchProductService {
 	private final ElasticsearchOperations openSearchTemplate;
 	private final ProductMapper productMapper;
+
+	@Override
+	public ProductInventoryDocument create(ProductEntity entity) {
+//		var productDocument = productMapper.entityToDocument(entity);
+//		return openSearchTemplate.save(productDocument);
+		return null;
+	}
 
 //	@Override
 //	public Page<ProductSuggestion> getSuggestionInPage(Query query, Pageable pageable) {

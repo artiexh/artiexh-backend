@@ -1,5 +1,6 @@
 package com.artiexh.api.service.marketplace.impl;
 
+import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.api.service.marketplace.SaleCampaignService;
 import com.artiexh.data.jpa.entity.CampaignSaleEntity;
 import com.artiexh.data.jpa.entity.ProductEntity;
@@ -31,6 +32,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 	private final ProductInventoryRepository productInventoryRepository;
 	private final ProductRepository productRepository;
 	private final CampaignSaleMapper campaignSaleMapper;
+	private final ProductService productService;
 
 	@Override
 	@Transactional
@@ -55,7 +57,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.build());
 
 		request.getProducts().stream()
-			.map(productRequest -> productRepository.save(ProductEntity.builder()
+			.map(productRequest -> productService.create(ProductEntity.builder()
 				.id(new ProductEntityId(productRequest.getProductCode(), entity.getId()))
 				.priceAmount(productRequest.getPrice().getAmount())
 				.priceUnit(productRequest.getPrice().getUnit())

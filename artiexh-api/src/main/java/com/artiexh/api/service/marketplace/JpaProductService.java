@@ -1,6 +1,9 @@
-package com.artiexh.api.service.product;
+package com.artiexh.api.service.marketplace;
+
+import com.artiexh.data.jpa.entity.ProductEntity;
 
 public interface JpaProductService {
+	ProductEntity create(ProductEntity productEntity);
 //	Page<Product> fillProductPage(Page<Product> productPage);
 //
 //	Product getDetail(long id);

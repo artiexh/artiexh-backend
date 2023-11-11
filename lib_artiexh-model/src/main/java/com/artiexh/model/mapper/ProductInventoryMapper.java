@@ -2,6 +2,7 @@ package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.ProductAttachEntity;
 import com.artiexh.data.jpa.entity.ProductInventoryEntity;
+import com.artiexh.data.opensearch.model.ProductInventoryDocument;
 import com.artiexh.model.domain.*;
 import com.artiexh.model.rest.campaign.request.FinalizeProductRequest;
 import com.artiexh.model.rest.product.request.UpdateProductRequest;
@@ -56,6 +57,10 @@ public interface ProductInventoryMapper {
 
 	@Mapping(target = "productInCampaign.id", source = "productInCampaignId")
 	ProductInventory finalizeProductRequestToProduct(FinalizeProductRequest request);
+
+
+	@Mapping(target = "campaign", source = "productInCampaign.campaign")
+	ProductInventoryDocument domainToDocument(ProductInventory product);
 
 	default Integer toValue(ProductStatus status) {
 		return status.getValue();

@@ -1,9 +1,8 @@
-package com.artiexh.api.service.product.impl;
+package com.artiexh.api.service.productinventory.impl;
 
-import com.artiexh.api.service.product.ProductHistoryService;
-import com.artiexh.api.service.product.ProductInventoryService;
+import com.artiexh.api.service.productinventory.ProductHistoryService;
+import com.artiexh.api.service.productinventory.ProductInventoryJpaService;
 import com.artiexh.data.jpa.entity.*;
-import com.artiexh.model.domain.ProductInventoryQuantity;
 import com.artiexh.data.jpa.repository.ArtistRepository;
 import com.artiexh.data.jpa.repository.ProductCategoryRepository;
 import com.artiexh.data.jpa.repository.ProductInventoryRepository;
@@ -29,7 +28,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ProductInventoryServiceImpl implements ProductInventoryService {
+public class ProductInventoryJpaServiceImpl implements ProductInventoryJpaService {
 	private final ProductInventoryRepository productRepository;
 	private final ArtistRepository artistRepository;
 	private final ProductCategoryRepository productCategoryRepository;
