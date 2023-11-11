@@ -57,10 +57,6 @@ public class CampaignEntity {
 	private String content;
 
 	@Builder.Default
-	@Column(name = "is_published", nullable = false)
-	private Boolean isPrePublished = false;
-
-	@Builder.Default
 	@Column(name = "is_finalized", nullable = false)
 	private Boolean isFinalized = false;
 
