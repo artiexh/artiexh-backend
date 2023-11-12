@@ -29,7 +29,7 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariantEn
 			        group by variant_id
 			        having count(option_value_id) = :numOfOptionValue) temp on temp.variant_id = pv.id
 			group by pvm.variant_id
-			campaignOrder by count(pvm.option_id)
+			order by count(pvm.option_id)
 			""",
 		countQuery = """
 			select count(pv.id)
@@ -42,7 +42,7 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariantEn
 			    group by variant_id
 			    having count(option_value_id) = :numOfOptionValue) temp on temp.variant_id = pv.id
 			group by pvm.variant_id
-			campaignOrder by count(pvm.option_id)
+			order by count(pvm.option_id)
 			""")
 	Page<ProductVariantEntity> findAllByOptionAndProductTemplateId(
 		Pageable pageable,

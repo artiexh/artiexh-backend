@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.Map;
 import java.util.Set;
 
 public interface ProductInventoryJpaService {
@@ -22,5 +23,5 @@ public interface ProductInventoryJpaService {
 
 	ProductInventory create(Long ownerId, ProductInventory product, ProductInCampaignEntity productInCampaign);
 
-	void updateQuantityFromCampaignRequest(Set<Long> productInCampaignIds, Long sourceId, Set<ProductInventoryQuantity> productQuantities);
+	void updateQuantityFromCampaignRequest(Long sourceId, Set<ProductInventoryQuantity> productQuantities);
 }

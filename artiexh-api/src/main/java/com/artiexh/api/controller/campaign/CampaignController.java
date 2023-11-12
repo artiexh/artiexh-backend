@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -41,7 +42,7 @@ public class CampaignController {
 	public void publishProduct(
 		Authentication authentication,
 		@PathVariable("id") Long campaignId,
-		@RequestBody @Valid Set<ProductInventoryQuantity> productQuantities
+		@RequestBody @Valid Map<String, Long> productQuantities
 	) {
 		try {
 			long staffId = (long) authentication.getPrincipal();
