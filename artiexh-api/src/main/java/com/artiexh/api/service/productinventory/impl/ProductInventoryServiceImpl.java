@@ -67,6 +67,6 @@ public class ProductInventoryServiceImpl implements ProductInventoryService {
 
 	@Override
 	public void updateQuantityFromCampaignRequest(Set<Long> productInCampaignIds, Long sourceId, Set<ProductInventoryQuantity> productQuantities) {
-		productInventoryJpaService.updateQuantityFromCampaignRequest(productInCampaignIds, sourceId, productQuantities);
+		productInventoryJpaService.updateQuantityFromCampaignRequest(sourceId, productQuantities);
 	}
 }

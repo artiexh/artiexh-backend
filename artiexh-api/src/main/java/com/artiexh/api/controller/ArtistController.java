@@ -3,12 +3,15 @@ package com.artiexh.api.controller;
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.service.ArtistService;
+import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.model.domain.Post;
 import com.artiexh.model.mapper.PostMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.artist.request.UpdateArtistProfileRequest;
 import com.artiexh.model.rest.artist.response.ArtistProfileResponse;
+import com.artiexh.model.rest.marketplace.filter.ProductPageFilter;
+import com.artiexh.model.rest.marketplace.response.ProductResponse;
 import com.artiexh.model.rest.post.PostDetail;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -16,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -25,6 +29,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping(Endpoint.Artist.ROOT)
 public class ArtistController {
 	private final ArtistService artistService;
+	private final ProductService productService;
 	private final PostMapper postMapper;
 
 	@GetMapping(Endpoint.Artist.ARTIST_PROFILE)
@@ -48,17 +53,17 @@ public class ArtistController {
 		}
 	}
 
-//	@GetMapping(Endpoint.Artist.ARTIST_PRODUCT)
-//	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
-//	public PageResponse<ProductResponse> getAllProduct(
-//		Authentication authentication,
-//		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
-//		@ParameterObject @Valid ProductPageFilter filter
-//	) {
-//		long userId = (long) authentication.getPrincipal();
-//		filter.setArtistId(userId);
-//		return artistService.getAllProducts(filter.getQuery(), paginationAndSortingRequest.getPageable());
-//	}
+	@GetMapping(Endpoint.Artist.ARTIST_PRODUCT)
+	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
+	public PageResponse<ProductResponse> getAllProduct(
+		Authentication authentication,
+		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
+		@ParameterObject @Valid ProductPageFilter filter
+	) {
+		long userId = (long) authentication.getPrincipal();
+		filter.setArtistId(userId);
+		return new PageResponse<>(productService.getAll(paginationAndSortingRequest.getPageable(), filter.getQuery()));
+	}
 
 //	@GetMapping(Endpoint.Artist.ARTIST_ORDER)
 //	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
