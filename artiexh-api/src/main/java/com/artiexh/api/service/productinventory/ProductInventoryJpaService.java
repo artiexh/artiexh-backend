@@ -4,6 +4,7 @@ import com.artiexh.data.jpa.entity.ProductInCampaignEntity;
 import com.artiexh.data.jpa.entity.ProductInventoryEntity;
 import com.artiexh.model.domain.ProductInventory;
 import com.artiexh.model.domain.ProductInventoryQuantity;
+import com.artiexh.model.domain.SourceCategory;
 import com.artiexh.model.rest.product.request.UpdateProductQuantitiesRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,4 +25,6 @@ public interface ProductInventoryJpaService {
 	ProductInventory create(Long ownerId, ProductInventory product, ProductInCampaignEntity productInCampaign);
 
 	void updateQuantityFromCampaignRequest(Long sourceId, Set<ProductInventoryQuantity> productQuantities);
+
+	void reduceQuantity(Long sourceId, SourceCategory sourceCategory, Set<ProductInventoryQuantity> productQuantities);
 }

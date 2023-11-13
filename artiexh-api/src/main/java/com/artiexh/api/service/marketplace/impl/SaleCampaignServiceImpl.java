@@ -2,17 +2,22 @@ package com.artiexh.api.service.marketplace.impl;
 
 import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.api.service.marketplace.SaleCampaignService;
+import com.artiexh.api.service.productinventory.ProductInventoryJpaService;
 import com.artiexh.data.jpa.entity.CampaignSaleEntity;
 import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.jpa.entity.ProductEntityId;
 import com.artiexh.data.jpa.repository.ArtistRepository;
 import com.artiexh.data.jpa.repository.CampaignSaleRepository;
 import com.artiexh.data.jpa.repository.ProductInventoryRepository;
+import com.artiexh.model.domain.Product;
+import com.artiexh.model.domain.ProductInventoryQuantity;
+import com.artiexh.model.domain.SourceCategory;
 import com.artiexh.model.mapper.CampaignSaleMapper;
 import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.rest.marketplace.filter.SaleCampaignFilter;
 import com.artiexh.model.rest.marketplace.request.ProductInSaleRequest;
 import com.artiexh.model.rest.marketplace.request.SaleCampaignRequest;
+import com.artiexh.model.rest.marketplace.response.ProductInSaleCampaignResponse;
 import com.artiexh.model.rest.marketplace.response.SaleCampaignDetailResponse;
 import com.artiexh.model.rest.marketplace.response.SaleCampaignResponse;
 import jakarta.persistence.EntityNotFoundException;
@@ -23,6 +28,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,6 +42,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 	private final CampaignSaleMapper campaignSaleMapper;
 	private final ProductMapper productMapper;
 	private final ProductService productService;
+	private final ProductInventoryJpaService productInventoryJpaService;
 
 	@Override
 	@Transactional
@@ -61,16 +68,25 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 
 		var result = campaignSaleMapper.entityToDetailDomain(entity);
 
-		var products = request.getProducts().stream()
-			.map(productRequest -> productService.create(ProductEntity.builder()
+		Set<ProductInventoryQuantity> productQuantities = new HashSet<>();
+		Set<ProductInSaleCampaignResponse> productResponses = new HashSet<>();
+
+		for (var productRequest : request.getProducts()) {
+			Product product = productService.create(ProductEntity.builder()
 				.id(new ProductEntityId(productRequest.getProductCode(), entity.getId()))
 				.priceAmount(productRequest.getPrice().getAmount())
 				.priceUnit(productRequest.getPrice().getUnit())
 				.build()
-			))
-			.map(productMapper::domainToProductInSaleResponse)
-			.collect(Collectors.toSet());
-		result.setProducts(products);
+			);
+			productQuantities.add(new ProductInventoryQuantity(
+				product.getProductInventory().getProductCode(),
+				(long) productRequest.getQuantity())
+			);
+			productResponses.add(productMapper.domainToProductInSaleResponse(product));
+		}
+
+		productInventoryJpaService.reduceQuantity(result.getId(), SourceCategory.CAMPAIGN_SALE, productQuantities);
+		result.setProducts(productResponses);
 
 		return result;
 	}
@@ -81,11 +97,11 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 		if (entities.size() != productCodes.size()) {
 			throw new IllegalArgumentException("Some products are not found");
 		}
-		for (var productEntity : entities) {
+		for (var productInventoryEntity : entities) {
 			for (var productRequest : productRequests) {
-				if (productEntity.getProductCode().equals(productRequest.getProductCode())
-					&& (productEntity.getQuantity() < productRequest.getQuantity())) {
-					throw new IllegalArgumentException("Product " + productEntity.getProductCode() + " has not enough quantity");
+				if (productInventoryEntity.getProductCode().equals(productRequest.getProductCode())
+					&& (productInventoryEntity.getQuantity() < productRequest.getQuantity())) {
+					throw new IllegalArgumentException("Product " + productInventoryEntity.getProductCode() + " has not enough quantity");
 				}
 			}
 		}

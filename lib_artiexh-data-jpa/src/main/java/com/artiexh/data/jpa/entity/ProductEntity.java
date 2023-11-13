@@ -38,4 +38,7 @@ public class ProductEntity {
 	@Column(name = "sold_quantity")
 	private Integer soldQuantity;
 
+	@Column(name = "artist_profit", precision = 38, scale = 2)
+	private BigDecimal artistProfit;
+
 }
