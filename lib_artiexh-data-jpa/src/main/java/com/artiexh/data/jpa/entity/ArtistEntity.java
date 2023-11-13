@@ -44,6 +44,9 @@ public class ArtistEntity extends UserEntity {
 	@Column(name = "shop_phone", length = 15)
 	private String phone;
 
+	@Column(name = "shop_thumbnail_url")
+	private String shopThumbnailUrl;
+
 	@Builder.Default
 	@OneToMany(mappedBy = "owner")
 	private Set<CampaignEntity> campaigns = new LinkedHashSet<>();
