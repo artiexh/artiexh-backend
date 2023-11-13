@@ -76,7 +76,7 @@ public final class Endpoint {
 	public static class Artist {
 		public static final String ROOT = PREFIX + "/artist";
 		public static final String ARTIST_PROFILE = "/{username}";
-		public static final String ARTIST_PRODUCT = "/product";
+		public static final String ARTIST_PRODUCT = "/product-in-sale";
 		public static final String ARTIST_ORDER = "/order-shop";
 		public static final String ARTIST_POST = "/{id}/post";
 		public static final String ARTIST_CAMPAIGN = "/{id}/campaign";

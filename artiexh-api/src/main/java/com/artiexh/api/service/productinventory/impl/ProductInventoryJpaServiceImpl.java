@@ -169,4 +169,13 @@ public class ProductInventoryJpaServiceImpl implements ProductInventoryJpaServic
 		);
 		return tagEntities;
 	}
+
+	@Override
+	@Transactional
+	public void reduceQuantity(Long sourceId, SourceCategory sourceCategory, Set<ProductInventoryQuantity> productQuantities) {
+		for (var productQuantity : productQuantities) {
+			productRepository.updateQuantity(productQuantity.getProductCode(), -productQuantity.getQuantity());
+		}
+		productHistoryService.create(ProductHistoryAction.EXPORT, sourceId, sourceCategory, productQuantities);
+	}
 }
