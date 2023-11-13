@@ -3,7 +3,7 @@ package com.artiexh.api.service.marketplace;
 import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.jpa.entity.ProductEntityId;
 import com.artiexh.model.domain.Product;
-import com.artiexh.model.rest.marketplace.response.ProductResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.response.ProductResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

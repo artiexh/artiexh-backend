@@ -7,7 +7,7 @@ import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.Product;
 import com.artiexh.model.mapper.AddressMapper;
 import com.artiexh.model.mapper.ProductMapper;
-import com.artiexh.model.rest.marketplace.response.ProductResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

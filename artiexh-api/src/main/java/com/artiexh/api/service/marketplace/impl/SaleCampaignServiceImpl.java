@@ -14,12 +14,12 @@ import com.artiexh.model.domain.ProductInventoryQuantity;
 import com.artiexh.model.domain.SourceCategory;
 import com.artiexh.model.mapper.CampaignSaleMapper;
 import com.artiexh.model.mapper.ProductMapper;
-import com.artiexh.model.rest.marketplace.filter.SaleCampaignFilter;
-import com.artiexh.model.rest.marketplace.request.ProductInSaleRequest;
-import com.artiexh.model.rest.marketplace.request.SaleCampaignRequest;
-import com.artiexh.model.rest.marketplace.response.ProductInSaleCampaignResponse;
-import com.artiexh.model.rest.marketplace.response.SaleCampaignDetailResponse;
-import com.artiexh.model.rest.marketplace.response.SaleCampaignResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.filter.SaleCampaignFilter;
+import com.artiexh.model.rest.marketplace.salecampaign.request.ProductInSaleRequest;
+import com.artiexh.model.rest.marketplace.salecampaign.request.SaleCampaignRequest;
+import com.artiexh.model.rest.marketplace.salecampaign.response.ProductInSaleCampaignResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignDetailResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -61,8 +61,8 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.name(request.getName())
 			.description(request.getDescription())
 			.publicDate(request.getPublicDate())
-			.orderFrom(request.getOrderFrom())
-			.orderTo(request.getOrderTo())
+			.from(request.getOrderFrom())
+			.to(request.getOrderTo())
 			.createdBy(creatorId)
 			.build());
 

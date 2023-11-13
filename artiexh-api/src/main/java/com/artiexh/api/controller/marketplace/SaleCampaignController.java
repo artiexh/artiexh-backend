@@ -2,8 +2,8 @@ package com.artiexh.api.controller.marketplace;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.marketplace.SaleCampaignService;
-import com.artiexh.model.rest.marketplace.request.SaleCampaignRequest;
-import com.artiexh.model.rest.marketplace.response.SaleCampaignDetailResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.request.SaleCampaignRequest;
+import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;

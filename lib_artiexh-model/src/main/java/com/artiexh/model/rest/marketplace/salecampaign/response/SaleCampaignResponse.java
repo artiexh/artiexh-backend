@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.marketplace.response;
+package com.artiexh.model.rest.marketplace.salecampaign.response;
 
 import com.artiexh.model.domain.CampaignType;
 import com.artiexh.model.rest.artist.response.OwnerResponse;
@@ -19,8 +19,8 @@ public class SaleCampaignResponse {
 	private String name;
 	private String description;
 	private Instant publicDate;
-	private Instant orderFrom;
-	private Instant orderTo;
+	private Instant from;
+	private Instant to;
 	private Long createdBy;
 	private Instant createdDate;
 	private Instant modifiedDate;

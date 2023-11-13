@@ -1,8 +1,8 @@
 package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.CampaignSaleEntity;
-import com.artiexh.model.rest.marketplace.response.SaleCampaignDetailResponse;
-import com.artiexh.model.rest.marketplace.response.SaleCampaignResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignDetailResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
