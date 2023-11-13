@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.Map;
 import java.util.Set;
 
 public interface CampaignService {
@@ -35,7 +36,7 @@ public interface CampaignService {
 
 	ProductInCampaignDetailResponse getProductInCampaign(Long campaignId, Long productId);
 
-	void staffFinishManufactureCampaign(Set<ProductInventoryQuantity> productInventoryQuantities,
+	void staffFinishManufactureCampaign(Map<String, Long> productQuantities,
 										Long campaignId,
 										Long staffId,
 										String message);

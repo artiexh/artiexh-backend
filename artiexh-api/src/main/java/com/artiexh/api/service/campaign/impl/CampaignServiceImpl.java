@@ -5,6 +5,7 @@ import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.campaign.ProductInCampaignService;
 import com.artiexh.api.service.productinventory.ProductInventoryJpaService;
 import com.artiexh.data.jpa.entity.*;
+import com.artiexh.data.jpa.projection.ProductInventoryCode;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.*;
 import com.artiexh.model.mapper.*;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,7 +48,7 @@ public class CampaignServiceImpl implements CampaignService {
 	private final ProductTagMapper productTagMapper;
 	private final ProductCategoryMapper productCategoryMapper;
 	private final ProductInventoryJpaService productInventoryJpaService;
-
+	private final ProductInventoryRepository productInventoryRepository;
 	@Override
 	@Transactional
 	public CampaignDetailResponse createCampaign(Long ownerId, ArtistCampaignRequest request) {
@@ -515,12 +517,30 @@ public class CampaignServiceImpl implements CampaignService {
 
 	@Override
 	@Transactional
-	public void staffFinishManufactureCampaign(Set<ProductInventoryQuantity> productInventoryQuantities,
+	public void staffFinishManufactureCampaign(Map<String, Long> productQuantities,
 											   Long campaignId,
 											   Long staffId,
 											   String message) {
 		var campaignEntity = campaignRepository.findById(campaignId)
 			.orElseThrow(() -> new EntityNotFoundException("campaignId " + campaignId + " not valid"));
+
+		Set<ProductInventoryQuantity> productInventoryQuantities = new HashSet<>();
+		Set<ProductInventoryCode> productInventoryCodes = productInventoryRepository.getAllByCampaignId(campaignEntity.getId());
+		boolean isProductExisted = true;
+		for (ProductInventoryCode productInventoryCode : productInventoryCodes) {
+			Long quantity = productQuantities.get(productInventoryCode.getProductInCampaignId().toString());
+			if (quantity == null) {
+				isProductExisted = false;
+			} else {
+				productInventoryQuantities.add(ProductInventoryQuantity.builder()
+					.productCode(productInventoryCode.getProductCode())
+					.quantity(quantity)
+					.build());
+			}
+		}
+		if (productInventoryCodes.size() != productQuantities.size() || !isProductExisted) {
+			throw new IllegalArgumentException(ErrorCode.PRODUCT_NOT_FOUND.getMessage());
+		}
 
 		AccountEntity accountEntity = accountRepository.getReferenceById(staffId);
 		if (campaignEntity.getStatus() != CampaignStatus.APPROVED.getByteValue()
@@ -541,9 +561,6 @@ public class CampaignServiceImpl implements CampaignService {
 		campaignEntity = campaignRepository.save(campaignEntity);
 
 		productInventoryJpaService.updateQuantityFromCampaignRequest(
-			campaignEntity.getProductInCampaigns().stream()
-				.map(ProductInCampaignEntity::getId)
-				.collect(Collectors.toSet()),
 			campaignEntity.getId(),
 			productInventoryQuantities
 		);
