@@ -25,4 +25,6 @@ public class RegistrationArtistRequest {
 
 	@NotEmpty
 	private String phone;
+
+	private String shopThumbnailUrl;
 }
