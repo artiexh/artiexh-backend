@@ -25,4 +25,6 @@ public class UpdateArtistProfileRequest {
 
 	@NotEmpty
 	private String phone;
+
+	private String shopThumbnailUrl;
 }
