@@ -26,6 +26,7 @@ public interface UserMapper {
 	@Named("domainToAccountProfile")
 	AccountProfile domainToAccountProfile(User userEntity);
 
+	@Mapping(target = "shoppingCart", ignore = true)
 	UserEntity domainToEntity(User user);
 
 	@Mapping(target = "role", constant = "USER")

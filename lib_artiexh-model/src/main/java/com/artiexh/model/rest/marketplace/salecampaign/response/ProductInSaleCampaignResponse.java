@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.marketplace.response;
+package com.artiexh.model.rest.marketplace.salecampaign.response;
 
 import com.artiexh.model.domain.*;
 import com.artiexh.model.rest.artist.response.OwnerResponse;
@@ -23,7 +23,6 @@ public class ProductInSaleCampaignResponse {
 	private float averageRate;
 	private ProductType type;
 	private long quantity;
-	private long soldQuantity;
 	private OwnerResponse owner;
 	private String description;
 	private Integer maxItemsPerOrder;

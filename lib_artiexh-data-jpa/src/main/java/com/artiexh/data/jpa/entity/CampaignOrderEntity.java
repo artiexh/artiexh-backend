@@ -10,7 +10,6 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -30,19 +29,13 @@ public class CampaignOrderEntity extends BaseAuditEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "campaign_id", nullable = false)
-	private CampaignEntity campaign;
+	private CampaignSaleEntity campaignSale;
 
 	@Column(name = "note")
 	private String note;
 
 	@Column(name = "status", nullable = false)
 	private Byte status;
-
-	@Column(name = "modified_date")
-	private Instant modifiedDate;
-
-	@Column(name = "created_date", nullable = false)
-	private Instant createdDate;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_id")

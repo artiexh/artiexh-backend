@@ -16,7 +16,7 @@ import java.util.Set;
 @Builder
 public class CampaignOrder {
 	private Long id;
-	private Campaign campaign;
+	private CampaignSale campaignSale;
 	private BigDecimal shippingFee;
 	private String note;
 	private CampaignOrderStatus status;

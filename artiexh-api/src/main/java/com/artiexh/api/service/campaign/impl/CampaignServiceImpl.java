@@ -49,6 +49,7 @@ public class CampaignServiceImpl implements CampaignService {
 	private final ProductCategoryMapper productCategoryMapper;
 	private final ProductInventoryJpaService productInventoryJpaService;
 	private final ProductInventoryRepository productInventoryRepository;
+
 	@Override
 	@Transactional
 	public CampaignDetailResponse createCampaign(Long ownerId, ArtistCampaignRequest request) {

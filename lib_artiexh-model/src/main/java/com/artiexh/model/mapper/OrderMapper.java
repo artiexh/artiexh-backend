@@ -13,16 +13,17 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
 	uses = {
-		UserAddressMapper.class,
 		UserMapper.class,
-		ProductMapper.class,
-		CampaignMapper.class,
-		OrderTransactionMapper.class,
 		CampaignOrderMapper.class,
-		AddressMapper.class})
+		OrderTransactionMapper.class,
+		ProductMapper.class,
+		UserMapper.class
+	})
 public interface OrderMapper {
+
 	@Mapping(target = "user", qualifiedByName = "entityToBasicUser")
-	@Mapping(target = "campaignOrders", source = "campaignOrders", qualifiedByName = "entityToDomainWithoutOrder")
+	@Mapping(target = "campaignOrders", source = "campaignOrders", qualifiedByName = "entitiesToDomainsWithoutOrder")
+	@Mapping(target = "currentTransaction", source = "orderTransactions", qualifiedByName = "getCurrentTransactionDomain")
 	Order entityToDomain(OrderEntity entity);
 
 	@Named("domainToResponse")
@@ -38,7 +39,10 @@ public interface OrderMapper {
 	@Named("entityToAdminResponse")
 	AdminOrderResponse entityToAdminResponse(OrderEntity order);
 
+	@Mapping(target = "currentTransaction", source = "orderTransactions", qualifiedByName = "getCurrentTransaction")
+	@Mapping(target = "campaignOrders", source = "campaignOrders", qualifiedByName = "entitiesToUserResponses")
+	DetailUserOrderResponse entityToUserDetailResponse(OrderEntity entity);
+
 	@Named("domainToDetailResponse")
-	@Mapping(target = "campaignOrders", source = "campaignOrders", qualifiedByName = "domainsToUserResponses")
 	DetailUserOrderResponse domainToUserDetailResponse(Order order);
 }

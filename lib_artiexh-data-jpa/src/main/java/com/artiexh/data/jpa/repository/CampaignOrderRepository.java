@@ -14,12 +14,12 @@ import java.util.Set;
 @Repository
 public interface CampaignOrderRepository extends JpaRepository<CampaignOrderEntity, Long>, JpaSpecificationExecutor<CampaignOrderEntity> {
 
-	Optional<CampaignOrderEntity> findByIdAndCampaignOwnerId(Long orderId, Long artistId);
+	Optional<CampaignOrderEntity> findByIdAndCampaignSaleOwnerId(Long orderId, Long artistId);
 
 
 	Optional<CampaignOrderEntity> findByIdAndOrderUserId(Long orderId, Long userId);
 
-	@Modifying(flushAutomatically = true)
+	@Modifying
 	@Query("update CampaignOrderEntity set status = cast(1 as byte) where order.id = :id")
 	void updatePayment(@Param("id") Long id);
 

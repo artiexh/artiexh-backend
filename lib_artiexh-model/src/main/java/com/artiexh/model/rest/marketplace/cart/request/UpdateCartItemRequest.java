@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.cart.request;
+package com.artiexh.model.rest.marketplace.cart.request;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;

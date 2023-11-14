@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.cart.response;
+package com.artiexh.model.rest.marketplace.cart.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -22,9 +22,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, ProductE
 //	Set<ProductEntity> findAllByIdInAndShopIdAndStatus(Set<Long> ids, Long shopId, byte status);
 //
 //	Set<ProductEntity> findAllByIdIn(Set<Long> ids);
-//
-//	int countAllByIdInAndOwnerId(Collection<Long> id, Long ownerId);
-//
+
 //	int countAllByIdIn(Collection<Long> id);
 
 //	@QueryHints(value = {

@@ -15,7 +15,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
-public class OrderHistoryEntityId implements Serializable {
+public class OrderHistoryId implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 6651597644338920273L;
 
@@ -29,7 +29,7 @@ public class OrderHistoryEntityId implements Serializable {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-		OrderHistoryEntityId entity = (OrderHistoryEntityId) o;
+		OrderHistoryId entity = (OrderHistoryId) o;
 		return Objects.equals(this.campaignOrderId, entity.campaignOrderId) &&
 			Objects.equals(this.status, entity.status);
 	}

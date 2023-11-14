@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserUserCampaignOrderDetailResponse extends UserCampaignOrderResponse {
+public class UserCampaignOrderDetailResponse extends UserCampaignOrderResponse {
 	private UserOrderResponse order;
 }

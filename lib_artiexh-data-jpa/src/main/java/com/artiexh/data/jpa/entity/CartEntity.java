@@ -18,7 +18,7 @@ public class CartEntity {
 	@Column(name = "user_id", nullable = false)
 	private Long id;
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
 	@JoinColumn(name = "cart_id")
 	private Set<CartItemEntity> cartItems;
 

@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.marketplace.request;
+package com.artiexh.model.rest.marketplace.salecampaign.request;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Future;
