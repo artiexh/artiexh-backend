@@ -34,9 +34,14 @@ public class ProductPageFilter {
 	@JsonIgnore
 	private String artistUsername;
 	private Set<ProductStatus> statuses;
+	private Long campaignId;
 
 	public Query getQuery() {
 		var boolQuery = new BoolQueryBuilder();
+
+		if (campaignId != null) {
+			boolQuery.must(new TermQueryBuilder("campaign.id", campaignId));
+		}
 
 		if (artistId != null) {
 			boolQuery.must(new TermQueryBuilder("owner.id", artistId));
