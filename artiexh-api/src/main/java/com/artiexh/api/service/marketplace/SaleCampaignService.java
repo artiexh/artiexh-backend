@@ -3,6 +3,7 @@ package com.artiexh.api.service.marketplace;
 import com.artiexh.data.jpa.entity.CampaignSaleEntity;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.SaleCampaignFilter;
 import com.artiexh.model.rest.marketplace.salecampaign.request.SaleCampaignRequest;
+import com.artiexh.model.rest.marketplace.salecampaign.response.CampaignStatistics;
 import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignDetailResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignResponse;
 import org.springframework.data.domain.Page;
@@ -20,4 +21,6 @@ public interface SaleCampaignService {
 	Page<SaleCampaignResponse> getAllByArtist(String artistUsername,
 											  Pageable pageable,
 											  SaleCampaignFilter filter);
+
+	CampaignStatistics getStatistics(Long campaignId);
 }
