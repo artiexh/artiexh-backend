@@ -66,7 +66,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.createdBy(creatorId)
 			.build());
 
-		var result = campaignSaleMapper.entityToDetailDomain(entity);
+		var result = campaignSaleMapper.entityToDetailResponse(entity);
 
 		Set<ProductInventoryQuantity> productQuantities = new HashSet<>();
 		Set<ProductInSaleCampaignResponse> productResponses = new HashSet<>();
@@ -110,13 +110,13 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 	@Override
 	public Page<SaleCampaignResponse> getAll(Pageable pageable, Specification<CampaignSaleEntity> specification) {
 		return campaignSaleRepository.findAll(specification, pageable)
-			.map(campaignSaleMapper::entityToDomain);
+			.map(campaignSaleMapper::entityToResponse);
 	}
 
 	@Override
 	public SaleCampaignDetailResponse getDetail(Long id) {
 		return campaignSaleRepository.findById(id)
-			.map(campaignSaleMapper::entityToDetailDomain)
+			.map(campaignSaleMapper::entityToDetailResponse)
 			.orElseThrow(() -> new EntityNotFoundException("Sale campaign not found"));
 	}
 

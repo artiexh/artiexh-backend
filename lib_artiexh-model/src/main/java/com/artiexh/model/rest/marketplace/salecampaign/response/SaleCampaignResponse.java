@@ -27,5 +27,4 @@ public class SaleCampaignResponse {
 	private OwnerResponse owner;
 	private CampaignType type;
 	private String thumbnailUrl;
-
 }

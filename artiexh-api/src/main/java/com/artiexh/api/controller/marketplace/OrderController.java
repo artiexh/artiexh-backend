@@ -1,12 +1,21 @@
-package com.artiexh.api.controller;
+package com.artiexh.api.controller.marketplace;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.CampaignOrderService;
 import com.artiexh.api.service.OrderService;
 import com.artiexh.model.mapper.OrderMapper;
+import com.artiexh.model.rest.order.request.CheckoutRequest;
+import com.artiexh.model.rest.order.user.response.DetailUserOrderResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RequiredArgsConstructor
 @RestController
@@ -16,21 +25,20 @@ public class OrderController {
 	private final CampaignOrderService campaignOrderService;
 	private final OrderMapper orderMapper;
 
-//	@PostMapping(Endpoint.Order.CHECKOUT)
-//	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
-//	public DetailUserOrderResponse checkout(Authentication authentication,
-//											@RequestBody @Valid CheckoutRequest request) {
-//		var userId = (Long) authentication.getPrincipal();
-//		try {
-//			Order order = orderService.checkout(userId, request);
-//			return orderMapper.domainToUserDetailResponse(order);
-//		} catch (IllegalArgumentException ex) {
-//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
-//		} catch (UnsupportedOperationException ex) {
-//			throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, ex.getMessage());
-//		}
-//	}
-//
+	@PostMapping(Endpoint.Order.CHECKOUT)
+	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
+	public DetailUserOrderResponse checkout(Authentication authentication,
+											@RequestBody @Valid CheckoutRequest request) {
+		var userId = (Long) authentication.getPrincipal();
+		try {
+			return orderService.checkout(userId, request);
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+		} catch (UnsupportedOperationException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, ex.getMessage());
+		}
+	}
+
 //	@GetMapping(Endpoint.Order.SHIPPING_FEE)
 //	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
 //	public ShipFeeResponse.ShipFee getShippingFee(Authentication authentication,

@@ -13,6 +13,6 @@ public class Product {
 	private ProductInventory productInventory;
 	private CampaignSale campaignSale;
 	private Money price;
-	private Long quantity;
-	private Long soldQuantity;
+	private Integer quantity;
+	private Integer soldQuantity;
 }

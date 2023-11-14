@@ -1,7 +1,7 @@
 package com.artiexh.model.rest.order.user.response;
 
 import com.artiexh.model.domain.CampaignOrderStatus;
-import com.artiexh.model.rest.campaign.response.CampaignResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignResponse;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ public class CampaignOrderResponsePage {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 
-	private CampaignResponse campaign;
+	private SaleCampaignResponse campaignSale;
 
 	private String note;
 

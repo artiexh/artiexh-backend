@@ -19,7 +19,7 @@ public class CartItemResponse {
 	private Money price;
 	private String description;
 	private ProductType type;
-	private Long remainingQuantity;
+	private Integer remainingQuantity;
 	private Long maxItemsPerOrder;
 	private DeliveryType deliveryType;
 	private Integer quantity;

@@ -77,22 +77,15 @@ public class CartServiceImpl implements CartService {
 		return cartMapper.entityToDomain(cartRepository.save(cartEntity));
 	}
 
-	//	@Override
-//	@Transactional
-//	public void deleteItemToCart(long userId, Set<Long> items) {
-//		if (items.isEmpty()) {
-//			return;
-//		}
-//
-//		CartEntity cartEntity = getOrCreateCartEntity(userId);
-//		Set<CartItemEntity> cartItemEntities = items.stream().map(productId -> {
-//			CartItemId cartItemId = new CartItemId(cartEntity.getId(), productId);
-//			return CartItemEntity.builder().id(cartItemId).build();
-//		}).collect(Collectors.toSet());
-//
-//		cartItemRepository.deleteAll(cartItemEntities);
-//	}
-//
+	@Override
+	@Transactional
+	public void deleteItemToCart(Set<CartItemId> itemIds) {
+		if (itemIds.isEmpty()) {
+			return;
+		}
+		cartItemRepository.deleteAllById(itemIds);
+	}
+
 	private CartEntity getOrCreateCartEntity(long userId) {
 		return cartRepository.findById(userId)
 			.orElseGet(() -> {

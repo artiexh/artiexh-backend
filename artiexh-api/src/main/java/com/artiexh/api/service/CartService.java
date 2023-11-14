@@ -1,5 +1,6 @@
 package com.artiexh.api.service;
 
+import com.artiexh.data.jpa.entity.CartItemId;
 import com.artiexh.model.domain.Cart;
 import com.artiexh.model.rest.marketplace.cart.request.CartItemRequest;
 
@@ -11,6 +12,6 @@ public interface CartService {
 
 	Cart updateCartItem(long userId, Set<CartItemRequest> items);
 
-//	void deleteItemToCart(long userId, Set<Long> items);
+	void deleteItemToCart(Set<CartItemId> itemIds);
 
 }

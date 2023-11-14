@@ -23,6 +23,6 @@ public class CheckoutCampaign {
 	private BigDecimal shippingFee;
 
 	@NotEmpty
-	private Set<Long> itemIds;
+	private Set<String> itemIds;
 
 }

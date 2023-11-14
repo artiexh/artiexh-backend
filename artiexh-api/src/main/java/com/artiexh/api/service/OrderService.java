@@ -1,9 +1,12 @@
 package com.artiexh.api.service;
 
+import com.artiexh.model.rest.order.request.CheckoutRequest;
+import com.artiexh.model.rest.order.user.response.DetailUserOrderResponse;
+
 public interface OrderService {
 
-//	Order checkout(long userId, CheckoutRequest request);
-//
+	DetailUserOrderResponse checkout(long userId, CheckoutRequest request);
+
 //	Page<Order> getInPage(Specification<OrderEntity> query, Pageable pageable);
 //
 //	Order getById(Long orderGroupId);

@@ -30,7 +30,7 @@ public class CampaignOrderEntity extends BaseAuditEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "campaign_id", nullable = false)
-	private CampaignEntity campaign;
+	private CampaignSaleEntity campaignSale;
 
 	@Column(name = "note")
 	private String note;
