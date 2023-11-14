@@ -220,6 +220,11 @@ public final class Endpoint {
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class ProductHistoryDetail {
+		public static final String ROOT = PREFIX + "/product-history-detail";
+	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class SaleCampaign {
 		public static final String ROOT = PREFIX + "/sale-campaign";
 	}
