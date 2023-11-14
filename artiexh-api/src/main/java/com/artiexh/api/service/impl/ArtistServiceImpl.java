@@ -115,6 +115,7 @@ public class ArtistServiceImpl implements ArtistService {
 		entity.setAddress(request.getAddress());
 		entity.setShopWard(WardEntity.builder().id(request.getWardId()).build());
 		entity.setPhone(request.getPhone());
+		entity.setShopThumbnailUrl(request.getShopThumbnailUrl());
 
 		artistRepository.save(entity);
 
