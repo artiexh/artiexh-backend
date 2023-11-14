@@ -6,12 +6,10 @@ import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.service.CampaignOrderService;
 import com.artiexh.api.service.OrderService;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
+import com.artiexh.model.domain.Role;
 import com.artiexh.model.mapper.OrderMapper;
 import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
-import com.artiexh.model.rest.order.request.CheckoutRequest;
-import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
-import com.artiexh.model.rest.order.request.PaymentQueryProperties;
-import com.artiexh.model.rest.order.request.UpdateShippingOrderRequest;
+import com.artiexh.model.rest.order.request.*;
 import com.artiexh.model.rest.order.response.PaymentResponse;
 import com.artiexh.model.rest.order.user.response.DetailUserOrderResponse;
 import jakarta.persistence.EntityNotFoundException;
@@ -117,34 +115,34 @@ public class OrderController {
 		}
 	}
 
-//	@PatchMapping("/{id}/status")
-//	public ResponseEntity<Void> updateStatus(
-//		Authentication authentication,
-//		@RequestBody @Valid UpdateOrderStatusRequest request,
-//		@PathVariable Long id
-//	) {
-//		try {
-//			var userId = (Long) authentication.getPrincipal();
-//			switch (request.getStatus()) {
-//				case CANCELED -> campaignOrderService.cancelOrder(id, request.getMessage(), userId);
-//				case REFUNDED -> {
-//					boolean isAdmin = authentication.getAuthorities().stream()
-//						.anyMatch(r -> r.getAuthority().equals(Role.ADMIN.name()) || r.getAuthority().equals(Role.STAFF.name()));
-//					if (!isAdmin) {
-//						throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only Admin or Staff can update order's status REFUNDED");
-//					}
-//					campaignOrderService.refundOrder(id, userId);
-//				}
-//				default ->
-//					throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can just update order's status REFUNDED or CANCELED ");
-//			}
-//			return ResponseEntity.ok().build();
-//		} catch (IllegalArgumentException ex) {
-//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
-//		} catch (EntityNotFoundException ex) {
-//			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage(), ex);
-//		} catch (IllegalAccessException ex) {
-//			throw new ResponseStatusException(HttpStatus.FORBIDDEN, ex.getMessage(), ex);
-//		}
-//	}
+	@PatchMapping("/{id}/status")
+	public ResponseEntity<Void> updateStatus(
+		Authentication authentication,
+		@RequestBody @Valid UpdateOrderStatusRequest request,
+		@PathVariable Long id
+	) {
+		try {
+			var userId = (Long) authentication.getPrincipal();
+			switch (request.getStatus()) {
+				case CANCELED -> campaignOrderService.cancelOrder(id, request.getMessage(), userId);
+				case REFUNDED -> {
+					boolean isAdmin = authentication.getAuthorities().stream()
+						.anyMatch(r -> r.getAuthority().equals(Role.ADMIN.name()) || r.getAuthority().equals(Role.STAFF.name()));
+					if (!isAdmin) {
+						throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only Admin or Staff can update order's status REFUNDED");
+					}
+					campaignOrderService.refundOrder(id, userId);
+				}
+				default ->
+					throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can just update order's status REFUNDED or CANCELED ");
+			}
+			return ResponseEntity.ok().build();
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage(), ex);
+		} catch (IllegalAccessException ex) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, ex.getMessage(), ex);
+		}
+	}
 }
