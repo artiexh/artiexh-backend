@@ -24,9 +24,13 @@ import com.artiexh.model.rest.order.request.CheckoutCampaign;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
 import com.artiexh.model.rest.order.request.PaymentQueryProperties;
 import com.artiexh.model.rest.order.user.response.DetailUserOrderResponse;
+import com.artiexh.model.rest.order.user.response.UserOrderResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -265,21 +269,23 @@ public class OrderServiceImpl implements OrderService {
 
 	}
 
-//	@Override
-//	public Page<Order> getInPage(Specification<OrderEntity> specification, Pageable pageable) {
-//		Page<OrderEntity> entities = orderRepository.findAll(specification, pageable);
-//		Page<Order> orderPage = entities.map(orderMapper::entityToDomain);
-//		return orderPage;
-//	}
-//
-//	@Override
-//	public Order getById(Long orderGroupId) {
-//		OrderEntity order = orderRepository.findById(orderGroupId).orElseThrow(EntityNotFoundException::new);
-//		OrderTransactionEntity orderTransaction = order.getOrderTransactions().stream().max(Comparator.comparing(OrderTransactionEntity::getPayDate)).orElse(null);
-//		Order domain = orderMapper.entityToDomain(order);
-//		domain.setCurrentTransaction(orderTransactionMapper.entityToDomain(orderTransaction));
-//		return domain;
-//	}
+	@Override
+	public Page<UserOrderResponse> getUserOrderInPage(Specification<OrderEntity> specification, Pageable pageable) {
+		return orderRepository.findAll(specification, pageable)
+			.map(orderMapper::entityToUserResponse);
+	}
+
+	@Override
+	public DetailUserOrderResponse getUserDetailById(Long orderId) {
+		OrderEntity order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
+		return orderMapper.entityToUserDetailResponse(order);
+	}
+
+	@Override
+	public DetailUserOrderResponse getUserDetailByIdAndUserId(Long orderId, Long userId) {
+		OrderEntity order = orderRepository.findByIdAndUserId(orderId, userId).orElseThrow(IllegalArgumentException::new);
+		return orderMapper.entityToUserDetailResponse(order);
+	}
 
 	@Override
 	public String payment(Long id, PaymentQueryProperties paymentQueryProperties, Long userId, String confirmUrl) {

@@ -26,7 +26,7 @@ public class OrderPageFilter {
 	private Instant to;
 
 	public Specification<CampaignOrderEntity> getSpecificationForArtist(Long shopId) {
-		return getSpecification(root -> root.get("campaign").get("owner").get("id"), shopId);
+		return getSpecification(root -> root.get("campaignSale").get("owner").get("id"), shopId);
 	}
 
 	public Specification<CampaignOrderEntity> getSpecificationForUser(Long userId) {

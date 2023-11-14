@@ -2,10 +2,13 @@ package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.CampaignOrderEntity;
 import com.artiexh.data.jpa.entity.OrderDetailEntity;
+import com.artiexh.model.domain.CampaignOrder;
 import com.artiexh.model.domain.CampaignOrderStatus;
 import com.artiexh.model.domain.OrderDetail;
 import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
 import com.artiexh.model.rest.order.response.OrderDetailResponse;
+import com.artiexh.model.rest.order.user.response.CampaignOrderResponsePage;
+import com.artiexh.model.rest.order.user.response.UserCampaignOrderDetailResponse;
 import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponse;
 import org.mapstruct.*;
 
@@ -16,20 +19,27 @@ import java.util.Set;
 	uses = {
 		ProductInventoryMapper.class,
 		CampaignSaleMapper.class,
-		OrderMapper.class
+		OrderMapper.class,
+		AccountMapper.class,
+		ProductMapper.class,
+		ProductAttachMapper.class,
+		CampaignTypeMapper.class
 	}
 )
 public interface CampaignOrderMapper {
 
-//	CampaignOrder entityToDomain(CampaignOrderEntity entity);
+	@Mapping(target = "order.campaignOrders", ignore = true)
+	@Mapping(target = "campaignSale.products", ignore = true)
+	CampaignOrder entityToDomain(CampaignOrderEntity entity);
 
-//	@Named("entityToDomainWithoutOrder")
-//	@Mapping(target = "order", ignore = true)
-//	CampaignOrder entityToDomainWithoutOrder(CampaignOrderEntity entity);
-//
-//	@IterableMapping(qualifiedByName = "entitiesToDomainsWithoutOrder")
-//	@Named("entityToDomainWithoutOrder")
-//	Set<CampaignOrder> entitiesToDomainsWithoutOrder(Set<CampaignOrderEntity> entities);
+	@Named("entityToDomainWithoutOrder")
+	@Mapping(target = "order", ignore = true)
+	@Mapping(target = "campaignSale.products", ignore = true)
+	CampaignOrder entityToDomainWithoutOrder(CampaignOrderEntity entity);
+
+	@IterableMapping(qualifiedByName = "entityToDomainWithoutOrder")
+	@Named("entitiesToDomainsWithoutOrder")
+	Set<CampaignOrder> entitiesToDomainsWithoutOrder(Set<CampaignOrderEntity> entities);
 
 //	@Mapping(target = "createdDate", ignore = true)
 //	@Mapping(target = "modifiedDate", ignore = true)
@@ -44,21 +54,24 @@ public interface CampaignOrderMapper {
 	@Mapping(target = "campaignSale", qualifiedByName = "entityToResponse")
 	UserCampaignOrderResponse entityToUserResponse(CampaignOrderEntity entity);
 
-//	@Named("domainToUserDetailResponse")
-//	UserUserCampaignOrderDetailResponse domainToUserDetailResponse(CampaignOrder campaignOrder);
+	@Named("domainToUserDetailResponse")
+	UserCampaignOrderDetailResponse domainToUserDetailResponse(CampaignOrder campaignOrder);
+
+	UserCampaignOrderDetailResponse entityToUserDetailResponse(CampaignOrderEntity entity);
 
 	@IterableMapping(qualifiedByName = "entityToUserResponse")
 	@Named("entitiesToUserResponses")
 	Set<UserCampaignOrderResponse> entitiesToUserResponses(Set<CampaignOrderEntity> entities);
 
-//	CampaignOrderResponsePage entityToUserResponsePage(CampaignOrderEntity campaignOrder);
-//
-//	@Named("domainToUserResponsePage")
-//	CampaignOrderResponsePage domainToUserResponsePage(CampaignOrder campaignOrder);
-//
-//	@IterableMapping(qualifiedByName = "domainToUserResponsePage")
-//	@Named("domainsToUserResponsePages")
-//	Set<CampaignOrderResponsePage> domainsToUserResponsePages(Set<CampaignOrder> campaignOrders);
+	@Mapping(target = "campaignSale", qualifiedByName = "entityToResponse")
+	CampaignOrderResponsePage entityToUserResponsePage(CampaignOrderEntity campaignOrder);
+
+	@Named("domainToUserResponsePage")
+	CampaignOrderResponsePage domainToUserResponsePage(CampaignOrder campaignOrder);
+
+	@IterableMapping(qualifiedByName = "domainToUserResponsePage")
+	@Named("domainsToUserResponsePages")
+	Set<CampaignOrderResponsePage> domainsToUserResponsePages(Set<CampaignOrder> campaignOrders);
 
 	@Mapping(target = "productCode", source = "product.productInventory.productCode")
 	@Mapping(target = "status", source = "product.productInventory.status")
@@ -84,6 +97,10 @@ public interface CampaignOrderMapper {
 	@Mapping(target = "maxItemsPerOrder", source = "product.productInventory.maxItemsPerOrder")
 	@Mapping(target = "deliveryType", source = "product.productInventory.deliveryType")
 	OrderDetailResponse entityToOrderDetailResponse(OrderDetailEntity entity);
+
+	@Mapping(target = "product.campaignSale.products", ignore = true)
+	@Mapping(target = "product.productInventory.productInCampaign", ignore = true)
+	OrderDetail entityToDomain(OrderDetailEntity entity);
 
 	default Integer toValue(CampaignOrderStatus status) {
 		return status.getValue();

@@ -16,6 +16,7 @@ import com.artiexh.ghtk.client.model.order.CreateOrderRequest;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeRequest;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
 import com.artiexh.ghtk.client.service.GhtkOrderService;
+import com.artiexh.model.domain.CampaignOrder;
 import com.artiexh.model.domain.CampaignOrderStatus;
 import com.artiexh.model.domain.OrderHistoryStatus;
 import com.artiexh.model.domain.Role;
@@ -23,9 +24,14 @@ import com.artiexh.model.mapper.CampaignOrderMapper;
 import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
 import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
 import com.artiexh.model.rest.order.request.UpdateShippingOrderRequest;
+import com.artiexh.model.rest.order.user.response.CampaignOrderResponsePage;
+import com.artiexh.model.rest.order.user.response.UserCampaignOrderDetailResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -49,51 +55,46 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	private final SystemConfigService systemConfigService;
 	private final SystemConfigHelper systemConfigHelper;
 
-//	@Override
-//	public Page<CampaignOrder> getCampaignOrderInPage(Specification<CampaignOrderEntity> specification, Pageable pageable) {
-//		Page<CampaignOrderEntity> entities = campaignOrderRepository.findAll(specification, pageable);
-//		return entities.map(order -> {
-//			CampaignOrder domain = campaignOrderMapper.entityToDomain(order);
-//			return domain;
-//		});
-//	}
-//
-//	@Override
-//	public CampaignOrder getCampaignOrderById(Long orderId) {
-//		CampaignOrderEntity order = campaignOrderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
-//		CampaignOrder domain = campaignOrderMapper.entityToDomain(order);
-//		return domain;
-//	}
-//
-//	@Override
-//	public Page<CampaignOrderResponsePage> getAdminCampaignOrderInPage(Specification<CampaignOrderEntity> specification,
-//																	   Pageable pageable) {
-//		return campaignOrderRepository.findAll(specification, pageable)
-//			.map(campaignOrderMapper::entityToUserResponsePage);
-//	}
-//
-//	@Override
-//	public AdminCampaignOrderResponse getAdminCampaignOrderById(Long orderId) {
-//		return campaignOrderRepository.findById(orderId)
-//			.map(campaignOrderMapper::entityToUserResponse)
-//			.orElseThrow(EntityNotFoundException::new);
-//	}
-//
-//	@Override
-//	public CampaignOrder getOrderByIdAndOwner(Long orderId, Long artistId) {
-//		CampaignOrderEntity order = campaignOrderRepository.findByIdAndCampaignOwnerId(orderId, artistId)
-//			.orElseThrow(EntityNotFoundException::new);
-//		CampaignOrder domain = campaignOrderMapper.entityToDomain(order);
-//		return domain;
-//	}
-//
-//	@Override
-//	public CampaignOrder getOrderByIdAndUserId(Long orderId, Long userId) {
-//		CampaignOrderEntity order = campaignOrderRepository.findByIdAndOrderUserId(orderId, userId)
-//			.orElseThrow(EntityNotFoundException::new);
-//		CampaignOrder domain = campaignOrderMapper.entityToDomain(order);
-//		return domain;
-//	}
+	@Override
+	public Page<CampaignOrderResponsePage> getCampaignOrderInPage(Specification<CampaignOrderEntity> specification, Pageable pageable) {
+		return campaignOrderRepository.findAll(specification, pageable)
+			.map(campaignOrderMapper::entityToUserResponsePage);
+	}
+
+	@Override
+	public CampaignOrder getCampaignOrderById(Long orderId) {
+		CampaignOrderEntity order = campaignOrderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
+		CampaignOrder domain = campaignOrderMapper.entityToDomain(order);
+		return domain;
+	}
+
+	@Override
+	public Page<CampaignOrderResponsePage> getAdminCampaignOrderInPage(Specification<CampaignOrderEntity> specification,
+																	   Pageable pageable) {
+		return campaignOrderRepository.findAll(specification, pageable)
+			.map(campaignOrderMapper::entityToUserResponsePage);
+	}
+
+	@Override
+	public AdminCampaignOrderResponse getAdminCampaignOrderById(Long orderId) {
+		return campaignOrderRepository.findById(orderId)
+			.map(campaignOrderMapper::entityToAdminResponse)
+			.orElseThrow(EntityNotFoundException::new);
+	}
+
+	@Override
+	public UserCampaignOrderDetailResponse getOrderByIdAndOwner(Long orderId, Long artistId) {
+		CampaignOrderEntity order = campaignOrderRepository.findByIdAndCampaignSaleOwnerId(orderId, artistId)
+			.orElseThrow(EntityNotFoundException::new);
+		return campaignOrderMapper.entityToUserDetailResponse(order);
+	}
+
+	@Override
+	public UserCampaignOrderDetailResponse getOrderByIdAndUserId(Long orderId, Long userId) {
+		CampaignOrderEntity order = campaignOrderRepository.findByIdAndOrderUserId(orderId, userId)
+			.orElseThrow(EntityNotFoundException::new);
+		return campaignOrderMapper.entityToUserDetailResponse(order);
+	}
 
 	@Override
 	public Mono<ShipFeeResponse.ShipFee> getShippingFee(Long userId, GetShippingFeeRequest getShippingFeeRequest) {

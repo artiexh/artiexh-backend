@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<OrderEntity, Long>, JpaSpecificationExecutor<OrderEntity> {
@@ -23,5 +24,6 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long>, JpaSp
 			group by co.id""")
 	List<Bill> getBillInfo(@Param("id") Long id);
 
+	Optional<OrderEntity> findByIdAndUserId(Long id, Long userId);
 
 }
