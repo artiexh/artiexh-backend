@@ -55,6 +55,17 @@ public class MarketplaceController {
 		}
 	}
 
+	@GetMapping("/sale-campaign/{id}/product-in-sale")
+	public PageResponse<ProductResponse> getAllProductInSaleByCampaign(@PathVariable Long id,
+																	   @ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
+																	   @ParameterObject ProductPageFilter filter) {
+		filter.setCampaignId(id);
+		return new PageResponse<>(productService.getAll(
+			paginationAndSortingRequest.getPageable(),
+			filter.getQuery()
+		));
+	}
+
 	@GetMapping("/product-in-sale")
 	public PageResponse<ProductResponse> getAllProductInSale(@ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
 															 @ParameterObject ProductPageFilter filter) {
