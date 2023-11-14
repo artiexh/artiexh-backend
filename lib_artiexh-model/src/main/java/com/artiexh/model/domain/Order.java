@@ -14,7 +14,6 @@ import java.util.Set;
 public class Order {
 	private Long id;
 	private User user;
-	private UserAddress shippingAddress;
 	private OrderTransaction currentTransaction;
 	private Set<CampaignOrder> campaignOrders;
 	private PaymentMethod paymentMethod;

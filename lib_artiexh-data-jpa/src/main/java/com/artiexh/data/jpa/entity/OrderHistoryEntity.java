@@ -16,7 +16,7 @@ import java.time.Instant;
 @Table(name = "order_history")
 public class OrderHistoryEntity {
 	@EmbeddedId
-	private OrderHistoryEntityId id;
+	private OrderHistoryId id;
 
 	@Builder.Default
 	@Column(name = "datetime", nullable = false)

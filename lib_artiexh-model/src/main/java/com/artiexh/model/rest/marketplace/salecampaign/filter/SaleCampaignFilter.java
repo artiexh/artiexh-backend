@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.marketplace.filter;
+package com.artiexh.model.rest.marketplace.salecampaign.filter;
 
 import com.artiexh.data.jpa.entity.CampaignSaleEntity;
 import com.artiexh.model.domain.CampaignType;

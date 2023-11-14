@@ -2,8 +2,8 @@ package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.model.domain.*;
-import com.artiexh.model.rest.marketplace.response.ProductInSaleCampaignResponse;
-import com.artiexh.model.rest.marketplace.response.ProductResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.response.ProductInSaleCampaignResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.response.ProductResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -37,7 +37,7 @@ public interface ProductMapper {
 	@Mapping(target = "price.amount", source = "priceAmount")
 	@Mapping(target = "averageRate", source = "productInventory.averageRate")
 	@Mapping(target = "type", source = "productInventory.type")
-	@Mapping(target = "quantity", source = "productInventory.quantity")
+	@Mapping(target = "quantity", expression = "java(entity.getQuantity() - entity.getSoldQuantity())")
 	@Mapping(target = "owner", source = "productInventory.owner")
 	@Mapping(target = "description", source = "productInventory.description")
 	@Mapping(target = "maxItemsPerOrder", source = "productInventory.maxItemsPerOrder")
@@ -55,7 +55,7 @@ public interface ProductMapper {
 	@Mapping(target = "status", source = "productInventory.status")
 	@Mapping(target = "averageRate", source = "productInventory.averageRate")
 	@Mapping(target = "type", source = "productInventory.type")
-	@Mapping(target = "quantity", source = "productInventory.quantity")
+	@Mapping(target = "quantity", expression = "java(domain.getQuantity() - domain.getSoldQuantity())")
 	@Mapping(target = "owner", source = "productInventory.owner")
 	@Mapping(target = "description", source = "productInventory.description")
 	@Mapping(target = "maxItemsPerOrder", source = "productInventory.maxItemsPerOrder")
@@ -76,7 +76,7 @@ public interface ProductMapper {
 	@Mapping(target = "price.amount", source = "priceAmount")
 	@Mapping(target = "averageRate", source = "productInventory.averageRate")
 	@Mapping(target = "type", source = "productInventory.type")
-	@Mapping(target = "quantity", source = "productInventory.quantity")
+	@Mapping(target = "quantity", expression = "java(entity.getQuantity() - entity.getSoldQuantity())")
 	@Mapping(target = "owner", source = "productInventory.owner")
 	@Mapping(target = "description", source = "productInventory.description")
 	@Mapping(target = "maxItemsPerOrder", source = "productInventory.maxItemsPerOrder")

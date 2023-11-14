@@ -7,7 +7,6 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -24,12 +23,6 @@ public class OrderEntity extends BaseAuditEntity {
 	@Tsid
 	@Column(name = "id", nullable = false)
 	private Long id;
-
-	@Column(name = "created_date", nullable = false)
-	private Instant createdDate;
-
-	@Column(name = "modified_date")
-	private Instant modifiedDate;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "user_id", nullable = false)

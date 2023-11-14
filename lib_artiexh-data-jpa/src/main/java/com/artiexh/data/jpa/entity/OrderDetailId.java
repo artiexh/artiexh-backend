@@ -17,12 +17,12 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
-public class CartItemId implements Serializable {
+public class OrderDetailId implements Serializable {
 	@Serial
-	private static final long serialVersionUID = -8902113740013463137L;
+	private static final long serialVersionUID = 4756128493235651454L;
 
-	@Column(name = "cart_id", nullable = false)
-	private Long cartId;
+	@Column(name = "campaign_order_id", nullable = false)
+	private Long campaignOrderId;
 
 	@Column(name = "campaign_sale_id", nullable = false)
 	private Long campaignSaleId;
@@ -34,15 +34,15 @@ public class CartItemId implements Serializable {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-		CartItemId entity = (CartItemId) o;
+		OrderDetailId entity = (OrderDetailId) o;
 		return Objects.equals(this.campaignSaleId, entity.campaignSaleId) &&
 			Objects.equals(this.productCode, entity.productCode) &&
-			Objects.equals(this.cartId, entity.cartId);
+			Objects.equals(this.campaignOrderId, entity.campaignOrderId);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(campaignSaleId, productCode, cartId);
+		return Objects.hash(campaignSaleId, productCode, campaignOrderId);
 	}
 
 }

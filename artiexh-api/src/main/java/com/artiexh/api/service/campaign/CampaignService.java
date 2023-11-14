@@ -1,8 +1,10 @@
 package com.artiexh.api.service.campaign;
 
 import com.artiexh.data.jpa.entity.CampaignEntity;
-import com.artiexh.model.domain.ProductInventoryQuantity;
-import com.artiexh.model.rest.campaign.request.*;
+import com.artiexh.model.rest.campaign.request.ArtistCampaignRequest;
+import com.artiexh.model.rest.campaign.request.CreatePublicCampaignRequest;
+import com.artiexh.model.rest.campaign.request.FinalizeProductRequest;
+import com.artiexh.model.rest.campaign.request.UpdateCampaignStatusRequest;
 import com.artiexh.model.rest.campaign.response.*;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import org.springframework.data.domain.Page;

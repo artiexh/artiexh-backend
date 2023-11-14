@@ -33,11 +33,11 @@ public class CampaignSaleEntity extends BaseAuditEntity {
 	@Column(name = "public_date", nullable = false)
 	private Instant publicDate;
 
-	@Column(name = "order_from", nullable = false)
-	private Instant orderFrom;
+	@Column(name = "from", nullable = false)
+	private Instant from;
 
-	@Column(name = "order_to", nullable = false)
-	private Instant orderTo;
+	@Column(name = "to", nullable = false)
+	private Instant to;
 
 	@Column(name = "created_by", nullable = false)
 	private Long createdBy;

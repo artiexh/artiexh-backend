@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.marketplace.request;
+package com.artiexh.model.rest.marketplace.salecampaign.request;
 
 import com.artiexh.model.domain.Money;
 import jakarta.validation.Valid;

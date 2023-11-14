@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.cart.response;
+package com.artiexh.model.rest.marketplace.cart.response;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -9,10 +9,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ShopInCartResponse {
+public class ShopOwnerResponse {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
-	private String shopName;
-	private String imageUrl;
-	private ShopOwnerResponse owner;
+	private String username;
+	private String displayName;
+	private String avatarUrl;
+	private String email;
 }

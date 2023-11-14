@@ -32,4 +32,10 @@ public interface OrderTransactionMapper {
 		OrderTransactionEntity orderTransaction = orderTransactions.stream().max(Comparator.comparing(OrderTransactionEntity::getPayDate)).orElse(null);
 		return entityToResponse(orderTransaction);
 	}
+
+	@Named("getCurrentTransactionDomain")
+	default OrderTransaction getCurrentTransactionDomain(Set<OrderTransactionEntity> orderTransactions) {
+		OrderTransactionEntity orderTransaction = orderTransactions.stream().max(Comparator.comparing(OrderTransactionEntity::getPayDate)).orElse(null);
+		return entityToDomain(orderTransaction);
+	}
 }
