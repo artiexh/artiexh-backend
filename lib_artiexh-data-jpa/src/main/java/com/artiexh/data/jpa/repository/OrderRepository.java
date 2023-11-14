@@ -18,7 +18,7 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long>, JpaSp
 			from `order` o
 			inner join campaign_order co on o.id = co.order_id
 			inner join order_detail od on co.id = od.campaign_order_id
-			inner join product p on od.product_id = p.id
+			inner join product p on od.campaign_sale_id = p.campaign_sale_id and od.product_code = p.product_code
 			where o.id = :id
 			group by co.id""")
 	List<Bill> getBillInfo(@Param("id") Long id);

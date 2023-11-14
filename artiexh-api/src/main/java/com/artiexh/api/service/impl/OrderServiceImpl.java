@@ -2,12 +2,16 @@ package com.artiexh.api.service.impl;
 
 import com.artiexh.api.base.common.Const;
 import com.artiexh.api.base.exception.ArtiexhConfigException;
+import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.base.service.SystemConfigService;
+import com.artiexh.api.base.utils.DateTimeUtils;
+import com.artiexh.api.base.utils.PaymentUtils;
 import com.artiexh.api.base.utils.SystemConfigHelper;
 import com.artiexh.api.config.VnpConfigurationProperties;
 import com.artiexh.api.service.CartService;
 import com.artiexh.api.service.OrderService;
 import com.artiexh.data.jpa.entity.*;
+import com.artiexh.data.jpa.projection.Bill;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.ghtk.client.service.GhtkOrderService;
 import com.artiexh.model.domain.CampaignOrderStatus;
@@ -18,7 +22,9 @@ import com.artiexh.model.mapper.OrderMapper;
 import com.artiexh.model.mapper.OrderTransactionMapper;
 import com.artiexh.model.rest.order.request.CheckoutCampaign;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
+import com.artiexh.model.rest.order.request.PaymentQueryProperties;
 import com.artiexh.model.rest.order.user.response.DetailUserOrderResponse;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -26,7 +32,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -232,7 +240,7 @@ public class OrderServiceImpl implements OrderService {
 				orderDetailRepository.saveAll(orderDetailEntities);
 
 				orderHistoryRepository.save(OrderHistoryEntity.builder()
-					.id(new OrderHistoryEntityId(savedCampaignOrderEntity.getId(), OrderHistoryStatus.CREATED.getByteValue()))
+					.id(new OrderHistoryId(savedCampaignOrderEntity.getId(), OrderHistoryStatus.CREATED.getByteValue()))
 					.build()
 				);
 
@@ -272,80 +280,80 @@ public class OrderServiceImpl implements OrderService {
 //		domain.setCurrentTransaction(orderTransactionMapper.entityToDomain(orderTransaction));
 //		return domain;
 //	}
-//
-//	@Override
-//	public String payment(Long id, PaymentQueryProperties paymentQueryProperties, Long userId, String confirmUrl) {
-//		List<Bill> bills = orderRepository.getBillInfo(id);
-//
-//		if (bills == null || bills.isEmpty()) {
-//			throw new EntityNotFoundException();
-//		}
-//
-//		if (!userId.equals(bills.get(0).getOwnerId()) || !bills.get(0).getStatus().equals(CampaignOrderStatus.PAYING.getByteValue())) {
-//			throw new IllegalArgumentException(ErrorCode.ORDER_IS_INVALID.getMessage());
-//		}
-//
-//		BigDecimal totalPrice = BigDecimal.ZERO;
-//		for (Bill bill : bills) {
-//			totalPrice = totalPrice.add(bill.getOrderAmount());
-//		}
-//
-//		redisTemplate.boundValueOps("payment_confirm_url_" + id).set(confirmUrl);
-//
-//		String vnpOrderInfo = "Thanh toan don hang " + id;
-//
-//		return PaymentUtils.generatePaymentUrl(
-//			vnpProperties.getVersion(),
-//			vnpProperties.getCommand(),
-//			vnpOrderInfo,
-//			id.toString(),
-//			paymentQueryProperties.getVnp_IpAddr(),
-//			vnpProperties.getTmnCode(),
-//			vnpProperties.getReturnUrl(),
-//			totalPrice.multiply(new BigDecimal(100)).toBigInteger().toString(),
-//			bills.get(0).getPriceUnit(),
-//			"vn",
-//			vnpProperties.getUrl(),
-//			vnpProperties.getSecretKey()
-//		);
-//	}
-//
-//	@Override
-//	@Transactional
-//	public String confirmPayment(PaymentQueryProperties paymentQueryProperties) {
-//		OrderTransactionEntity orderTransaction = OrderTransactionEntity.builder()
-//			.transactionNo(paymentQueryProperties.getVnp_TransactionNo())
-//			.orderInfo(paymentQueryProperties.getVnp_OrderInfo())
-//			.bankCode(paymentQueryProperties.getVnp_BankCode())
-//			.cardType(paymentQueryProperties.getVnp_CardType())
-//			.payDate(DateTimeUtils.stringToInstant(paymentQueryProperties.getVnp_PayDate(), "yyyyMMddHHmmss", ZoneId.of("Asia/Ho_Chi_Minh")))
-//			.priceAmount(new BigDecimal(paymentQueryProperties.getVnp_Amount()).divide(new BigDecimal(100)))
-//			.responseCode(paymentQueryProperties.getVnp_ResponseCode())
-//			.transactionStatus(paymentQueryProperties.getVnp_TransactionStatus())
-//			.orderId(Long.parseLong(paymentQueryProperties.getVnp_TxnRef()))
-//			.build();
-//		orderTransactionRepository.save(orderTransaction);
-//		if (paymentQueryProperties.getVnp_ResponseCode().equals("00")) {
-//			log.info("Payment is done successfully. Transaction No" + paymentQueryProperties.getVnp_TransactionNo());
-//
-//			long orderId = Long.parseLong(paymentQueryProperties.getVnp_TxnRef());
-//
-//			var orderHistoryEntities = campaignOrderRepository.getAllByOrderId(orderId).stream()
-//				.map(CampaignOrderEntity::getId)
-//				.map(campaignOrderId -> OrderHistoryEntity.builder()
-//					.id(new OrderHistoryEntityId(campaignOrderId, OrderHistoryStatus.PAID.getByteValue()))
-//					.build()
-//				)
-//				.collect(Collectors.toSet());
-//
-//			orderHistoryRepository.saveAll(orderHistoryEntities);
-//
-//			campaignOrderRepository.updatePayment(orderId);
-//		}
-//		log.info("Payment Transaction " + paymentQueryProperties.getVnp_TransactionNo() + " Status " + paymentQueryProperties.getVnp_TransactionStatus());
-//		log.info("Payment Transaction " + paymentQueryProperties.getVnp_TransactionNo() + " Response Code " + paymentQueryProperties.getVnp_ResponseCode());
-//
-//		return redisTemplate.boundValueOps("payment_confirm_url_" + paymentQueryProperties.getVnp_TxnRef())
-//			.getAndDelete();
-//	}
+
+	@Override
+	public String payment(Long id, PaymentQueryProperties paymentQueryProperties, Long userId, String confirmUrl) {
+		List<Bill> bills = orderRepository.getBillInfo(id);
+
+		if (bills == null || bills.isEmpty()) {
+			throw new EntityNotFoundException();
+		}
+
+		if (!userId.equals(bills.get(0).getOwnerId()) || !bills.get(0).getStatus().equals(CampaignOrderStatus.PAYING.getByteValue())) {
+			throw new IllegalArgumentException(ErrorCode.ORDER_IS_INVALID.getMessage());
+		}
+
+		BigDecimal totalPrice = BigDecimal.ZERO;
+		for (Bill bill : bills) {
+			totalPrice = totalPrice.add(bill.getOrderAmount());
+		}
+
+		redisTemplate.boundValueOps("payment_confirm_url_" + id).set(confirmUrl);
+
+		String vnpOrderInfo = "Thanh toan don hang " + id;
+
+		return PaymentUtils.generatePaymentUrl(
+			vnpProperties.getVersion(),
+			vnpProperties.getCommand(),
+			vnpOrderInfo,
+			id.toString(),
+			paymentQueryProperties.getVnp_IpAddr(),
+			vnpProperties.getTmnCode(),
+			vnpProperties.getReturnUrl(),
+			totalPrice.multiply(new BigDecimal(100)).toBigInteger().toString(),
+			bills.get(0).getPriceUnit(),
+			"vn",
+			vnpProperties.getUrl(),
+			vnpProperties.getSecretKey()
+		);
+	}
+
+	@Override
+	@Transactional
+	public String confirmPayment(PaymentQueryProperties paymentQueryProperties) {
+		OrderTransactionEntity orderTransaction = OrderTransactionEntity.builder()
+			.transactionNo(paymentQueryProperties.getVnp_TransactionNo())
+			.orderInfo(paymentQueryProperties.getVnp_OrderInfo())
+			.bankCode(paymentQueryProperties.getVnp_BankCode())
+			.cardType(paymentQueryProperties.getVnp_CardType())
+			.payDate(DateTimeUtils.stringToInstant(paymentQueryProperties.getVnp_PayDate(), "yyyyMMddHHmmss", ZoneId.of("Asia/Ho_Chi_Minh")))
+			.priceAmount(new BigDecimal(paymentQueryProperties.getVnp_Amount()).divide(new BigDecimal(100)))
+			.responseCode(paymentQueryProperties.getVnp_ResponseCode())
+			.transactionStatus(paymentQueryProperties.getVnp_TransactionStatus())
+			.orderId(Long.parseLong(paymentQueryProperties.getVnp_TxnRef()))
+			.build();
+		orderTransactionRepository.save(orderTransaction);
+		if (paymentQueryProperties.getVnp_ResponseCode().equals("00")) {
+			log.info("Payment is done successfully. Transaction No" + paymentQueryProperties.getVnp_TransactionNo());
+
+			long orderId = Long.parseLong(paymentQueryProperties.getVnp_TxnRef());
+
+			var orderHistoryEntities = campaignOrderRepository.getAllByOrderId(orderId).stream()
+				.map(CampaignOrderEntity::getId)
+				.map(campaignOrderId -> OrderHistoryEntity.builder()
+					.id(new OrderHistoryId(campaignOrderId, OrderHistoryStatus.PAID.getByteValue()))
+					.build()
+				)
+				.collect(Collectors.toSet());
+
+			orderHistoryRepository.saveAll(orderHistoryEntities);
+
+			campaignOrderRepository.updatePayment(orderId);
+		}
+		log.info("Payment Transaction " + paymentQueryProperties.getVnp_TransactionNo() + " Status " + paymentQueryProperties.getVnp_TransactionStatus());
+		log.info("Payment Transaction " + paymentQueryProperties.getVnp_TransactionNo() + " Response Code " + paymentQueryProperties.getVnp_ResponseCode());
+
+		return redisTemplate.boundValueOps("payment_confirm_url_" + paymentQueryProperties.getVnp_TxnRef())
+			.getAndDelete();
+	}
 }

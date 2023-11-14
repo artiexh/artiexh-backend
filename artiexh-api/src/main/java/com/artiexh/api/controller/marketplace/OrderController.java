@@ -1,21 +1,32 @@
 package com.artiexh.api.controller.marketplace;
 
 import com.artiexh.api.base.common.Endpoint;
+import com.artiexh.api.base.exception.ArtiexhConfigException;
+import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.service.CampaignOrderService;
 import com.artiexh.api.service.OrderService;
+import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
 import com.artiexh.model.mapper.OrderMapper;
+import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
+import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
+import com.artiexh.model.rest.order.request.PaymentQueryProperties;
+import com.artiexh.model.rest.order.request.UpdateShippingOrderRequest;
+import com.artiexh.model.rest.order.response.PaymentResponse;
 import com.artiexh.model.rest.order.user.response.DetailUserOrderResponse;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.net.URI;
 
 @RequiredArgsConstructor
 @RestController
@@ -39,73 +50,73 @@ public class OrderController {
 		}
 	}
 
-//	@GetMapping(Endpoint.Order.SHIPPING_FEE)
-//	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
-//	public ShipFeeResponse.ShipFee getShippingFee(Authentication authentication,
-//												  @ParameterObject @Valid GetShippingFeeRequest request) {
-//		var userId = (Long) authentication.getPrincipal();
-//		try {
-//			return campaignOrderService.getShippingFee(userId, request).block();
-//		} catch (ArtiexhConfigException ex) {
-//			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
-//		} catch (IllegalArgumentException ex) {
-//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
-//		}
-//	}
-//
-//	@GetMapping(Endpoint.Order.PAYMENT)
-//	public PaymentResponse payment(Authentication authentication,
-//								   HttpServletRequest request,
-//								   @PathVariable Long id,
-//								   @RequestParam String confirmUrl
-//	) {
-//		var userId = (Long) authentication.getPrincipal();
-//		try {
-//			String ip = request.getHeader("X-FORWARDED-FOR");
-//
-//			if (ip == null || ip.isEmpty()) {
-//				ip = request.getRemoteAddr();
-//			}
-//			return PaymentResponse.builder()
-//				.paymentUrl(orderService.payment(
-//						id,
-//						PaymentQueryProperties.builder().vnp_IpAddr(ip).build(),
-//						userId,
-//						confirmUrl
-//					)
-//				)
-//				.build();
-//		} catch (IllegalArgumentException ex) {
-//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
-//		} catch (EntityNotFoundException ex) {
-//			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage(), ex);
-//		}
-//	}
-//
-//	@GetMapping(Endpoint.Order.PAYMENT_RETURN)
-//	public ResponseEntity<Void> confirmUrl(@ParameterObject PaymentQueryProperties paymentQueryProperties) {
-//		var confirmUrl = orderService.confirmPayment(paymentQueryProperties);
-//		URI uri = URI.create(confirmUrl + "/" + paymentQueryProperties.getVnp_TxnRef());
-//		return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
-//	}
-//
-//	@PatchMapping("/{id}/shipping")
-//	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
-//	public AdminCampaignOrderResponse updateOrderToShippingStatus(
-//		@PathVariable Long id,
-//		@RequestBody @Valid UpdateShippingOrderRequest updateShippingOrderRequest
-//	) {
-//		try {
-//			return campaignOrderService.updateShippingOrderStatus(id, updateShippingOrderRequest);
-//		} catch (EntityNotFoundException exception) {
-//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.ORDER_NOT_FOUND.getMessage(), exception);
-//		} catch (IllegalArgumentException exception) {
-//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
-//		} catch (ArtiexhConfigException ex) {
-//			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
-//		}
-//	}
-//
+	@GetMapping(Endpoint.Order.SHIPPING_FEE)
+	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
+	public ShipFeeResponse.ShipFee getShippingFee(Authentication authentication,
+												  @ParameterObject @Valid GetShippingFeeRequest request) {
+		var userId = (Long) authentication.getPrincipal();
+		try {
+			return campaignOrderService.getShippingFee(userId, request).block();
+		} catch (ArtiexhConfigException ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+		}
+	}
+
+	@GetMapping(Endpoint.Order.PAYMENT)
+	public PaymentResponse payment(Authentication authentication,
+								   HttpServletRequest request,
+								   @PathVariable Long id,
+								   @RequestParam String confirmUrl
+	) {
+		var userId = (Long) authentication.getPrincipal();
+		try {
+			String ip = request.getHeader("X-FORWARDED-FOR");
+
+			if (ip == null || ip.isEmpty()) {
+				ip = request.getRemoteAddr();
+			}
+			return PaymentResponse.builder()
+				.paymentUrl(orderService.payment(
+						id,
+						PaymentQueryProperties.builder().vnp_IpAddr(ip).build(),
+						userId,
+						confirmUrl
+					)
+				)
+				.build();
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage(), ex);
+		}
+	}
+
+	@GetMapping(Endpoint.Order.PAYMENT_RETURN)
+	public ResponseEntity<Void> confirmUrl(@ParameterObject PaymentQueryProperties paymentQueryProperties) {
+		var confirmUrl = orderService.confirmPayment(paymentQueryProperties);
+		URI uri = URI.create(confirmUrl + "/" + paymentQueryProperties.getVnp_TxnRef());
+		return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
+	}
+
+	@PatchMapping("/{id}/shipping")
+	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
+	public AdminCampaignOrderResponse updateOrderToShippingStatus(
+		@PathVariable Long id,
+		@RequestBody @Valid UpdateShippingOrderRequest updateShippingOrderRequest
+	) {
+		try {
+			return campaignOrderService.updateShippingOrderStatus(id, updateShippingOrderRequest);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.ORDER_NOT_FOUND.getMessage(), exception);
+		} catch (IllegalArgumentException exception) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
+		} catch (ArtiexhConfigException ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		}
+	}
+
 //	@PatchMapping("/{id}/status")
 //	public ResponseEntity<Void> updateStatus(
 //		Authentication authentication,

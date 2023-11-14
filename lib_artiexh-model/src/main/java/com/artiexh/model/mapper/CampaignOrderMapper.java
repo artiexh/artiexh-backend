@@ -4,6 +4,7 @@ import com.artiexh.data.jpa.entity.CampaignOrderEntity;
 import com.artiexh.data.jpa.entity.OrderDetailEntity;
 import com.artiexh.model.domain.CampaignOrderStatus;
 import com.artiexh.model.domain.OrderDetail;
+import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
 import com.artiexh.model.rest.order.response.OrderDetailResponse;
 import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponse;
 import org.mapstruct.*;
@@ -14,7 +15,8 @@ import java.util.Set;
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
 	uses = {
 		ProductInventoryMapper.class,
-		CampaignSaleMapper.class
+		CampaignSaleMapper.class,
+		OrderMapper.class
 	}
 )
 public interface CampaignOrderMapper {
@@ -32,11 +34,11 @@ public interface CampaignOrderMapper {
 //	@Mapping(target = "createdDate", ignore = true)
 //	@Mapping(target = "modifiedDate", ignore = true)
 //	CampaignOrderEntity orderToOrderEntity(CampaignOrder campaignOrder);
-//
-//	@Mapping(target = "user", source = "order.user")
-//	@Mapping(target = "campaign", source = "campaign", qualifiedByName = "entityToResponse")
-//	@Mapping(target = "order", source = "order", qualifiedByName = "entityToAdminResponse")
-//	AdminCampaignOrderResponse entityToUserResponse(CampaignOrderEntity entity);
+
+	@Mapping(target = "user", source = "order.user")
+	@Mapping(target = "campaignSale", qualifiedByName = "entityToResponse")
+	@Mapping(target = "order", source = "order", qualifiedByName = "entityToAdminResponse")
+	AdminCampaignOrderResponse entityToAdminResponse(CampaignOrderEntity entity);
 
 	@Named("entityToUserResponse")
 	@Mapping(target = "campaignSale", qualifiedByName = "entityToResponse")
