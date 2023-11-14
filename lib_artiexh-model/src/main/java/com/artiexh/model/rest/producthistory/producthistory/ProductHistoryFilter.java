@@ -1,4 +1,4 @@
-package com.artiexh.model.rest.producthistory;
+package com.artiexh.model.rest.producthistory.producthistory;
 
 import com.artiexh.data.jpa.entity.ProductHistoryEntity;
 import com.artiexh.model.domain.ProductHistoryAction;

@@ -6,6 +6,7 @@ import com.artiexh.data.jpa.entity.ProductHistoryDetailEntity;
 import com.artiexh.data.jpa.entity.ProductHistoryEntity;
 import com.artiexh.data.jpa.entity.embededmodel.ProductHistoryEntityDetailId;
 import com.artiexh.data.jpa.repository.CampaignRepository;
+import com.artiexh.data.jpa.repository.ProductHistoryDetailRepository;
 import com.artiexh.data.jpa.repository.ProductHistoryRepository;
 import com.artiexh.model.domain.ProductHistory;
 import com.artiexh.model.domain.ProductHistoryAction;
@@ -13,6 +14,7 @@ import com.artiexh.model.domain.ProductInventoryQuantity;
 import com.artiexh.model.domain.SourceCategory;
 import com.artiexh.model.mapper.CampaignMapper;
 import com.artiexh.model.mapper.ProductHistoryMapper;
+import com.artiexh.model.rest.producthistory.ProductHistoryDetailPageResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class ProductHistoryServiceImpl implements ProductHistoryService {
 	private final ProductHistoryRepository productHistoryRepository;
+	private final ProductHistoryDetailRepository productHistoryDetailRepository;
 	private final ProductHistoryMapper productHistoryMapper;
 	private final CampaignRepository campaignRepository;
 	private final CampaignMapper campaignMapper;
@@ -80,5 +83,11 @@ public class ProductHistoryServiceImpl implements ProductHistoryService {
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public Page<ProductHistoryDetailPageResponse> getDetailInPage(Pageable pageable, Specification<ProductHistoryDetailEntity> specification) {
+		Page<ProductHistoryDetailEntity> result = productHistoryDetailRepository.findAll(specification, pageable);
+		return result.map(productHistoryMapper::entityToDetailPageResponse);
 	}
 }

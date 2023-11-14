@@ -1,11 +1,14 @@
 package com.artiexh.model.mapper;
 
+import com.artiexh.data.jpa.entity.ProductHistoryDetailEntity;
 import com.artiexh.data.jpa.entity.ProductHistoryEntity;
 import com.artiexh.model.domain.*;
-import com.artiexh.model.rest.producthistory.ProductHistoryPageResponse;
-import com.artiexh.model.rest.producthistory.ProductHistoryResponse;
+import com.artiexh.model.rest.producthistory.ProductHistoryDetailPageResponse;
+import com.artiexh.model.rest.producthistory.producthistory.ProductHistoryPageResponse;
+import com.artiexh.model.rest.producthistory.producthistory.ProductHistoryResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
@@ -17,7 +20,11 @@ public interface ProductHistoryMapper {
 	ProductHistory entityToDomainWithoutProductHistoryDetail(ProductHistoryEntity entity);
 	ProductHistory entityToDomain(ProductHistoryEntity entity);
 	ProductHistoryPageResponse domainToPageResponse(ProductHistory productHistory);
+	@Named("entityToPageResponse")
+	ProductHistoryPageResponse domainToPageResponse(ProductHistoryEntity productHistory);
 	ProductHistoryResponse domainToResponse(ProductHistory productHistory);
+	@Mapping(target = "productHistory", source = "productHistory", qualifiedByName = "entityToPageResponse")
+	ProductHistoryDetailPageResponse entityToDetailPageResponse(ProductHistoryDetailEntity entity);
 
 	default Byte toValue(SourceCategory sourceCategory) {
 		return sourceCategory == null ? null : sourceCategory.getByteValue();

@@ -21,4 +21,8 @@ public class ProductHistoryDetailEntity {
 	@ManyToOne
 	@JoinColumn(name = "product_code", updatable = false, insertable = false)
 	private ProductInventoryEntity productInventory;
+
+	@ManyToOne
+	@JoinColumn(name = "product_history_id", updatable = false, insertable = false)
+	private ProductHistoryEntity productHistory;
 }
