@@ -3,7 +3,6 @@ package com.artiexh.api.service.marketplace.impl;
 import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.api.service.marketplace.SaleCampaignService;
 import com.artiexh.api.service.productinventory.ProductInventoryJpaService;
-import com.artiexh.data.jpa.entity.CampaignEntity;
 import com.artiexh.data.jpa.entity.CampaignSaleEntity;
 import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.jpa.entity.ProductEntityId;
@@ -29,7 +28,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -86,7 +88,6 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 		}
 
 		productInventoryJpaService.reduceQuantity(result.getId(), SourceCategory.CAMPAIGN_SALE, productQuantities);
-		result.setProducts(productResponses);
 
 		return result;
 	}
