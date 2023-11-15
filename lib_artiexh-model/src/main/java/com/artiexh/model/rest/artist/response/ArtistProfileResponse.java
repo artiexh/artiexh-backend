@@ -42,4 +42,6 @@ public class ArtistProfileResponse {
 	private String bankName;
 
 	private String shopThumbnailUrl;
+
+	private String description;
 }
