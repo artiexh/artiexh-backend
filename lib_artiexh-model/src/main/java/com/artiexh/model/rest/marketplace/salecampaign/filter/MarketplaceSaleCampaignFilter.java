@@ -4,23 +4,27 @@ import com.artiexh.data.jpa.entity.CampaignSaleEntity;
 import com.artiexh.model.domain.CampaignType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.criteria.Predicate;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SaleCampaignFilter {
+public class MarketplaceSaleCampaignFilter {
 	private Long ownerId;
 	private String username;
 	private CampaignType campaignType;
-	private Instant from;
+	private Instant from = Instant.now();
 	private Instant to;
+	@JsonIgnore
+	private Instant publicDate = Instant.now();
 
 	public Specification<CampaignSaleEntity> getSpecification() {
 		return (root, query, builder) -> {
@@ -49,5 +53,26 @@ public class SaleCampaignFilter {
 			}
 			return builder.and(predicates.toArray(new Predicate[0]));
 		};
+	}
+
+	public Specification<CampaignSaleEntity> getMarketplaceSpecification() {
+		Specification<CampaignSaleEntity> marketplaceCampaignSpec = (root, query, builder) -> {
+			List<Predicate> predicates = new ArrayList<>();
+
+			predicates.add(builder.lessThanOrEqualTo(root.get("publicDate"), publicDate));
+
+			if (campaignType != null && CampaignType.MARKETPLACE_VIEW_TYPE.contains(campaignType)) {
+				predicates.add(builder.equal(root.get("type"), campaignType.getByteValue()));
+			} else {
+				predicates.add(root.get("type").in(
+					CampaignType.MARKETPLACE_VIEW_TYPE.stream()
+						.map(CampaignType::getByteValue)
+						.collect(Collectors.toSet())
+				));
+			}
+
+			return builder.and(predicates.toArray(new Predicate[0]));
+		};
+		return getSpecification().and(marketplaceCampaignSpec);
 	}
 }
