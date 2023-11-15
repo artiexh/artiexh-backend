@@ -3,11 +3,9 @@ package com.artiexh.model.mapper;
 import com.artiexh.data.jpa.entity.ArtistEntity;
 import com.artiexh.model.domain.Artist;
 import com.artiexh.model.rest.account.AccountProfile;
+import com.artiexh.model.rest.artist.request.UpdateArtistProfileRequest;
 import com.artiexh.model.rest.artist.response.ArtistProfileResponse;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
 @Mapper(
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
@@ -48,4 +46,6 @@ public abstract class ArtistMapper {
 	@Mapping(target = "numOfSubscriptions", ignore = true)
 	@Mapping(target = "subscriptionsFrom", ignore = true)
 	public abstract ArtistProfileResponse entityToProfileResponse(ArtistEntity entity);
+
+	public abstract ArtistEntity requestToEntity(UpdateArtistProfileRequest request, @MappingTarget ArtistEntity entity);
 }

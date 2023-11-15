@@ -10,7 +10,7 @@ import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.artist.response.ArtistProfileResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.ProductPageFilter;
-import com.artiexh.model.rest.marketplace.salecampaign.filter.SaleCampaignFilter;
+import com.artiexh.model.rest.marketplace.salecampaign.filter.MarketplaceSaleCampaignFilter;
 import com.artiexh.model.rest.marketplace.salecampaign.response.ProductResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignDetailResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignResponse;
@@ -39,7 +39,7 @@ public class MarketplaceController {
 
 	@GetMapping("/sale-campaign")
 	public PageResponse<SaleCampaignResponse> getAllSaleCampaign(@ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
-																 @ParameterObject SaleCampaignFilter filter) {
+																 @ParameterObject MarketplaceSaleCampaignFilter filter) {
 		return new PageResponse<>(saleCampaignService.getAll(
 			paginationAndSortingRequest.getPageable(),
 			filter.getMarketplaceSpecification())
@@ -87,7 +87,7 @@ public class MarketplaceController {
 	@GetMapping("/artist/{username}/sale-campaign")
 	public PageResponse<SaleCampaignResponse> getAllCampaignByArtist(@PathVariable String username,
 																	 @ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
-																	 @ParameterObject SaleCampaignFilter filter) {
+																	 @ParameterObject MarketplaceSaleCampaignFilter filter) {
 		try {
 			return new PageResponse<>(
 				saleCampaignService.getAllByArtist(username, paginationAndSortingRequest.getPageable(), filter)
