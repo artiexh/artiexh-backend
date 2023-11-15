@@ -1,6 +1,7 @@
 package com.artiexh.api.service.campaign;
 
 import com.artiexh.data.jpa.entity.CampaignEntity;
+import com.artiexh.model.domain.CampaignHistory;
 import com.artiexh.model.rest.campaign.request.ArtistCampaignRequest;
 import com.artiexh.model.rest.campaign.request.CreatePublicCampaignRequest;
 import com.artiexh.model.rest.campaign.request.FinalizeProductRequest;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,4 +44,5 @@ public interface CampaignService {
 										Long campaignId,
 										Long staffId,
 										String message);
+	List<CampaignHistory> getCampaignHistory(Long campaignId, Pageable pageable);
 }

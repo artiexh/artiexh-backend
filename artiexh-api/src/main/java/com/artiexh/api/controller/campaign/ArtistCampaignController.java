@@ -3,6 +3,7 @@ package com.artiexh.api.controller.campaign;
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.provider.ProviderService;
+import com.artiexh.model.domain.CampaignHistory;
 import com.artiexh.model.domain.Role;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
@@ -23,6 +24,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -153,6 +155,19 @@ public class ArtistCampaignController {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, ex.getMessage(), ex);
+		}
+	}
+
+	@GetMapping("/{id}/campaign-history/top-5")
+	public List<CampaignHistory> getCampaignHistory(
+		@PathVariable Long id
+	) {
+		try {
+			PaginationAndSortingRequest pagination = new PaginationAndSortingRequest();
+			pagination.setSortBy("id.eventTime");
+			return campaignService.getCampaignHistory(id, pagination.getPageable());
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
 		}
 	}
 
