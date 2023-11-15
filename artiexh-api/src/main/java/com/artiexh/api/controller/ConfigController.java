@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class ConfigController {
 	private final ConfigService configService;
 
-//	@PreAuthorize("hasAuthority('ADMIN')")
-//	@PostMapping(Endpoint.Config.SYNC_PRODUCT_OPEN_SEARCH)
-//	public void syncProductToOpenSearch() {
-//		configService.syncProductToOpenSearch();
-//	}
+	//@PreAuthorize("hasAuthority('ADMIN')")
+	@PostMapping(Endpoint.Config.SYNC_PRODUCT_OPEN_SEARCH)
+	public void syncProductToOpenSearch() {
+		configService.syncProductToOpenSearch();
+	}
 
 	@PostMapping("/initial-campaign-product")
 	public void createCampaignProduct(@RequestBody ProductInCampaign productInCampaign) {
