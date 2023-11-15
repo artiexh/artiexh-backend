@@ -12,9 +12,11 @@ import com.artiexh.model.rest.campaign.response.CampaignDetailResponse;
 import com.artiexh.model.rest.campaign.response.CampaignProviderResponse;
 import com.artiexh.model.rest.campaign.response.CampaignResponse;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -158,14 +160,14 @@ public class ArtistCampaignController {
 		}
 	}
 
-	@GetMapping("/{id}/campaign-history/top-5")
-	public List<CampaignHistory> getCampaignHistory(
-		@PathVariable Long id
+	@GetMapping("/{id}/campaign-history")
+	public PageResponse<CampaignHistory> getCampaignHistory(
+		@PathVariable Long id,
+		@ParameterObject @Valid PaginationAndSortingRequest pagination
 	) {
 		try {
-			PaginationAndSortingRequest pagination = new PaginationAndSortingRequest();
 			pagination.setSortBy("id.eventTime");
-			return campaignService.getCampaignHistory(id, pagination.getPageable());
+			return new PageResponse<>(campaignService.getCampaignHistory(id, pagination.getPageable()));
 		} catch (EntityNotFoundException ex) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
 		}

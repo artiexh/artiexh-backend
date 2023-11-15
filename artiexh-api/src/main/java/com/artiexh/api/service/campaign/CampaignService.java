@@ -44,5 +44,5 @@ public interface CampaignService {
 										Long campaignId,
 										Long staffId,
 										String message);
-	List<CampaignHistory> getCampaignHistory(Long campaignId, Pageable pageable);
+	Page<CampaignHistory> getCampaignHistory(Long campaignId, Pageable pageable);
 }
