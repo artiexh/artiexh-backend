@@ -1,5 +1,6 @@
 package com.artiexh.model.mapper;
 
+import com.artiexh.data.jpa.entity.CampaignSaleEntity;
 import com.artiexh.data.jpa.entity.ProductAttachEntity;
 import com.artiexh.data.jpa.entity.ProductInventoryEntity;
 import com.artiexh.data.opensearch.model.ProductInventoryDocument;
@@ -56,7 +57,7 @@ public interface ProductInventoryMapper {
 	ProductInventoryEntity domainToEntity(ProductInventory product, @MappingTarget ProductInventoryEntity productInventoryEntity);
 
 	@Mapping(target = "productInCampaign.id", source = "productInCampaignId")
-	@Mapping(target = "status", constant ="AVAILABLE" )
+	@Mapping(target = "status", constant = "AVAILABLE")
 	@Mapping(target = "deliveryType", constant = "SHIP")
 	@Mapping(target = "weight", constant = "0F")
 	@Mapping(target = "quantity", constant = "0L")
@@ -66,7 +67,14 @@ public interface ProductInventoryMapper {
 	@Mapping(target = "campaign", ignore = true)
 	ProductInventoryDocument domainToDocument(ProductInventory product);
 
+	@Mapping(target = "price.unit", source = "priceUnit")
+	@Mapping(target = "price.amount", source = "priceAmount")
+	@Mapping(target = "campaign", ignore = true)
+	ProductInventoryDocument entityToDocument(ProductInventoryEntity entity);
+
 	ProductInventoryDocument.Campaign campaignToCampaignDocument(CampaignSale campaign);
+
+	ProductInventoryDocument.Campaign campaignEntityToCampaignDocument(CampaignSaleEntity entity);
 
 	default Integer toValue(ProductStatus status) {
 		return status.getValue();
