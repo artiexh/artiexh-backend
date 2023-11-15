@@ -11,8 +11,8 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateCartItemRequest {
+public class UpdateCartRequest {
 	@NotNull(message = "items is required")
 	@Valid
-	private Set<CartItemRequest> items;
+	private Set<CartItemWithQuantityRequest> items;
 }

@@ -2,9 +2,12 @@ package com.artiexh.api.controller.marketplace;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.CartService;
+import com.artiexh.data.jpa.entity.CartItemId;
 import com.artiexh.model.domain.Cart;
 import com.artiexh.model.mapper.CartMapper;
-import com.artiexh.model.rest.marketplace.cart.request.UpdateCartItemRequest;
+import com.artiexh.model.rest.marketplace.cart.request.CartItemRequest;
+import com.artiexh.model.rest.marketplace.cart.request.DeleteCartItemsRequest;
+import com.artiexh.model.rest.marketplace.cart.request.UpdateCartRequest;
 import com.artiexh.model.rest.marketplace.cart.response.CartResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,6 +16,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -32,8 +37,8 @@ public class CartController {
 
 	@PutMapping(Endpoint.Cart.ITEM)
 	@PreAuthorize("hasAnyAuthority('USER','ARTIST')")
-	public CartResponse addItemToCart(Authentication authentication,
-									  @RequestBody @Validated UpdateCartItemRequest request) {
+	public CartResponse updateCart(Authentication authentication,
+								   @RequestBody @Validated UpdateCartRequest request) {
 		try {
 			long userId = (Long) authentication.getPrincipal();
 			Cart cart = cartService.updateCartItem(userId, request.getItems());
@@ -42,15 +47,30 @@ public class CartController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
 		}
 	}
-//
-//	@DeleteMapping(Endpoint.Cart.ITEM)
-//	@PreAuthorize("hasAnyAuthority('USER','ARTIST')")
-//	public CartResponse deleteCartItem(Authentication authentication,
-//									   @RequestBody @Validated DeleteCartItemRequest request) {
-//		long userId = (Long) authentication.getPrincipal();
-//		cartService.deleteItemToCart(userId, request.getProductIds());
-//		Cart cart = cartService.getCart(userId);
-//		return cartMapper.domainToCartResponse(cart);
-//	}
+
+	@PatchMapping(Endpoint.Cart.ITEM_ADD_QUANTITY)
+	@PreAuthorize("hasAnyAuthority('USER','ARTIST')")
+	public CartResponse addItemToCart(Authentication authentication,
+									  @RequestBody @Validated CartItemRequest request) {
+		long userId = (Long) authentication.getPrincipal();
+		try {
+			Cart cart = cartService.addOneItem(userId, request);
+			return cartMapper.domainToCartResponse(cart);
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
+	}
+
+	@DeleteMapping(Endpoint.Cart.ITEM)
+	@PreAuthorize("hasAnyAuthority('USER','ARTIST')")
+	public CartResponse deleteCartItem(Authentication authentication,
+									   @RequestBody @Validated DeleteCartItemsRequest deleteItemsRequest) {
+		long userId = (Long) authentication.getPrincipal();
+		cartService.deleteItemToCart(deleteItemsRequest.getItems().stream().map(request ->
+			new CartItemId(userId, request.getSaleCampaignId(), request.getProductCode())).collect(Collectors.toSet())
+		);
+		Cart cart = cartService.getCart(userId);
+		return cartMapper.domainToCartResponse(cart);
+	}
 
 }

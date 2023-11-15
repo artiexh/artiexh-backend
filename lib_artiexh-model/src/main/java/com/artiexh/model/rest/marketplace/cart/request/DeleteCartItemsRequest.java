@@ -10,9 +10,9 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeleteCartItemRequest {
+public class DeleteCartItemsRequest {
 
-	@NotNull(message = "productIds is required")
-	private Set<Long> productIds;
+	@NotNull(message = "items is required")
+	private Set<CartItemRequest> items;
 
 }

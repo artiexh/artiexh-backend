@@ -70,6 +70,7 @@ public final class Endpoint {
 	public static class Cart {
 		public static final String ROOT = PREFIX + "/cart";
 		public static final String ITEM = "/item";
+		public static final String ITEM_ADD_QUANTITY = "/item/add";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
