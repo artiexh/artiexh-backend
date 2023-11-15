@@ -24,6 +24,7 @@ import com.artiexh.model.mapper.CampaignOrderMapper;
 import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
 import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
 import com.artiexh.model.rest.order.request.UpdateShippingOrderRequest;
+import com.artiexh.model.rest.order.user.response.AdminCampaignOrderResponsePage;
 import com.artiexh.model.rest.order.user.response.CampaignOrderResponsePage;
 import com.artiexh.model.rest.order.user.response.UserCampaignOrderDetailResponse;
 import jakarta.persistence.EntityNotFoundException;
@@ -69,10 +70,10 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	}
 
 	@Override
-	public Page<CampaignOrderResponsePage> getAdminCampaignOrderInPage(Specification<CampaignOrderEntity> specification,
-																	   Pageable pageable) {
+	public Page<AdminCampaignOrderResponsePage> getAdminCampaignOrderInPage(Specification<CampaignOrderEntity> specification,
+																			Pageable pageable) {
 		return campaignOrderRepository.findAll(specification, pageable)
-			.map(campaignOrderMapper::entityToUserResponsePage);
+			.map(campaignOrderMapper::entityToAdminResponsePage);
 	}
 
 	@Override

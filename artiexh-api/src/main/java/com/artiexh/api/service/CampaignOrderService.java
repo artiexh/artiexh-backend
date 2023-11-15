@@ -6,6 +6,7 @@ import com.artiexh.model.domain.CampaignOrder;
 import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
 import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
 import com.artiexh.model.rest.order.request.UpdateShippingOrderRequest;
+import com.artiexh.model.rest.order.user.response.AdminCampaignOrderResponsePage;
 import com.artiexh.model.rest.order.user.response.CampaignOrderResponsePage;
 import com.artiexh.model.rest.order.user.response.UserCampaignOrderDetailResponse;
 import org.springframework.data.domain.Page;
@@ -19,7 +20,7 @@ public interface CampaignOrderService {
 
 	CampaignOrder getCampaignOrderById(Long orderId);
 
-	Page<CampaignOrderResponsePage> getAdminCampaignOrderInPage(Specification<CampaignOrderEntity> query, Pageable pageable);
+	Page<AdminCampaignOrderResponsePage> getAdminCampaignOrderInPage(Specification<CampaignOrderEntity> query, Pageable pageable);
 
 	AdminCampaignOrderResponse getAdminCampaignOrderById(Long orderId);
 
