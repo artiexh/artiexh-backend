@@ -9,6 +9,7 @@ import com.artiexh.data.jpa.projection.ProductInventoryCode;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.*;
 import com.artiexh.model.mapper.*;
+import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.campaign.request.*;
 import com.artiexh.model.rest.campaign.response.*;
 import com.artiexh.model.rest.product.response.ProductResponse;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -181,6 +183,12 @@ public class CampaignServiceImpl implements CampaignService {
 
 	private CampaignDetailResponse buildCampaignDetailResponse(CampaignEntity campaignEntity) {
 		var result = campaignMapper.entityToDetailResponse(campaignEntity);
+
+		PaginationAndSortingRequest pagination = new PaginationAndSortingRequest();
+		pagination.setSortBy("id.eventTime");
+		Set<CampaignHistory> campaignHistories = new HashSet<>(getCampaignHistory(campaignEntity.getId(), pagination.getPageable()).getContent());
+
+		result.setCampaignHistories(campaignHistories);
 		if (campaignEntity.getProviderId() != null) {
 			var provider = providerRepository.getReferenceById(campaignEntity.getProviderId());
 			result.setProvider(providerMapper.entityToInfo(provider));
@@ -567,6 +575,12 @@ public class CampaignServiceImpl implements CampaignService {
 		);
 
 		campaignMapper.entityToResponse(campaignEntity);
+	}
+
+	@Override
+	public Page<CampaignHistory> getCampaignHistory(Long campaignId, Pageable pageable) {
+		Page<CampaignHistoryEntity> historyPage = campaignHistoryRepository.findCampaignHistoryEntitiesByIdCampaignId(campaignId, pageable);
+		return historyPage.map(campaignMapper::campaignHistoryEntityToCampaignHistory);
 	}
 
 	@Override

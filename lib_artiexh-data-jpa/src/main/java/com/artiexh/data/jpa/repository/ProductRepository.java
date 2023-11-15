@@ -2,13 +2,19 @@ package com.artiexh.data.jpa.repository;
 
 import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.jpa.entity.ProductEntityId;
+import jakarta.persistence.QueryHint;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.stream.Stream;
+
+import static org.hibernate.jpa.HibernateHints.*;
 
 @Repository
 public interface ProductRepository extends JpaRepository<ProductEntity, ProductEntityId>, JpaSpecificationExecutor<ProductEntity> {
@@ -25,11 +31,11 @@ public interface ProductRepository extends JpaRepository<ProductEntity, ProductE
 
 //	int countAllByIdIn(Collection<Long> id);
 
-//	@QueryHints(value = {
-//		@QueryHint(name = HINT_FETCH_SIZE, value = "1"),
-//		@QueryHint(name = HINT_CACHEABLE, value = "false"),
-//		@QueryHint(name = HINT_READ_ONLY, value = "true")
-//	})
-//	@Query("select p from ProductEntity p where p.status = 2")
-//	Stream<ProductEntity> streamAllByAvailableStatus();
+	@QueryHints(value = {
+		@QueryHint(name = HINT_FETCH_SIZE, value = "1"),
+		@QueryHint(name = HINT_CACHEABLE, value = "false"),
+		@QueryHint(name = HINT_READ_ONLY, value = "true")
+	})
+	@Query("select p from ProductEntity p")
+	Stream<ProductEntity> streamAllByAvailableStatus();
 }
