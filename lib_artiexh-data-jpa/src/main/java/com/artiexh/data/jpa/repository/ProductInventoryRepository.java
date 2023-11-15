@@ -33,4 +33,6 @@ public interface ProductInventoryRepository extends JpaRepository<ProductInvento
 
 	int countAllByProductCodeInAndOwnerId(Collection<String> productCodes, Long ownerId);
 
+	boolean existsByProductCodeAndOwnerId(String productCode, Long ownerId);
+
 }
