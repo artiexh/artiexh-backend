@@ -10,6 +10,7 @@ import com.artiexh.data.jpa.repository.ProductRepository;
 import com.artiexh.model.domain.Cart;
 import com.artiexh.model.mapper.CartMapper;
 import com.artiexh.model.rest.marketplace.cart.request.CartItemRequest;
+import com.artiexh.model.rest.marketplace.cart.request.CartItemWithQuantityRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +38,7 @@ public class CartServiceImpl implements CartService {
 
 	@Override
 	@Transactional
-	public Cart updateCartItem(long userId, Set<CartItemRequest> items) {
+	public Cart updateCartItem(long userId, Set<CartItemWithQuantityRequest> items) {
 		CartEntity cartEntity = getOrCreateCartEntity(userId);
 
 		if (items.isEmpty()) {
@@ -46,7 +47,7 @@ public class CartServiceImpl implements CartService {
 		}
 
 		int numOfItemsBelongToUser = productInventoryRepository.countAllByProductCodeInAndOwnerId(
-			items.stream().map(CartItemRequest::getProductCode).toList(),
+			items.stream().map(CartItemWithQuantityRequest::getProductCode).toList(),
 			userId
 		);
 		if (numOfItemsBelongToUser > 0) {
@@ -75,6 +76,35 @@ public class CartServiceImpl implements CartService {
 		cartEntity.getCartItems().clear();
 		cartEntity.getCartItems().addAll(cartItemEntities);
 		return cartMapper.entityToDomain(cartRepository.save(cartEntity));
+	}
+
+	@Override
+	@Transactional
+	public Cart addOneItem(long userId, CartItemRequest item) {
+		if (productInventoryRepository.existsByProductCodeAndOwnerId(item.getProductCode(), userId)) {
+			throw new IllegalArgumentException(ErrorCode.INVALID_ITEM.getMessage());
+		}
+
+		CartItemId cartItemId = new CartItemId(userId, item.getSaleCampaignId(), item.getProductCode());
+		cartItemRepository.findById(cartItemId).ifPresentOrElse(
+			cartItemEntity -> {
+				cartItemEntity.setQuantity(cartItemEntity.getQuantity() + 1);
+				cartItemRepository.save(cartItemEntity);
+			},
+			() -> {
+				ProductEntity productEntity = ProductEntity.builder()
+					.id(new ProductEntityId(item.getProductCode(), item.getSaleCampaignId()))
+					.build();
+				var cartItemEntity = CartItemEntity.builder()
+					.id(cartItemId)
+					.product(productEntity)
+					.quantity(1)
+					.build();
+				cartItemRepository.save(cartItemEntity);
+			}
+		);
+
+		return cartMapper.entityToDomain(getOrCreateCartEntity(userId));
 	}
 
 	@Override

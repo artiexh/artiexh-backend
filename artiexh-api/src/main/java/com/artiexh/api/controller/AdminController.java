@@ -7,7 +7,7 @@ import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
 import com.artiexh.model.rest.order.request.OrderPageFilter;
-import com.artiexh.model.rest.order.user.response.CampaignOrderResponsePage;
+import com.artiexh.model.rest.order.user.response.AdminCampaignOrderResponsePage;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class AdminController {
 
 	@GetMapping(Endpoint.Admin.CAMPAIGN_ORDER)
 	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
-	public PageResponse<CampaignOrderResponsePage> getAllOrder(
+	public PageResponse<AdminCampaignOrderResponsePage> getAllOrder(
 		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
 		@ParameterObject @Valid OrderPageFilter filter
 	) {

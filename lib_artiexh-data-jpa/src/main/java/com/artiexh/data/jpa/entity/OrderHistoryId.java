@@ -25,7 +25,7 @@ public class OrderHistoryId implements Serializable {
 	@Column(name = "status", nullable = false)
 	private Byte status;
 
-	@Override
+    @Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;

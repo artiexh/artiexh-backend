@@ -7,6 +7,7 @@ import com.artiexh.model.domain.CampaignOrderStatus;
 import com.artiexh.model.domain.OrderDetail;
 import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
 import com.artiexh.model.rest.order.response.OrderDetailResponse;
+import com.artiexh.model.rest.order.user.response.AdminCampaignOrderResponsePage;
 import com.artiexh.model.rest.order.user.response.CampaignOrderResponsePage;
 import com.artiexh.model.rest.order.user.response.UserCampaignOrderDetailResponse;
 import com.artiexh.model.rest.order.user.response.UserCampaignOrderResponse;
@@ -23,7 +24,8 @@ import java.util.Set;
 		AccountMapper.class,
 		ProductMapper.class,
 		ProductAttachMapper.class,
-		CampaignTypeMapper.class
+		CampaignTypeMapper.class,
+		OrderHistoryMapper.class
 	}
 )
 public interface CampaignOrderMapper {
@@ -65,6 +67,9 @@ public interface CampaignOrderMapper {
 
 	@Mapping(target = "campaignSale", qualifiedByName = "entityToResponse")
 	CampaignOrderResponsePage entityToUserResponsePage(CampaignOrderEntity campaignOrder);
+
+	@Mapping(target = "campaignSale", qualifiedByName = "entityToResponse")
+	AdminCampaignOrderResponsePage entityToAdminResponsePage(CampaignOrderEntity campaignOrder);
 
 	@Named("domainToUserResponsePage")
 	CampaignOrderResponsePage domainToUserResponsePage(CampaignOrder campaignOrder);
