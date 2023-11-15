@@ -18,10 +18,6 @@ public class UpdateArtistProfileRequest {
 	@NotEmpty
 	private String bankName;
 
-	private Integer wardId;
-
-	private String address;
-
 	@NotEmpty
 	private String phone;
 

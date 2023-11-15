@@ -47,6 +47,5 @@ public abstract class ArtistMapper {
 	@Mapping(target = "subscriptionsFrom", ignore = true)
 	public abstract ArtistProfileResponse entityToProfileResponse(ArtistEntity entity);
 
-	@Mapping(target = "shopWard", ignore = true)
 	public abstract ArtistEntity requestToEntity(UpdateArtistProfileRequest request, @MappingTarget ArtistEntity entity);
 }

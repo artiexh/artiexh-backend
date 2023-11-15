@@ -112,10 +112,6 @@ public class ArtistServiceImpl implements ArtistService {
 
 		entity = artistMapper.requestToEntity(request, entity);
 
-		if (request.getWardId() != null) {
-			entity.setShopWard(WardEntity.builder().id(request.getWardId()).build());
-		}
-
 		artistRepository.save(entity);
 
 		ArtistProfileResponse profile = artistMapper.entityToProfileResponse(entity);

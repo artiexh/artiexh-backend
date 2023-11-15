@@ -33,13 +33,6 @@ public class ArtistEntity extends UserEntity {
 	@ToString.Exclude
 	private Set<SubscriptionEntity> subscriptionsFrom;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "shop_ward_id")
-	private WardEntity shopWard;
-
-	@Column(name = "shop_address")
-	private String address;
-
 	@Size(max = 15)
 	@Column(name = "shop_phone", length = 15)
 	private String phone;

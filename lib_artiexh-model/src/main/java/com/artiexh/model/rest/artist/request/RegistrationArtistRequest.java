@@ -20,12 +20,6 @@ public class RegistrationArtistRequest {
 	@NotEmpty
 	private String bankName;
 
-	@NotNull
-	private Integer wardId;
-
-	@NotEmpty
-	private String address;
-
 	@NotEmpty
 	private String phone;
 
