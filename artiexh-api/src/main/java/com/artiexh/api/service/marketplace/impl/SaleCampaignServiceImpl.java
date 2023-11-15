@@ -15,7 +15,7 @@ import com.artiexh.model.domain.ProductInventoryQuantity;
 import com.artiexh.model.domain.SourceCategory;
 import com.artiexh.model.mapper.CampaignSaleMapper;
 import com.artiexh.model.mapper.ProductMapper;
-import com.artiexh.model.rest.marketplace.salecampaign.filter.SaleCampaignFilter;
+import com.artiexh.model.rest.marketplace.salecampaign.filter.MarketplaceSaleCampaignFilter;
 import com.artiexh.model.rest.marketplace.salecampaign.request.ProductInSaleRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.request.SaleCampaignRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.response.*;
@@ -122,9 +122,16 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 	}
 
 	@Override
+	public SaleCampaignDetailResponse getDetail(Long id, Long ownerId) {
+		return campaignSaleRepository.findCampaignSaleEntityByIdAndOwnerId(id, ownerId)
+			.map(campaignSaleMapper::entityToDetailResponse)
+			.orElseThrow(() -> new EntityNotFoundException("Sale campaign not found"));
+	}
+
+	@Override
 	public Page<SaleCampaignResponse> getAllByArtist(String artistUsername,
 													 Pageable pageable,
-													 SaleCampaignFilter filter) {
+													 MarketplaceSaleCampaignFilter filter) {
 		if (!artistRepository.existsByUsername(artistUsername)) {
 			throw new EntityNotFoundException("Artist not found");
 		}

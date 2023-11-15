@@ -2,6 +2,7 @@ package com.artiexh.model.rest.artist.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -17,14 +18,11 @@ public class UpdateArtistProfileRequest {
 	@NotEmpty
 	private String bankName;
 
-	@NotNull
-	private Integer wardId;
-
-	@NotEmpty
-	private String address;
-
 	@NotEmpty
 	private String phone;
 
 	private String shopThumbnailUrl;
+
+	@Size(max = 255)
+	private String description;
 }

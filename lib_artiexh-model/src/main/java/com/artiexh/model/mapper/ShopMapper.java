@@ -26,8 +26,6 @@ public interface ShopMapper {
 		//@Mapping(target = "owner", source = ".", qualifiedByName = "basicArtistInfo")
 	Shop entityToDomain(AccountEntity entity);
 
-	@Mapping(target = "ward", source = "shopWard")
-	@Mapping(target = "address", source = "address")
 	AddressResponse entityToShopAddressResponse(ArtistEntity entity);
 
 }
