@@ -110,12 +110,7 @@ public class ArtistServiceImpl implements ArtistService {
 	public ArtistProfileResponse updateArtistProfile(Long artistId, UpdateArtistProfileRequest request) {
 		ArtistEntity entity = artistRepository.findById(artistId).orElseThrow(EntityNotFoundException::new);
 
-		entity.setBankAccount(request.getBankAccount());
-		entity.setBankName(request.getBankName());
-		entity.setAddress(request.getAddress());
-		entity.setShopWard(WardEntity.builder().id(request.getWardId()).build());
-		entity.setPhone(request.getPhone());
-		entity.setShopThumbnailUrl(request.getShopThumbnailUrl());
+		entity = artistMapper.requestToEntity(request, entity);
 
 		artistRepository.save(entity);
 

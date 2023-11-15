@@ -87,20 +87,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 			throw new IllegalArgumentException("User role is not USER, cannot register as ARTIST");
 		}
 
-		if (!wardRepository.existsById(request.getWardId())) {
-			throw new IllegalArgumentException("wardId not existed");
-		}
-
 		artistRepository.createArtistByExistedUserId(id);
 		ArtistEntity artistEntity = artistRepository.findById(id)
 			.orElseThrow(EntityNotFoundException::new);
 
-		artistEntity.setShopWard(WardEntity.builder().id(request.getWardId()).build());
-		artistEntity.setAddress(request.getAddress());
 		artistEntity.setBankAccount(request.getBankAccount());
 		artistEntity.setBankName(request.getBankName());
 		artistEntity.setPhone(request.getPhone());
 		artistEntity.setShopThumbnailUrl(request.getShopThumbnailUrl());
+		artistEntity.setDescription(request.getDescription());
 
 		artistEntity.setRole((byte) Role.ARTIST.getValue());
 		return artistMapper.basicArtistInfo(artistRepository.save(artistEntity));

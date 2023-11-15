@@ -19,7 +19,6 @@ public class Artist extends User {
 	private String bankAccount;
 	private String bankName;
 	private String phone;
-	private String address;
 	private String shopThumbnailUrl;
-	private Ward ward;
+	private String description;
 }

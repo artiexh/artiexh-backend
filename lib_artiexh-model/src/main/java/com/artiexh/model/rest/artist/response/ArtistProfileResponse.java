@@ -31,10 +31,6 @@ public class ArtistProfileResponse {
 
 	private Set<Subscription> subscriptionsFrom;
 
-	private Ward shopWard;
-
-	private String address;
-
 	private String phone;
 
 	private String bankAccount;
@@ -42,4 +38,6 @@ public class ArtistProfileResponse {
 	private String bankName;
 
 	private String shopThumbnailUrl;
+
+	private String description;
 }
