@@ -19,7 +19,10 @@ import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.MarketplaceSaleCampaignFilter;
 import com.artiexh.model.rest.marketplace.salecampaign.request.ProductInSaleRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.request.SaleCampaignRequest;
-import com.artiexh.model.rest.marketplace.salecampaign.response.*;
+import com.artiexh.model.rest.marketplace.salecampaign.response.CampaignStatistics;
+import com.artiexh.model.rest.marketplace.salecampaign.response.ProductStatisticResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignDetailResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -63,7 +66,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			throw new IllegalArgumentException("Order from date must be before order to date");
 		}
 
-		validateProductsRequest(request.getProducts());
+		ArtistEntity owner = validateProductsRequest(request.getProducts());
 
 		var entity = campaignSaleRepository.save(CampaignSaleEntity.builder()
 			.name(request.getName())
@@ -72,30 +75,33 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.from(request.getFrom())
 			.to(request.getTo())
 			.createdBy(creatorId)
+			.owner(owner)
+			.content(request.getContent())
+			.thumbnailUrl(request.getThumbnailUrl())
+			.type(request.getType().getByteValue())
 			.build());
 
-		var result = campaignSaleMapper.entityToDetailResponse(entity);
-
 		Set<ProductInventoryQuantity> productQuantities = new HashSet<>();
-		Set<ProductInSaleCampaignResponse> productResponses = new HashSet<>();
 
 		for (var productRequest : request.getProducts()) {
 			Product product = productService.create(ProductEntity.builder()
 				.id(new ProductEntityId(productRequest.getProductCode(), entity.getId()))
+				.productInventory(productInventoryRepository.getReferenceById(productRequest.getProductCode()))
+				.campaignSale(entity)
 				.priceAmount(productRequest.getPrice().getAmount())
 				.priceUnit(productRequest.getPrice().getUnit())
+				.quantity(productRequest.getQuantity())
+				.artistProfit(productRequest.getArtistProfit())
 				.build()
 			);
 			productQuantities.add(new ProductInventoryQuantity(
 				product.getProductInventory().getProductCode(),
 				(long) productRequest.getQuantity())
 			);
-			productResponses.add(productMapper.domainToProductInSaleResponse(product));
 		}
+		productInventoryJpaService.reduceQuantity(entity.getId(), SourceCategory.CAMPAIGN_SALE, productQuantities);
 
-		productInventoryJpaService.reduceQuantity(result.getId(), SourceCategory.CAMPAIGN_SALE, productQuantities);
-
-		return result;
+		return campaignSaleMapper.entityToDetailResponse(entity);
 	}
 
 	@Override
@@ -156,12 +162,18 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 		return result;
 	}
 
-	private void validateProductsRequest(Set<ProductInSaleRequest> productRequests) {
+	private ArtistEntity validateProductsRequest(Set<ProductInSaleRequest> productRequests) {
 		var productCodes = productRequests.stream().map(ProductInSaleRequest::getProductCode).collect(Collectors.toSet());
 		var entities = productInventoryRepository.findAllById(productCodes);
 		if (entities.size() != productCodes.size()) {
 			throw new IllegalArgumentException("Some products are not found");
 		}
+
+		Set<ArtistEntity> owners = entities.stream().map(ProductInventoryEntity::getOwner).collect(Collectors.toSet());
+		if (owners.size() != 1) {
+			throw new IllegalArgumentException("Campaign must contain all products with the same artist");
+		}
+
 		for (var productInventoryEntity : entities) {
 			for (var productRequest : productRequests) {
 				if (productInventoryEntity.getProductCode().equals(productRequest.getProductCode())
@@ -170,6 +182,8 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 				}
 			}
 		}
+
+		return owners.stream().findFirst().get();
 	}
 
 	@Override
