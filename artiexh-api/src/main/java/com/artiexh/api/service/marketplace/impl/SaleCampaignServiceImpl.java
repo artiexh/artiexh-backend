@@ -124,7 +124,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.map(ProductInCampaignEntity::getId)
 			.collect(Collectors.toSet());
 
-		var productInventoryEntities = productInventoryRepository.findAllByProductInCampaignId(productInCampaignIds);
+		var productInventoryEntities = productInventoryRepository.findAllByProductInCampaignIdIn(productInCampaignIds);
 		if (productInventoryEntities.size() != productInCampaignIds.size()) {
 			throw new IllegalArgumentException("Finalize campaign request is not finished");
 		}
