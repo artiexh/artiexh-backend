@@ -8,6 +8,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -25,5 +26,5 @@ public class CampaignStatistics {
 	private Money profit;
 	private ProductStatisticResponse bestSoldProduct;
 	private ProductStatisticResponse worstSoldProduct;
-	private Set<ProductStatisticResponse> products;
+	private List<ProductStatisticResponse> products;
 }
