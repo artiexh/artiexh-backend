@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -63,7 +64,10 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			throw new IllegalArgumentException("Order from date must be before order to date");
 		}
 
-		ArtistEntity owner = validateProductsRequest(request.getProducts());
+		ArtistEntity artistEntity = artistRepository.findById(request.getArtistId())
+			.orElseThrow(() -> new EntityNotFoundException("Artist " + request.getArtistId() + " not found"));
+
+		//ArtistEntity owner = validateProductsRequest(request.getProducts());
 
 		var entity = campaignSaleRepository.save(CampaignSaleEntity.builder()
 			.name(request.getName())
@@ -72,31 +76,31 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.from(request.getFrom())
 			.to(request.getTo())
 			.createdBy(creatorId)
-			.owner(owner)
+			.owner(artistEntity)
 			.content(request.getContent())
 			.thumbnailUrl(request.getThumbnailUrl())
 			.type(request.getType().getByteValue())
 			.build());
 
-		Set<ProductInventoryQuantity> productQuantities = new HashSet<>();
-
-		for (var productRequest : request.getProducts()) {
-			Product product = productService.create(ProductEntity.builder()
-				.id(new ProductEntityId(productRequest.getProductCode(), entity.getId()))
-				.productInventory(productInventoryRepository.getReferenceById(productRequest.getProductCode()))
-				.campaignSale(entity)
-				.priceAmount(productRequest.getPrice().getAmount())
-				.priceUnit(productRequest.getPrice().getUnit())
-				.quantity(productRequest.getQuantity())
-				.artistProfit(productRequest.getArtistProfit())
-				.build()
-			);
-			productQuantities.add(new ProductInventoryQuantity(
-				product.getProductInventory().getProductCode(),
-				(long) productRequest.getQuantity())
-			);
-		}
-		productInventoryJpaService.reduceQuantity(entity.getId(), SourceCategory.CAMPAIGN_SALE, productQuantities);
+//		Set<ProductInventoryQuantity> productQuantities = new HashSet<>();
+//
+//		for (var productRequest : request.getProducts()) {
+//			Product product = productService.create(ProductEntity.builder()
+//				.id(new ProductEntityId(productRequest.getProductCode(), entity.getId()))
+//				.productInventory(productInventoryRepository.getReferenceById(productRequest.getProductCode()))
+//				.campaignSale(entity)
+//				.priceAmount(productRequest.getPrice().getAmount())
+//				.priceUnit(productRequest.getPrice().getUnit())
+//				.quantity(productRequest.getQuantity())
+//				.artistProfit(productRequest.getArtistProfit())
+//				.build()
+//			);
+//			productQuantities.add(new ProductInventoryQuantity(
+//				product.getProductInventory().getProductCode(),
+//				(long) productRequest.getQuantity())
+//			);
+//		}
+//		productInventoryJpaService.reduceQuantity(entity.getId(), SourceCategory.CAMPAIGN_SALE, productQuantities);
 
 		return campaignSaleMapper.entityToDetailResponse(entity);
 	}
@@ -157,6 +161,60 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 		}
 		productInventoryJpaService.reduceQuantity(result.getId(), SourceCategory.CAMPAIGN_SALE, productQuantities);
 		return result;
+	}
+
+	@Override
+	@Transactional
+	public SaleCampaignDetailResponse updateSaleCampaign(Long id, SaleCampaignRequest request) {
+		CampaignSaleEntity entity = campaignSaleRepository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException("Sale campaign " + id + " not found"));
+
+		Instant now = Instant.now();
+
+		if (now.isAfter(entity.getTo())) {
+			throw new IllegalArgumentException("Cannot update sale campaign after it ends");
+		}
+
+		if (now.isAfter(entity.getFrom())) {
+			if (request.getFrom() != entity.getFrom()) {
+				throw new IllegalArgumentException("Cannot update sale campaign from after it starts");
+			}
+			if (request.getPublicDate() != entity.getPublicDate()) {
+				throw new IllegalArgumentException("Cannot update sale campaign public date after it starts");
+			}
+		}
+
+		if (request.getPublicDate().isAfter(request.getFrom())) {
+			throw new IllegalArgumentException("Public date must be before or equal to order from date");
+		} else {
+			entity.setPublicDate(request.getPublicDate());
+		}
+
+		if (request.getFrom().isAfter(request.getTo())) {
+			throw new IllegalArgumentException("Order from date must be before order to date");
+		} else {
+			entity.setFrom(request.getFrom());
+			entity.setTo(request.getTo());
+		}
+
+		ArtistEntity artistEntity = artistRepository.findById(request.getArtistId())
+			.orElseThrow(() -> new EntityNotFoundException("Artist " + request.getArtistId() + " not found"));
+
+		if (entity.getOwner().getId() == null) {
+			entity.setOwner(artistEntity);
+		} else if (entity.getProducts().isEmpty()) {
+			entity.setOwner(artistEntity);
+		} else if (!entity.getOwner().getId().equals(artistEntity.getId())) {
+			throw new IllegalArgumentException("Cannot change owner of sale campaign");
+		}
+
+		entity.setName(request.getName());
+		entity.setDescription(request.getDescription());
+		entity.setContent(request.getContent());
+		entity.setThumbnailUrl(request.getThumbnailUrl());
+		entity.setType(request.getType().getByteValue());
+
+		return campaignSaleMapper.entityToDetailResponse(entity);
 	}
 
 	private ArtistEntity validateProductsRequest(Set<ProductInSaleRequest> productRequests) {

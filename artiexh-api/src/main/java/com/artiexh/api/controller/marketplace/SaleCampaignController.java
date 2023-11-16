@@ -4,7 +4,6 @@ import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.service.marketplace.SaleCampaignService;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
-import com.artiexh.model.rest.marketplace.salecampaign.filter.MarketplaceSaleCampaignFilter;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.SaleCampaignFilter;
 import com.artiexh.model.rest.marketplace.salecampaign.request.SaleCampaignRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.response.CampaignStatistics;
@@ -33,6 +32,19 @@ public class SaleCampaignController {
 		Long id = (Long) authentication.getPrincipal();
 		try {
 			return saleCampaignService.createSaleCampaign(id, request);
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
+	}
+
+	@PutMapping("/{id}")
+	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
+	public SaleCampaignDetailResponse updateSaleCampaign(@PathVariable("id") Long id,
+														 @RequestBody SaleCampaignRequest request) {
+		try {
+			return saleCampaignService.updateSaleCampaign(id, request);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
 		} catch (IllegalArgumentException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		}
