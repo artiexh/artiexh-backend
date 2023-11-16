@@ -116,6 +116,10 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.from(campaignEntity.getFrom())
 			.to(campaignEntity.getTo())
 			.createdBy(creatorId)
+			.owner(campaignEntity.getOwner())
+			.content(campaignEntity.getContent())
+			.thumbnailUrl(campaignEntity.getThumbnailUrl())
+			.type(campaignEntity.getType())
 			.campaignRequestId(campaignEntity.getId())
 			.build());
 		var result = campaignSaleMapper.entityToDetailResponse(entity);
