@@ -13,6 +13,7 @@ public final class Const {
 		public static final String ARTIEXH_PICK_PHONE = "artiexh.pick.phone";
 		public static final String ARTIEXH_PICK_EMAIL = "artiexh.pick.email";
 		public static final String ARTIEXH_PICK_NAME = "artiexh.pick.name";
+		public static final String DEFAULT_PROFIT_PERCENTAGE = "artiexh.product.profit.percentage";
 	}
 
 }

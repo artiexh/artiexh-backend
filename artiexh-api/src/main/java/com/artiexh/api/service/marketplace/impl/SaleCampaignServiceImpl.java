@@ -1,12 +1,13 @@
 package com.artiexh.api.service.marketplace.impl;
 
+import com.artiexh.api.base.exception.ArtiexhConfigException;
+import com.artiexh.api.base.service.SystemConfigService;
 import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.api.service.marketplace.SaleCampaignService;
 import com.artiexh.api.service.productinventory.ProductInventoryJpaService;
-import com.artiexh.data.jpa.entity.CampaignSaleEntity;
-import com.artiexh.data.jpa.entity.ProductEntity;
-import com.artiexh.data.jpa.entity.ProductEntityId;
+import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.ArtistRepository;
+import com.artiexh.data.jpa.repository.CampaignRepository;
 import com.artiexh.data.jpa.repository.CampaignSaleRepository;
 import com.artiexh.data.jpa.repository.ProductInventoryRepository;
 import com.artiexh.model.domain.Money;
@@ -28,11 +29,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.artiexh.api.base.common.Const.SystemConfigKey.DEFAULT_PROFIT_PERCENTAGE;
 
 @RequiredArgsConstructor
 @Service
@@ -41,19 +45,21 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 	private final CampaignSaleRepository campaignSaleRepository;
 	private final ProductInventoryRepository productInventoryRepository;
 	private final ArtistRepository artistRepository;
+	private final CampaignRepository campaignRepository;
 	private final CampaignSaleMapper campaignSaleMapper;
 	private final ProductMapper productMapper;
 	private final ProductService productService;
 	private final ProductInventoryJpaService productInventoryJpaService;
+	private final SystemConfigService systemConfigService;
 
 	@Override
 	@Transactional
 	public SaleCampaignDetailResponse createSaleCampaign(long creatorId, SaleCampaignRequest request) {
-		if (request.getPublicDate().isAfter(request.getOrderFrom())) {
+		if (request.getPublicDate().isAfter(request.getFrom())) {
 			throw new IllegalArgumentException("Public date must be before or equal to order from date");
 		}
 
-		if (request.getOrderFrom().isAfter(request.getOrderTo())) {
+		if (request.getFrom().isAfter(request.getTo())) {
 			throw new IllegalArgumentException("Order from date must be before order to date");
 		}
 
@@ -63,8 +69,8 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.name(request.getName())
 			.description(request.getDescription())
 			.publicDate(request.getPublicDate())
-			.from(request.getOrderFrom())
-			.to(request.getOrderTo())
+			.from(request.getFrom())
+			.to(request.getTo())
 			.createdBy(creatorId)
 			.build());
 
@@ -89,6 +95,57 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 
 		productInventoryJpaService.reduceQuantity(result.getId(), SourceCategory.CAMPAIGN_SALE, productQuantities);
 
+		return result;
+	}
+
+	@Override
+	public SaleCampaignDetailResponse createSaleCampaign(long creatorId, Long campaignRequestId) {
+		int profitPercentageInt = Integer.parseInt(systemConfigService.getOrThrow(DEFAULT_PROFIT_PERCENTAGE, () -> new ArtiexhConfigException("Missing artiexh default profit percentage")));
+		var profitPercentage = BigDecimal.valueOf(profitPercentageInt);
+
+		CampaignEntity campaignEntity = campaignRepository.findById(campaignRequestId)
+			.orElseThrow(() -> new EntityNotFoundException("Campaign request " + campaignRequestId + " not existed"));
+
+		if (!Boolean.TRUE.equals(campaignEntity.getIsFinalized())) {
+			throw new IllegalArgumentException("Campaign request must be finalized before create sale campaign");
+		}
+
+		var entity = campaignSaleRepository.save(CampaignSaleEntity.builder()
+			.name(campaignEntity.getName())
+			.description(campaignEntity.getDescription())
+			.from(campaignEntity.getFrom())
+			.to(campaignEntity.getTo())
+			.createdBy(creatorId)
+			.campaignRequestId(campaignEntity.getId())
+			.build());
+		var result = campaignSaleMapper.entityToDetailResponse(entity);
+
+		Set<Long> productInCampaignIds = campaignEntity.getProductInCampaigns().stream()
+			.map(ProductInCampaignEntity::getId)
+			.collect(Collectors.toSet());
+
+		var productInventoryEntities = productInventoryRepository.findAllByProductInCampaignId(productInCampaignIds);
+		if (productInventoryEntities.size() != productInCampaignIds.size()) {
+			throw new IllegalArgumentException("Finalize campaign request is not finished");
+		}
+
+		Set<ProductInventoryQuantity> productQuantities = new HashSet<>();
+		for (var productInventory : productInventoryEntities) {
+			var artistProfit = productInventory.getPriceAmount().subtract(productInventory.getPriceAmount().multiply(profitPercentage).divide(BigDecimal.valueOf(100), RoundingMode.HALF_EVEN));
+			Product product = productService.create(ProductEntity.builder()
+				.id(new ProductEntityId(productInventory.getProductCode(), entity.getId()))
+				.priceAmount(productInventory.getPriceAmount())
+				.priceUnit(productInventory.getPriceUnit())
+				.quantity(productInventory.getQuantity().intValue())
+				.artistProfit(artistProfit)
+				.build()
+			);
+			productQuantities.add(new ProductInventoryQuantity(
+				product.getProductInventory().getProductCode(),
+				(long) product.getQuantity())
+			);
+		}
+		productInventoryJpaService.reduceQuantity(result.getId(), SourceCategory.CAMPAIGN_SALE, productQuantities);
 		return result;
 	}
 

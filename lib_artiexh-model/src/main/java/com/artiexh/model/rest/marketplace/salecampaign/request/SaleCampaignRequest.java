@@ -21,9 +21,9 @@ public class SaleCampaignRequest {
 	@FutureOrPresent
 	private Instant publicDate;
 	@FutureOrPresent
-	private Instant orderFrom;
+	private Instant from;
 	@Future
-	private Instant orderTo;
+	private Instant to;
 	@Valid
 	private Set<ProductInSaleRequest> products = Set.of();
 }

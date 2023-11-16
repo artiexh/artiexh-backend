@@ -63,4 +63,7 @@ public class CampaignSaleEntity extends BaseAuditEntity {
 	@Column(name = "type", nullable = false)
 	private Byte type;
 
+	@Column(name = "campaign_request_id")
+	private Long campaignRequestId;
+
 }

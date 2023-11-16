@@ -35,8 +35,9 @@ public class ProductEntity {
 	@Column(name = "quantity", nullable = false)
 	private Integer quantity;
 
+	@Builder.Default
 	@Column(name = "sold_quantity")
-	private Integer soldQuantity;
+	private Integer soldQuantity = 0;
 
 	@Column(name = "artist_profit", precision = 38, scale = 2)
 	private BigDecimal artistProfit;
