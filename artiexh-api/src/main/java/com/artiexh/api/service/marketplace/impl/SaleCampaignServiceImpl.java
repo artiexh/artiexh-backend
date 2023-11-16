@@ -33,10 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.artiexh.api.base.common.Const.SystemConfigKey.DEFAULT_PROFIT_PERCENTAGE;
@@ -220,14 +217,14 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 	@Override
 	public CampaignStatistics getStatistics(Long campaignId) {
 		CampaignSaleEntity campaignEntity = campaignSaleRepository.findById(campaignId).orElseThrow(EntityNotFoundException::new);
-		Set<ProductEntity> products = campaignEntity.getProducts().stream().sorted(Comparator.comparingInt(ProductEntity::getSoldQuantity)).collect(Collectors.toCollection(LinkedHashSet::new));
+		List<ProductEntity> products = campaignEntity.getProducts().stream().sorted(Comparator.comparingInt(ProductEntity::getSoldQuantity)).toList();
 
 		BigDecimal revenue = BigDecimal.ZERO;
 		BigDecimal profit = BigDecimal.ZERO;
-		Set<ProductStatisticResponse> productStatisticResponses = new HashSet<>();
+		List<ProductStatisticResponse> productStatisticResponses = new LinkedList<>();
 
 		for (ProductEntity product : products) {
-			revenue = revenue.add(product.getPriceAmount().multiply(BigDecimal.valueOf(product.getQuantity())));
+			revenue = revenue.add(product.getPriceAmount().multiply(BigDecimal.valueOf(product.getSoldQuantity())));
 			profit = profit.add(product.getArtistProfit().multiply(BigDecimal.valueOf(product.getSoldQuantity())));
 
 			productStatisticResponses.add(
@@ -235,6 +232,10 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 					.name(product.getProductInventory().getName())
 					.productCode(product.getProductInventory().getProductCode())
 					.soldQuantity(Long.valueOf(product.getSoldQuantity()))
+					.revenue(Money.builder()
+						.amount(product.getPriceAmount().multiply(BigDecimal.valueOf(product.getSoldQuantity())))
+						.unit("VND")
+						.build())
 					.quantity(Long.valueOf(product.getQuantity()))
 					.build()
 			);
