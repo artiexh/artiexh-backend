@@ -1,5 +1,6 @@
 package com.artiexh.data.jpa.entity;
 
+import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -21,6 +22,7 @@ import java.util.Set;
 @EntityListeners(AuditingEntityListener.class)
 public class CampaignSaleEntity extends BaseAuditEntity {
 	@Id
+	@Tsid
 	@Column(name = "id", nullable = false)
 	private Long id;
 
@@ -33,10 +35,10 @@ public class CampaignSaleEntity extends BaseAuditEntity {
 	@Column(name = "public_date", nullable = false)
 	private Instant publicDate;
 
-	@Column(name = "from", nullable = false)
+	@Column(name = "`from`", nullable = false)
 	private Instant from;
 
-	@Column(name = "to", nullable = false)
+	@Column(name = "`to`", nullable = false)
 	private Instant to;
 
 	@Column(name = "created_by", nullable = false)
@@ -62,5 +64,8 @@ public class CampaignSaleEntity extends BaseAuditEntity {
 	@NotNull
 	@Column(name = "type", nullable = false)
 	private Byte type;
+
+	@Column(name = "campaign_request_id")
+	private Long campaignRequestId;
 
 }

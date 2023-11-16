@@ -1,11 +1,12 @@
 package com.artiexh.api.controller.campaign;
 
 import com.artiexh.api.base.common.Endpoint;
+import com.artiexh.api.base.exception.ArtiexhConfigException;
 import com.artiexh.api.service.campaign.CampaignService;
-import com.artiexh.data.jpa.entity.ProductHistoryEntity;
-import com.artiexh.model.domain.ProductInventoryQuantity;
+import com.artiexh.api.service.marketplace.SaleCampaignService;
 import com.artiexh.model.rest.campaign.request.FinalizeProductRequest;
 import com.artiexh.model.rest.campaign.response.ProductInCampaignDetailResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignDetailResponse;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -24,6 +25,8 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class CampaignController {
 	private final CampaignService campaignService;
+	private final SaleCampaignService saleCampaignService;
+
 	@PostMapping("/{id}/finalize-product")
 	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
 	public Set<ProductResponse> finalizeProduct(@PathVariable("id") Long campaignId,
@@ -64,4 +67,21 @@ public class CampaignController {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
 		}
 	}
+
+	@PostMapping("/{id}/sale-campaign")
+	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
+	public SaleCampaignDetailResponse createSaleCampaignFromCampaignRequest(Authentication authentication,
+																			@PathVariable long id) {
+		long staffId = (long) authentication.getPrincipal();
+		try {
+			return saleCampaignService.createSaleCampaign(staffId, id);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		} catch (ArtiexhConfigException ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), ex);
+		}
+	}
+
 }
