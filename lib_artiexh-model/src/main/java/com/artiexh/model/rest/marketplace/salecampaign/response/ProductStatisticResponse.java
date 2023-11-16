@@ -1,5 +1,6 @@
 package com.artiexh.model.rest.marketplace.salecampaign.response;
 
+import com.artiexh.model.domain.Money;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -13,4 +14,5 @@ public class ProductStatisticResponse {
 	private Long soldQuantity;
 	private Long quantity;
 	private String name;
+	private Money revenue;
 }
