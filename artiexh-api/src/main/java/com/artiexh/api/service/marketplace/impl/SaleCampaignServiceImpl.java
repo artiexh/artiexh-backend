@@ -99,6 +99,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 	}
 
 	@Override
+	@Transactional
 	public SaleCampaignDetailResponse createSaleCampaign(long creatorId, Long campaignRequestId) {
 		int profitPercentageInt = Integer.parseInt(systemConfigService.getOrThrow(DEFAULT_PROFIT_PERCENTAGE, () -> new ArtiexhConfigException("Missing artiexh default profit percentage")));
 		var profitPercentage = BigDecimal.valueOf(profitPercentageInt);
@@ -138,6 +139,8 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			var artistProfit = productInventory.getPriceAmount().subtract(productInventory.getPriceAmount().multiply(profitPercentage).divide(BigDecimal.valueOf(100), RoundingMode.HALF_EVEN));
 			Product product = productService.create(ProductEntity.builder()
 				.id(new ProductEntityId(productInventory.getProductCode(), entity.getId()))
+				.productInventory(productInventory)
+				.campaignSale(entity)
 				.priceAmount(productInventory.getPriceAmount())
 				.priceUnit(productInventory.getPriceUnit())
 				.quantity(productInventory.getQuantity().intValue())
