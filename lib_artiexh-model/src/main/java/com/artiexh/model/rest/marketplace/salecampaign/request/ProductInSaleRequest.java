@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,4 +21,6 @@ public class ProductInSaleRequest {
 	private Integer quantity;
 	@Valid
 	private Money price;
+	@NotNull
+	private BigDecimal artistProfit;
 }

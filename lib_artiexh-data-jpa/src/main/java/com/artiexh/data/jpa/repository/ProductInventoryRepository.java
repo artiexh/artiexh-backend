@@ -35,4 +35,6 @@ public interface ProductInventoryRepository extends JpaRepository<ProductInvento
 
 	boolean existsByProductCodeAndOwnerId(String productCode, Long ownerId);
 
+	Set<ProductInventoryEntity> findAllByProductInCampaignIdIn(Set<Long> productInCampaignIds);
+
 }

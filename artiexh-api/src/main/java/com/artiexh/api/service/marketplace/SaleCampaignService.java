@@ -14,6 +14,8 @@ public interface SaleCampaignService {
 
 	SaleCampaignDetailResponse createSaleCampaign(long creatorId, SaleCampaignRequest request);
 
+	SaleCampaignDetailResponse createSaleCampaign(long creatorId, Long campaignRequestId);
+
 	Page<SaleCampaignResponse> getAll(Pageable pageable, Specification<CampaignSaleEntity> specification);
 
 	SaleCampaignDetailResponse getDetail(Long id);
