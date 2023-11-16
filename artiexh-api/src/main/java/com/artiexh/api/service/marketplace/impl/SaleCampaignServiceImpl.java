@@ -217,7 +217,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 	@Override
 	public CampaignStatistics getStatistics(Long campaignId) {
 		CampaignSaleEntity campaignEntity = campaignSaleRepository.findById(campaignId).orElseThrow(EntityNotFoundException::new);
-		List<ProductEntity> products = campaignEntity.getProducts().stream().sorted(Comparator.comparingInt(ProductEntity::getSoldQuantity)).toList();
+		List<ProductEntity> products = campaignEntity.getProducts().stream().sorted(Comparator.comparingInt(ProductEntity::getSoldQuantity).reversed()).toList();
 
 		BigDecimal revenue = BigDecimal.ZERO;
 		BigDecimal profit = BigDecimal.ZERO;
