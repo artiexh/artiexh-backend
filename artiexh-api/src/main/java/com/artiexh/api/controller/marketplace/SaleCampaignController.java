@@ -5,8 +5,10 @@ import com.artiexh.api.service.marketplace.SaleCampaignService;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.SaleCampaignFilter;
+import com.artiexh.model.rest.marketplace.salecampaign.request.ProductInSaleRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.request.SaleCampaignRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.response.CampaignStatistics;
+import com.artiexh.model.rest.marketplace.salecampaign.response.ProductInSaleCampaignResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignDetailResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignResponse;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,6 +20,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Set;
 
 @RequiredArgsConstructor
 @RestController
@@ -43,6 +47,32 @@ public class SaleCampaignController {
 														 @RequestBody SaleCampaignRequest request) {
 		try {
 			return saleCampaignService.updateSaleCampaign(id, request);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
+	}
+
+	@PostMapping("/{id}/product-in-sale")
+	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
+	public Set<ProductInSaleCampaignResponse> createProductInSaleCampaign(@PathVariable Long id,
+																		  @RequestBody Set<ProductInSaleRequest> requests) {
+		try {
+			return saleCampaignService.createProductInSaleCampaign(id, requests);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
+	}
+
+	@DeleteMapping("/{id}/product-in-sale")
+	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
+	public void deleteProductInSaleCampaign(@PathVariable("id") Long campaignId,
+											@RequestBody Set<String> productCodes) {
+		try {
+			saleCampaignService.deleteProductInSaleCampaign(campaignId, productCodes);
 		} catch (EntityNotFoundException ex) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
 		} catch (IllegalArgumentException ex) {

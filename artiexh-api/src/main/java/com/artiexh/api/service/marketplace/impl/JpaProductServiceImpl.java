@@ -52,6 +52,12 @@ public class JpaProductServiceImpl implements JpaProductService {
 			.orElseThrow(() -> new EntityNotFoundException("Product not found"));
 	}
 
+	@Override
+	@Transactional
+	public void delete(ProductEntity entity) {
+		productRepository.delete(entity);
+	}
+
 //	public Page<Product> fillProductPage(Page<Product> productPage) {
 //		// get missing fields from db: thumbnailUrl, remainingQuantity, owner.avatarUrl, description
 //		Set<Long> hitIds = productPage.stream()

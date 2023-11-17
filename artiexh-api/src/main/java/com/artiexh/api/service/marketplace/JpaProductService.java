@@ -13,6 +13,10 @@ public interface JpaProductService {
 	Page<ProductResponse> getByProductInventoryId(Page<ProductEntityId> idPage, Pageable pageable);
 
 	ProductResponse getById(ProductEntityId id);
+
+	void delete(ProductEntity entity);
+
+
 //	Page<Product> fillProductPage(Page<Product> productPage);
 //
 //	Product getDetail(long id);

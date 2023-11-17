@@ -20,6 +20,8 @@ public interface ProductService {
 
 	Page<ProductSuggestion> getSuggestionInPage(Query query, Pageable pageable);
 
+	void delete(ProductEntity entity);
+
 //	Page<Product> getInPage(Query query, Pageable pageable);
 //
 //	Product getDetail(long id);
