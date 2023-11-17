@@ -12,6 +12,8 @@ import org.springframework.data.elasticsearch.core.query.Query;
 public interface ProductService {
 	Product create(ProductEntity entity);
 
+	Product update(ProductEntity entity);
+
 	Page<ProductResponse> getAll(Pageable pageable, Query query);
 
 	ProductResponse getByCampaignIdAndProductCode(long id, String productCode);
@@ -19,6 +21,8 @@ public interface ProductService {
 	Page<ProductResponse> getAllByArtist(String artistUsername, Pageable pageable, ProductPageFilter filter);
 
 	Page<ProductSuggestion> getSuggestionInPage(Query query, Pageable pageable);
+
+	void delete(ProductEntity entity);
 
 //	Page<Product> getInPage(Query query, Pageable pageable);
 //

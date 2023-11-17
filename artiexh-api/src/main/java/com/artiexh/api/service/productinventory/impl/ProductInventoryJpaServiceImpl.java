@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -178,5 +177,14 @@ public class ProductInventoryJpaServiceImpl implements ProductInventoryJpaServic
 			productRepository.updateQuantity(productQuantity.getProductCode(), -productQuantity.getQuantity());
 		}
 		productHistoryService.create(ProductHistoryAction.EXPORT, sourceId, sourceCategory, productQuantities);
+	}
+
+	@Override
+	@Transactional
+	public void refundQuantity(Long sourceId, SourceCategory sourceCategory, Set<ProductInventoryQuantity> productQuantities) {
+		for (var productQuantity : productQuantities) {
+			productRepository.updateQuantity(productQuantity.getProductCode(), productQuantity.getQuantity());
+		}
+		productHistoryService.create(ProductHistoryAction.IMPORT, sourceId, sourceCategory, productQuantities);
 	}
 }

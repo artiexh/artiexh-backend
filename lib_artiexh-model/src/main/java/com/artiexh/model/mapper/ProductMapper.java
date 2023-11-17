@@ -24,6 +24,12 @@ import java.util.Set;
 )
 public interface ProductMapper {
 
+	@Named("entityToDomainWithoutCampaign")
+	@Mapping(target = "price.amount", source = "priceAmount")
+	@Mapping(target = "price.unit", source = "priceUnit")
+	@Mapping(target = "campaignSale", ignore = true)
+	Product entityToDomainWithoutCampaign(ProductEntity entity);
+
 	@Mapping(target = "price.amount", source = "priceAmount")
 	@Mapping(target = "price.unit", source = "priceUnit")
 	Product entityToDomain(ProductEntity entity);

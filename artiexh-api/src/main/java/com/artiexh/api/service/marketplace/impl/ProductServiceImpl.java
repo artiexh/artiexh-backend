@@ -8,6 +8,7 @@ import com.artiexh.data.jpa.entity.ProductEntityId;
 import com.artiexh.data.jpa.repository.ArtistRepository;
 import com.artiexh.model.domain.Product;
 import com.artiexh.model.domain.ProductSuggestion;
+import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.ProductPageFilter;
 import com.artiexh.model.rest.marketplace.salecampaign.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
@@ -25,6 +26,7 @@ public class ProductServiceImpl implements ProductService {
 	private final ArtistRepository artistRepository;
 	private final JpaProductService jpaProductService;
 	private final ProductInventoryOpenSearchService productInventoryOpenSearchService;
+	private final ProductMapper productMapper;
 
 	@Override
 	public Product create(ProductEntity entity) {
@@ -36,6 +38,21 @@ public class ProductServiceImpl implements ProductService {
 				result.getPrice(),
 				result.getCampaignSale()
 			);
+		} catch (Exception e) {
+			log.warn("Insert product to db fail", e);
+			throw e;
+		}
+		return result;
+	}
+
+	@Override
+	public Product update(ProductEntity entity) {
+		Product result;
+		try {
+			result = jpaProductService.create(entity);
+			productInventoryOpenSearchService.updatePrice(
+				result.getProductInventory().getProductCode(),
+				result.getPrice());
 		} catch (Exception e) {
 			log.warn("Insert product to db fail", e);
 			throw e;
@@ -68,6 +85,13 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public Page<ProductSuggestion> getSuggestionInPage(Query query, Pageable pageable) {
 		return productInventoryOpenSearchService.getSuggestionInPage(query, pageable);
+	}
+
+	@Override
+	public void delete(ProductEntity entity) {
+		Product product = productMapper.entityToDomainWithoutCampaign(entity);
+		productInventoryOpenSearchService.removeSaveCampaign(product.getProductInventory().getProductCode());
+		jpaProductService.delete(entity);
 	}
 
 //	@Override

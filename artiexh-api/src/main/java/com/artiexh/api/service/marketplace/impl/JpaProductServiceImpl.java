@@ -36,7 +36,13 @@ public class JpaProductServiceImpl implements JpaProductService {
 	@Override
 	@Transactional
 	public Product create(ProductEntity productEntity) {
-		return productMapper.entityToDomain(productRepository.save(productEntity));
+		return productMapper.entityToDomainWithoutCampaign(productRepository.save(productEntity));
+	}
+
+	@Override
+	@Transactional
+	public Product update(ProductEntity productEntity) {
+		return productMapper.entityToDomainWithoutCampaign(productRepository.save(productEntity));
 	}
 
 	@Override
@@ -50,6 +56,12 @@ public class JpaProductServiceImpl implements JpaProductService {
 		return productRepository.findById(id)
 			.map(productMapper::entityToProductResponse)
 			.orElseThrow(() -> new EntityNotFoundException("Product not found"));
+	}
+
+	@Override
+	@Transactional
+	public void delete(ProductEntity entity) {
+		productRepository.delete(entity);
 	}
 
 //	public Page<Product> fillProductPage(Page<Product> productPage) {

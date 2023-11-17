@@ -17,6 +17,10 @@ public interface ProductInventoryOpenSearchService {
 
 	ProductInventoryDocument updateSaveCampaign(String productCode, Money price, CampaignSale campaignSale);
 
+	ProductInventoryDocument updatePrice(String productCode, Money price);
+
+	void removeSaveCampaign(String productCode);
+
 	Page<ProductInventoryDocument> getAll(Pageable pageable, Query query);
 
 	Page<ProductSuggestion> getSuggestionInPage(Query query, Pageable pageable);
