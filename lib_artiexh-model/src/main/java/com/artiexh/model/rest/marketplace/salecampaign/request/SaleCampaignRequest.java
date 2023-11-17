@@ -1,7 +1,6 @@
 package com.artiexh.model.rest.marketplace.salecampaign.request;
 
 import com.artiexh.model.domain.CampaignType;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
@@ -11,7 +10,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -41,7 +39,10 @@ public class SaleCampaignRequest {
 	@NotNull
 	private CampaignType type;
 
-	@Valid
-	@NotBlank
-	private Set<ProductInSaleRequest> products = Set.of();
+	@NotNull
+	private Long artistId;
+
+//	@Valid
+//	@NotBlank
+//	private Set<ProductInSaleRequest> products = Set.of();
 }

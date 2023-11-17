@@ -23,8 +23,8 @@ import java.util.List;
 public class ProductHistoryDetailFilter {
 	private String productCode;
 	public Specification<ProductHistoryDetailEntity> getSpecification() {
-		List<Predicate> predicates = new ArrayList<>();
 		return (root, cQuery, builder) -> {
+			List<Predicate> predicates = new ArrayList<>();
 			if (StringUtils.isNotBlank(productCode)) {
 				predicates.add(builder.equal(root.get("productInventory").get("productCode"), productCode));
 			}

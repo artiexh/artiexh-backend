@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.*;
 import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -40,6 +41,31 @@ public class ProductInventoryOpenSearchServiceImpl implements ProductInventoryOp
 			openSearchTemplate.save(document);
 		}
 		return document;
+	}
+
+	@Override
+	public ProductInventoryDocument updatePrice(String productCode, Money price) {
+		var document = openSearchTemplate.get(productCode, ProductInventoryDocument.class);
+		if (document != null) {
+			document.getPrice().setAmount(price.getAmount());
+			document.getPrice().setUnit(price.getUnit());
+			openSearchTemplate.save(document);
+		}
+		return document;
+	}
+
+	@Override
+	@Async
+	public void removeSaveCampaign(String productCode) {
+		var document = openSearchTemplate.get(productCode, ProductInventoryDocument.class);
+		if (document == null) {
+			return;
+		}
+
+		document.setCampaign(null);
+		document.setPrice(null);
+
+		openSearchTemplate.save(document);
 	}
 
 	@Override
