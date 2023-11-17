@@ -7,6 +7,7 @@ import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.SaleCampaignFilter;
 import com.artiexh.model.rest.marketplace.salecampaign.request.ProductInSaleRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.request.SaleCampaignRequest;
+import com.artiexh.model.rest.marketplace.salecampaign.request.UpdateProductInSaleRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.response.CampaignStatistics;
 import com.artiexh.model.rest.marketplace.salecampaign.response.ProductInSaleCampaignResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignDetailResponse;
@@ -32,7 +33,7 @@ public class SaleCampaignController {
 	@PostMapping
 	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
 	public SaleCampaignDetailResponse createSaleCampaign(Authentication authentication,
-														 @RequestBody SaleCampaignRequest request) {
+														 @RequestBody @Validated SaleCampaignRequest request) {
 		Long id = (Long) authentication.getPrincipal();
 		try {
 			return saleCampaignService.createSaleCampaign(id, request);
@@ -44,7 +45,7 @@ public class SaleCampaignController {
 	@PutMapping("/{id}")
 	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
 	public SaleCampaignDetailResponse updateSaleCampaign(@PathVariable("id") Long id,
-														 @RequestBody SaleCampaignRequest request) {
+														 @RequestBody @Validated SaleCampaignRequest request) {
 		try {
 			return saleCampaignService.updateSaleCampaign(id, request);
 		} catch (EntityNotFoundException ex) {
@@ -56,8 +57,8 @@ public class SaleCampaignController {
 
 	@PostMapping("/{id}/product-in-sale")
 	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
-	public Set<ProductInSaleCampaignResponse> createProductInSaleCampaign(@PathVariable Long id,
-																		  @RequestBody Set<ProductInSaleRequest> requests) {
+	public Set<ProductInSaleCampaignResponse> createProductInSale(@PathVariable Long id,
+																  @RequestBody @Validated Set<ProductInSaleRequest> requests) {
 		try {
 			return saleCampaignService.createProductInSaleCampaign(id, requests);
 		} catch (EntityNotFoundException ex) {
@@ -67,10 +68,24 @@ public class SaleCampaignController {
 		}
 	}
 
+	@PutMapping("/{id}/product-in-sale/{productCode}")
+	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
+	public ProductInSaleCampaignResponse updateProductInSale(@PathVariable Long id,
+															 @PathVariable String productCode,
+															 @RequestBody @Validated UpdateProductInSaleRequest request) {
+		try {
+			return saleCampaignService.updateProductInSaleCampaign(id, productCode, request);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
+	}
+
 	@DeleteMapping("/{id}/product-in-sale")
 	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
-	public void deleteProductInSaleCampaign(@PathVariable("id") Long campaignId,
-											@RequestBody Set<String> productCodes) {
+	public void deleteProductInSale(@PathVariable("id") Long campaignId,
+									@RequestBody @Validated Set<String> productCodes) {
 		try {
 			saleCampaignService.deleteProductInSaleCampaign(campaignId, productCodes);
 		} catch (EntityNotFoundException ex) {

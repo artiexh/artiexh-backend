@@ -36,7 +36,13 @@ public class JpaProductServiceImpl implements JpaProductService {
 	@Override
 	@Transactional
 	public Product create(ProductEntity productEntity) {
-		return productMapper.entityToDomain(productRepository.save(productEntity));
+		return productMapper.entityToDomainWithoutCampaign(productRepository.save(productEntity));
+	}
+
+	@Override
+	@Transactional
+	public Product update(ProductEntity productEntity) {
+		return productMapper.entityToDomainWithoutCampaign(productRepository.save(productEntity));
 	}
 
 	@Override

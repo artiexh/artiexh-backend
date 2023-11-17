@@ -16,6 +16,7 @@ import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.MarketplaceSaleCampaignFilter;
 import com.artiexh.model.rest.marketplace.salecampaign.request.ProductInSaleRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.request.SaleCampaignRequest;
+import com.artiexh.model.rest.marketplace.salecampaign.request.UpdateProductInSaleRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.response.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -323,6 +324,49 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 
 		return result.map(productMapper::domainToProductInSaleResponse)
 			.collect(Collectors.toSet());
+	}
+
+	@Override
+	@Transactional
+	public ProductInSaleCampaignResponse updateProductInSaleCampaign(long campaignId,
+																	 String productCode,
+																	 UpdateProductInSaleRequest request) {
+		ProductEntity productEntity = productRepository.findById(new ProductEntityId(productCode, campaignId))
+			.orElseThrow(() -> new EntityNotFoundException("Product " + productCode + " in campaign " + campaignId + " not found"));
+
+		int compareResult = Integer.compare(request.getQuantity(), productEntity.getQuantity());
+		if (compareResult > 1) {
+			// check inventory quantity
+			if (productEntity.getProductInventory().getQuantity() < request.getQuantity()) {
+				throw new IllegalArgumentException("Product inventory have not enough quantity");
+			}
+
+			productEntity.setQuantity(request.getQuantity());
+
+			Set<ProductInventoryQuantity> productQuantities = Set.of(
+				new ProductInventoryQuantity(productCode, (long) request.getQuantity())
+			);
+			productInventoryJpaService.reduceQuantity(campaignId, SourceCategory.CAMPAIGN_SALE, productQuantities);
+		}
+		if (compareResult < 1) {
+			// check sold quantity
+			if (request.getQuantity() < productEntity.getSoldQuantity()) {
+				throw new IllegalArgumentException("Product is sold more than request quantity");
+			}
+
+			productEntity.setQuantity(request.getQuantity());
+
+			Set<ProductInventoryQuantity> productQuantities = Set.of(
+				new ProductInventoryQuantity(productCode, (long) request.getQuantity())
+			);
+			productInventoryJpaService.refundQuantity(campaignId, SourceCategory.CAMPAIGN_SALE, productQuantities);
+		}
+
+		productEntity.setPriceAmount(request.getPrice().getAmount());
+		productEntity.setPriceUnit(request.getPrice().getUnit());
+		productEntity.setArtistProfit(request.getArtistProfit());
+
+		return productMapper.domainToProductInSaleResponse(productService.update(productEntity));
 	}
 
 	@Override

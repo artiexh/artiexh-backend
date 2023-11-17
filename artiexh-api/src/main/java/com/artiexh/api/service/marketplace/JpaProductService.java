@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 public interface JpaProductService {
 	Product create(ProductEntity productEntity);
 
+	Product update(ProductEntity productEntity);
+
 	Page<ProductResponse> getByProductInventoryId(Page<ProductEntityId> idPage, Pageable pageable);
 
 	ProductResponse getById(ProductEntityId id);

@@ -4,6 +4,7 @@ import com.artiexh.data.jpa.entity.CampaignSaleEntity;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.MarketplaceSaleCampaignFilter;
 import com.artiexh.model.rest.marketplace.salecampaign.request.ProductInSaleRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.request.SaleCampaignRequest;
+import com.artiexh.model.rest.marketplace.salecampaign.request.UpdateProductInSaleRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.response.CampaignStatistics;
 import com.artiexh.model.rest.marketplace.salecampaign.response.ProductInSaleCampaignResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignDetailResponse;
@@ -35,6 +36,10 @@ public interface SaleCampaignService {
 	CampaignStatistics getStatistics(Long campaignId);
 
 	Set<ProductInSaleCampaignResponse> createProductInSaleCampaign(Long campaignId, Set<ProductInSaleRequest> requests);
+
+	ProductInSaleCampaignResponse updateProductInSaleCampaign(long campaignId,
+															  String productCode,
+															  UpdateProductInSaleRequest request);
 
 	void deleteProductInSaleCampaign(Long campaignId, Set<String> productCodes);
 }

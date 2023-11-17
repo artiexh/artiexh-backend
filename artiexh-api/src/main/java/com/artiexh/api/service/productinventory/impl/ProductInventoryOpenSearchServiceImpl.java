@@ -44,6 +44,17 @@ public class ProductInventoryOpenSearchServiceImpl implements ProductInventoryOp
 	}
 
 	@Override
+	public ProductInventoryDocument updatePrice(String productCode, Money price) {
+		var document = openSearchTemplate.get(productCode, ProductInventoryDocument.class);
+		if (document != null) {
+			document.getPrice().setAmount(price.getAmount());
+			document.getPrice().setUnit(price.getUnit());
+			openSearchTemplate.save(document);
+		}
+		return document;
+	}
+
+	@Override
 	@Async
 	public void removeSaveCampaign(String productCode) {
 		var document = openSearchTemplate.get(productCode, ProductInventoryDocument.class);

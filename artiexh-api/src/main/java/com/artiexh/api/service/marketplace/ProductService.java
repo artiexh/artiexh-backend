@@ -12,6 +12,8 @@ import org.springframework.data.elasticsearch.core.query.Query;
 public interface ProductService {
 	Product create(ProductEntity entity);
 
+	Product update(ProductEntity entity);
+
 	Page<ProductResponse> getAll(Pageable pageable, Query query);
 
 	ProductResponse getByCampaignIdAndProductCode(long id, String productCode);

@@ -46,6 +46,21 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
+	public Product update(ProductEntity entity) {
+		Product result;
+		try {
+			result = jpaProductService.create(entity);
+			productInventoryOpenSearchService.updatePrice(
+				result.getProductInventory().getProductCode(),
+				result.getPrice());
+		} catch (Exception e) {
+			log.warn("Insert product to db fail", e);
+			throw e;
+		}
+		return result;
+	}
+
+	@Override
 	public Page<ProductResponse> getAll(Pageable pageable, Query query) {
 		Page<ProductEntityId> idPage = productInventoryOpenSearchService.getAll(pageable, query)
 			.map(document -> new ProductEntityId(document.getProductCode(), document.getCampaign().getId()));
@@ -74,7 +89,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public void delete(ProductEntity entity) {
-		Product product = productMapper.entityToDomain(entity);
+		Product product = productMapper.entityToDomainWithoutCampaign(entity);
 		productInventoryOpenSearchService.removeSaveCampaign(product.getProductInventory().getProductCode());
 		jpaProductService.delete(entity);
 	}
