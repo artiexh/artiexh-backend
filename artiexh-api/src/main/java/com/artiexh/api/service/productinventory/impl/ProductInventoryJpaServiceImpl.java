@@ -40,7 +40,7 @@ public class ProductInventoryJpaServiceImpl implements ProductInventoryJpaServic
 
 	@Override
 	public Page<ProductInventory> getInPage(Specification<ProductInventoryEntity> specification, Pageable pageable) {
-		return productRepository.findAll(pageable).map(productInventoryMapper::entityToDomain);
+		return productRepository.findAll(specification, pageable).map(productInventoryMapper::entityToDomain);
 	}
 
 	@Override

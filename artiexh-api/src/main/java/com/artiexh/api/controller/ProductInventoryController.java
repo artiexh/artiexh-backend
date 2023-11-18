@@ -10,6 +10,7 @@ import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.product.request.UpdateProductQuantitiesRequest;
 import com.artiexh.model.rest.product.request.UpdateProductRequest;
 import com.artiexh.model.rest.product.response.ProductResponse;
+import com.artiexh.model.rest.productinventory.ProductInventoryFilter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -64,9 +65,10 @@ public class ProductInventoryController {
 
 	@GetMapping
 	public PageResponse<ProductResponse> getInPage(
-		@ParameterObject @Valid PaginationAndSortingRequest pagination
+		@ParameterObject @Valid PaginationAndSortingRequest pagination,
+		@ParameterObject ProductInventoryFilter filter
 	) {
-		Page<ProductInventory> product = productInventoryService.getInPage(null, pagination.getPageable());
+		Page<ProductInventory> product = productInventoryService.getInPage(filter.getSpecification(), pagination.getPageable());
 		return new PageResponse<>(product.map(productInventoryMapper::domainToProductResponse));
 	}
 
