@@ -105,7 +105,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.content(campaignEntity.getContent())
 			.thumbnailUrl(campaignEntity.getThumbnailUrl())
 			.type(campaignEntity.getType())
-			.campaignRequestId(campaignEntity.getId())
+			.campaignRequest(campaignEntity)
 			.build());
 		var result = campaignSaleMapper.entityToDetailResponse(entity);
 
@@ -280,7 +280,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 		CampaignSaleEntity entity = campaignSaleRepository.findById(campaignId)
 			.orElseThrow(() -> new EntityNotFoundException("Sale campaign " + campaignId + " not found"));
 
-		if (entity.getCampaignRequestId() != null) {
+		if (entity.getCampaignRequest() != null) {
 			throw new IllegalArgumentException("Cannot add product to sale campaign created from campaign request");
 		}
 
@@ -375,7 +375,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 		CampaignSaleEntity entity = campaignSaleRepository.findById(campaignId)
 			.orElseThrow(() -> new EntityNotFoundException("Sale campaign " + campaignId + " not found"));
 
-		if (entity.getCampaignRequestId() != null) {
+		if (entity.getCampaignRequest() != null) {
 			throw new IllegalArgumentException("Cannot add product to sale campaign created from campaign request");
 		}
 
