@@ -46,7 +46,7 @@ public class ConfigServiceImpl implements ConfigService {
 		Query idsQuery = new NativeSearchQueryBuilder().withQuery(QueryBuilders.idsQuery().addIds(ids)).build();
 		openSearchTemplate.delete(idsQuery, ProductInventoryDocument.class, coordinates);
 
-		campaignSaleRepository.streamALlByFromBeforeAndToAfter(now, now)
+		campaignSaleRepository.streamAllByFromBeforeAndToAfter(now, now)
 			.forEach(campaign -> {
 				for (var product : campaign.getProducts()) {
 					var productInventory = product.getProductInventory();

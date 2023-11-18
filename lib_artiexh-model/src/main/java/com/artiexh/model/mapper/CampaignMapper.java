@@ -29,6 +29,7 @@ public interface CampaignMapper {
 	@Mapping(target = "products", source = "productInCampaigns")
 	@Mapping(target = "provider", ignore = true)
 	@Mapping(target = "campaignHistories", ignore = true)
+	@Mapping(target = "campaignSaleId", source = "campaignSale.id")
 	CampaignDetailResponse entityToDetailResponse(CampaignEntity entity);
 
 	@Mapping(target = "provider", ignore = true)
