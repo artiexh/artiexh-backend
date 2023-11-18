@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SaleCampaignDetailResponse extends SaleCampaignResponse {
 	private String content;
+	private Long campaignRequestId;
 }

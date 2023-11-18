@@ -72,4 +72,8 @@ public class CampaignEntity {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "created_by", nullable = false)
 	private AccountEntity createdBy;
+
+	@OneToOne(mappedBy = "campaignRequest")
+	private CampaignSaleEntity campaignSale;
+
 }

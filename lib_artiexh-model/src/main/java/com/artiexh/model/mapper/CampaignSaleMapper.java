@@ -4,6 +4,7 @@ import com.artiexh.data.jpa.entity.CampaignSaleEntity;
 import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignDetailResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignResponse;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
@@ -16,6 +17,7 @@ public interface CampaignSaleMapper {
 	@Named("entityToResponse")
 	SaleCampaignResponse entityToResponse(CampaignSaleEntity entity);
 
+	@Mapping(target = "campaignRequestId", source = "campaignRequest.id")
 	@Named("entityToDetailResponse")
 	SaleCampaignDetailResponse entityToDetailResponse(CampaignSaleEntity entity);
 
