@@ -62,12 +62,12 @@ public class RegistrationController {
 		}
 	}
 
-	@PostMapping(Endpoint.Registration.ADMIN)
+	@PostMapping(Endpoint.Registration.STAFF)
 	@PreAuthorize("hasAuthority('ADMIN')")
-	public Account registerAdmin(Authentication authentication, @RequestBody @Valid RegisterAdminRequest registerAdminRequest) {
+	public Account registerStaff(Authentication authentication, @RequestBody @Valid RegisterAdminRequest registerAdminRequest) {
 		if (rootAdminId.equals(authentication.getPrincipal())) {
 			try {
-				return registrationService.createAdmin(accountMapper.registerAdminRequestToDomain(registerAdminRequest));
+				return registrationService.createStaff(accountMapper.registerStaffRequestToDomain(registerAdminRequest));
 			} catch (IllegalArgumentException ex) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
 			}

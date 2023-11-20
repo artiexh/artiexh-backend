@@ -30,7 +30,7 @@ public class ProductTemplateController {
 
 	//Create Product Base
 	@PostMapping
-	@PreAuthorize("hasAuthority('ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
 	public ProductTemplateDetail create(@Valid @RequestBody ProductTemplateDetail detail) {
 		try {
 			ProductTemplate productTemplate = mapper.detailToDomain(detail);
@@ -42,7 +42,7 @@ public class ProductTemplateController {
 	}
 
 	@PutMapping(Endpoint.ProductTemplate.DETAIL)
-	@PreAuthorize("hasAuthority('ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
 	public ProductTemplateDetail update(
 		@PathVariable Long id,
 		@Valid @RequestBody UpdateProductTemplateDetail detail) {
@@ -59,7 +59,7 @@ public class ProductTemplateController {
 	}
 
 	@PutMapping(Endpoint.ProductTemplate.DETAIL + "/provider")
-	@PreAuthorize("hasAuthority('ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
 	public ProductTemplateDetail updateProviderConfig(
 		@PathVariable Long id,
 		@Valid @RequestBody UpdateProviderConfig detail) {
