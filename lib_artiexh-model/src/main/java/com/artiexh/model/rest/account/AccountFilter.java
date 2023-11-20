@@ -13,20 +13,22 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccountFilter {
-	private Role role;
+	private Set<Role> roles;
 	private String username;
 
 	public Specification<AccountEntity> getSpecification() {
 		return (root, query, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
-			if (role != null) {
-				predicates.add(builder.equal(root.get("role"), role.getByteValue()));
+			if (roles != null && !roles.isEmpty()) {
+				predicates.add(root.get("role").in(roles.stream().map(Role::getByteValue).collect(Collectors.toSet())));
 			}
 
 			if (StringUtils.isNotBlank(username)) {
