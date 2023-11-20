@@ -1,5 +1,6 @@
 package com.artiexh.model.rest.marketplace.salecampaign.response;
 
+import com.artiexh.model.domain.CampaignSaleStatus;
 import com.artiexh.model.domain.CampaignType;
 import com.artiexh.model.rest.artist.response.OwnerResponse;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -27,4 +28,5 @@ public class SaleCampaignResponse {
 	private OwnerResponse owner;
 	private CampaignType type;
 	private String thumbnailUrl;
+	private CampaignSaleStatus status;
 }

@@ -1,6 +1,8 @@
 package com.artiexh.model.mapper;
 
+import com.artiexh.data.jpa.entity.CampaignSaleEntity;
 import com.artiexh.data.jpa.entity.ProductEntity;
+import com.artiexh.data.opensearch.model.ProductDocument;
 import com.artiexh.model.domain.*;
 import com.artiexh.model.rest.marketplace.salecampaign.response.ProductInSaleCampaignResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.ProductResponse;
@@ -19,7 +21,8 @@ import java.util.Set;
 		ArtistMapper.class,
 		ProductAttachMapper.class,
 		ProductInventoryMapper.class,
-		CampaignTypeMapper.class
+		CampaignTypeMapper.class,
+		CampaignSaleMapper.class,
 	}
 )
 public interface ProductMapper {
@@ -103,6 +106,34 @@ public interface ProductMapper {
 			.map(ProductAttach::getUrl)
 			.orElse(null);
 	}
+
+	@Mapping(target = "campaign", source = "campaignSale")
+	@Mapping(target = "type", source = "productInventory.type")
+	@Mapping(target = "tags", source = "productInventory.tags")
+	@Mapping(target = "status", source = "productInventory.status")
+	@Mapping(target = "productCode", source = "productInventory.productCode")
+	@Mapping(target = "owner", source = "productInventory.owner")
+	@Mapping(target = "name", source = "productInventory.name")
+	@Mapping(target = "averageRate", source = "productInventory.averageRate")
+	@Mapping(target = "category", source = "productInventory.category")
+	ProductDocument domainToDocument(Product product);
+
+	@Mapping(target = "type", source = "productInventory.type")
+	@Mapping(target = "tags", source = "productInventory.tags")
+	@Mapping(target = "status", source = "productInventory.status")
+	@Mapping(target = "productCode", source = "productInventory.productCode")
+	@Mapping(target = "owner", source = "productInventory.owner")
+	@Mapping(target = "name", source = "productInventory.name")
+	@Mapping(target = "category", source = "productInventory.category")
+	@Mapping(target = "averageRate", source = "productInventory.averageRate")
+	@Mapping(target = "price.unit", source = "priceUnit")
+	@Mapping(target = "price.amount", source = "priceAmount")
+	@Mapping(target = "campaign", source = "campaignSale")
+	ProductDocument entityToDocument(ProductEntity entity);
+
+	ProductDocument.Campaign campaignToCampaignDocument(CampaignSale campaign);
+
+	ProductDocument.Campaign campaignEntityToCampaignDocument(CampaignSaleEntity entity);
 
 //	default Page<ProductResponse> productPageToProductResponsePage(Page<Product> productPage) {
 //		return productPage.map(this::domainToProductResponse);

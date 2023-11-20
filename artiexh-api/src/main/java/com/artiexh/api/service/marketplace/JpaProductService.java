@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface JpaProductService {
+
 	Product create(ProductEntity productEntity);
 
 	Product update(ProductEntity productEntity);

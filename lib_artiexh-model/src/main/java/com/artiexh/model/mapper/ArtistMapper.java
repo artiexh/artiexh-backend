@@ -20,7 +20,8 @@ import org.mapstruct.*;
 		AddressMapper.class,
 		CustomProductMapper.class,
 		CampaignMapper.class,
-		CampaignTypeMapper.class
+		CampaignTypeMapper.class,
+		CampaignSaleMapper.class
 	}
 )
 public abstract class ArtistMapper {

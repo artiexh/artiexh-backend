@@ -42,7 +42,4 @@ public class SaleCampaignRequest {
 	@NotNull
 	private Long artistId;
 
-//	@Valid
-//	@NotBlank
-//	private Set<ProductInSaleRequest> products = Set.of();
 }

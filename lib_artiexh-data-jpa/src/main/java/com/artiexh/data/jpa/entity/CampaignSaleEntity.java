@@ -2,8 +2,6 @@ package com.artiexh.data.jpa.entity;
 
 import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -48,7 +46,6 @@ public class CampaignSaleEntity extends BaseAuditEntity {
 	@OneToMany(mappedBy = "campaignSale", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<ProductEntity> products = new LinkedHashSet<>();
 
-	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "owner_id", nullable = false)
 	private ArtistEntity owner;
@@ -57,16 +54,17 @@ public class CampaignSaleEntity extends BaseAuditEntity {
 	@Column(name = "content")
 	private String content;
 
-	@Size(max = 2048)
 	@Column(name = "thumbnail_url", length = 2048)
 	private String thumbnailUrl;
 
-	@NotNull
 	@Column(name = "type", nullable = false)
 	private Byte type;
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "campaign_request_id")
 	private CampaignEntity campaignRequest;
+
+	@Column(name = "status", nullable = false)
+	private Byte status;
 
 }

@@ -17,12 +17,13 @@ public class CampaignSale {
 	private String name;
 	private String description;
 	private Instant publicDate;
-	private Instant orderFrom;
-	private Instant orderTo;
+	private Instant from;
+	private Instant to;
 	private Long createdBy;
 	private Set<Product> products;
 	private Artist owner;
 	private String content;
 	private String thumbnailUrl;
-	private CampaignType campaignType;
+	private CampaignType type;
+	private CampaignSaleStatus status;
 }

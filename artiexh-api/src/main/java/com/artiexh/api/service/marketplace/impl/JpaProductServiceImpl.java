@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -34,13 +35,13 @@ public class JpaProductServiceImpl implements JpaProductService {
 	private Long rootAdminId;
 
 	@Override
-	@Transactional
+	@Transactional(propagation = Propagation.NESTED)
 	public Product create(ProductEntity productEntity) {
 		return productMapper.entityToDomainWithoutCampaign(productRepository.save(productEntity));
 	}
 
 	@Override
-	@Transactional
+	@Transactional(propagation = Propagation.NESTED)
 	public Product update(ProductEntity productEntity) {
 		return productMapper.entityToDomainWithoutCampaign(productRepository.save(productEntity));
 	}
@@ -59,7 +60,7 @@ public class JpaProductServiceImpl implements JpaProductService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(propagation = Propagation.NESTED)
 	public void delete(ProductEntity entity) {
 		productRepository.delete(entity);
 	}
