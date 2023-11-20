@@ -106,7 +106,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Override
 	@Transactional
-	public Account createAdmin(Account account) {
+	public Account createStaff(Account account) {
 		StaffEntity savedAccountEntity = staffRepository.save(staffMapper.domainToEntity(account));
 		return accountMapper.entityToDomain(savedAccountEntity);
 	}
