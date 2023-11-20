@@ -11,6 +11,6 @@ public interface RegistrationService {
 
 	Artist registerArtist(Long id, RegistrationArtistRequest request);
 
-	Account createAdmin(Account account);
+	Account createStaff(Account account);
 
 }

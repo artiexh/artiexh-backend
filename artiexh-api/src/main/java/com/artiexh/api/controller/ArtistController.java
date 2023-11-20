@@ -64,7 +64,7 @@ public class ArtistController {
 	}
 
 	@GetMapping(Endpoint.Artist.ARTIST_PRODUCT)
-	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN', 'STAFF')")
 	public PageResponse<ProductResponse> getAllProduct(
 		Authentication authentication,
 		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
@@ -76,7 +76,7 @@ public class ArtistController {
 	}
 
 	@GetMapping(Endpoint.Artist.ARTIST_ORDER)
-	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN', 'STAFF')")
 	public PageResponse<CampaignOrderResponsePage> getAllOrder(
 		Authentication authentication,
 		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
@@ -87,7 +87,7 @@ public class ArtistController {
 	}
 
 	@GetMapping(Endpoint.Artist.ARTIST_ORDER + "/{id}")
-	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN', 'STAFF')")
 	public UserCampaignOrderDetailResponse getOrderById(
 		@PathVariable Long id,
 		Authentication authentication

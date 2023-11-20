@@ -10,6 +10,7 @@ import com.artiexh.model.domain.Role;
 import com.artiexh.model.domain.User;
 import com.artiexh.model.mapper.AccountMapper;
 import com.artiexh.model.mapper.ArtistMapper;
+import com.artiexh.model.mapper.StaffMapper;
 import com.artiexh.model.mapper.UserMapper;
 import com.artiexh.model.rest.artist.request.RegistrationArtistRequest;
 import jakarta.persistence.EntityNotFoundException;
@@ -36,6 +37,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private final CartRepository cartRepository;
 	private final WardRepository wardRepository;
 	private final RecentOauth2LoginFailId recentOauth2LoginFailId;
+	private final StaffRepository staffRepository;
+	private final StaffMapper staffMapper;
 
 	@Override
 	public User createUser(User user) {
@@ -102,8 +105,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	@Override
-	public Account createAdmin(Account account) {
-		AccountEntity savedAccountEntity = accountRepository.save(accountMapper.domainToEntity(account));
+	@Transactional
+	public Account createStaff(Account account) {
+		StaffEntity savedAccountEntity = staffRepository.save(staffMapper.domainToEntity(account));
 		return accountMapper.entityToDomain(savedAccountEntity);
 	}
 
