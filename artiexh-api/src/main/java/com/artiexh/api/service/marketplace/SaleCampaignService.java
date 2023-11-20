@@ -1,6 +1,7 @@
 package com.artiexh.api.service.marketplace;
 
 import com.artiexh.data.jpa.entity.CampaignSaleEntity;
+import com.artiexh.model.domain.CampaignSaleStatus;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.MarketplaceSaleCampaignFilter;
 import com.artiexh.model.rest.marketplace.salecampaign.request.ProductInSaleRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.request.SaleCampaignRequest;
@@ -22,6 +23,8 @@ public interface SaleCampaignService {
 	SaleCampaignDetailResponse createSaleCampaign(long creatorId, Long campaignRequestId);
 
 	SaleCampaignDetailResponse updateSaleCampaign(Long id, SaleCampaignRequest request);
+
+	void updateStatus(Long id, CampaignSaleStatus status);
 
 	Page<SaleCampaignResponse> getAll(Pageable pageable, Specification<CampaignSaleEntity> specification);
 

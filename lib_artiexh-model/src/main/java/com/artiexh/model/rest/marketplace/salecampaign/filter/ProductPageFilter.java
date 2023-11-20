@@ -1,5 +1,6 @@
 package com.artiexh.model.rest.marketplace.salecampaign.filter;
 
+import com.artiexh.model.domain.CampaignSaleStatus;
 import com.artiexh.model.domain.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -36,7 +37,7 @@ public class ProductPageFilter {
 	private Set<ProductStatus> statuses;
 	private Long campaignId;
 
-	public Query getQuery() {
+	public NativeSearchQueryBuilder getQueryBuilder() {
 		var boolQuery = new BoolQueryBuilder();
 
 		if (campaignId != null) {
@@ -79,6 +80,16 @@ public class ProductPageFilter {
 			queryBuilder.withQuery(new MultiMatchQueryBuilder(keyword, "name").fuzziness(Fuzziness.AUTO));
 		}
 
-		return queryBuilder.build();
+		return queryBuilder;
+	}
+
+	public Query getQuery() {
+		return getQueryBuilder().build();
+	}
+
+	public Query getMarketplaceQuery() {
+		return getQueryBuilder()
+			.withFilter(new TermQueryBuilder("campaign.status", CampaignSaleStatus.ACTIVE.getByteValue()))
+			.build();
 	}
 }

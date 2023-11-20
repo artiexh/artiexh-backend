@@ -1,6 +1,7 @@
 package com.artiexh.model.rest.marketplace.salecampaign.filter;
 
 import com.artiexh.data.jpa.entity.CampaignSaleEntity;
+import com.artiexh.model.domain.CampaignSaleStatus;
 import com.artiexh.model.domain.CampaignType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.criteria.Predicate;
@@ -25,10 +26,15 @@ public class MarketplaceSaleCampaignFilter {
 	private Instant to;
 	@JsonIgnore
 	private Instant publicDate = Instant.now();
+	private CampaignSaleStatus status;
 
 	public Specification<CampaignSaleEntity> getSpecification() {
 		return (root, query, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
+
+			if (status != null) {
+				predicates.add(builder.equal(root.get("status"), status.getByteValue()));
+			}
 
 			if (ownerId != null) {
 				predicates.add(builder.equal(root.get("owner").get("id"), ownerId));
@@ -60,6 +66,8 @@ public class MarketplaceSaleCampaignFilter {
 			List<Predicate> predicates = new ArrayList<>();
 
 			predicates.add(builder.lessThanOrEqualTo(root.get("publicDate"), publicDate));
+
+			predicates.add(builder.equal(root.get("status"), CampaignSaleStatus.ACTIVE.getByteValue()));
 
 			if (campaignType != null && CampaignType.MARKETPLACE_VIEW_TYPE.contains(campaignType)) {
 				predicates.add(builder.equal(root.get("type"), campaignType.getByteValue()));

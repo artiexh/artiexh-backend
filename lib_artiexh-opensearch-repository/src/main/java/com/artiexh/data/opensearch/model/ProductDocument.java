@@ -1,6 +1,7 @@
 package com.artiexh.data.opensearch.model;
 
 import lombok.Data;
+import org.springframework.data.annotation.AccessType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -11,9 +12,9 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 @Data
-@Document(indexName = "product-inventory")
-public class ProductInventoryDocument {
-	@Id
+@Document(indexName = "product")
+public class ProductDocument {
+	@Field(name = "productCode", type = FieldType.Keyword)
 	private String productCode;
 	@Field(name = "owner", type = FieldType.Object)
 	private Owner owner;
@@ -33,6 +34,12 @@ public class ProductInventoryDocument {
 	private String[] tags;
 	@Field(name = "campaign", type = FieldType.Nested)
 	private Campaign campaign;
+
+	@Id
+	@AccessType(AccessType.Type.PROPERTY)
+	public String getDocumentId() {
+		return campaign.id + '-' + productCode;
+	}
 
 	@Data
 	public static class Money {
@@ -112,11 +119,13 @@ public class ProductInventoryDocument {
 		private Long id;
 		@Field(name = "type", type = FieldType.Byte)
 		private Byte type;
-		@Field(name = "order_from", type = FieldType.Date, format = {DateFormat.date_time})
-		private Instant orderFrom;
-		@Field(name = "order_to", type = FieldType.Date, format = {DateFormat.date_time})
-		private Instant orderTo;
+		@Field(name = "from", type = FieldType.Date, format = {DateFormat.date_time})
+		private Instant from;
+		@Field(name = "to", type = FieldType.Date, format = {DateFormat.date_time})
+		private Instant to;
 		@Field(name = "public_date", type = FieldType.Date, format = {DateFormat.date_time})
 		private Instant publicDate;
+		@Field(name = "status", type = FieldType.Byte)
+		private Byte status;
 	}
 }

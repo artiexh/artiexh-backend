@@ -1,8 +1,8 @@
 package com.artiexh.api.service.marketplace.impl;
 
 import com.artiexh.api.service.marketplace.JpaProductService;
+import com.artiexh.api.service.marketplace.ProductOpenSearchService;
 import com.artiexh.api.service.marketplace.ProductService;
-import com.artiexh.api.service.productinventory.ProductInventoryOpenSearchService;
 import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.jpa.entity.ProductEntityId;
 import com.artiexh.data.jpa.repository.ArtistRepository;
@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 public class ProductServiceImpl implements ProductService {
 	private final ArtistRepository artistRepository;
 	private final JpaProductService jpaProductService;
-	private final ProductInventoryOpenSearchService productInventoryOpenSearchService;
+	private final ProductOpenSearchService productOpenSearchService;
 	private final ProductMapper productMapper;
 
 	@Override
@@ -33,11 +33,7 @@ public class ProductServiceImpl implements ProductService {
 		Product result;
 		try {
 			result = jpaProductService.create(entity);
-			productInventoryOpenSearchService.updateSaveCampaign(
-				result.getProductInventory().getProductCode(),
-				result.getPrice(),
-				result.getCampaignSale()
-			);
+			productOpenSearchService.create(result);
 		} catch (Exception e) {
 			log.warn("Insert product to db fail", e);
 			throw e;
@@ -49,12 +45,10 @@ public class ProductServiceImpl implements ProductService {
 	public Product update(ProductEntity entity) {
 		Product result;
 		try {
-			result = jpaProductService.create(entity);
-			productInventoryOpenSearchService.updatePrice(
-				result.getProductInventory().getProductCode(),
-				result.getPrice());
+			result = jpaProductService.update(entity);
+			productOpenSearchService.update(result);
 		} catch (Exception e) {
-			log.warn("Insert product to db fail", e);
+			log.warn("Update product to db fail", e);
 			throw e;
 		}
 		return result;
@@ -62,7 +56,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public Page<ProductResponse> getAll(Pageable pageable, Query query) {
-		Page<ProductEntityId> idPage = productInventoryOpenSearchService.getAll(pageable, query)
+		Page<ProductEntityId> idPage = productOpenSearchService.getAll(pageable, query)
 			.map(document -> new ProductEntityId(document.getProductCode(), document.getCampaign().getId()));
 		return jpaProductService.getByProductInventoryId(idPage, pageable);
 	}
@@ -76,7 +70,7 @@ public class ProductServiceImpl implements ProductService {
 	public Page<ProductResponse> getAllByArtist(String artistUsername, Pageable pageable, ProductPageFilter filter) {
 		if (artistRepository.existsByUsername(artistUsername)) {
 			filter.setArtistUsername(artistUsername);
-			return getAll(pageable, filter.getQuery());
+			return getAll(pageable, filter.getMarketplaceQuery());
 		} else {
 			throw new EntityNotFoundException("Artist not found");
 		}
@@ -84,14 +78,19 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public Page<ProductSuggestion> getSuggestionInPage(Query query, Pageable pageable) {
-		return productInventoryOpenSearchService.getSuggestionInPage(query, pageable);
+		return productOpenSearchService.getSuggestionInPage(query, pageable);
 	}
 
 	@Override
 	public void delete(ProductEntity entity) {
-		Product product = productMapper.entityToDomainWithoutCampaign(entity);
-		productInventoryOpenSearchService.removeSaveCampaign(product.getProductInventory().getProductCode());
-		jpaProductService.delete(entity);
+		try {
+			Product product = productMapper.entityToDomainWithoutCampaign(entity);
+			jpaProductService.delete(entity);
+			productOpenSearchService.delete(product.getCampaignSale().getId(), product.getProductInventory().getProductCode());
+		} catch (Exception e) {
+			log.warn("Delete product to db fail", e);
+			throw e;
+		}
 	}
 
 //	@Override

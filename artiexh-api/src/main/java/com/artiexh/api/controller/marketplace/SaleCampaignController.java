@@ -10,6 +10,7 @@ import com.artiexh.model.rest.marketplace.salecampaign.filter.SaleCampaignFilter
 import com.artiexh.model.rest.marketplace.salecampaign.request.ProductInSaleRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.request.SaleCampaignRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.request.UpdateProductInSaleRequest;
+import com.artiexh.model.rest.marketplace.salecampaign.request.UpdateSaleCampaignStatusRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.response.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,19 @@ public class SaleCampaignController {
 														 @RequestBody @Validated SaleCampaignRequest request) {
 		try {
 			return saleCampaignService.updateSaleCampaign(id, request);
+		} catch (EntityNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+		} catch (IllegalArgumentException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
+	}
+
+	@PatchMapping("/{id}/status")
+	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
+	public void updateStatus(@PathVariable("id") Long id,
+							 @RequestBody @Validated UpdateSaleCampaignStatusRequest request) {
+		try {
+			saleCampaignService.updateStatus(id, request.getStatus());
 		} catch (EntityNotFoundException ex) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
 		} catch (IllegalArgumentException ex) {

@@ -1,9 +1,7 @@
 package com.artiexh.model.mapper;
 
-import com.artiexh.data.jpa.entity.CampaignSaleEntity;
 import com.artiexh.data.jpa.entity.ProductAttachEntity;
 import com.artiexh.data.jpa.entity.ProductInventoryEntity;
-import com.artiexh.data.opensearch.model.ProductInventoryDocument;
 import com.artiexh.model.domain.*;
 import com.artiexh.model.rest.campaign.request.FinalizeProductRequest;
 import com.artiexh.model.rest.product.request.UpdateProductRequest;
@@ -63,21 +61,12 @@ public interface ProductInventoryMapper {
 	@Mapping(target = "quantity", constant = "0L")
 	ProductInventory finalizeProductRequestToProduct(FinalizeProductRequest request);
 
-
-	@Mapping(target = "campaign", ignore = true)
-	ProductInventoryDocument domainToDocument(ProductInventory product);
-
-	@Mapping(target = "price.unit", source = "priceUnit")
-	@Mapping(target = "price.amount", source = "priceAmount")
-	@Mapping(target = "campaign", ignore = true)
-	ProductInventoryDocument entityToDocument(ProductInventoryEntity entity);
-
-	ProductInventoryDocument.Campaign campaignToCampaignDocument(CampaignSale campaign);
-
-	ProductInventoryDocument.Campaign campaignEntityToCampaignDocument(CampaignSaleEntity entity);
-
 	default Integer toValue(ProductStatus status) {
 		return status.getValue();
+	}
+
+	default Byte toByteValue(ProductStatus status) {
+		return status.getByteValue();
 	}
 
 	default ProductStatus toProductStatus(Integer value) {
@@ -86,6 +75,10 @@ public interface ProductInventoryMapper {
 
 	default Integer toValue(ProductType type) {
 		return type.getValue();
+	}
+
+	default Byte toByteValue(ProductType type) {
+		return type.getByteValue();
 	}
 
 	default ProductType toProductType(Integer value) {

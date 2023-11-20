@@ -4,13 +4,11 @@ import com.artiexh.api.base.exception.ArtiexhConfigException;
 import com.artiexh.api.base.service.SystemConfigService;
 import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.api.service.marketplace.SaleCampaignService;
-import com.artiexh.api.service.productinventory.ProductInventoryJpaService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.*;
+import com.artiexh.model.domain.CampaignSaleStatus;
 import com.artiexh.model.domain.Money;
 import com.artiexh.model.domain.Product;
-import com.artiexh.model.domain.ProductInventoryQuantity;
-import com.artiexh.model.domain.SourceCategory;
 import com.artiexh.model.mapper.CampaignSaleMapper;
 import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.MarketplaceSaleCampaignFilter;
@@ -30,7 +28,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
-import java.util.*;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,7 +49,6 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 	private final CampaignSaleMapper campaignSaleMapper;
 	private final ProductMapper productMapper;
 	private final ProductService productService;
-	private final ProductInventoryJpaService productInventoryJpaService;
 	private final SystemConfigService systemConfigService;
 
 	@Override
@@ -77,6 +77,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.content(request.getContent())
 			.thumbnailUrl(request.getThumbnailUrl())
 			.type(request.getType().getByteValue())
+			.status(CampaignSaleStatus.DRAFT.getByteValue())
 			.build());
 
 		return campaignSaleMapper.entityToDetailResponse(entity);
@@ -105,6 +106,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.content(campaignEntity.getContent())
 			.thumbnailUrl(campaignEntity.getThumbnailUrl())
 			.type(campaignEntity.getType())
+			.status(CampaignSaleStatus.DRAFT.getByteValue())
 			.campaignRequest(campaignEntity)
 			.build());
 		var result = campaignSaleMapper.entityToDetailResponse(entity);
@@ -118,10 +120,14 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			throw new IllegalArgumentException("Finalize campaign request is not finished");
 		}
 
-		Set<ProductInventoryQuantity> productQuantities = new HashSet<>();
+
 		for (var productInventory : productInventoryEntities) {
-			var artistProfit = productInventory.getPriceAmount().subtract(productInventory.getPriceAmount().multiply(profitPercentage).divide(BigDecimal.valueOf(100), RoundingMode.HALF_EVEN));
-			Product product = productService.create(ProductEntity.builder()
+			var artistProfit = productInventory.getPriceAmount().subtract(
+				productInventory.getPriceAmount()
+					.multiply(profitPercentage)
+					.divide(BigDecimal.valueOf(100), RoundingMode.HALF_EVEN)
+			);
+			productService.create(ProductEntity.builder()
 				.id(new ProductEntityId(productInventory.getProductCode(), entity.getId()))
 				.productInventory(productInventory)
 				.campaignSale(entity)
@@ -129,14 +135,8 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 				.priceUnit(productInventory.getPriceUnit())
 				.quantity(productInventory.getQuantity().intValue())
 				.artistProfit(artistProfit)
-				.build()
-			);
-			productQuantities.add(new ProductInventoryQuantity(
-				product.getProductInventory().getProductCode(),
-				(long) product.getQuantity())
-			);
+				.build());
 		}
-		productInventoryJpaService.reduceQuantity(result.getId(), SourceCategory.CAMPAIGN_SALE, productQuantities);
 		return result;
 	}
 
@@ -192,6 +192,45 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 		entity.setType(request.getType().getByteValue());
 
 		return campaignSaleMapper.entityToDetailResponse(entity);
+	}
+
+	@Override
+	@Transactional
+	public void updateStatus(Long id, CampaignSaleStatus status) {
+		CampaignSaleEntity entity = campaignSaleRepository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException("Sale campaign " + id + " not found"));
+
+		if (entity.getStatus() == status.getByteValue()) {
+			return;
+		}
+
+		switch (CampaignSaleStatus.from(entity.getStatus())) {
+			case DRAFT -> updateCampaignFromDraft(entity, status);
+			case ACTIVE -> updateCampaignFromActive(entity, status);
+			case CLOSED -> throw new IllegalArgumentException("Cannot update status of closed sale campaign");
+		}
+	}
+
+	private void updateCampaignFromDraft(CampaignSaleEntity entity, CampaignSaleStatus status) {
+		if (status == CampaignSaleStatus.CLOSED) {
+			entity.setStatus(status.getByteValue());
+			campaignSaleRepository.save(entity);
+		} else { // ACTIVE
+			entity.setStatus(status.getByteValue());
+			campaignSaleRepository.save(entity);
+		}
+	}
+
+	private void updateCampaignFromActive(CampaignSaleEntity entity, CampaignSaleStatus status) {
+		if (status == CampaignSaleStatus.CLOSED) {
+			// refund inventory, inventory history
+			entity.setStatus(status.getByteValue());
+			campaignSaleRepository.save(entity);
+		} else {
+			// refund product_inventory history
+			entity.setStatus(status.getByteValue());
+			campaignSaleRepository.save(entity);
+		}
 	}
 
 	@Override
@@ -280,6 +319,10 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 		CampaignSaleEntity entity = campaignSaleRepository.findById(campaignId)
 			.orElseThrow(() -> new EntityNotFoundException("Sale campaign " + campaignId + " not found"));
 
+		if (entity.getStatus() != CampaignSaleStatus.DRAFT.getByteValue()) {
+			throw new IllegalStateException("Cannot add product to sale campaign that is not in draft status");
+		}
+
 		if (entity.getCampaignRequest() != null) {
 			throw new IllegalArgumentException("Cannot add product to sale campaign created from campaign request");
 		}
@@ -288,7 +331,6 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			throw new IllegalArgumentException("Sale campaign must have an owner before add product");
 		}
 
-		Set<ProductInventoryQuantity> productQuantities = new HashSet<>(requests.size());
 		Stream<Product> result = requests.stream()
 			.map(request -> {
 				ProductInventoryEntity productInventory = productInventoryRepository.findById(request.getProductCode())
@@ -301,26 +343,16 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 				}
 				return Pair.of(request, productInventory);
 			})
-			.map(pair -> {
-				Product product = productService.create(ProductEntity.builder()
-					.id(new ProductEntityId(pair.getFirst().getProductCode(), entity.getId()))
-					.productInventory(pair.getSecond())
-					.campaignSale(entity)
-					.priceAmount(pair.getFirst().getPrice().getAmount())
-					.priceUnit(pair.getFirst().getPrice().getUnit())
-					.quantity(pair.getFirst().getQuantity())
-					.artistProfit(pair.getFirst().getArtistProfit())
-					.build());
-
-				productQuantities.add(new ProductInventoryQuantity(
-					product.getProductInventory().getProductCode(),
-					(long) product.getQuantity()
-				));
-
-				return product;
-			});
-
-		productInventoryJpaService.reduceQuantity(campaignId, SourceCategory.CAMPAIGN_SALE, productQuantities);
+			.map(pair -> productService.create(ProductEntity.builder()
+				.id(new ProductEntityId(pair.getFirst().getProductCode(), entity.getId()))
+				.productInventory(pair.getSecond())
+				.campaignSale(entity)
+				.priceAmount(pair.getFirst().getPrice().getAmount())
+				.priceUnit(pair.getFirst().getPrice().getUnit())
+				.quantity(pair.getFirst().getQuantity())
+				.artistProfit(pair.getFirst().getArtistProfit())
+				.build())
+			);
 
 		return result.map(productMapper::domainToProductInSaleResponse)
 			.collect(Collectors.toSet());
@@ -334,34 +366,21 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 		ProductEntity productEntity = productRepository.findById(new ProductEntityId(productCode, campaignId))
 			.orElseThrow(() -> new EntityNotFoundException("Product " + productCode + " in campaign " + campaignId + " not found"));
 
+		if (productEntity.getCampaignSale().getStatus() != CampaignSaleStatus.DRAFT.getByteValue()) {
+			throw new IllegalStateException("Cannot add product to sale campaign that is not in draft status");
+		}
+
 		int compareResult = Integer.compare(request.getQuantity(), productEntity.getQuantity());
-		if (compareResult > 1) {
+		if (compareResult > 1 && productEntity.getProductInventory().getQuantity() < request.getQuantity()) {
 			// check inventory quantity
-			if (productEntity.getProductInventory().getQuantity() < request.getQuantity()) {
-				throw new IllegalArgumentException("Product inventory have not enough quantity");
-			}
-
-			productEntity.setQuantity(request.getQuantity());
-
-			Set<ProductInventoryQuantity> productQuantities = Set.of(
-				new ProductInventoryQuantity(productCode, (long) request.getQuantity())
-			);
-			productInventoryJpaService.reduceQuantity(campaignId, SourceCategory.CAMPAIGN_SALE, productQuantities);
+			throw new IllegalArgumentException("Product inventory have not enough quantity");
 		}
-		if (compareResult < 1) {
+		if (compareResult < 1 && request.getQuantity() < productEntity.getSoldQuantity()) {
 			// check sold quantity
-			if (request.getQuantity() < productEntity.getSoldQuantity()) {
-				throw new IllegalArgumentException("Product is sold more than request quantity");
-			}
-
-			productEntity.setQuantity(request.getQuantity());
-
-			Set<ProductInventoryQuantity> productQuantities = Set.of(
-				new ProductInventoryQuantity(productCode, (long) request.getQuantity())
-			);
-			productInventoryJpaService.refundQuantity(campaignId, SourceCategory.CAMPAIGN_SALE, productQuantities);
+			throw new IllegalArgumentException("Product is sold more than request quantity");
 		}
 
+		productEntity.setQuantity(request.getQuantity());
 		productEntity.setPriceAmount(request.getPrice().getAmount());
 		productEntity.setPriceUnit(request.getPrice().getUnit());
 		productEntity.setArtistProfit(request.getArtistProfit());
@@ -375,19 +394,18 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 		CampaignSaleEntity entity = campaignSaleRepository.findById(campaignId)
 			.orElseThrow(() -> new EntityNotFoundException("Sale campaign " + campaignId + " not found"));
 
+		if (entity.getStatus() != CampaignSaleStatus.DRAFT.getByteValue()) {
+			throw new IllegalStateException("Cannot add product to sale campaign that is not in draft status");
+		}
+
 		if (entity.getCampaignRequest() != null) {
 			throw new IllegalArgumentException("Cannot add product to sale campaign created from campaign request");
 		}
 
-		Set<ProductInventoryQuantity> productQuantities = productCodes.stream()
-			.map(productCode -> {
-				var productEntity = productRepository.findById(new ProductEntityId(productCode, campaignId))
-					.orElseThrow(() -> new IllegalArgumentException("Product " + productCode + " not in campaign"));
-				productService.delete(productEntity);
-				return new ProductInventoryQuantity(productCode, (long) productEntity.getQuantity());
-			})
-			.collect(Collectors.toSet());
-
-		productInventoryJpaService.refundQuantity(campaignId, SourceCategory.CAMPAIGN_SALE, productQuantities);
+		for (var productCode : productCodes) {
+			var productEntity = productRepository.findById(new ProductEntityId(productCode, campaignId))
+				.orElseThrow(() -> new IllegalArgumentException("Product " + productCode + " not in campaign"));
+			productService.delete(productEntity);
+		}
 	}
 }
