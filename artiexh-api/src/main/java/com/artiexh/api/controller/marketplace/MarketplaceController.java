@@ -9,8 +9,8 @@ import com.artiexh.model.mapper.ArtistMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.artist.response.ArtistProfileResponse;
-import com.artiexh.model.rest.marketplace.salecampaign.filter.ProductPageFilter;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.MarketplaceSaleCampaignFilter;
+import com.artiexh.model.rest.marketplace.salecampaign.filter.ProductPageFilter;
 import com.artiexh.model.rest.marketplace.salecampaign.response.ProductResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignDetailResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignResponse;
@@ -62,7 +62,7 @@ public class MarketplaceController {
 		filter.setCampaignId(id);
 		return new PageResponse<>(productService.getAll(
 			paginationAndSortingRequest.getPageable(),
-			filter.getQuery()
+			filter.getMarketplaceQuery()
 		));
 	}
 
@@ -71,7 +71,7 @@ public class MarketplaceController {
 															 @ParameterObject ProductPageFilter filter) {
 		return new PageResponse<>(productService.getAll(
 			paginationAndSortingRequest.getPageable(),
-			filter.getQuery())
+			filter.getMarketplaceQuery())
 		);
 	}
 

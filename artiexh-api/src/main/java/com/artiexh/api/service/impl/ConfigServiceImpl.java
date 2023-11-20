@@ -7,7 +7,7 @@ import com.artiexh.data.jpa.entity.ProductInCampaignEntity;
 import com.artiexh.data.jpa.repository.CampaignSaleRepository;
 import com.artiexh.data.jpa.repository.ProductInCampaignRepository;
 import com.artiexh.data.jpa.repository.ProductRepository;
-import com.artiexh.data.opensearch.model.ProductInventoryDocument;
+import com.artiexh.data.opensearch.model.ProductDocument;
 import com.artiexh.model.domain.ProductInCampaign;
 import com.artiexh.model.mapper.ProductInventoryMapper;
 import com.artiexh.model.mapper.ProductMapper;
@@ -37,25 +37,25 @@ public class ConfigServiceImpl implements ConfigService {
 	@Override
 	public void syncProductToOpenSearch() {
 		Instant now = Instant.now();
-		IndexCoordinates coordinates = openSearchTemplate.getIndexCoordinatesFor(ProductInventoryDocument.class);
+		IndexCoordinates coordinates = openSearchTemplate.getIndexCoordinatesFor(ProductDocument.class);
 		Query query = new NativeSearchQueryBuilder().withQuery(QueryBuilders.matchAllQuery()).build();
-		String[] ids = openSearchTemplate.search(query, ProductInventoryDocument.class, coordinates)
+		String[] ids = openSearchTemplate.search(query, ProductDocument.class, coordinates)
 			.stream()
 			.map(SearchHit::getId)
 			.toArray(String[]::new);
 		Query idsQuery = new NativeSearchQueryBuilder().withQuery(QueryBuilders.idsQuery().addIds(ids)).build();
-		openSearchTemplate.delete(idsQuery, ProductInventoryDocument.class, coordinates);
+		openSearchTemplate.delete(idsQuery, ProductDocument.class, coordinates);
 
-		campaignSaleRepository.streamAllByFromBeforeAndToAfter(now, now)
-			.forEach(campaign -> {
-				for (var product : campaign.getProducts()) {
-					var productInventory = product.getProductInventory();
-					var document = productInventoryMapper.entityToDocument(productInventory);
-					var campaignDocument = productInventoryMapper.campaignEntityToCampaignDocument(campaign);
-					document.setCampaign(campaignDocument);
-					openSearchTemplate.save(document);
-				}
-			});
+//		campaignSaleRepository.streamAllByFromBeforeAndToAfter(now, now)
+//			.forEach(campaign -> {
+//				for (var product : campaign.getProducts()) {
+//					var productInventory = product.getProductInventory();
+//					var document = productInventoryMapper.entityToDocument(productInventory);
+//					var campaignDocument = productInventoryMapper.campaignEntityToCampaignDocument(campaign);
+//					document.setCampaign(campaignDocument);
+//					openSearchTemplate.save(document);
+//				}
+//			});
 	}
 
 	@Override

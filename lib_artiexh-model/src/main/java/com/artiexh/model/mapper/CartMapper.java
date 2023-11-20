@@ -23,7 +23,8 @@ import java.util.stream.Collectors;
 	uses = {
 		ArtistMapper.class,
 		ProductInventoryMapper.class,
-		CampaignSaleMapper.class
+		CampaignSaleMapper.class,
+		CampaignTypeMapper.class
 	}
 )
 public interface CartMapper {

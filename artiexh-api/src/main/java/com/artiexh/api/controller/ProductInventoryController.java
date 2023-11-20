@@ -2,7 +2,7 @@ package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.base.exception.ErrorCode;
-import com.artiexh.api.service.productinventory.ProductInventoryService;
+import com.artiexh.api.service.productinventory.ProductInventoryJpaService;
 import com.artiexh.model.domain.ProductInventory;
 import com.artiexh.model.mapper.ProductInventoryMapper;
 import com.artiexh.model.rest.PageResponse;
@@ -26,7 +26,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 @RequestMapping(path = Endpoint.ProductInventory.ROOT)
 public class ProductInventoryController {
-	private final ProductInventoryService productInventoryService;
+	private final ProductInventoryJpaService productInventoryService;
 	private final ProductInventoryMapper productInventoryMapper;
 
 	@PutMapping(path = "{product-code}")
