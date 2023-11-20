@@ -29,7 +29,7 @@ public class ProviderController {
 
 	//Create Provider
 	@PostMapping
-	@PreAuthorize("hasAuthority('ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
 	public ProviderDetail create(@Valid @RequestBody ProviderDetail detail) {
 		try {
 			Provider provider = providerMapper.detailToDomain(detail);
@@ -65,7 +65,7 @@ public class ProviderController {
 	}
 
 	@PutMapping(Endpoint.Provider.DETAIL)
-	@PreAuthorize("hasAuthority('ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
 	public ProviderDetail update(
 		@Valid @RequestBody ProviderDetail detail,
 		@PathVariable("id") String businessCode) {

@@ -19,7 +19,7 @@ public interface AccountMapper {
 
 	AccountEntity domainToEntity(Account account);
 
-	@Mapping(target = "role", constant = "ADMIN")
+	@Mapping(target = "role", constant = "STAFF")
 	@Mapping(target = "status", constant = "ACTIVE")
 	@Mapping(source = "password", target = "password", qualifiedByName = "encodedPassword")
 	Account registerAdminRequestToDomain(RegisterAdminRequest registerAdminRequest);
