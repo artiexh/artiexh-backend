@@ -72,7 +72,7 @@ public class MediaController {
 		var userId = (Long) authentication.getPrincipal();
 		try {
 			boolean isStaff = authentication.getAuthorities().stream()
-				.anyMatch(r -> r.getAuthority().equals(Role.ADMIN.name()));
+				.anyMatch(r -> r.getAuthority().equals(Role.ADMIN.name()) || r.getAuthority().equals(Role.STAFF.name()));
 			S3Object s3Object = storageService.download(id, userId, isStaff);
 			String contentType = s3Object.getObjectMetadata().getContentType();
 			var bytes = s3Object.getObjectContent().readAllBytes();
