@@ -3,6 +3,7 @@ package com.artiexh.api.service.impl;
 import com.artiexh.api.service.AccountService;
 import com.artiexh.data.jpa.entity.AccountEntity;
 import com.artiexh.data.jpa.entity.ArtistEntity;
+import com.artiexh.data.jpa.entity.StaffEntity;
 import com.artiexh.data.jpa.entity.UserEntity;
 import com.artiexh.data.jpa.repository.AccountRepository;
 import com.artiexh.data.jpa.repository.CartItemRepository;
@@ -13,6 +14,7 @@ import com.artiexh.model.domain.Role;
 import com.artiexh.model.domain.User;
 import com.artiexh.model.mapper.AccountMapper;
 import com.artiexh.model.mapper.ArtistMapper;
+import com.artiexh.model.mapper.StaffMapper;
 import com.artiexh.model.mapper.UserMapper;
 import com.artiexh.model.rest.account.AccountProfile;
 import jakarta.persistence.EntityNotFoundException;
@@ -33,7 +35,7 @@ public class AccountServiceImpl implements AccountService {
 	private final AccountMapper accountMapper;
 	private final SubscriptionRepository subscriptionRepository;
 	private final CartItemRepository cartItemRepository;
-
+	private final StaffMapper staffMapper;
 	@Override
 	@Transactional
 	public Account getUserById(Long id) {
@@ -47,6 +49,11 @@ public class AccountServiceImpl implements AccountService {
 				}
 				case ARTIST -> {
 					Artist artist = artistMapper.basicArtistInfo((ArtistEntity) accountEntity);
+					//artist.setCartItemCount(cartItemRepository.countAllByCartId(id));
+					yield artist;
+				}
+				case STAFF -> {
+					Account artist = staffMapper.basicStaffInfo((StaffEntity) accountEntity);
 					//artist.setCartItemCount(cartItemRepository.countAllByCartId(id));
 					yield artist;
 				}

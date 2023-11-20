@@ -14,4 +14,5 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 )
 public interface StaffMapper {
 	StaffEntity domainToEntity(Account user);
+	Account basicStaffInfo(StaffEntity staff);
 }
