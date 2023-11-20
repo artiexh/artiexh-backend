@@ -45,7 +45,7 @@ public class ProductVariantController {
 	}
 
 	@PostMapping()
-	@PreAuthorize("hasAnyAuthority('ADMIN'. 'STAFF')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
 	public ProductVariantCollection create(
 		@Valid @RequestBody CreateProductVariantDetail detail) {
 		Set<ProductVariant> variants = productVariantMapper.detailSetToDomainSet(detail.getVariants());
@@ -65,7 +65,7 @@ public class ProductVariantController {
 
 
 	@PutMapping(Endpoint.ProductVariant.DETAIL)
-	@PreAuthorize("hasAnyAuthority('ADMIN'. 'STAFF')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
 	public ProductVariantDetail update(
 		@PathVariable("id") Long id,
 		@Valid @RequestBody UpdateProductVariantDetail detail) {
