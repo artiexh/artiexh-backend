@@ -2,13 +2,13 @@ package com.artiexh.api.service.marketplace.impl;
 
 import com.artiexh.api.base.exception.ArtiexhConfigException;
 import com.artiexh.api.base.service.SystemConfigService;
+import com.artiexh.api.service.marketplace.ProductOpenSearchService;
 import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.api.service.marketplace.SaleCampaignService;
+import com.artiexh.api.service.productinventory.ProductInventoryJpaService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.*;
-import com.artiexh.model.domain.CampaignSaleStatus;
-import com.artiexh.model.domain.Money;
-import com.artiexh.model.domain.Product;
+import com.artiexh.model.domain.*;
 import com.artiexh.model.mapper.CampaignSaleMapper;
 import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.MarketplaceSaleCampaignFilter;
@@ -50,6 +50,8 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 	private final ProductMapper productMapper;
 	private final ProductService productService;
 	private final SystemConfigService systemConfigService;
+	private final ProductOpenSearchService productOpenSearchService;
+	private final ProductInventoryJpaService productInventoryJpaService;
 
 	@Override
 	@Transactional
@@ -218,19 +220,52 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 		} else { // ACTIVE
 			entity.setStatus(status.getByteValue());
 			campaignSaleRepository.save(entity);
+
+			Set<ProductInventoryQuantity> productQuantities = entity.getProducts().stream()
+				.map(productEntity -> {
+					// check quantity
+					if (productEntity.getQuantity() > productEntity.getProductInventory().getQuantity()) {
+						throw new IllegalArgumentException("Product inventory have not enough quantity");
+					}
+					// update opensearch
+					productOpenSearchService.updateCampaignStatus(
+						entity.getId(),
+						productEntity.getProductInventory().getProductCode(),
+						status
+					);
+					return new ProductInventoryQuantity(
+						productEntity.getProductInventory().getProductCode(),
+						(long) productEntity.getQuantity() - productEntity.getSoldQuantity()
+					);
+				})
+				.collect(Collectors.toSet());
+
+			// reduce inventory quantity
+			productInventoryJpaService.reduceQuantity(entity.getId(), SourceCategory.CAMPAIGN_SALE, productQuantities);
 		}
 	}
 
 	private void updateCampaignFromActive(CampaignSaleEntity entity, CampaignSaleStatus status) {
-		if (status == CampaignSaleStatus.CLOSED) {
-			// refund inventory, inventory history
-			entity.setStatus(status.getByteValue());
-			campaignSaleRepository.save(entity);
-		} else {
-			// refund product_inventory history
-			entity.setStatus(status.getByteValue());
-			campaignSaleRepository.save(entity);
-		}
+		entity.setStatus(status.getByteValue());
+		campaignSaleRepository.save(entity);
+
+		Set<ProductInventoryQuantity> productQuantities = entity.getProducts().stream()
+			.map(productEntity -> {
+				// update opensearch
+				productOpenSearchService.updateCampaignStatus(
+					entity.getId(),
+					productEntity.getProductInventory().getProductCode(),
+					status
+				);
+				return new ProductInventoryQuantity(
+					productEntity.getProductInventory().getProductCode(),
+					(long) productEntity.getQuantity() - productEntity.getSoldQuantity()
+				);
+			})
+			.collect(Collectors.toSet());
+
+		// reduce inventory quantity
+		productInventoryJpaService.refundQuantity(entity.getId(), SourceCategory.CAMPAIGN_SALE, productQuantities);
 	}
 
 	@Override
