@@ -30,11 +30,12 @@ public interface ProductMapper {
 	@Named("entityToDomainWithoutCampaign")
 	@Mapping(target = "price.amount", source = "priceAmount")
 	@Mapping(target = "price.unit", source = "priceUnit")
-	@Mapping(target = "campaignSale", ignore = true)
+	@Mapping(target = "campaignSale.products", ignore = true)
 	Product entityToDomainWithoutCampaign(ProductEntity entity);
 
 	@Mapping(target = "price.amount", source = "priceAmount")
 	@Mapping(target = "price.unit", source = "priceUnit")
+	@Mapping(target = "campaignSale.products", ignore = true)
 	Product entityToDomain(ProductEntity entity);
 
 	@Named("entityToProductInSaleResponse")
