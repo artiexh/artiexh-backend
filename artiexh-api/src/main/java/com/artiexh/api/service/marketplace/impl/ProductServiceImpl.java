@@ -6,6 +6,7 @@ import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.jpa.entity.ProductEntityId;
 import com.artiexh.data.jpa.repository.ArtistRepository;
+import com.artiexh.data.opensearch.model.ProductDocument;
 import com.artiexh.model.domain.Product;
 import com.artiexh.model.domain.ProductSuggestion;
 import com.artiexh.model.mapper.ProductMapper;
@@ -56,9 +57,8 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public Page<ProductResponse> getAll(Pageable pageable, Query query) {
-		Page<ProductEntityId> idPage = productOpenSearchService.getAll(pageable, query)
-			.map(document -> new ProductEntityId(document.getProductCode(), document.getCampaign().getId()));
-		return jpaProductService.getByProductInventoryId(idPage, pageable);
+		Page<ProductDocument> documentPage = productOpenSearchService.getAll(pageable, query);
+		return jpaProductService.fillDocumentToResponse(documentPage);
 	}
 
 	@Override
