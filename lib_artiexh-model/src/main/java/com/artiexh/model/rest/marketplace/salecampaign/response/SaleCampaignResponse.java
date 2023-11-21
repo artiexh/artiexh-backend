@@ -29,4 +29,5 @@ public class SaleCampaignResponse {
 	private CampaignType type;
 	private String thumbnailUrl;
 	private CampaignSaleStatus status;
+	private Long campaignRequestId;
 }

@@ -32,8 +32,9 @@ public class ProductEntity {
 	@Column(name = "price_unit", nullable = false, length = 3)
 	private String priceUnit;
 
+	@Builder.Default
 	@Column(name = "quantity", nullable = false)
-	private Integer quantity;
+	private Integer quantity = 0;
 
 	@Builder.Default
 	@Column(name = "sold_quantity")

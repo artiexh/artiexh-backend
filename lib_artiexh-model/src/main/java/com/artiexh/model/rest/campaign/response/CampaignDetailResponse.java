@@ -18,5 +18,4 @@ public class CampaignDetailResponse extends CampaignResponse {
 	private Set<ProductInCampaignResponse> products;
 	private Set<CampaignHistory> campaignHistories;
 	private String content;
-	private Long campaignSaleId;
 }
