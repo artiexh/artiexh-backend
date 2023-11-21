@@ -26,7 +26,7 @@ public class CampaignResponse {
 	private Instant from;
 	private Instant to;
 	private Creator createdBy;
-
+	private Long campaignSaleId;
 
 	@Data
 	@NoArgsConstructor
