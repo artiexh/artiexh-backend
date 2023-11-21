@@ -14,10 +14,10 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateProductInSaleRequest {
-	@NotNull
 	@Min(1)
 	private Integer quantity;
 	@Valid
+	@NotNull
 	private Money price;
 	@NotNull
 	private BigDecimal artistProfit;

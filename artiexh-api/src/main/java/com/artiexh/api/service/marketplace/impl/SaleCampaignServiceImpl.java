@@ -98,6 +98,10 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			throw new IllegalArgumentException("Campaign request must be finalized before create sale campaign");
 		}
 
+		if (campaignEntity.getCampaignSale() != null) {
+			throw new IllegalArgumentException("Campaign request is in another sale campaign");
+		}
+
 		var entity = campaignSaleRepository.save(CampaignSaleEntity.builder()
 			.name(campaignEntity.getName())
 			.description(campaignEntity.getDescription())
@@ -373,20 +377,28 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 				if (!productInventory.getOwner().getId().equals(entity.getOwner().getId())) {
 					throw new IllegalArgumentException("Product " + request.getProductCode() + " is not owned by sale campaign owner");
 				}
-				if (request.getQuantity() > productInventory.getQuantity()) {
+				if (request.getQuantity() != null && request.getQuantity() > productInventory.getQuantity()) {
 					throw new IllegalArgumentException("Product " + request.getProductCode() + " has not enough quantity");
 				}
 				return Pair.of(request, productInventory);
 			})
-			.map(pair -> productService.create(ProductEntity.builder()
-				.id(new ProductEntityId(pair.getFirst().getProductCode(), entity.getId()))
-				.productInventory(pair.getSecond())
-				.campaignSale(entity)
-				.priceAmount(pair.getFirst().getPrice().getAmount())
-				.priceUnit(pair.getFirst().getPrice().getUnit())
-				.quantity(pair.getFirst().getQuantity())
-				.artistProfit(pair.getFirst().getArtistProfit())
-				.build())
+			.map(pair -> {
+					var productEntityBuilder = ProductEntity.builder()
+						.id(new ProductEntityId(pair.getFirst().getProductCode(), entity.getId()))
+						.productInventory(pair.getSecond())
+						.campaignSale(entity)
+						.artistProfit(pair.getFirst().getArtistProfit());
+					if (pair.getFirst().getPrice() != null) {
+						productEntityBuilder
+							.priceAmount(pair.getFirst().getPrice().getAmount())
+							.priceUnit(pair.getFirst().getPrice().getUnit());
+					}
+					if (pair.getFirst().getQuantity() != null) {
+						productEntityBuilder.quantity(pair.getFirst().getQuantity());
+					}
+
+					return productService.create(productEntityBuilder.build());
+				}
 			);
 
 		return result.map(productMapper::domainToProductInSaleResponse)
