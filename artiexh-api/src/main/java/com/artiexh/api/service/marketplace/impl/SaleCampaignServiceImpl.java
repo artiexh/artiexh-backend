@@ -354,7 +354,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 
 	@Override
 	@Transactional
-	public Set<ProductInSaleCampaignResponse> createProductInSaleCampaign(Long campaignId, Set<ProductInSaleRequest> requests) {
+	public Set<ProductResponse> createProductInSaleCampaign(Long campaignId, Set<ProductInSaleRequest> requests) {
 		CampaignSaleEntity entity = campaignSaleRepository.findById(campaignId)
 			.orElseThrow(() -> new EntityNotFoundException("Sale campaign " + campaignId + " not found"));
 
@@ -401,15 +401,15 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 				}
 			);
 
-		return result.map(productMapper::domainToProductInSaleResponse)
+		return result.map(productMapper::domainToProductResponse)
 			.collect(Collectors.toSet());
 	}
 
 	@Override
 	@Transactional
-	public ProductInSaleCampaignResponse updateProductInSaleCampaign(long campaignId,
-																	 String productCode,
-																	 UpdateProductInSaleRequest request) {
+	public ProductResponse updateProductInSaleCampaign(long campaignId,
+													   String productCode,
+													   UpdateProductInSaleRequest request) {
 		ProductEntity productEntity = productRepository.findById(new ProductEntityId(productCode, campaignId))
 			.orElseThrow(() -> new EntityNotFoundException("Product " + productCode + " in campaign " + campaignId + " not found"));
 
@@ -428,11 +428,13 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 		}
 
 		productEntity.setQuantity(request.getQuantity());
-		productEntity.setPriceAmount(request.getPrice().getAmount());
-		productEntity.setPriceUnit(request.getPrice().getUnit());
+		if (request.getPrice() != null) {
+			productEntity.setPriceAmount(request.getPrice().getAmount());
+			productEntity.setPriceUnit(request.getPrice().getUnit());
+		}
 		productEntity.setArtistProfit(request.getArtistProfit());
 
-		return productMapper.domainToProductInSaleResponse(productService.update(productEntity));
+		return productMapper.domainToProductResponse(productService.update(productEntity));
 	}
 
 	@Override

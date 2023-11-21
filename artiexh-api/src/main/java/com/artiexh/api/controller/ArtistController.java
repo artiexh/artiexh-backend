@@ -12,9 +12,8 @@ import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.artist.request.UpdateArtistProfileRequest;
 import com.artiexh.model.rest.artist.response.ArtistProfileResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.ProductPageFilter;
-import com.artiexh.model.rest.marketplace.salecampaign.filter.MarketplaceSaleCampaignFilter;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.SaleCampaignFilter;
-import com.artiexh.model.rest.marketplace.salecampaign.response.ProductResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.response.ProductMarketplaceResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignDetailResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignResponse;
 import com.artiexh.model.rest.order.request.OrderPageFilter;
@@ -65,14 +64,14 @@ public class ArtistController {
 
 	@GetMapping(Endpoint.Artist.ARTIST_PRODUCT)
 	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN', 'STAFF')")
-	public PageResponse<ProductResponse> getAllProduct(
+	public PageResponse<ProductMarketplaceResponse> getAllProduct(
 		Authentication authentication,
 		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
 		@ParameterObject @Valid ProductPageFilter filter
 	) {
 		long userId = (long) authentication.getPrincipal();
 		filter.setArtistId(userId);
-		return new PageResponse<>(productService.getAll(paginationAndSortingRequest.getPageable(), filter.getQuery()));
+		return new PageResponse<>(productService.getAllMarketplaceResponse(paginationAndSortingRequest.getPageable(), filter.getQuery()));
 	}
 
 	@GetMapping(Endpoint.Artist.ARTIST_ORDER)

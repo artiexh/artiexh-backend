@@ -5,6 +5,7 @@ import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.opensearch.model.ProductDocument;
 import com.artiexh.model.domain.*;
 import com.artiexh.model.rest.marketplace.salecampaign.response.ProductInSaleCampaignResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.response.ProductMarketplaceResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.ProductResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -47,7 +48,6 @@ public interface ProductMapper {
 	@Mapping(target = "price.amount", source = "priceAmount")
 	@Mapping(target = "averageRate", source = "productInventory.averageRate")
 	@Mapping(target = "type", source = "productInventory.type")
-	@Mapping(target = "quantity", expression = "java(entity.getQuantity() - entity.getSoldQuantity())")
 	@Mapping(target = "owner", source = "productInventory.owner")
 	@Mapping(target = "description", source = "productInventory.description")
 	@Mapping(target = "maxItemsPerOrder", source = "productInventory.maxItemsPerOrder")
@@ -65,7 +65,6 @@ public interface ProductMapper {
 	@Mapping(target = "status", source = "productInventory.status")
 	@Mapping(target = "averageRate", source = "productInventory.averageRate")
 	@Mapping(target = "type", source = "productInventory.type")
-	@Mapping(target = "quantity", expression = "java(domain.getQuantity() - domain.getSoldQuantity())")
 	@Mapping(target = "owner", source = "productInventory.owner")
 	@Mapping(target = "description", source = "productInventory.description")
 	@Mapping(target = "maxItemsPerOrder", source = "productInventory.maxItemsPerOrder")
@@ -76,6 +75,25 @@ public interface ProductMapper {
 	@Mapping(target = "paymentMethods", source = "productInventory.paymentMethods")
 	@Mapping(target = "weight", source = "productInventory.weight")
 	ProductInSaleCampaignResponse domainToProductInSaleResponse(Product domain);
+
+	@Mapping(target = "productCode", source = "productInventory.productCode")
+	@Mapping(target = "name", source = "productInventory.name")
+	@Mapping(target = "thumbnailUrl", source = "productInventory.attaches", qualifiedByName = "getProductThumbnailUrl")
+	@Mapping(target = "status", source = "productInventory.status")
+	@Mapping(target = "averageRate", source = "productInventory.averageRate")
+	@Mapping(target = "type", source = "productInventory.type")
+	@Mapping(target = "owner", source = "productInventory.owner")
+	@Mapping(target = "description", source = "productInventory.description")
+	@Mapping(target = "maxItemsPerOrder", source = "productInventory.maxItemsPerOrder")
+	@Mapping(target = "deliveryType", source = "productInventory.deliveryType")
+	@Mapping(target = "tags", source = "productInventory.tags")
+	@Mapping(target = "attaches", source = "productInventory.attaches")
+	@Mapping(target = "category", source = "productInventory.category")
+	@Mapping(target = "paymentMethods", source = "productInventory.paymentMethods")
+	@Mapping(target = "weight", source = "productInventory.weight")
+	@Mapping(target = "inventoryPrice", source = "productInventory.price")
+	@Mapping(target = "inventoryQuantity", source = "productInventory.quantity")
+	ProductResponse domainToProductResponse(Product domain);
 
 	@Named("entityToProductResponse")
 	@Mapping(target = "productCode", source = "productInventory.productCode")
@@ -97,7 +115,10 @@ public interface ProductMapper {
 	@Mapping(target = "paymentMethods", source = "productInventory.paymentMethods")
 	@Mapping(target = "weight", source = "productInventory.weight")
 	@Mapping(target = "saleCampaign", source = "campaignSale")
-	ProductResponse entityToProductResponse(ProductEntity entity);
+	ProductMarketplaceResponse entityToProductResponse(ProductEntity entity);
+
+	@Mapping(target = "owner.province", source = "owner.ward.district.province")
+	ProductMarketplaceResponse documentToMarketplaceResponse(ProductDocument document);
 
 	@Mapping(target = "owner.province", source = "owner.ward.district.province")
 	ProductResponse documentToProductResponse(ProductDocument document);

@@ -4,6 +4,7 @@ import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.jpa.entity.ProductEntityId;
 import com.artiexh.data.opensearch.model.ProductDocument;
 import com.artiexh.model.domain.Product;
+import com.artiexh.model.rest.marketplace.salecampaign.response.ProductMarketplaceResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.ProductResponse;
 import org.springframework.data.domain.Page;
 
@@ -13,9 +14,11 @@ public interface JpaProductService {
 
 	Product update(ProductEntity productEntity);
 
-	Page<ProductResponse> fillDocumentToResponse(Page<ProductDocument> documentPage);
+	Page<ProductMarketplaceResponse> fillDocumentToMarketplaceResponse(Page<ProductDocument> documentPage);
 
-	ProductResponse getById(ProductEntityId id);
+	Page<ProductResponse> fillDocumentToProductResponse(Page<ProductDocument> documentPage);
+
+	ProductMarketplaceResponse getById(ProductEntityId id);
 
 	void delete(ProductEntity entity);
 
