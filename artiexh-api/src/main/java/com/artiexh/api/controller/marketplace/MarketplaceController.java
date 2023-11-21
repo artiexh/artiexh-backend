@@ -11,7 +11,7 @@ import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.artist.response.ArtistProfileResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.MarketplaceSaleCampaignFilter;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.ProductPageFilter;
-import com.artiexh.model.rest.marketplace.salecampaign.response.ProductResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.response.ProductMarketplaceResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignDetailResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignResponse;
 import com.artiexh.model.rest.product.request.SuggestionFilter;
@@ -56,27 +56,27 @@ public class MarketplaceController {
 	}
 
 	@GetMapping("/sale-campaign/{id}/product-in-sale")
-	public PageResponse<ProductResponse> getAllProductInSaleByCampaign(@PathVariable Long id,
-																	   @ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
-																	   @ParameterObject ProductPageFilter filter) {
+	public PageResponse<ProductMarketplaceResponse> getAllProductInSaleByCampaign(@PathVariable Long id,
+																				  @ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
+																				  @ParameterObject ProductPageFilter filter) {
 		filter.setCampaignId(id);
-		return new PageResponse<>(productService.getAll(
+		return new PageResponse<>(productService.getAllMarketplaceResponse(
 			paginationAndSortingRequest.getPageable(),
 			filter.getMarketplaceQuery()
 		));
 	}
 
 	@GetMapping("/product-in-sale")
-	public PageResponse<ProductResponse> getAllProductInSale(@ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
-															 @ParameterObject ProductPageFilter filter) {
-		return new PageResponse<>(productService.getAll(
+	public PageResponse<ProductMarketplaceResponse> getAllProductInSale(@ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
+																		@ParameterObject ProductPageFilter filter) {
+		return new PageResponse<>(productService.getAllMarketplaceResponse(
 			paginationAndSortingRequest.getPageable(),
 			filter.getMarketplaceQuery())
 		);
 	}
 
 	@GetMapping("/sale-campaign/{campaignId}/product-in-sale/{productCode}")
-	public ProductResponse getProductInSaleDetail(@PathVariable Long campaignId, @PathVariable String productCode) {
+	public ProductMarketplaceResponse getProductInSaleDetail(@PathVariable Long campaignId, @PathVariable String productCode) {
 		try {
 			return productService.getByCampaignIdAndProductCode(campaignId, productCode);
 		} catch (EntityNotFoundException ex) {
@@ -98,9 +98,9 @@ public class MarketplaceController {
 	}
 
 	@GetMapping("/artist/{username}/product-in-sale")
-	public PageResponse<ProductResponse> getAllProductInSaleByArtist(@PathVariable String username,
-																	 @ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
-																	 @ParameterObject ProductPageFilter filter) {
+	public PageResponse<ProductMarketplaceResponse> getAllProductInSaleByArtist(@PathVariable String username,
+																				@ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
+																				@ParameterObject ProductPageFilter filter) {
 		try {
 			return new PageResponse<>(
 				productService.getAllByArtist(username, paginationAndSortingRequest.getPageable(), filter)

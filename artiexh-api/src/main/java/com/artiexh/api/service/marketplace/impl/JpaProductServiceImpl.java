@@ -6,11 +6,13 @@ import com.artiexh.data.jpa.entity.ProductEntityId;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.data.opensearch.model.ProductDocument;
 import com.artiexh.model.domain.DeliveryType;
+import com.artiexh.model.domain.Money;
 import com.artiexh.model.domain.Product;
 import com.artiexh.model.mapper.AddressMapper;
 import com.artiexh.model.mapper.ProductAttachMapper;
 import com.artiexh.model.mapper.ProductInventoryMapper;
 import com.artiexh.model.mapper.ProductMapper;
+import com.artiexh.model.rest.marketplace.salecampaign.response.ProductMarketplaceResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -54,14 +56,14 @@ public class JpaProductServiceImpl implements JpaProductService {
 	}
 
 	@Override
-	public Page<ProductResponse> fillDocumentToResponse(Page<ProductDocument> documentPage) {
+	public Page<ProductMarketplaceResponse> fillDocumentToMarketplaceResponse(Page<ProductDocument> documentPage) {
 		var ids = documentPage.map(document -> new ProductEntityId(document.getProductCode(), document.getCampaign().getId()));
 
 		Map<String, ProductEntity> entityMap = productRepository.findByIdIn(ids.toSet()).stream()
 			.collect(Collectors.toMap(entity -> entity.getId().getProductCode(), entity -> entity));
 
 		return documentPage.map(productDocument -> {
-			ProductResponse response = productMapper.documentToProductResponse(productDocument);
+			ProductMarketplaceResponse response = productMapper.documentToMarketplaceResponse(productDocument);
 
 			ProductEntity entity = entityMap.get(productDocument.getProductCode());
 			response.setThumbnailUrl(productInventoryMapper.getThumbnailUrl(entity.getProductInventory().getAttaches()));
@@ -80,7 +82,36 @@ public class JpaProductServiceImpl implements JpaProductService {
 	}
 
 	@Override
-	public ProductResponse getById(ProductEntityId id) {
+	public Page<ProductResponse> fillDocumentToProductResponse(Page<ProductDocument> documentPage) {
+		var ids = documentPage.map(document -> new ProductEntityId(document.getProductCode(), document.getCampaign().getId()));
+
+		Map<String, ProductEntity> entityMap = productRepository.findByIdIn(ids.toSet()).stream()
+			.collect(Collectors.toMap(entity -> entity.getId().getProductCode(), entity -> entity));
+
+		return documentPage.map(productDocument -> {
+			ProductResponse response = productMapper.documentToProductResponse(productDocument);
+
+			ProductEntity entity = entityMap.get(productDocument.getProductCode());
+			response.setThumbnailUrl(productInventoryMapper.getThumbnailUrl(entity.getProductInventory().getAttaches()));
+			response.setQuantity(entity.getQuantity());
+			response.setSoldQuantity(entity.getSoldQuantity());
+			response.setInventoryPrice(new Money(entity.getProductInventory().getPriceAmount(), entity.getProductInventory().getPriceUnit()));
+			response.setInventoryQuantity(entity.getProductInventory().getQuantity().intValue());
+			response.getOwner().setAvatarUrl(entity.getProductInventory().getOwner().getAvatarUrl());
+			response.setDescription(entity.getProductInventory().getDescription());
+			Long maxItemsPerOrder = entity.getProductInventory().getMaxItemsPerOrder();
+			response.setMaxItemsPerOrder(maxItemsPerOrder != null ? maxItemsPerOrder.intValue() : null);
+			response.setDeliveryType(DeliveryType.fromValue(entity.getProductInventory().getDeliveryType()));
+			response.setAttaches(productAttachMapper.entitiesToDomains(entity.getProductInventory().getAttaches()));
+			response.setPaymentMethods(productInventoryMapper.byteArrayToPaymentMethodSet(entity.getProductInventory().getPaymentMethods()));
+			response.setWeight(entity.getProductInventory().getWeight());
+
+			return response;
+		});
+	}
+
+	@Override
+	public ProductMarketplaceResponse getById(ProductEntityId id) {
 		return productRepository.findById(id)
 			.map(productMapper::entityToProductResponse)
 			.orElseThrow(() -> new EntityNotFoundException("Product not found"));
