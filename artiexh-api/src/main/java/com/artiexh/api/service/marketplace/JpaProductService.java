@@ -2,10 +2,10 @@ package com.artiexh.api.service.marketplace;
 
 import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.jpa.entity.ProductEntityId;
+import com.artiexh.data.opensearch.model.ProductDocument;
 import com.artiexh.model.domain.Product;
 import com.artiexh.model.rest.marketplace.salecampaign.response.ProductResponse;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 public interface JpaProductService {
 
@@ -13,7 +13,7 @@ public interface JpaProductService {
 
 	Product update(ProductEntity productEntity);
 
-	Page<ProductResponse> getByProductInventoryId(Page<ProductEntityId> idPage, Pageable pageable);
+	Page<ProductResponse> fillDocumentToResponse(Page<ProductDocument> documentPage);
 
 	ProductResponse getById(ProductEntityId id);
 

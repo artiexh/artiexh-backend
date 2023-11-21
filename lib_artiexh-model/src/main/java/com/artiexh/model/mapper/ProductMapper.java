@@ -99,6 +99,9 @@ public interface ProductMapper {
 	@Mapping(target = "saleCampaign", source = "campaignSale")
 	ProductResponse entityToProductResponse(ProductEntity entity);
 
+	@Mapping(target = "owner.province", source = "owner.ward.district.province")
+	ProductResponse documentToProductResponse(ProductDocument document);
+
 	@Named("getProductThumbnailUrl")
 	default String getThumbnailUrl(Set<ProductAttach> productAttaches) {
 		return productAttaches.stream()
