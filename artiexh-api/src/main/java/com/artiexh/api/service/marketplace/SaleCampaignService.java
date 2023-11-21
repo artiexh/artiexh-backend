@@ -7,7 +7,7 @@ import com.artiexh.model.rest.marketplace.salecampaign.request.ProductInSaleRequ
 import com.artiexh.model.rest.marketplace.salecampaign.request.SaleCampaignRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.request.UpdateProductInSaleRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.response.CampaignStatistics;
-import com.artiexh.model.rest.marketplace.salecampaign.response.ProductInSaleCampaignResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.response.ProductResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignDetailResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignResponse;
 import org.springframework.data.domain.Page;
@@ -38,11 +38,11 @@ public interface SaleCampaignService {
 
 	CampaignStatistics getStatistics(Long campaignId);
 
-	Set<ProductInSaleCampaignResponse> createProductInSaleCampaign(Long campaignId, Set<ProductInSaleRequest> requests);
+	Set<ProductResponse> createProductInSaleCampaign(Long campaignId, Set<ProductInSaleRequest> requests);
 
-	ProductInSaleCampaignResponse updateProductInSaleCampaign(long campaignId,
-															  String productCode,
-															  UpdateProductInSaleRequest request);
+	ProductResponse updateProductInSaleCampaign(long campaignId,
+												String productCode,
+												UpdateProductInSaleRequest request);
 
 	void deleteProductInSaleCampaign(Long campaignId, Set<String> productCodes);
 }

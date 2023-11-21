@@ -4,6 +4,7 @@ import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.model.domain.Product;
 import com.artiexh.model.domain.ProductSuggestion;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.ProductPageFilter;
+import com.artiexh.model.rest.marketplace.salecampaign.response.ProductMarketplaceResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.ProductResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,11 +15,13 @@ public interface ProductService {
 
 	Product update(ProductEntity entity);
 
-	Page<ProductResponse> getAll(Pageable pageable, Query query);
+	Page<ProductMarketplaceResponse> getAllMarketplaceResponse(Pageable pageable, Query query);
 
-	ProductResponse getByCampaignIdAndProductCode(long id, String productCode);
+	Page<ProductResponse> getAllProductResponse(Pageable pageable, Query query);
 
-	Page<ProductResponse> getAllByArtist(String artistUsername, Pageable pageable, ProductPageFilter filter);
+	ProductMarketplaceResponse getByCampaignIdAndProductCode(long id, String productCode);
+
+	Page<ProductMarketplaceResponse> getAllByArtist(String artistUsername, Pageable pageable, ProductPageFilter filter);
 
 	Page<ProductSuggestion> getSuggestionInPage(Query query, Pageable pageable);
 

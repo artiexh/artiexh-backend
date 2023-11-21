@@ -11,7 +11,10 @@ import com.artiexh.model.rest.marketplace.salecampaign.request.ProductInSaleRequ
 import com.artiexh.model.rest.marketplace.salecampaign.request.SaleCampaignRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.request.UpdateProductInSaleRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.request.UpdateSaleCampaignStatusRequest;
-import com.artiexh.model.rest.marketplace.salecampaign.response.*;
+import com.artiexh.model.rest.marketplace.salecampaign.response.CampaignStatistics;
+import com.artiexh.model.rest.marketplace.salecampaign.response.ProductResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignDetailResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -71,8 +74,8 @@ public class SaleCampaignController {
 
 	@PostMapping("/{id}/product-in-sale")
 	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
-	public Set<ProductInSaleCampaignResponse> createProductInSale(@PathVariable Long id,
-																  @RequestBody @Validated Set<ProductInSaleRequest> requests) {
+	public Set<ProductResponse> createProductInSale(@PathVariable Long id,
+													@RequestBody @Validated Set<ProductInSaleRequest> requests) {
 		try {
 			return saleCampaignService.createProductInSaleCampaign(id, requests);
 		} catch (EntityNotFoundException ex) {
@@ -84,9 +87,9 @@ public class SaleCampaignController {
 
 	@PutMapping("/{id}/product-in-sale/{productCode}")
 	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
-	public ProductInSaleCampaignResponse updateProductInSale(@PathVariable Long id,
-															 @PathVariable String productCode,
-															 @RequestBody @Validated UpdateProductInSaleRequest request) {
+	public ProductResponse updateProductInSale(@PathVariable Long id,
+											   @PathVariable String productCode,
+											   @RequestBody @Validated UpdateProductInSaleRequest request) {
 		try {
 			return saleCampaignService.updateProductInSaleCampaign(id, productCode, request);
 		} catch (EntityNotFoundException ex) {
@@ -115,7 +118,7 @@ public class SaleCampaignController {
 																	   @ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
 																	   @ParameterObject ProductPageFilter filter) {
 		filter.setCampaignId(id);
-		return new PageResponse<>(productService.getAll(
+		return new PageResponse<>(productService.getAllProductResponse(
 			paginationAndSortingRequest.getPageable(),
 			filter.getQuery()
 		));

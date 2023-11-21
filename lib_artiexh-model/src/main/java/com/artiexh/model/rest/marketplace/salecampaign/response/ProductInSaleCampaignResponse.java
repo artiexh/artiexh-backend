@@ -22,7 +22,6 @@ public class ProductInSaleCampaignResponse {
 	private Money price;
 	private float averageRate;
 	private ProductType type;
-	private long quantity;
 	private OwnerResponse owner;
 	private String description;
 	private Integer maxItemsPerOrder;

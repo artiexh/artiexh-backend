@@ -11,6 +11,7 @@ import com.artiexh.model.domain.Product;
 import com.artiexh.model.domain.ProductSuggestion;
 import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.ProductPageFilter;
+import com.artiexh.model.rest.marketplace.salecampaign.response.ProductMarketplaceResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -56,21 +57,27 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Page<ProductResponse> getAll(Pageable pageable, Query query) {
+	public Page<ProductMarketplaceResponse> getAllMarketplaceResponse(Pageable pageable, Query query) {
 		Page<ProductDocument> documentPage = productOpenSearchService.getAll(pageable, query);
-		return jpaProductService.fillDocumentToResponse(documentPage);
+		return jpaProductService.fillDocumentToMarketplaceResponse(documentPage);
 	}
 
 	@Override
-	public ProductResponse getByCampaignIdAndProductCode(long id, String productCode) {
+	public Page<ProductResponse> getAllProductResponse(Pageable pageable, Query query) {
+		Page<ProductDocument> documentPage = productOpenSearchService.getAll(pageable, query);
+		return jpaProductService.fillDocumentToProductResponse(documentPage);
+	}
+
+	@Override
+	public ProductMarketplaceResponse getByCampaignIdAndProductCode(long id, String productCode) {
 		return jpaProductService.getById(new ProductEntityId(productCode, id));
 	}
 
 	@Override
-	public Page<ProductResponse> getAllByArtist(String artistUsername, Pageable pageable, ProductPageFilter filter) {
+	public Page<ProductMarketplaceResponse> getAllByArtist(String artistUsername, Pageable pageable, ProductPageFilter filter) {
 		if (artistRepository.existsByUsername(artistUsername)) {
 			filter.setArtistUsername(artistUsername);
-			return getAll(pageable, filter.getMarketplaceQuery());
+			return getAllMarketplaceResponse(pageable, filter.getMarketplaceQuery());
 		} else {
 			throw new EntityNotFoundException("Artist not found");
 		}
