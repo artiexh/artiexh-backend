@@ -2,6 +2,7 @@ package com.artiexh.api.service.marketplace.impl;
 
 import com.artiexh.api.service.marketplace.ProductOpenSearchService;
 import com.artiexh.data.opensearch.model.ProductDocument;
+import com.artiexh.model.domain.CampaignSaleStatus;
 import com.artiexh.model.domain.Product;
 import com.artiexh.model.domain.ProductSuggestion;
 import com.artiexh.model.mapper.ProductMapper;
@@ -30,8 +31,20 @@ public class ProductOpenSearchServiceImpl implements ProductOpenSearchService {
 	}
 
 	@Override
+	public UpdateResponse updateCampaignStatus(Long campaignId, String productCode, CampaignSaleStatus status) {
+		String documentId = campaignId + "-" + productCode;
+		var document = openSearchTemplate.get(documentId, ProductDocument.class);
+		if (document != null) {
+			document.getCampaign().setStatus(status.getByteValue());
+			return openSearchTemplate.update(document);
+		} else {
+			return UpdateResponse.of(UpdateResponse.Result.NOOP);
+		}
+	}
+
+	@Override
 	public void delete(Long campaignId, String productCode) {
-		String documentId = campaignId + '-' + productCode;
+		String documentId = campaignId + "-" + productCode;
 		openSearchTemplate.delete(documentId, ProductDocument.class);
 	}
 

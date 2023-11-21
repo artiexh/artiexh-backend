@@ -38,7 +38,11 @@ public class ProductDocument {
 	@Id
 	@AccessType(AccessType.Type.PROPERTY)
 	public String getDocumentId() {
-		return campaign.id + '-' + productCode;
+		return campaign.id + "-" + productCode;
+	}
+
+	public void setDocumentId(String ignored) {
+		// ignored
 	}
 
 	@Data
