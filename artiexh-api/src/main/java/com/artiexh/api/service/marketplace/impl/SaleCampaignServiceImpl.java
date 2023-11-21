@@ -417,14 +417,16 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			throw new IllegalStateException("Cannot add product to sale campaign that is not in draft status");
 		}
 
-		int compareResult = Integer.compare(request.getQuantity(), productEntity.getQuantity());
-		if (compareResult > 1 && productEntity.getProductInventory().getQuantity() < request.getQuantity()) {
-			// check inventory quantity
-			throw new IllegalArgumentException("Product inventory have not enough quantity");
-		}
-		if (compareResult < 1 && request.getQuantity() < productEntity.getSoldQuantity()) {
-			// check sold quantity
-			throw new IllegalArgumentException("Product is sold more than request quantity");
+		if (request.getQuantity() != null) {
+			int compareResult = Integer.compare(request.getQuantity(), productEntity.getQuantity());
+			if (compareResult > 1 && productEntity.getProductInventory().getQuantity() < request.getQuantity()) {
+				// check inventory quantity
+				throw new IllegalArgumentException("Product inventory have not enough quantity");
+			}
+			if (compareResult < 1 && request.getQuantity() < productEntity.getSoldQuantity()) {
+				// check sold quantity
+				throw new IllegalArgumentException("Product is sold more than request quantity");
+			}
 		}
 
 		productEntity.setQuantity(request.getQuantity());
