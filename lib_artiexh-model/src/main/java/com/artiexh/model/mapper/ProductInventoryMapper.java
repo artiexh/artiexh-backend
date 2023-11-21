@@ -93,6 +93,8 @@ public interface ProductInventoryMapper {
 		return PaymentMethod.fromValue(value);
 	}
 
+	Set<PaymentMethod> byteArrayToPaymentMethodSet(Byte[] byteArray);
+
 	default Integer toValue(DeliveryType type) {
 		return type.getValue();
 	}

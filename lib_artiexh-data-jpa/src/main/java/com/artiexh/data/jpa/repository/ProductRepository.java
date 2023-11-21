@@ -3,8 +3,6 @@ package com.artiexh.data.jpa.repository;
 import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.jpa.entity.ProductEntityId;
 import jakarta.persistence.QueryHint;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -12,6 +10,7 @@ import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.hibernate.jpa.HibernateHints.*;
@@ -19,7 +18,7 @@ import static org.hibernate.jpa.HibernateHints.*;
 @Repository
 public interface ProductRepository extends JpaRepository<ProductEntity, ProductEntityId>, JpaSpecificationExecutor<ProductEntity> {
 
-	Page<ProductEntity> findByIdIn(Collection<ProductEntityId> id, Pageable pageable);
+	Set<ProductEntity> findByIdIn(Collection<ProductEntityId> id);
 
 //	@Modifying
 //	@Query("update ProductEntity entity set entity.status = cast(1 as byte) where entity.id = :id")
