@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Set;
 
@@ -43,6 +44,7 @@ public class ProductResponse {
 	private Set<ProductResponse> bundleItems;
 	private CustomProductInfo customProduct;
 	private CampaignResponse campaign;
+	private BigDecimal manufacturingPrice;
 
 	@Data
 	@NoArgsConstructor

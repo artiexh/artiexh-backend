@@ -2,6 +2,7 @@ package com.artiexh.model.domain;
 
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 @Getter
@@ -30,5 +31,6 @@ public class ProductInventory {
 	//	private Set<Product> bundles;
 //	private Set<Product> bundleItems;
 	private ProductInCampaign productInCampaign;
-//	private Campaign campaign;
+	private BigDecimal manufacturingPrice;
+
 }
