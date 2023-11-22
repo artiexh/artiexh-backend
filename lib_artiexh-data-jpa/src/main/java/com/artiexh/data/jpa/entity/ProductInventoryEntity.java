@@ -1,7 +1,6 @@
 package com.artiexh.data.jpa.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -89,6 +88,9 @@ public class ProductInventoryEntity {
 	@Builder.Default
 	@Column(name = "weight", nullable = false)
 	private Float weight = 0F;
+
+	@Column(name = "manufacturing_price", precision = 38, scale = 2)
+	private BigDecimal manufacturingPrice;
 
 //	@Builder.Default
 //	@ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})

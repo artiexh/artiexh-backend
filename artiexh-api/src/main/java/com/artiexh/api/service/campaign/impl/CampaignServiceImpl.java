@@ -5,6 +5,7 @@ import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.campaign.ProductInCampaignService;
 import com.artiexh.api.service.productinventory.ProductInventoryJpaService;
 import com.artiexh.data.jpa.entity.*;
+import com.artiexh.data.jpa.entity.embededmodel.ProductVariantProviderId;
 import com.artiexh.data.jpa.projection.ProductInventoryCode;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.*;
@@ -23,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,6 +51,7 @@ public class CampaignServiceImpl implements CampaignService {
 	private final ProductCategoryMapper productCategoryMapper;
 	private final ProductInventoryJpaService productInventoryJpaService;
 	private final ProductInventoryRepository productInventoryRepository;
+	private final ProductVariantProviderRepository productVariantProviderRepository;
 
 	@Override
 	@Transactional
@@ -625,6 +626,12 @@ public class CampaignServiceImpl implements CampaignService {
 			product.setTags(productInCampaign.getCustomProduct().getTags().stream().map(productTagMapper::entityToDomain).collect(Collectors.toSet()));
 			product.setCategory(productCategoryMapper.entityToDomain(productInCampaign.getCustomProduct().getCategory()));
 			product.setPaymentMethods(Set.of(PaymentMethod.VN_PAY.getByteValue()));
+
+			String providerId = productInCampaign.getCampaign().getProviderId();
+			Long variantId = productInCampaign.getCustomProduct().getVariant().getId();
+			ProductVariantProviderEntity providerConfig = productVariantProviderRepository.findById(new ProductVariantProviderId(variantId, providerId))
+				.orElseThrow(() -> new IllegalArgumentException("Provider config not found for variantId: " + variantId + " and providerId: " + providerId));
+			product.setManufacturingPrice(providerConfig.getBasePriceAmount());
 
 			product = productService.create(campaign.getOwner().getId(), product, productInCampaign);
 			productResponses.add(productMapper.domainToProductResponse(product));
