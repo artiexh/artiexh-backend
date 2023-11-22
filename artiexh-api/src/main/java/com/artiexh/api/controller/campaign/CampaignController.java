@@ -2,9 +2,11 @@ package com.artiexh.api.controller.campaign;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.base.exception.ArtiexhConfigException;
+import com.artiexh.api.base.service.SystemConfigService;
 import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.marketplace.SaleCampaignService;
 import com.artiexh.model.rest.campaign.request.FinalizeProductRequest;
+import com.artiexh.model.rest.campaign.response.ArtiexhProfitConfig;
 import com.artiexh.model.rest.campaign.response.ProductInCampaignDetailResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignDetailResponse;
 import com.artiexh.model.rest.product.response.ProductResponse;
@@ -20,12 +22,15 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Map;
 import java.util.Set;
 
+import static com.artiexh.api.base.common.Const.SystemConfigKey.DEFAULT_PROFIT_PERCENTAGE;
+
 @RestController
 @RequestMapping(Endpoint.Campaign.ROOT)
 @RequiredArgsConstructor
 public class CampaignController {
 	private final CampaignService campaignService;
 	private final SaleCampaignService saleCampaignService;
+	private final SystemConfigService systemConfigService;
 
 	@PostMapping("/{id}/finalize-product")
 	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
@@ -81,6 +86,22 @@ public class CampaignController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		} catch (ArtiexhConfigException ex) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), ex);
+		}
+	}
+
+	@GetMapping("/artiexh-percentage")
+	@PreAuthorize("hasAnyAuthority('ARTIST','ADMIN','STAFF')")
+	public ArtiexhProfitConfig getArtiexhChargePercentage() {
+		var config = systemConfigService.getOrThrow(DEFAULT_PROFIT_PERCENTAGE,
+			() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Missing artiexh default profit percentage")
+		);
+
+		int result;
+		try {
+			result = Integer.parseInt(config);
+			return new ArtiexhProfitConfig(result);
+		} catch (NumberFormatException ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Invalid artiexh default profit percentage", ex);
 		}
 	}
 

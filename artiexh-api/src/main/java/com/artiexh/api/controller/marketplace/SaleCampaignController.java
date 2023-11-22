@@ -113,7 +113,7 @@ public class SaleCampaignController {
 	}
 
 	@GetMapping("/{id}/product-in-sale")
-	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
+	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF','ARTIST')")
 	public PageResponse<ProductResponse> getAllProductInSaleByCampaign(@PathVariable Long id,
 																	   @ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
 																	   @ParameterObject ProductPageFilter filter) {
@@ -137,7 +137,7 @@ public class SaleCampaignController {
 	}
 
 	@GetMapping("/{id}")
-	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
+	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF','ARTIST')")
 	public SaleCampaignDetailResponse getDetail(
 		@PathVariable("id") Long id
 	) {
@@ -149,7 +149,7 @@ public class SaleCampaignController {
 	}
 
 	@GetMapping()
-	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
+	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF','ARTIST')")
 	public PageResponse<SaleCampaignResponse> getAllSaleCampaign(@ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
 																 @ParameterObject SaleCampaignFilter filter) {
 		return new PageResponse<>(saleCampaignService.getAll(

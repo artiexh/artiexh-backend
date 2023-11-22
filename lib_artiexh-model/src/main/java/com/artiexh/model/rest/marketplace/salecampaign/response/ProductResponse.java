@@ -7,6 +7,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.math.BigDecimal;
+
 @Data
 @SuperBuilder
 @NoArgsConstructor
@@ -17,4 +19,5 @@ public class ProductResponse extends ProductInSaleCampaignResponse {
 	private Integer inventoryQuantity;
 	private Integer quantity;
 	private Integer soldQuantity;
+	private BigDecimal artistProfit;
 }
