@@ -105,6 +105,7 @@ public class JpaProductServiceImpl implements JpaProductService {
 			response.setAttaches(productAttachMapper.entitiesToDomains(entity.getProductInventory().getAttaches()));
 			response.setPaymentMethods(productInventoryMapper.byteArrayToPaymentMethodSet(entity.getProductInventory().getPaymentMethods()));
 			response.setWeight(entity.getProductInventory().getWeight());
+			response.setArtistProfit(entity.getArtistProfit());
 			response.setManufacturingPrice(entity.getProductInventory().getManufacturingPrice());
 
 			return response;
