@@ -118,6 +118,7 @@ public interface ProductMapper {
 	ProductMarketplaceResponse entityToProductResponse(ProductEntity entity);
 
 	@Mapping(target = "owner.province", source = "owner.ward.district.province")
+	@Mapping(target = "saleCampaign", source = "campaign")
 	ProductMarketplaceResponse documentToMarketplaceResponse(ProductDocument document);
 
 	@Mapping(target = "owner.province", source = "owner.ward.district.province")
