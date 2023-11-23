@@ -36,7 +36,6 @@ public class ConfigServiceImpl implements ConfigService {
 
 	@Override
 	public void syncProductToOpenSearch() {
-		Instant now = Instant.now();
 		IndexCoordinates coordinates = openSearchTemplate.getIndexCoordinatesFor(ProductDocument.class);
 		Query query = new NativeSearchQueryBuilder().withQuery(QueryBuilders.matchAllQuery()).build();
 		String[] ids = openSearchTemplate.search(query, ProductDocument.class, coordinates)
@@ -46,16 +45,13 @@ public class ConfigServiceImpl implements ConfigService {
 		Query idsQuery = new NativeSearchQueryBuilder().withQuery(QueryBuilders.idsQuery().addIds(ids)).build();
 		openSearchTemplate.delete(idsQuery, ProductDocument.class, coordinates);
 
-//		campaignSaleRepository.streamAllByFromBeforeAndToAfter(now, now)
-//			.forEach(campaign -> {
-//				for (var product : campaign.getProducts()) {
-//					var productInventory = product.getProductInventory();
-//					var document = productInventoryMapper.entityToDocument(productInventory);
-//					var campaignDocument = productInventoryMapper.campaignEntityToCampaignDocument(campaign);
-//					document.setCampaign(campaignDocument);
-//					openSearchTemplate.save(document);
-//				}
-//			});
+		campaignSaleRepository.streamAllByFromBeforeAndToAfter(Instant.now())
+			.forEach(campaign -> {
+				for (var product : campaign.getProducts()) {
+					var document = productMapper.entityToDocument(product);
+					openSearchTemplate.save(document);
+				}
+			});
 	}
 
 	@Override

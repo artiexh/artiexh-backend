@@ -20,4 +20,5 @@ public class ProductResponse extends ProductInSaleCampaignResponse {
 	private Integer quantity;
 	private Integer soldQuantity;
 	private BigDecimal artistProfit;
+	private BigDecimal manufacturingPrice;
 }
