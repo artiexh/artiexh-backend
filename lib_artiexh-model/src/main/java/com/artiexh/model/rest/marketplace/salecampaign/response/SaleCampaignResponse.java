@@ -29,5 +29,6 @@ public class SaleCampaignResponse {
 	private CampaignType type;
 	private String thumbnailUrl;
 	private CampaignSaleStatus status;
+	@JsonSerialize(using = ToStringSerializer.class)
 	private Long campaignRequestId;
 }
