@@ -18,4 +18,5 @@ public class ImageConfig {
 	private Double[] rotate;
 	private Double[] scale;
 	private Size size;
+	private Size mockupImageSize;
 }
