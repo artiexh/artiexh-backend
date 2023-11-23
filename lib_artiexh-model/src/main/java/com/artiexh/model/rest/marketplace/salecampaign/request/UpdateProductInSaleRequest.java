@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 public class UpdateProductInSaleRequest {
 	@NotNull
 	@Min(0)
-	private Integer quantity;
+	private Integer quantity = 0;
 	private Money price;
 	private BigDecimal artistProfit;
 }
