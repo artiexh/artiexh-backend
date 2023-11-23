@@ -22,4 +22,6 @@ public interface ProductOpenSearchService {
 	Page<ProductDocument> getAll(Pageable pageable, Query query);
 
 	Page<ProductSuggestion> getSuggestionInPage(Query query, Pageable pageable);
+
+	void refreshIndex();
 }

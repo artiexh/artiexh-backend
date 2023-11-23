@@ -400,6 +400,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 					return productService.create(productEntityBuilder.build());
 				}
 			);
+		productService.refreshOpenSearchIndex();
 
 		return result.map(productMapper::domainToProductResponse)
 			.collect(Collectors.toSet());
