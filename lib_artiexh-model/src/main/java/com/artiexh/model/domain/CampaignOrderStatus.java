@@ -2,6 +2,8 @@ package com.artiexh.model.domain;
 
 import lombok.Getter;
 
+import java.util.Set;
+
 @Getter
 public enum CampaignOrderStatus {
 	PAYING(0),
@@ -16,6 +18,8 @@ public enum CampaignOrderStatus {
 	CampaignOrderStatus(int value) {
 		this.value = value;
 	}
+
+	public static Set<CampaignOrderStatus> ALLOWED_CANCEL_STATUS = Set.of(PAYING, PREPARING, SHIPPING);
 
 	public static CampaignOrderStatus fromValue(int value) {
 		return switch (value) {
