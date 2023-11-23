@@ -49,6 +49,7 @@ public class ProductServiceImpl implements ProductService {
 		try {
 			result = jpaProductService.update(entity);
 			productOpenSearchService.update(result);
+			refreshOpenSearchIndex();
 		} catch (Exception e) {
 			log.warn("Update product to db fail", e);
 			throw e;
@@ -94,10 +95,16 @@ public class ProductServiceImpl implements ProductService {
 			Product product = productMapper.entityToDomainWithoutCampaign(entity);
 			jpaProductService.delete(entity);
 			productOpenSearchService.delete(product.getCampaignSale().getId(), product.getProductInventory().getProductCode());
+			refreshOpenSearchIndex();
 		} catch (Exception e) {
 			log.warn("Delete product to db fail", e);
 			throw e;
 		}
+	}
+
+	@Override
+	public void refreshOpenSearchIndex() {
+		productOpenSearchService.refreshIndex();
 	}
 
 //	@Override

@@ -27,6 +27,8 @@ public interface ProductService {
 
 	void delete(ProductEntity entity);
 
+	void refreshOpenSearchIndex();
+
 //	Page<Product> getInPage(Query query, Pageable pageable);
 //
 //	Product getDetail(long id);
