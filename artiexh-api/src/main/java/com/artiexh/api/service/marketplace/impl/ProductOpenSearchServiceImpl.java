@@ -64,4 +64,9 @@ public class ProductOpenSearchServiceImpl implements ProductOpenSearchService {
 		return hitPage.map(searchHit -> ProductSuggestion.builder().name(searchHit.getContent().getName()).build());
 	}
 
+	@Override
+	public void refreshIndex() {
+		openSearchTemplate.indexOps(ProductDocument.class).refresh();
+	}
+
 }
