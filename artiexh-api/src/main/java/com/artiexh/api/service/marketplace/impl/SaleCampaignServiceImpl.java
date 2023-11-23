@@ -419,11 +419,11 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 
 		if (request.getQuantity() != null) {
 			int compareResult = Integer.compare(request.getQuantity(), productEntity.getQuantity());
-			if (compareResult > 1 && productEntity.getProductInventory().getQuantity() < request.getQuantity()) {
+			if (compareResult > 0 && productEntity.getProductInventory().getQuantity() < request.getQuantity()) {
 				// check inventory quantity
 				throw new IllegalArgumentException("Product inventory have not enough quantity");
 			}
-			if (compareResult < 1 && request.getQuantity() < productEntity.getSoldQuantity()) {
+			if (compareResult < 0 && request.getQuantity() < productEntity.getSoldQuantity()) {
 				// check sold quantity
 				throw new IllegalArgumentException("Product is sold more than request quantity");
 			}
