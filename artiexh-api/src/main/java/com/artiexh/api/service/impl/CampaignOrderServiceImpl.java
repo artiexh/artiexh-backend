@@ -228,6 +228,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	public void cancelOrder(Long orderId, String message, Long updatedBy) throws IllegalAccessException {
 		CampaignOrderEntity order = campaignOrderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
 
+		//Cancel ghtk order
 		if (order.getStatus() == CampaignOrderStatus.SHIPPING.getByteValue()) {
 			var cancelOrderGhtkResponse = ghtkOrderService.cancelOrder(order.getId().toString())
 				.doOnError(WebClientResponseException.class, throwable -> {
@@ -237,9 +238,10 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 				})
 				.block();
 			if (cancelOrderGhtkResponse == null || !cancelOrderGhtkResponse.isSuccess()) {
-				throw new IllegalArgumentException("Cancel ghtk order failed: " + cancelOrderGhtkResponse.getMessage());
+				throw new IllegalArgumentException("Cancel ghtk order failed" + (cancelOrderGhtkResponse != null ? cancelOrderGhtkResponse.getMessage() : ""));
 			}
 		}
+
 		AccountEntity account = accountRepository.findById(updatedBy).orElseThrow(EntityNotFoundException::new);
 		if (!account.getId().equals(order.getOrder().getUser().getId())
 			&& (account.getRole() != Role.ADMIN.getByteValue() &&
