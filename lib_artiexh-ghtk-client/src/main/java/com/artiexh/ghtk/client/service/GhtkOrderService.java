@@ -24,7 +24,7 @@ public interface GhtkOrderService {
 	@GetExchange("/services/shipment/v2/{orderId}")
 	Mono<OrderStatusResponse> getOrderStatus(@PathVariable String orderId);
 
-	@PostExchange("/services/shipment/cancel/partner_id:{orderId}")
+	@PostExchange("/services/shipment/cancel/{orderId}")
 	Mono<GhtkResponse> cancelOrder(@PathVariable String orderId);
 
 }

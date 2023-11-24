@@ -230,7 +230,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 
 		//Cancel ghtk order
 		if (order.getStatus() == CampaignOrderStatus.SHIPPING.getByteValue()) {
-			var cancelOrderGhtkResponse = ghtkOrderService.cancelOrder(order.getId().toString())
+			var cancelOrderGhtkResponse = ghtkOrderService.cancelOrder(order.getShippingLabel())
 				.doOnError(WebClientResponseException.class, throwable -> {
 					var response = throwable.getResponseBodyAs(GhtkResponse.class);
 					throw new IllegalArgumentException(
@@ -272,7 +272,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	private void revertProductQuantity(Set<OrderDetailEntity> orderDetailEntities) {
 		for (OrderDetailEntity orderDetail : orderDetailEntities) {
 			ProductEntity productInSale = orderDetail.getProduct();
-			productInSale.setSoldQuantity(productInSale.getQuantity() - orderDetail.getQuantity());
+			productInSale.setSoldQuantity(productInSale.getSoldQuantity() - orderDetail.getQuantity());
 			productService.update(productInSale);
 		}
 	}
