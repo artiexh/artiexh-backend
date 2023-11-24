@@ -66,10 +66,6 @@ public class ProductTemplateServiceImpl implements ProductTemplateService {
 	@Override
 	@Transactional
 	public ProductTemplate update(ProductTemplate product) {
-		Set<String> businessCodes = product.getProviders().stream().map(Provider::getBusinessCode).collect(Collectors.toSet());
-		if (businessCodes.size() != providerRepository.countByBusinessCodeIn(businessCodes)) {
-			throw new IllegalArgumentException(ErrorCode.PROVIDER_NOT_FOUND.getMessage());
-		}
 
 		ProductTemplateEntity entity = productTemplateRepository.findById(product.getId())
 			.orElseThrow(EntityNotFoundException::new);
