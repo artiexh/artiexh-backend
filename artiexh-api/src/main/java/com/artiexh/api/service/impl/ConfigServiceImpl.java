@@ -1,7 +1,9 @@
 package com.artiexh.api.service.impl;
 
 import com.artiexh.api.service.ConfigService;
-import com.artiexh.data.jpa.entity.*;
+import com.artiexh.data.jpa.entity.CampaignEntity;
+import com.artiexh.data.jpa.entity.CustomProductEntity;
+import com.artiexh.data.jpa.entity.ProductInCampaignEntity;
 import com.artiexh.data.jpa.repository.CampaignSaleRepository;
 import com.artiexh.data.jpa.repository.ProductInCampaignRepository;
 import com.artiexh.data.jpa.repository.ProductRepository;
@@ -9,7 +11,6 @@ import com.artiexh.data.opensearch.model.ProductDocument;
 import com.artiexh.model.domain.ProductInCampaign;
 import com.artiexh.model.mapper.ProductInventoryMapper;
 import com.artiexh.model.mapper.ProductMapper;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.opensearch.data.client.orhlc.NativeSearchQueryBuilder;
 import org.opensearch.index.query.QueryBuilders;
@@ -51,17 +52,6 @@ public class ConfigServiceImpl implements ConfigService {
 					openSearchTemplate.save(document);
 				}
 			});
-	}
-
-	@Override
-	public void syncProductToOpenSearch(String productCode, Long campaignSaleId) {
-		ProductEntity product = productRepository.findById(ProductEntityId.builder()
-				.productCode(productCode)
-				.campaignSaleId(campaignSaleId)
-				.build())
-			.orElseThrow(EntityNotFoundException::new);
-		var document = productMapper.entityToDocument(product);
-		openSearchTemplate.save(document);
 	}
 
 	@Override
