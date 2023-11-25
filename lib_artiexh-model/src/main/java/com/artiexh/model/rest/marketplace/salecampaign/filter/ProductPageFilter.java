@@ -17,6 +17,7 @@ import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -39,6 +40,7 @@ public class ProductPageFilter {
 
 	public NativeSearchQueryBuilder getQueryBuilder() {
 		var boolQuery = new BoolQueryBuilder();
+		//boolQuery.must(new RangeQueryBuilder("campaign.public_date").lte(Instant.now()));
 
 		if (campaignId != null) {
 			boolQuery.must(new TermQueryBuilder("campaign.id", campaignId));
@@ -88,8 +90,11 @@ public class ProductPageFilter {
 	}
 
 	public Query getMarketplaceQuery() {
+		var filterQuery = new BoolQueryBuilder();
+		filterQuery.must(new TermQueryBuilder("campaign.status", CampaignSaleStatus.ACTIVE.getByteValue()));
+		filterQuery.must(new RangeQueryBuilder("campaign.public_date").lte(Instant.now()));
 		return getQueryBuilder()
-			.withFilter(new TermQueryBuilder("campaign.status", CampaignSaleStatus.ACTIVE.getByteValue()))
+			.withFilter(filterQuery)
 			.build();
 	}
 }
