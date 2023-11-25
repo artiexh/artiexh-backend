@@ -40,7 +40,6 @@ public class ProductPageFilter {
 
 	public NativeSearchQueryBuilder getQueryBuilder() {
 		var boolQuery = new BoolQueryBuilder();
-		//boolQuery.must(new RangeQueryBuilder("campaign.public_date").lte(Instant.now()));
 
 		if (campaignId != null) {
 			boolQuery.must(new TermQueryBuilder("campaign.id", campaignId));
