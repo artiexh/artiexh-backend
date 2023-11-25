@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ser.impl.StringArraySerializer;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.persistence.criteria.Predicate;
 import lombok.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ import java.util.Set;
 @Builder
 public class ProductInventoryFilter {
 	private Long ownerId;
-	private Set<String> productCodes;
+	private String productCode;
 
 	public Specification<ProductInventoryEntity> getSpecification() {
 		return (root, cQuery, builder) -> {
@@ -30,8 +31,8 @@ public class ProductInventoryFilter {
 				predicates.add(builder.equal(root.get("owner").get("id"), ownerId));
 			}
 
-			if (productCodes != null && !productCodes.isEmpty()) {
-				predicates.add(root.get("productCode").in(productCodes));
+			if (StringUtils.isNotBlank(productCode)) {
+				predicates.add(builder.like(root.get("productCode"), "%" + productCode + "%"));
 			}
 			return builder.and(predicates.toArray(new Predicate[0]));
 		};
