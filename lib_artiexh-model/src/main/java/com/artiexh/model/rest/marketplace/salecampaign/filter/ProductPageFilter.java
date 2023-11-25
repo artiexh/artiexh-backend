@@ -91,9 +91,13 @@ public class ProductPageFilter {
 	public Query getMarketplaceQuery() {
 		var filterQuery = new BoolQueryBuilder();
 		filterQuery.must(new TermQueryBuilder("campaign.status", CampaignSaleStatus.ACTIVE.getByteValue()));
-		filterQuery.must(new RangeQueryBuilder("campaign.public_date").lte(Instant.now()));
+		var activeCampaignFilter = new BoolQueryBuilder();
+		activeCampaignFilter.should(new RangeQueryBuilder("campaign.public_date").lte(Instant.now()));
+		activeCampaignFilter.should(new RangeQueryBuilder("campaign.from").lte(Instant.now()));
+		activeCampaignFilter.minimumShouldMatch(1);
 		return getQueryBuilder()
 			.withFilter(filterQuery)
+			.withFilter(activeCampaignFilter)
 			.build();
 	}
 }

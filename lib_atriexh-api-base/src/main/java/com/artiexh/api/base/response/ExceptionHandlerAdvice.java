@@ -48,12 +48,12 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 
 	@Override
 	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException exception, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-		Pattern ENUM_MSG = Pattern.compile("\\[[a-zA-Z,_ ]*\\]");
+		Pattern ENUM_MSG = Pattern.compile("\\[[a-zA-Z,_,\" ]*\\]");
 		if (exception.getCause() != null && exception.getCause() instanceof InvalidFormatException) {
-			Matcher match = ENUM_MSG.matcher(exception.getMessage());
+			Matcher match = ENUM_MSG.matcher(exception.getCause().getMessage());
 			if (match.find()) {
 				//return new ResponseEntity<>(new ResponseBase<>(1, "values should be: " + match.group(0)), HttpStatus.BAD_REQUEST);
-				var responseException = new ResponseStatusException(HttpStatus.BAD_REQUEST, "values should be: " + match.group(0), exception);
+				var responseException = new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error in processing enum: " + match.group(0), exception);
 				return handleExceptionInternal(responseException, null, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 			}
 			var responseException = new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getCause().getMessage(), exception);
