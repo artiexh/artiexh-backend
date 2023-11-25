@@ -22,8 +22,8 @@ public class MarketplaceSaleCampaignFilter {
 	private Long ownerId;
 	private String username;
 	private CampaignType campaignType;
-	private Instant from = Instant.now();
-	private Instant to;
+	private Instant from;
+	private Instant to = Instant.now();
 	@JsonIgnore
 	private Instant publicDate = Instant.now();
 	private CampaignSaleStatus status;
@@ -31,6 +31,7 @@ public class MarketplaceSaleCampaignFilter {
 	public Specification<CampaignSaleEntity> getSpecification() {
 		return (root, query, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
+			predicates.add(builder.lessThanOrEqualTo(root.get("publicDate"), publicDate));
 
 			if (status != null) {
 				predicates.add(builder.equal(root.get("status"), status.getByteValue()));
