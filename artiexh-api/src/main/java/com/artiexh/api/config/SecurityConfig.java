@@ -70,6 +70,7 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.GET, Endpoint.Artist.ROOT + "/**").permitAll()
 				.requestMatchers(HttpMethod.GET, Endpoint.Post.ROOT + "/**").permitAll()
 				.requestMatchers(HttpMethod.GET, Endpoint.Marketplace.ROOT + "/**").permitAll()
+				.requestMatchers("/ws/**").permitAll()
 				.anyRequest().authenticated()
 			)
 			.oauth2Login(oauth2 -> oauth2
