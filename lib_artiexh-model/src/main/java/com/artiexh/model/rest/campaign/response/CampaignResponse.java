@@ -26,6 +26,7 @@ public class CampaignResponse {
 	private Instant from;
 	private Instant to;
 	private Creator createdBy;
+	@JsonSerialize(using = ToStringSerializer.class)
 	private Long campaignSaleId;
 
 	@Data
