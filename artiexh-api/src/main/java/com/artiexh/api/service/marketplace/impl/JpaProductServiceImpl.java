@@ -59,13 +59,16 @@ public class JpaProductServiceImpl implements JpaProductService {
 	public Page<ProductMarketplaceResponse> fillDocumentToMarketplaceResponse(Page<ProductDocument> documentPage) {
 		var ids = documentPage.map(document -> new ProductEntityId(document.getProductCode(), document.getCampaign().getId()));
 
-		Map<String, ProductEntity> entityMap = productRepository.findByIdIn(ids.toSet()).stream()
-			.collect(Collectors.toMap(entity -> entity.getId().getProductCode(), entity -> entity));
+		Map<ProductEntityId, ProductEntity> entityMap = productRepository.findByIdIn(ids.toSet()).stream()
+			.collect(Collectors.toMap(ProductEntity::getId, entity -> entity));
 
 		return documentPage.map(productDocument -> {
 			ProductMarketplaceResponse response = productMapper.documentToMarketplaceResponse(productDocument);
 
-			ProductEntity entity = entityMap.get(productDocument.getProductCode());
+			ProductEntity entity = entityMap.get(ProductEntityId.builder()
+				.productCode(productDocument.getProductCode())
+				.campaignSaleId(productDocument.getCampaign().getId())
+				.build());
 			response.setThumbnailUrl(productInventoryMapper.getThumbnailUrl(entity.getProductInventory().getAttaches()));
 			response.setQuantity((long) entity.getQuantity() - entity.getSoldQuantity());
 			response.getOwner().setAvatarUrl(entity.getProductInventory().getOwner().getAvatarUrl());

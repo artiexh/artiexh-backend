@@ -17,6 +17,7 @@ import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -88,14 +89,23 @@ public class ProductPageFilter {
 	}
 
 	public Query getMarketplaceQuery() {
-		var boolQuery = getBoolQueryInFilter();
-		boolQuery.must(new TermQueryBuilder("campaign.status", CampaignSaleStatus.ACTIVE.getByteValue()));
+		var activeCampaignFilter = new BoolQueryBuilder();
+		activeCampaignFilter.should(new RangeQueryBuilder("campaign.public_date").lte(Instant.now()));
+		activeCampaignFilter.should(new RangeQueryBuilder("campaign.from").lte(Instant.now()));
+		activeCampaignFilter.minimumShouldMatch(1);
+
+		var filterQuery = new BoolQueryBuilder();
+		filterQuery.must(new TermQueryBuilder("campaign.status", CampaignSaleStatus.ACTIVE.getByteValue()));
+		filterQuery.must(activeCampaignFilter);
+
 		var queryBuilder = new NativeSearchQueryBuilder().withFilter(getBoolQueryInFilter());
 
 		if (StringUtils.hasText(keyword)) {
 			queryBuilder.withQuery(new MultiMatchQueryBuilder(keyword, "name").fuzziness(Fuzziness.AUTO));
 		}
 
-		return queryBuilder.build();
+		return queryBuilder
+			.withFilter(filterQuery)
+			.build();
 	}
 }
