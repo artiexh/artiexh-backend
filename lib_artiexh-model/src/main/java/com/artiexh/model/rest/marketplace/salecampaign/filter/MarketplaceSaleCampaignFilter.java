@@ -54,7 +54,7 @@ public class MarketplaceSaleCampaignFilter {
 			if (from != null) {
 				List<Predicate> fromPredicate = new ArrayList<>();
 				fromPredicate.add(builder.greaterThanOrEqualTo(root.get("from"), from));
-				fromPredicate.add(builder.greaterThanOrEqualTo(root.get("to"), to));
+				fromPredicate.add(builder.greaterThanOrEqualTo(root.get("to"), from));
 				predicates.add(builder.or(fromPredicate.toArray(new Predicate[0])));
 			}
 			return builder.and(predicates.toArray(new Predicate[0]));
