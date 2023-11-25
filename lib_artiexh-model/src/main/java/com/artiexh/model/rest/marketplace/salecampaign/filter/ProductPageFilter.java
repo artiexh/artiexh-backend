@@ -38,7 +38,7 @@ public class ProductPageFilter {
 	private Set<ProductStatus> statuses;
 	private Long campaignId;
 
-	public NativeSearchQueryBuilder getQueryBuilder() {
+	private BoolQueryBuilder getBoolQueryInFilter() {
 		var boolQuery = new BoolQueryBuilder();
 
 		if (campaignId != null) {
@@ -75,17 +75,17 @@ public class ProductPageFilter {
 			boolQuery.must(new TermQueryBuilder("category.id", categoryId));
 		}
 
-		var queryBuilder = new NativeSearchQueryBuilder().withFilter(boolQuery);
+		return boolQuery;
+	}
+
+	public Query getQuery() {
+		var queryBuilder = new NativeSearchQueryBuilder().withFilter(getBoolQueryInFilter());
 
 		if (StringUtils.hasText(keyword)) {
 			queryBuilder.withQuery(new MultiMatchQueryBuilder(keyword, "name").fuzziness(Fuzziness.AUTO));
 		}
 
-		return queryBuilder;
-	}
-
-	public Query getQuery() {
-		return getQueryBuilder().build();
+		return queryBuilder.build();
 	}
 
 	public Query getMarketplaceQuery() {
@@ -95,7 +95,14 @@ public class ProductPageFilter {
 		activeCampaignFilter.should(new RangeQueryBuilder("campaign.public_date").lte(Instant.now()));
 		activeCampaignFilter.should(new RangeQueryBuilder("campaign.from").lte(Instant.now()));
 		activeCampaignFilter.minimumShouldMatch(1);
-		return getQueryBuilder()
+
+		var queryBuilder = new NativeSearchQueryBuilder().withFilter(getBoolQueryInFilter());
+
+		if (StringUtils.hasText(keyword)) {
+			queryBuilder.withQuery(new MultiMatchQueryBuilder(keyword, "name").fuzziness(Fuzziness.AUTO));
+		}
+
+		return queryBuilder
 			.withFilter(filterQuery)
 			.withFilter(activeCampaignFilter)
 			.build();
