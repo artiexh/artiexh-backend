@@ -31,7 +31,6 @@ public class MarketplaceSaleCampaignFilter {
 	public Specification<CampaignSaleEntity> getSpecification() {
 		return (root, query, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
-			predicates.add(builder.lessThanOrEqualTo(root.get("publicDate"), publicDate));
 
 			if (status != null) {
 				predicates.add(builder.equal(root.get("status"), status.getByteValue()));
@@ -66,7 +65,11 @@ public class MarketplaceSaleCampaignFilter {
 		Specification<CampaignSaleEntity> marketplaceCampaignSpec = (root, query, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
 
-			predicates.add(builder.lessThanOrEqualTo(root.get("publicDate"), publicDate));
+			List<Predicate> activeCampaignPredicate = new ArrayList<>();
+			activeCampaignPredicate.add(builder.lessThanOrEqualTo(root.get("publicDate"), Instant.now()));
+			activeCampaignPredicate.add(builder.lessThanOrEqualTo(root.get("from"), Instant.now()));
+
+			predicates.add(builder.or(activeCampaignPredicate.toArray(new Predicate[0])));
 
 			predicates.add(builder.equal(root.get("status"), CampaignSaleStatus.ACTIVE.getByteValue()));
 
