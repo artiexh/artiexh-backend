@@ -21,6 +21,10 @@
 			<version>1.0.0</version>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.artiexh</groupId>
 			<artifactId>lib_artiexh-opensearch-repository</artifactId>
 			<version>1.0.0</version>
