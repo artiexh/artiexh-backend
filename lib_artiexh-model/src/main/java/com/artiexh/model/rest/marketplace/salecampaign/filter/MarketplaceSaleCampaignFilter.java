@@ -64,7 +64,7 @@ public class MarketplaceSaleCampaignFilter {
 			List<Predicate> predicates = new ArrayList<>();
 
 			List<Predicate> activeCampaignPredicate = new ArrayList<>();
-			activeCampaignPredicate.add(builder.lessThanOrEqualTo(root.get("public_date"), Instant.now()));
+			activeCampaignPredicate.add(builder.lessThanOrEqualTo(root.get("publicDate"), Instant.now()));
 			activeCampaignPredicate.add(builder.lessThanOrEqualTo(root.get("from"), Instant.now()));
 
 			predicates.add(builder.or(activeCampaignPredicate.toArray(new Predicate[0])));
