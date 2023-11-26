@@ -22,6 +22,7 @@ import java.util.Set;
 public class ProductInventoryFilter {
 	private Long ownerId;
 	private String productCode;
+	private Set<String> productCodes;
 
 	public Specification<ProductInventoryEntity> getSpecification() {
 		return (root, cQuery, builder) -> {
@@ -33,6 +34,10 @@ public class ProductInventoryFilter {
 
 			if (StringUtils.isNotBlank(productCode)) {
 				predicates.add(builder.like(root.get("productCode"), "%" + productCode + "%"));
+			}
+
+			if (productCodes != null && !productCodes.isEmpty()) {
+				predicates.add(root.get("productCode").in(productCodes));
 			}
 			return builder.and(predicates.toArray(new Predicate[0]));
 		};
