@@ -22,7 +22,7 @@ public class MarketplaceSaleCampaignFilter {
 	private Long ownerId;
 	private String username;
 	private CampaignType campaignType;
-	private Instant from = Instant.now();
+	private Instant from;
 	private Instant to;
 	private CampaignSaleStatus status;
 
