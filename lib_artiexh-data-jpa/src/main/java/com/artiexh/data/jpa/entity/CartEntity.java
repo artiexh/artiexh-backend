@@ -20,7 +20,7 @@ public class CartEntity {
 	private Long id;
 
 	@Builder.Default
-	@OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
 	@JoinColumn(name = "cart_id")
 	private Set<CartItemEntity> cartItems = new LinkedHashSet<>();
 
