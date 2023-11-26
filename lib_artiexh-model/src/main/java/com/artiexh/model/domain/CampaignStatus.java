@@ -30,6 +30,13 @@ public enum CampaignStatus {
 		CampaignStatus.MANUFACTURED
 	);
 
+	public static final Set<CampaignStatus> SAVED_PROVIDER_CONFIGS_STATUS = Set.of(
+		CampaignStatus.APPROVED,
+		CampaignStatus.REJECTED,
+		CampaignStatus.MANUFACTURING,
+		CampaignStatus.MANUFACTURED
+	);
+
 	private final int value;
 
 	CampaignStatus(int value) {
