@@ -2,8 +2,10 @@ package com.artiexh.data.jpa.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -12,10 +14,11 @@ import java.util.Set;
 @Getter
 @Setter
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @Entity
 @Table(name = "product_inventory")
-public class ProductInventoryEntity {
+@EntityListeners(AuditingEntityListener.class)
+public class ProductInventoryEntity extends BaseAuditEntity {
 	@Id
 	@Column(name = "product_code", length = 20)
 	private String productCode;
