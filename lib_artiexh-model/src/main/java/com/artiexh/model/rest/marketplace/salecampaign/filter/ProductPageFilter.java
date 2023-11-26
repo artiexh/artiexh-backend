@@ -42,7 +42,7 @@ public class ProductPageFilter {
 		var boolQuery = new BoolQueryBuilder();
 
 		if (campaignId != null) {
-			boolQuery.must(new TermQueryBuilder("campaign.id", campaignId));
+			boolQuery.must(new TermQueryBuilder("campaign.id", campaignId)).minimumShouldMatch(1);
 		}
 
 		if (artistId != null) {
@@ -72,7 +72,7 @@ public class ProductPageFilter {
 			boolQuery.must(new TermQueryBuilder("averageRate", averageRate));
 		}
 		if (categoryId != null) {
-			boolQuery.must(new TermQueryBuilder("category.id", categoryId));
+			boolQuery.must(new TermQueryBuilder("category.id", categoryId)).minimumShouldMatch(1);
 		}
 
 		return boolQuery;
@@ -98,13 +98,14 @@ public class ProductPageFilter {
 		filterQuery.must(new TermQueryBuilder("campaign.status", CampaignSaleStatus.ACTIVE.getByteValue()));
 		filterQuery.must(activeCampaignFilter);
 
-		var queryBuilder = new NativeSearchQueryBuilder().withFilter(getBoolQueryInFilter());
+		BoolQueryBuilder boolQuery = getBoolQueryInFilter();
 
 		if (StringUtils.hasText(keyword)) {
-			queryBuilder.withQuery(new MultiMatchQueryBuilder(keyword, "name").fuzziness(Fuzziness.AUTO));
+			boolQuery.should(new MultiMatchQueryBuilder(keyword, "name").fuzziness(Fuzziness.AUTO));
 		}
 
-		return queryBuilder
+		return new NativeSearchQueryBuilder()
+			.withQuery(boolQuery)
 			.withFilter(filterQuery)
 			.build();
 	}
