@@ -22,7 +22,7 @@ public class MarketplaceSaleCampaignFilter {
 	private Long ownerId;
 	private String username;
 	private CampaignType campaignType;
-	private Instant from = Instant.now();
+	private Instant from;
 	private Instant to;
 	private CampaignSaleStatus status;
 
@@ -64,7 +64,7 @@ public class MarketplaceSaleCampaignFilter {
 			List<Predicate> predicates = new ArrayList<>();
 
 			List<Predicate> activeCampaignPredicate = new ArrayList<>();
-			activeCampaignPredicate.add(builder.lessThanOrEqualTo(root.get("public_date"), Instant.now()));
+			activeCampaignPredicate.add(builder.lessThanOrEqualTo(root.get("publicDate"), Instant.now()));
 			activeCampaignPredicate.add(builder.lessThanOrEqualTo(root.get("from"), Instant.now()));
 
 			predicates.add(builder.or(activeCampaignPredicate.toArray(new Predicate[0])));
