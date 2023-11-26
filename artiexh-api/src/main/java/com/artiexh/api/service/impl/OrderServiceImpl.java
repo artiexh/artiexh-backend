@@ -13,13 +13,11 @@ import com.artiexh.api.service.OrderService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.projection.Bill;
 import com.artiexh.data.jpa.repository.*;
-import com.artiexh.ghtk.client.service.GhtkOrderService;
 import com.artiexh.model.domain.CampaignOrderStatus;
 import com.artiexh.model.domain.OrderHistoryStatus;
 import com.artiexh.model.domain.PaymentMethod;
 import com.artiexh.model.domain.ProductStatus;
 import com.artiexh.model.mapper.OrderMapper;
-import com.artiexh.model.mapper.OrderTransactionMapper;
 import com.artiexh.model.rest.order.request.CheckoutCampaign;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
 import com.artiexh.model.rest.order.request.PaymentQueryProperties;
@@ -48,6 +46,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @Slf4j
 public class OrderServiceImpl implements OrderService {
+	private final CartRepository cartRepository;
 	private final CampaignSaleRepository campaignSaleRepository;
 	private final UserRepository userRepository;
 	private final ProductRepository productRepository;
@@ -55,7 +54,6 @@ public class OrderServiceImpl implements OrderService {
 	private final CartItemRepository cartItemRepository;
 	private final OrderMapper orderMapper;
 	private final CartService cartService;
-	private final OrderTransactionMapper orderTransactionMapper;
 	private final OrderTransactionRepository orderTransactionRepository;
 	private final OrderRepository orderRepository;
 	private final VnpConfigurationProperties vnpProperties;
@@ -64,11 +62,10 @@ public class OrderServiceImpl implements OrderService {
 	private final CampaignOrderRepository campaignOrderRepository;
 	private final StringRedisTemplate redisTemplate;
 	private final SystemConfigService systemConfigService;
-	private final GhtkOrderService ghtkOrderService;
 	private final SystemConfigHelper systemConfigHelper;
 
-	@Transactional(isolation = Isolation.SERIALIZABLE)
 	@Override
+	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public DetailUserOrderResponse checkout(long userId, CheckoutRequest request) {
 		OrderEntity order = switch (request.getPaymentMethod()) {
 			case CASH -> cashPaymentOrder(userId, request);
