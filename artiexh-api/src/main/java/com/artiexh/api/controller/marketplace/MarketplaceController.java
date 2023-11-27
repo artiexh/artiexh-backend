@@ -133,7 +133,7 @@ public class MarketplaceController {
 		@ParameterObject @Valid ArtistFilter filter
 	) {
 		Page<ArtistProfileResponse> profiles = artistService.getAllProfile(
-			filter.getSpecification(rootAdminId),
+			filter.getSpecification(),
 			paginationAndSortingRequest.getPageable()
 		);
 		return new PageResponse<>(profiles);

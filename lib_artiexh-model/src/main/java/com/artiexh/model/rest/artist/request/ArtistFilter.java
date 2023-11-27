@@ -19,10 +19,9 @@ import java.util.List;
 @NoArgsConstructor
 public class ArtistFilter {
 	private String name;
-	public Specification<ArtistEntity> getSpecification(Long rootAdminId) {
+	public Specification<ArtistEntity> getSpecification() {
 		return (root, query, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
-			predicates.add(builder.notEqual(root.get("id"),rootAdminId));
 			if (StringUtils.isNotBlank(name)) {
 				predicates.add(builder.like(root.get("displayName"), "%" + name + "%"));
 			}

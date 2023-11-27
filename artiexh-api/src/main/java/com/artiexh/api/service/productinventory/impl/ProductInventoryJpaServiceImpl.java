@@ -3,10 +3,7 @@ package com.artiexh.api.service.productinventory.impl;
 import com.artiexh.api.service.productinventory.ProductHistoryService;
 import com.artiexh.api.service.productinventory.ProductInventoryJpaService;
 import com.artiexh.data.jpa.entity.*;
-import com.artiexh.data.jpa.repository.ArtistRepository;
-import com.artiexh.data.jpa.repository.ProductCategoryRepository;
-import com.artiexh.data.jpa.repository.ProductInventoryRepository;
-import com.artiexh.data.jpa.repository.ProductTagRepository;
+import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.*;
 import com.artiexh.model.mapper.ProductInventoryMapper;
 import com.artiexh.model.rest.product.request.UpdateProductQuantitiesRequest;
@@ -31,6 +28,7 @@ import java.util.stream.Collectors;
 public class ProductInventoryJpaServiceImpl implements ProductInventoryJpaService {
 	private final ProductInventoryRepository productRepository;
 	private final ArtistRepository artistRepository;
+	private final AccountRepository accountRepository;
 	private final ProductCategoryRepository productCategoryRepository;
 	private final ProductInventoryMapper productInventoryMapper;
 	private final ProductTagRepository productTagRepository;
@@ -131,8 +129,8 @@ public class ProductInventoryJpaServiceImpl implements ProductInventoryJpaServic
 		productEntity.setTags(tagEntities);
 		//productEntity.setBundleItems(bundleItems);
 
-		ArtistEntity admin = artistRepository.findById(rootAdminId)
-			.orElseThrow(() -> new IllegalArgumentException("Admin shop is not configured"));
+		AccountEntity admin = accountRepository.findById(rootAdminId)
+			.orElseThrow(() -> new IllegalArgumentException("Root admin is not configured"));
 
 		productEntity.setShop(admin);
 		productEntity.setProductInCampaign(productInCampaign);
