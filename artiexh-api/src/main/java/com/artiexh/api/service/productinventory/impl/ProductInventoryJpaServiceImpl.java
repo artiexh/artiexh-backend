@@ -128,11 +128,6 @@ public class ProductInventoryJpaServiceImpl implements ProductInventoryJpaServic
 		productEntity.setCategory(categoryEntity);
 		productEntity.setTags(tagEntities);
 		//productEntity.setBundleItems(bundleItems);
-
-		AccountEntity admin = accountRepository.findById(rootAdminId)
-			.orElseThrow(() -> new IllegalArgumentException("Root admin is not configured"));
-
-		productEntity.setShop(admin);
 		productEntity.setProductInCampaign(productInCampaign);
 
 		ProductInventoryEntity savedProductEntity = productRepository.save(productEntity);
