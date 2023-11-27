@@ -24,6 +24,7 @@ import com.artiexh.model.rest.order.user.response.CampaignOrderResponsePage;
 import com.artiexh.model.rest.order.user.response.UserCampaignOrderDetailResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -47,6 +48,8 @@ public class ArtistServiceImpl implements ArtistService {
 	private final CampaignOrderMapper campaignOrderMapper;
 	private final ArtistMapper artistMapper;
 	private final SubscriptionMapper subscriptionMapper;
+	@Value("${artiexh.security.admin.id}")
+	private Long rootAdminId;
 
 	@Override
 	public ArtistProfileResponse getProfile(long id) {
@@ -56,8 +59,8 @@ public class ArtistServiceImpl implements ArtistService {
 	}
 
 	@Override
-	public Page<ArtistProfileResponse> getAllProfile(Pageable pageable) {
-		return artistRepository.findAll(pageable).map(artistMapper::entityToProfileResponse);
+	public Page<ArtistProfileResponse> getAllProfile(Specification<ArtistEntity> specification, Pageable pageable) {
+		return artistRepository.findAll(specification ,pageable).map(artistMapper::entityToProfileResponse);
 	}
 
 	@Override
