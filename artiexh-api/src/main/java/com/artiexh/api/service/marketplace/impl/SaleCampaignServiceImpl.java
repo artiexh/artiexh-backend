@@ -204,6 +204,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			campaignMap.put(productInSaleId.getCampaignSaleId().toString() + "-" + productInSaleId.getProductCode(), campaignInfo);
 		}
 		productOpenSearchService.updateCampaignInfo(campaignMap);
+		productService.refreshOpenSearchIndex();
 
 		return campaignSaleMapper.entityToDetailResponse(entity);
 	}

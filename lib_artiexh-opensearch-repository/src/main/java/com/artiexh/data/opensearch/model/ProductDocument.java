@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 @Data
-@Document(indexName = "staging-product")
+@Document(indexName = "product")
 public class ProductDocument {
 	@Field(name = "productCode", type = FieldType.Keyword)
 	private String productCode;
