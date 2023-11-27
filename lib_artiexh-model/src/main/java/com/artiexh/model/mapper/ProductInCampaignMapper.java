@@ -32,7 +32,9 @@ public interface ProductInCampaignMapper {
 	@Mapping(target = "price.amount", source = "priceAmount")
 	@Mapping(target = "price.unit", source = "priceUnit")
 	@Mapping(target = "customProduct", qualifiedByName = "customProductEntityToGeneralResponse")
-	@Mapping(target = "providerConfig", ignore = true)
+	@Mapping(target = "providerConfig.basePriceAmount", source = "basePriceAmount")
+	@Mapping(target = "providerConfig.manufacturingTime", source = "manufacturingTime")
+	@Mapping(target = "providerConfig.minQuantity", source = "minQuantity")
 	ProductInCampaignResponse entityToResponse(ProductInCampaignEntity product);
 
 	@Mapping(target = "price.amount", source = "priceAmount")
