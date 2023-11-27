@@ -2,11 +2,13 @@ package com.artiexh.data.jpa.repository;
 
 import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.jpa.entity.ProductEntityId;
+import com.artiexh.data.jpa.projection.ProductInSaleId;
 import jakarta.persistence.QueryHint;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -19,6 +21,12 @@ import static org.hibernate.jpa.HibernateHints.*;
 public interface ProductRepository extends JpaRepository<ProductEntity, ProductEntityId>, JpaSpecificationExecutor<ProductEntity> {
 
 	Set<ProductEntity> findByIdIn(Collection<ProductEntityId> id);
+
+	@Query(
+		nativeQuery = true,
+		value = "select product_code as productCode, campaign_sale_id as campaignSaleId from product where campaign_sale_id = :id"
+	)
+	Set<ProductInSaleId> findAllByCampaignSaleId(@Param("id") Long campaignSaleId);
 
 //	@Modifying
 //	@Query("update ProductEntity entity set entity.status = cast(1 as byte) where entity.id = :id")

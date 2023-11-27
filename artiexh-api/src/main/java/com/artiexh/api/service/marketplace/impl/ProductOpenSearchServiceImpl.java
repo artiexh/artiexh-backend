@@ -7,12 +7,16 @@ import com.artiexh.model.domain.Product;
 import com.artiexh.model.domain.ProductSuggestion;
 import com.artiexh.model.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
+import org.opensearch.index.reindex.UpdateByQueryRequestBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.*;
 import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.data.elasticsearch.core.query.UpdateQuery;
 import org.springframework.data.elasticsearch.core.query.UpdateResponse;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -62,6 +66,17 @@ public class ProductOpenSearchServiceImpl implements ProductOpenSearchService {
 		SearchHits<ProductDocument> hits = openSearchTemplate.search(query, ProductDocument.class);
 		SearchPage<ProductDocument> hitPage = SearchHitSupport.searchPageFor(hits, pageable);
 		return hitPage.map(searchHit -> ProductSuggestion.builder().name(searchHit.getContent().getName()).build());
+	}
+
+	@Override
+	public void updateCampaignInfo(Map<String, ProductDocument.Campaign> campaign) {
+		for (Map.Entry<String, ProductDocument.Campaign> entry : campaign.entrySet()) {
+			var document = openSearchTemplate.get(entry.getKey(), ProductDocument.class);
+			if (document != null) {
+				document.setCampaign(entry.getValue());
+				openSearchTemplate.update(document);
+			}
+		}
 	}
 
 	@Override

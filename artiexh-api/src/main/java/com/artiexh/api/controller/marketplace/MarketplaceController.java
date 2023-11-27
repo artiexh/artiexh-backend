@@ -62,7 +62,7 @@ public class MarketplaceController {
 		filter.setCampaignId(id);
 		return new PageResponse<>(productService.getAllMarketplaceResponse(
 			paginationAndSortingRequest.getPageable(),
-			filter.getMarketplaceQuery()
+			filter.getQuery()
 		));
 	}
 
