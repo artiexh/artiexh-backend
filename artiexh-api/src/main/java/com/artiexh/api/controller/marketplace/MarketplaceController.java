@@ -8,6 +8,7 @@ import com.artiexh.model.domain.ProductSuggestion;
 import com.artiexh.model.mapper.ArtistMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
+import com.artiexh.model.rest.artist.request.ArtistFilter;
 import com.artiexh.model.rest.artist.response.ArtistProfileResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.MarketplaceSaleCampaignFilter;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.ProductPageFilter;
@@ -19,6 +20,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -36,6 +38,8 @@ public class MarketplaceController {
 	private final ArtistMapper artistMapper;
 	private final SaleCampaignService saleCampaignService;
 	private final ProductService productService;
+	@Value("${artiexh.security.admin.id}")
+	private Long rootAdminId;
 
 	@GetMapping("/sale-campaign")
 	public PageResponse<SaleCampaignResponse> getAllSaleCampaign(@ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
@@ -125,9 +129,11 @@ public class MarketplaceController {
 
 	@GetMapping("/artist")
 	public PageResponse<ArtistProfileResponse> getInPage(
-		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest
+		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
+		@ParameterObject @Valid ArtistFilter filter
 	) {
 		Page<ArtistProfileResponse> profiles = artistService.getAllProfile(
+			filter.getSpecification(),
 			paginationAndSortingRequest.getPageable()
 		);
 		return new PageResponse<>(profiles);
