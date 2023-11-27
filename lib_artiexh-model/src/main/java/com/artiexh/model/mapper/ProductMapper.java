@@ -159,8 +159,6 @@ public interface ProductMapper {
 
 	ProductDocument.Campaign campaignToCampaignDocument(CampaignSale campaign);
 
-	ProductDocument.Campaign campaignEntityToCampaignDocument(CampaignSaleEntity entity);
-
 //	default Page<ProductResponse> productPageToProductResponsePage(Page<Product> productPage) {
 //		return productPage.map(this::domainToProductResponse);
 //	}
