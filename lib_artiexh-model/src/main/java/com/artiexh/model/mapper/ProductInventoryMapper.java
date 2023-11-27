@@ -51,7 +51,6 @@ public interface ProductInventoryMapper {
 	@Mapping(target = "productInCampaign", ignore = true)
 	@Mapping(target = "productCode", ignore = true)
 	@Mapping(target = "owner", ignore = true)
-	@Mapping(target = "shop", ignore = true)
 	ProductInventoryEntity domainToEntity(ProductInventory product, @MappingTarget ProductInventoryEntity productInventoryEntity);
 
 	@Mapping(target = "productInCampaign.id", source = "productInCampaignId")

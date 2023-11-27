@@ -1,5 +1,6 @@
 package com.artiexh.api.service;
 
+import com.artiexh.data.jpa.entity.ArtistEntity;
 import com.artiexh.data.jpa.entity.CampaignOrderEntity;
 import com.artiexh.model.domain.Post;
 import com.artiexh.model.rest.PageResponse;
@@ -15,7 +16,7 @@ public interface ArtistService {
 
 	ArtistProfileResponse getProfile(long id);
 
-	Page<ArtistProfileResponse> getAllProfile(Pageable pageable);
+	Page<ArtistProfileResponse> getAllProfile(Specification<ArtistEntity> specification, Pageable pageable);
 
 	ArtistProfileResponse getProfile(String username);
 
