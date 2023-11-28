@@ -36,6 +36,7 @@ public class AccountServiceImpl implements AccountService {
 	private final SubscriptionRepository subscriptionRepository;
 	private final CartItemRepository cartItemRepository;
 	private final StaffMapper staffMapper;
+
 	@Override
 	@Transactional
 	public Account getUserById(Long id) {
@@ -44,20 +45,15 @@ public class AccountServiceImpl implements AccountService {
 				case ADMIN -> accountMapper.entityToDomain(accountEntity);
 				case USER -> {
 					User user = userMapper.entityToBasicUser((UserEntity) accountEntity);
-					//user.setCartItemCount(cartItemRepository.countAllByCartId(id));
+					user.setCartItemCount(cartItemRepository.countAllByCartId(id));
 					yield user;
 				}
 				case ARTIST -> {
 					Artist artist = artistMapper.basicArtistInfo((ArtistEntity) accountEntity);
-					//artist.setCartItemCount(cartItemRepository.countAllByCartId(id));
+					artist.setCartItemCount(cartItemRepository.countAllByCartId(id));
 					yield artist;
 				}
-				case STAFF -> {
-					Account artist = staffMapper.basicStaffInfo((StaffEntity) accountEntity);
-					//artist.setCartItemCount(cartItemRepository.countAllByCartId(id));
-					yield artist;
-				}
-				default -> null;
+				case STAFF -> staffMapper.basicStaffInfo((StaffEntity) accountEntity);
 			})
 			.orElse(null);
 	}
