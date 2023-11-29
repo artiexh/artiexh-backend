@@ -25,4 +25,7 @@ public class OrderHistoryEntity {
 	@Column(name = "message")
 	private String message;
 
+	@Column(name = "updated_by")
+	private Long updatedBy;
+
 }
