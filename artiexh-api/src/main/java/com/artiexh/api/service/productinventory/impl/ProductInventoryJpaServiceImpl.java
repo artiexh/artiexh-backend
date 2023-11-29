@@ -17,6 +17,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -80,6 +81,8 @@ public class ProductInventoryJpaServiceImpl implements ProductInventoryJpaServic
 		if (productEntities.size() != request.getProductQuantities().size()) {
 			throw new IllegalStateException("Some products are not found");
 		}
+
+		Set<ProductInventoryQuantity> updatedInventoryQuantities = new HashSet<>();
 		for (ProductInventoryEntity productEntity : productEntities) {
 			ProductInventoryQuantity inventoryQuantity = request.getProductQuantities().stream()
 				.filter(productQuantity -> productQuantity.getProductCode().equals(productEntity.getProductCode()))
@@ -87,20 +90,24 @@ public class ProductInventoryJpaServiceImpl implements ProductInventoryJpaServic
 				.orElse(ProductInventoryQuantity.builder().build());
 			if (request.getAction().equals(ProductHistoryAction.IMPORT)) {
 				productEntity.setQuantity(productEntity.getQuantity() + inventoryQuantity.getQuantity());
+				inventoryQuantity.setCurrentQuantity(productEntity.getQuantity());
 			}
 			if (request.getAction().equals(ProductHistoryAction.EXPORT)) {
 				if (productEntity.getQuantity() < inventoryQuantity.getQuantity()) {
 					throw new IllegalArgumentException("Product inventory is not enough to export");
 				}
 				productEntity.setQuantity(productEntity.getQuantity() - inventoryQuantity.getQuantity());
+				inventoryQuantity.setCurrentQuantity(productEntity.getQuantity());
 			}
+			updatedInventoryQuantities.add(inventoryQuantity);
 		}
 
 		productHistoryService.create(
 			request.getAction(),
 			request.getSourceId(),
+			request.getSourceName(),
 			request.getSourceCategory(),
-			request.getProductQuantities()
+			updatedInventoryQuantities
 		);
 
 		productRepository.saveAll(productEntities);
@@ -138,12 +145,16 @@ public class ProductInventoryJpaServiceImpl implements ProductInventoryJpaServic
 
 	@Override
 	@Transactional
-	public void updateQuantityFromCampaignRequest(Long sourceId, Set<ProductInventoryQuantity> productQuantities) {
+	public void updateQuantityFromCampaignRequest(Long sourceId, String sourceName, Set<ProductInventoryQuantity> productQuantities) {
 		for (ProductInventoryQuantity productQuantity : productQuantities) {
-			productRepository.updateQuantity(productQuantity.getProductCode(), productQuantity.getQuantity());
+			ProductInventoryEntity productInventory = productRepository.findById(productQuantity.getProductCode()).orElseThrow();
+			productInventory.setQuantity(productInventory.getQuantity() + productQuantity.getQuantity());
+			productRepository.save(productInventory);
+
+			productQuantity.setCurrentQuantity(productInventory.getQuantity());
 		}
 
-		productHistoryService.create(ProductHistoryAction.IMPORT, sourceId, SourceCategory.CAMPAIGN_REQUEST, productQuantities);
+		productHistoryService.create(ProductHistoryAction.IMPORT, sourceId, sourceName, SourceCategory.CAMPAIGN_REQUEST, productQuantities);
 	}
 
 	private boolean isManyThumbnail(Set<ProductAttach> attaches) {
@@ -165,19 +176,27 @@ public class ProductInventoryJpaServiceImpl implements ProductInventoryJpaServic
 
 	@Override
 	@Transactional
-	public void reduceQuantity(Long sourceId, SourceCategory sourceCategory, Set<ProductInventoryQuantity> productQuantities) {
+	public void reduceQuantity(Long sourceId, String sourceName, SourceCategory sourceCategory, Set<ProductInventoryQuantity> productQuantities) {
 		for (var productQuantity : productQuantities) {
-			productRepository.updateQuantity(productQuantity.getProductCode(), -productQuantity.getQuantity());
+			ProductInventoryEntity productInventory = productRepository.findById(productQuantity.getProductCode()).orElseThrow();
+			productInventory.setQuantity(productInventory.getQuantity() - productQuantity.getQuantity());
+			productRepository.save(productInventory);
+
+			productQuantity.setCurrentQuantity(productInventory.getQuantity());
 		}
-		productHistoryService.create(ProductHistoryAction.EXPORT, sourceId, sourceCategory, productQuantities);
+		productHistoryService.create(ProductHistoryAction.EXPORT, sourceId, sourceName, sourceCategory, productQuantities);
 	}
 
 	@Override
 	@Transactional
-	public void refundQuantity(Long sourceId, SourceCategory sourceCategory, Set<ProductInventoryQuantity> productQuantities) {
+	public void refundQuantity(Long sourceId,String sourceName, SourceCategory sourceCategory, Set<ProductInventoryQuantity> productQuantities) {
 		for (var productQuantity : productQuantities) {
-			productRepository.updateQuantity(productQuantity.getProductCode(), productQuantity.getQuantity());
+			ProductInventoryEntity productInventory = productRepository.findById(productQuantity.getProductCode()).orElseThrow();
+			productInventory.setQuantity(productInventory.getQuantity() + productQuantity.getQuantity());
+			productRepository.save(productInventory);
+
+			productQuantity.setCurrentQuantity(productInventory.getQuantity());
 		}
-		productHistoryService.create(ProductHistoryAction.IMPORT, sourceId, sourceCategory, productQuantities);
+		productHistoryService.create(ProductHistoryAction.IMPORT, sourceId, sourceName, sourceCategory, productQuantities);
 	}
 }

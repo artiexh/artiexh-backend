@@ -34,6 +34,9 @@ public class ProductHistoryEntity extends BaseAuditEntity {
 	@Column(name = "source_id")
 	private Long sourceId;
 
+	@Column(name = "source_name")
+	private String sourceName;
+
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "product_history_id")
 	private Set<ProductHistoryDetailEntity> productHistoryDetails = new HashSet<>();

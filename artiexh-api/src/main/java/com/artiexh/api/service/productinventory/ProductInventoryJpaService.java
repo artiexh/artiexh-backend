@@ -23,9 +23,9 @@ public interface ProductInventoryJpaService {
 
 	ProductInventory create(Long ownerId, ProductInventory product, ProductInCampaignEntity productInCampaign);
 
-	void updateQuantityFromCampaignRequest(Long sourceId, Set<ProductInventoryQuantity> productQuantities);
+	void updateQuantityFromCampaignRequest(Long sourceId, String sourceName, Set<ProductInventoryQuantity> productQuantities);
 
-	void reduceQuantity(Long sourceId, SourceCategory sourceCategory, Set<ProductInventoryQuantity> productQuantities);
+	void reduceQuantity(Long sourceId, String sourceName, SourceCategory sourceCategory, Set<ProductInventoryQuantity> productQuantities);
 
-	void refundQuantity(Long sourceId, SourceCategory sourceCategory, Set<ProductInventoryQuantity> productQuantities);
+	void refundQuantity(Long sourceId, String sourceName, SourceCategory sourceCategory, Set<ProductInventoryQuantity> productQuantities);
 }

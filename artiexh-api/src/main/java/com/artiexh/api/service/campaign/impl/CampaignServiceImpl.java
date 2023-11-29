@@ -584,6 +584,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 		productInventoryJpaService.updateQuantityFromCampaignRequest(
 			campaignEntity.getId(),
+			campaignEntity.getName(),
 			productInventoryQuantities
 		);
 

@@ -18,6 +18,9 @@ public class ProductHistoryDetailEntity {
 
 	private Long quantity;
 
+	@Column(name = "current_quantity")
+	private Long currentQuantity;
+
 	@ManyToOne
 	@JoinColumn(name = "product_code", updatable = false, insertable = false)
 	private ProductInventoryEntity productInventory;
