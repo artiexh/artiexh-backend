@@ -180,4 +180,12 @@ public class ProductInventoryJpaServiceImpl implements ProductInventoryJpaServic
 		}
 		productHistoryService.create(ProductHistoryAction.IMPORT, sourceId, sourceCategory, productQuantities);
 	}
+
+	@Override
+	@Transactional
+	public void delete(String productCode) {
+		ProductInventoryEntity productInventory = productRepository.findById(productCode).orElseThrow(EntityNotFoundException::new);
+		productInventory.setDeleted(true);
+		productRepository.save(productInventory);
+	}
 }
