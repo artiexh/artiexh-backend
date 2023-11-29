@@ -90,6 +90,9 @@ public class ProductInventoryEntity extends BaseAuditEntity {
 	@Column(name = "manufacturing_price", precision = 38, scale = 2)
 	private BigDecimal manufacturingPrice;
 
+	@Column(name = "is_deleted")
+	private boolean isDeleted;
+
 //	@Builder.Default
 //	@ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 //	@JoinTable(name = "product_bundle_mapping",
