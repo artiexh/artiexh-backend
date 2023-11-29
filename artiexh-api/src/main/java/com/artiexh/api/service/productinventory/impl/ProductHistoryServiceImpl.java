@@ -8,6 +8,7 @@ import com.artiexh.data.jpa.entity.embededmodel.ProductHistoryEntityDetailId;
 import com.artiexh.data.jpa.repository.CampaignRepository;
 import com.artiexh.data.jpa.repository.ProductHistoryDetailRepository;
 import com.artiexh.data.jpa.repository.ProductHistoryRepository;
+import com.artiexh.data.jpa.repository.ProductInventoryRepository;
 import com.artiexh.model.domain.ProductHistory;
 import com.artiexh.model.domain.ProductHistoryAction;
 import com.artiexh.model.domain.ProductInventoryQuantity;
@@ -36,14 +37,16 @@ public class ProductHistoryServiceImpl implements ProductHistoryService {
 	private final ProductHistoryMapper productHistoryMapper;
 	private final CampaignRepository campaignRepository;
 	private final CampaignMapper campaignMapper;
+	private final ProductInventoryRepository productInventoryRepository;
 
 	@Override
 	@Transactional
-	public void create(ProductHistoryAction action, Long sourceId, SourceCategory sourceCategory, Set<ProductInventoryQuantity> productQuantities) {
+	public void create(ProductHistoryAction action, Long sourceId, String sourceName, SourceCategory sourceCategory, Set<ProductInventoryQuantity> productQuantities) {
 		Set<ProductHistoryDetailEntity> productHistoryDetails = new HashSet<>();
 		ProductHistoryEntity productHistory = ProductHistoryEntity.builder()
 			.action(action.getByteValue())
 			.sourceId(sourceId)
+			.sourceName(sourceName)
 			.sourceCategory(sourceCategory.getByteValue())
 			.productHistoryDetails(productHistoryDetails)
 			.build();
@@ -56,6 +59,7 @@ public class ProductHistoryServiceImpl implements ProductHistoryService {
 					.productCode(product.getProductCode())
 					.build())
 				.quantity(product.getQuantity())
+				.currentQuantity(product.getCurrentQuantity())
 				.build())
 			.collect(Collectors.toSet()));
 	}

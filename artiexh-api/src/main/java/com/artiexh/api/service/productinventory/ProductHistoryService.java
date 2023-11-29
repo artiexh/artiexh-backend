@@ -15,7 +15,12 @@ import java.util.Set;
 
 public interface ProductHistoryService {
 
-	void create(ProductHistoryAction action, Long sourceId, SourceCategory sourceCategory, Set<ProductInventoryQuantity> productQuantities);
+	void create(
+		ProductHistoryAction action,
+		Long sourceId,
+		String sourceName,
+		SourceCategory sourceCategory,
+		Set<ProductInventoryQuantity> productQuantities);
 
 	Page<ProductHistory> getInPage(Pageable pageable, Specification<ProductHistoryEntity> specification);
 

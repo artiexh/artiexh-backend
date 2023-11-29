@@ -246,15 +246,15 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 						productEntity.getProductInventory().getProductCode(),
 						status
 					);
-					return new ProductInventoryQuantity(
-						productEntity.getProductInventory().getProductCode(),
-						(long) productEntity.getQuantity() - productEntity.getSoldQuantity()
-					);
+					return ProductInventoryQuantity.builder()
+						.productCode(productEntity.getProductInventory().getProductCode())
+						.quantity((long) productEntity.getQuantity() - productEntity.getSoldQuantity())
+						.build();
 				})
 				.collect(Collectors.toSet());
 
 			// reduce inventory quantity
-			productInventoryJpaService.reduceQuantity(entity.getId(), SourceCategory.CAMPAIGN_SALE, productQuantities);
+			productInventoryJpaService.reduceQuantity(entity.getId(), entity.getName(),SourceCategory.CAMPAIGN_SALE, productQuantities);
 		}
 	}
 
@@ -270,15 +270,15 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 					productEntity.getProductInventory().getProductCode(),
 					status
 				);
-				return new ProductInventoryQuantity(
-					productEntity.getProductInventory().getProductCode(),
-					(long) productEntity.getQuantity() - productEntity.getSoldQuantity()
-				);
+				return ProductInventoryQuantity.builder()
+					.productCode(productEntity.getProductInventory().getProductCode())
+					.quantity((long) productEntity.getQuantity() - productEntity.getSoldQuantity())
+					.build();
 			})
 			.collect(Collectors.toSet());
 
 		// reduce inventory quantity
-		productInventoryJpaService.refundQuantity(entity.getId(), SourceCategory.CAMPAIGN_SALE, productQuantities);
+		productInventoryJpaService.refundQuantity(entity.getId(), entity.getName(), SourceCategory.CAMPAIGN_SALE, productQuantities);
 	}
 
 	@Override

@@ -24,6 +24,7 @@ public interface ProductHistoryMapper {
 	ProductHistoryPageResponse domainToPageResponse(ProductHistoryEntity productHistory);
 	ProductHistoryResponse domainToResponse(ProductHistory productHistory);
 	@Mapping(target = "productHistory", source = "productHistory", qualifiedByName = "entityToPageResponse")
+	@Mapping(target = "remainingQuantity", source = "currentQuantity")
 	ProductHistoryDetailPageResponse entityToDetailPageResponse(ProductHistoryDetailEntity entity);
 
 	default Byte toValue(SourceCategory sourceCategory) {
