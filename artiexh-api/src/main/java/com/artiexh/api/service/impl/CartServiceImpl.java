@@ -85,26 +85,32 @@ public class CartServiceImpl implements CartService {
 			throw new IllegalArgumentException(ErrorCode.INVALID_ITEM.getMessage());
 		}
 
+		var cartEntity = getOrCreateCartEntity(userId);
 		CartItemId cartItemId = new CartItemId(userId, item.getSaleCampaignId(), item.getProductCode());
-		cartItemRepository.findById(cartItemId).ifPresentOrElse(
-			cartItemEntity -> {
-				cartItemEntity.setQuantity(cartItemEntity.getQuantity() + 1);
-				cartItemRepository.save(cartItemEntity);
-			},
-			() -> {
-				ProductEntity productEntity = ProductEntity.builder()
-					.id(new ProductEntityId(item.getProductCode(), item.getSaleCampaignId()))
-					.build();
-				var cartItemEntity = CartItemEntity.builder()
-					.id(cartItemId)
-					.product(productEntity)
-					.quantity(1)
-					.build();
-				cartItemRepository.save(cartItemEntity);
-			}
-		);
 
-		return cartMapper.entityToDomain(getOrCreateCartEntity(userId));
+		cartEntity.getCartItems().stream()
+			.filter(itemEntity -> itemEntity.getId().equals(cartItemId))
+			.findAny()
+			.ifPresentOrElse(
+				cartItemEntity -> {
+					cartItemEntity.setQuantity(cartItemEntity.getQuantity() + 1);
+					cartRepository.save(cartEntity);
+				},
+				() -> {
+					ProductEntity productEntity = ProductEntity.builder()
+						.id(new ProductEntityId(item.getProductCode(), item.getSaleCampaignId()))
+						.build();
+					var cartItemEntity = CartItemEntity.builder()
+						.id(cartItemId)
+						.product(productEntity)
+						.quantity(1)
+						.build();
+					cartEntity.getCartItems().add(cartItemEntity);
+					cartRepository.save(cartEntity);
+				}
+			);
+
+		return cartMapper.entityToDomain(cartEntity);
 	}
 
 	@Override
