@@ -35,6 +35,6 @@ public interface CampaignOrderService {
 
 	void cancelOrder(Long orderId, String message, Long updatedBy) throws IllegalAccessException;
 
-	void refundOrder(Long orderId, Long createdBy);
+	void refundOrder(Long orderId, Long createdBy) throws IllegalAccessException;
 
 }

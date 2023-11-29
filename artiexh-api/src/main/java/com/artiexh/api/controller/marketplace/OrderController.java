@@ -119,22 +119,15 @@ public class OrderController {
 	public ResponseEntity<Void> updateStatus(
 		Authentication authentication,
 		@RequestBody @Valid UpdateOrderStatusRequest request,
-		@PathVariable Long id
+		@PathVariable("id") Long id
 	) {
 		try {
 			var userId = (Long) authentication.getPrincipal();
 			switch (request.getStatus()) {
 				case CANCELED -> campaignOrderService.cancelOrder(id, request.getMessage(), userId);
-				case REFUNDED -> {
-					boolean isAdmin = authentication.getAuthorities().stream()
-						.anyMatch(r -> r.getAuthority().equals(Role.ADMIN.name()) || r.getAuthority().equals(Role.STAFF.name()));
-					if (!isAdmin) {
-						throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only Admin or Staff can update order's status REFUNDED");
-					}
-					campaignOrderService.refundOrder(id, userId);
-				}
+				case REFUNDING -> campaignOrderService.refundOrder(id, userId);
 				default ->
-					throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can just update order's status REFUNDED or CANCELED ");
+					throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can just update order's status REFUNDING or CANCELED ");
 			}
 			return ResponseEntity.ok().build();
 		} catch (IllegalArgumentException ex) {

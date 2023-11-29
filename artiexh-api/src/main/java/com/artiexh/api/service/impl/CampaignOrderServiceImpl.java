@@ -223,10 +223,62 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 		return campaignOrderMapper.entityToAdminResponse(campaignOrderEntity);
 	}
 
-	@Transactional(isolation = Isolation.SERIALIZABLE)
+	@Transactional
 	@Override
 	public void cancelOrder(Long orderId, String message, Long updatedBy) throws IllegalAccessException {
 		CampaignOrderEntity order = campaignOrderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
+
+		if (!CampaignOrderStatus.ALLOWED_CANCEL_STATUS.contains(CampaignOrderStatus.fromValue(order.getStatus()))) {
+			throw new IllegalArgumentException("Order can not be canceled except for its status is PAYING or REFUNDING");
+		}
+
+		AccountEntity account = accountRepository.findById(updatedBy).orElseThrow(EntityNotFoundException::new);
+		if (!account.getId().equals(order.getOrder().getUser().getId())
+			&& (account.getRole() != Role.ADMIN.getByteValue() &&
+			account.getRole() != Role.STAFF.getByteValue())) {
+			throw new IllegalAccessException(ErrorCode.ORDER_STATUS_NOT_ALLOWED.getMessage());
+		}
+
+		order.setStatus(CampaignOrderStatus.CANCELED.getByteValue());
+		campaignOrderRepository.save(order);
+
+		OrderHistoryEntity orderHistory = OrderHistoryEntity.builder()
+			.id(OrderHistoryId.builder()
+				.campaignOrderId(order.getId())
+				.status(OrderHistoryStatus.CANCELED.getByteValue())
+				.build())
+			.datetime(Instant.now())
+			.message(message)
+			.updatedBy(account.getUsername())
+			.build();
+		orderHistoryRepository.save(orderHistory);
+	}
+
+	private void revertProductQuantity(Set<OrderDetailEntity> orderDetailEntities) {
+		for (OrderDetailEntity orderDetail : orderDetailEntities) {
+			ProductEntity productInSale = orderDetail.getProduct();
+			productInSale.setSoldQuantity(productInSale.getSoldQuantity() - orderDetail.getQuantity());
+			productService.update(productInSale);
+		}
+	}
+
+	@Transactional(isolation = Isolation.SERIALIZABLE)
+	@Override
+	public void refundOrder(Long orderId, Long updatedBy) throws IllegalAccessException {
+		CampaignOrderEntity order = campaignOrderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
+
+		if (!CampaignOrderStatus.ALLOWED_REFUNDING_STATUS.contains(CampaignOrderStatus.fromValue(order.getStatus()))) {
+			throw new IllegalArgumentException("Order can not be refunded except for its status is PREPARING or SHIPPING");
+		}
+
+		AccountEntity account = accountRepository.findById(updatedBy).orElseThrow(() -> new IllegalAccessException(ErrorCode.ORDER_STATUS_NOT_ALLOWED.getMessage()));
+		if (!account.getId().equals(order.getOrder().getUser().getId())
+			&& (account.getRole() != Role.ADMIN.getByteValue() &&
+			account.getRole() != Role.STAFF.getByteValue())) {
+			throw new IllegalAccessException(ErrorCode.ORDER_STATUS_NOT_ALLOWED.getMessage());
+		}
+
+		order.setStatus(CampaignOrderStatus.REFUNDING.getByteValue());
 
 		//Cancel ghtk order
 		if (order.getStatus() == CampaignOrderStatus.SHIPPING.getByteValue()) {
@@ -242,58 +294,19 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 			}
 		}
 
-		AccountEntity account = accountRepository.findById(updatedBy).orElseThrow(EntityNotFoundException::new);
-		if (!account.getId().equals(order.getOrder().getUser().getId())
-			&& (account.getRole() != Role.ADMIN.getByteValue() &&
-			account.getRole() != Role.STAFF.getByteValue())) {
-			throw new IllegalAccessException(ErrorCode.ORDER_STATUS_NOT_ALLOWED.getMessage());
-		}
-		if (!CampaignOrderStatus.ALLOWED_CANCEL_STATUS.contains(CampaignOrderStatus.fromValue(order.getStatus()))) {
-			throw new IllegalArgumentException("Order can not be canceled if order's status are not PAYING, PREPARING or SHIPPING");
-		}
-		order.setStatus(CampaignOrderStatus.CANCELED.getByteValue());
+		order.setStatus(CampaignOrderStatus.REFUNDING.getByteValue());
 		campaignOrderRepository.save(order);
 
 		//Revert campaign product quantity
 		revertProductQuantity(order.getOrderDetails());
 
-		//TODO: update field updatedBy for history
-		OrderHistoryEntity orderHistory = OrderHistoryEntity.builder()
-			.id(OrderHistoryId.builder()
-				.campaignOrderId(order.getId())
-				.status(OrderHistoryStatus.CANCELED.getByteValue())
-				.build())
-			.datetime(Instant.now())
-			.message(message)
-			.build();
-		orderHistoryRepository.save(orderHistory);
-	}
-
-	private void revertProductQuantity(Set<OrderDetailEntity> orderDetailEntities) {
-		for (OrderDetailEntity orderDetail : orderDetailEntities) {
-			ProductEntity productInSale = orderDetail.getProduct();
-			productInSale.setSoldQuantity(productInSale.getSoldQuantity() - orderDetail.getQuantity());
-			productService.update(productInSale);
-		}
-	}
-
-	@Transactional
-	@Override
-	public void refundOrder(Long orderId, Long updatedBy) {
-		CampaignOrderEntity order = campaignOrderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
-		if (!order.getStatus().equals(CampaignOrderStatus.CANCELED.getByteValue())) {
-			throw new IllegalArgumentException("Order can not be refunded before CANCELED");
-		}
-		order.setStatus(CampaignOrderStatus.REFUNDED.getByteValue());
-		campaignOrderRepository.save(order);
-
-		//TODO: update field updatedBy for history
 		OrderHistoryEntity orderHistory = OrderHistoryEntity.builder()
 			.id(OrderHistoryId.builder()
 				.campaignOrderId(order.getId())
 				.status(OrderHistoryStatus.REFUNDED.getByteValue())
 				.build())
 			.datetime(Instant.now())
+			.updatedBy(account.getUsername())
 			.build();
 		orderHistoryRepository.save(orderHistory);
 	}

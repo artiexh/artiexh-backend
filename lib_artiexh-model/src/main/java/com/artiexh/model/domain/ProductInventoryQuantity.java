@@ -1,5 +1,7 @@
 package com.artiexh.model.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -14,4 +16,6 @@ public class ProductInventoryQuantity {
 	private String productCode;
 	@NotNull
 	private Long quantity;
+	@JsonIgnore
+	private Long currentQuantity;
 }

@@ -84,4 +84,15 @@ public class ProductInventoryController {
 		}
 	}
 
+	@DeleteMapping("{product-code}")
+	public void delete(
+		@PathVariable("product-code") String productCode
+	) {
+		try {
+			productInventoryService.delete(productCode);
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(ErrorCode.PRODUCT_NOT_FOUND.getCode(), ErrorCode.PRODUCT_NOT_FOUND.getMessage(), exception);
+		}
+	}
+
 }
