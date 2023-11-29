@@ -228,28 +228,8 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	public void cancelOrder(Long orderId, String message, Long updatedBy) throws IllegalAccessException {
 		CampaignOrderEntity order = campaignOrderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
 
-//		//Cancel ghtk order
-//		if (order.getStatus() == CampaignOrderStatus.SHIPPING.getByteValue()) {
-//			var cancelOrderGhtkResponse = ghtkOrderService.cancelOrder(order.getShippingLabel())
-//				.doOnError(WebClientResponseException.class, throwable -> {
-//					var response = throwable.getResponseBodyAs(GhtkResponse.class);
-//					throw new IllegalArgumentException(
-//						"Cancel ghtk order failed: " + ((response != null && response.getMessage() != null) ? response.getMessage() : "Unknown response"));
-//				})
-//				.block();
-//			if (cancelOrderGhtkResponse == null || !cancelOrderGhtkResponse.isSuccess()) {
-//				throw new IllegalArgumentException("Cancel ghtk order failed" + (cancelOrderGhtkResponse != null ? cancelOrderGhtkResponse.getMessage() : ""));
-//			}
-//		}
-//
-//		AccountEntity account = accountRepository.findById(updatedBy).orElseThrow(EntityNotFoundException::new);
-//		if (!account.getId().equals(order.getOrder().getUser().getId())
-//			&& (account.getRole() != Role.ADMIN.getByteValue() &&
-//			account.getRole() != Role.STAFF.getByteValue())) {
-//			throw new IllegalAccessException(ErrorCode.ORDER_STATUS_NOT_ALLOWED.getMessage());
-//		}
 		if (!CampaignOrderStatus.ALLOWED_CANCEL_STATUS.contains(CampaignOrderStatus.fromValue(order.getStatus()))) {
-			throw new IllegalArgumentException("Order can not be refunded except for its status is PREPARING or SHIPPING");
+			throw new IllegalArgumentException("Order can not be canceled except for its status is PAYING or REFUNDING");
 		}
 
 		AccountEntity account = accountRepository.findById(updatedBy).orElseThrow(EntityNotFoundException::new);
@@ -269,7 +249,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 				.build())
 			.datetime(Instant.now())
 			.message(message)
-			.updatedBy(updatedBy)
+			.updatedBy(account.getUsername())
 			.build();
 		orderHistoryRepository.save(orderHistory);
 	}
@@ -301,18 +281,20 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 		order.setStatus(CampaignOrderStatus.REFUNDING.getByteValue());
 
 		//Cancel ghtk order
-		var cancelOrderGhtkResponse = ghtkOrderService.cancelOrder(order.getShippingLabel())
-			.doOnError(WebClientResponseException.class, throwable -> {
-				var response = throwable.getResponseBodyAs(GhtkResponse.class);
-				throw new IllegalArgumentException(
-					"Cancel ghtk order failed: " + ((response != null && response.getMessage() != null) ? response.getMessage() : "Unknown response"));
-			})
-			.block();
-		if (cancelOrderGhtkResponse == null || !cancelOrderGhtkResponse.isSuccess()) {
-			throw new IllegalArgumentException("Cancel ghtk order failed" + (cancelOrderGhtkResponse != null ? cancelOrderGhtkResponse.getMessage() : ""));
+		if (order.getStatus() == CampaignOrderStatus.SHIPPING.getByteValue()) {
+			var cancelOrderGhtkResponse = ghtkOrderService.cancelOrder(order.getShippingLabel())
+				.doOnError(WebClientResponseException.class, throwable -> {
+					var response = throwable.getResponseBodyAs(GhtkResponse.class);
+					throw new IllegalArgumentException(
+						"Cancel ghtk order failed: " + ((response != null && response.getMessage() != null) ? response.getMessage() : "Unknown response"));
+				})
+				.block();
+			if (cancelOrderGhtkResponse == null || !cancelOrderGhtkResponse.isSuccess()) {
+				throw new IllegalArgumentException("Cancel ghtk order failed" + (cancelOrderGhtkResponse != null ? cancelOrderGhtkResponse.getMessage() : ""));
+			}
 		}
 
-		order.setStatus(CampaignOrderStatus.CANCELED.getByteValue());
+		order.setStatus(CampaignOrderStatus.REFUNDING.getByteValue());
 		campaignOrderRepository.save(order);
 
 		//Revert campaign product quantity
@@ -324,7 +306,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 				.status(OrderHistoryStatus.REFUNDED.getByteValue())
 				.build())
 			.datetime(Instant.now())
-			.updatedBy(updatedBy)
+			.updatedBy(account.getUsername())
 			.build();
 		orderHistoryRepository.save(orderHistory);
 	}

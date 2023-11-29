@@ -119,7 +119,7 @@ public class OrderController {
 	public ResponseEntity<Void> updateStatus(
 		Authentication authentication,
 		@RequestBody @Valid UpdateOrderStatusRequest request,
-		@PathVariable Long id
+		@PathVariable("id") Long id
 	) {
 		try {
 			var userId = (Long) authentication.getPrincipal();
