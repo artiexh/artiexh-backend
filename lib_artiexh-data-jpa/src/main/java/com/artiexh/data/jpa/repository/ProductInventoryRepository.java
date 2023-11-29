@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
@@ -38,4 +39,5 @@ public interface ProductInventoryRepository extends JpaRepository<ProductInvento
 
 	Set<ProductInventoryEntity> findAllByProductInCampaignIdIn(Set<Long> productInCampaignIds);
 
+	Optional<ProductInventoryEntity> findByProductCodeAndIsDeleted(String productCode, boolean deleted);
 }

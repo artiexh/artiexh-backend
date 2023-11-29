@@ -43,7 +43,8 @@ public class ProductInventoryJpaServiceImpl implements ProductInventoryJpaServic
 
 	@Override
 	public ProductInventory getDetail(String productCode) {
-		ProductInventoryEntity product = productRepository.findById(productCode).orElseThrow(EntityNotFoundException::new);
+		ProductInventoryEntity product = productRepository.findByProductCodeAndIsDeleted(productCode, false)
+			.orElseThrow(EntityNotFoundException::new);
 		return productInventoryMapper.entityToDomain(product);
 	}
 
