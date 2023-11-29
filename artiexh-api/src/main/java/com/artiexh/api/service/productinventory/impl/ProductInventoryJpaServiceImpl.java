@@ -44,7 +44,8 @@ public class ProductInventoryJpaServiceImpl implements ProductInventoryJpaServic
 
 	@Override
 	public ProductInventory getDetail(String productCode) {
-		ProductInventoryEntity product = productRepository.findById(productCode).orElseThrow(EntityNotFoundException::new);
+		ProductInventoryEntity product = productRepository.findByProductCodeAndIsDeleted(productCode, false)
+			.orElseThrow(EntityNotFoundException::new);
 		return productInventoryMapper.entityToDomain(product);
 	}
 
@@ -198,5 +199,13 @@ public class ProductInventoryJpaServiceImpl implements ProductInventoryJpaServic
 			productQuantity.setCurrentQuantity(productInventory.getQuantity());
 		}
 		productHistoryService.create(ProductHistoryAction.IMPORT, sourceId, sourceName, sourceCategory, productQuantities);
+	}
+
+	@Override
+	@Transactional
+	public void delete(String productCode) {
+		ProductInventoryEntity productInventory = productRepository.findById(productCode).orElseThrow(EntityNotFoundException::new);
+		productInventory.setDeleted(true);
+		productRepository.save(productInventory);
 	}
 }

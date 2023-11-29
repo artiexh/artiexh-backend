@@ -28,4 +28,6 @@ public interface ProductInventoryJpaService {
 	void reduceQuantity(Long sourceId, String sourceName, SourceCategory sourceCategory, Set<ProductInventoryQuantity> productQuantities);
 
 	void refundQuantity(Long sourceId, String sourceName, SourceCategory sourceCategory, Set<ProductInventoryQuantity> productQuantities);
+
+	void delete(String productCode);
 }

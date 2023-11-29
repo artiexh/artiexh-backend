@@ -27,7 +27,7 @@ public class ProductInventoryFilter {
 	public Specification<ProductInventoryEntity> getSpecification() {
 		return (root, cQuery, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
-
+			predicates.add(builder.equal(root.get("isDeleted"), false));
 			if (ownerId != null) {
 				predicates.add(builder.equal(root.get("owner").get("id"), ownerId));
 			}
