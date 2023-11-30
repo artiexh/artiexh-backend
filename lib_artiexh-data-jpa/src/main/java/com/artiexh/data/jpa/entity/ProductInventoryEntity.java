@@ -85,7 +85,7 @@ public class ProductInventoryEntity extends BaseAuditEntity {
 
 	@Builder.Default
 	@Column(name = "weight", nullable = false)
-	private Float weight = 0F;
+	private Float weight = 500F;
 
 	@Column(name = "manufacturing_price", precision = 38, scale = 2)
 	private BigDecimal manufacturingPrice;

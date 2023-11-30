@@ -127,10 +127,10 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 
 
 		for (var productInventory : productInventoryEntities) {
-			var artistProfit = productInventory.getPriceAmount().subtract(
-				productInventory.getPriceAmount()
-					.multiply(profitPercentage)
-					.divide(BigDecimal.valueOf(100), RoundingMode.HALF_EVEN)
+			var profit = productInventory.getPriceAmount()
+				.subtract(productInventory.getManufacturingPrice());
+			var artistProfit = profit.subtract(
+				profit.multiply(profitPercentage).divide(BigDecimal.valueOf(100), RoundingMode.HALF_EVEN)
 			);
 			productService.create(ProductEntity.builder()
 				.id(new ProductEntityId(productInventory.getProductCode(), entity.getId()))
