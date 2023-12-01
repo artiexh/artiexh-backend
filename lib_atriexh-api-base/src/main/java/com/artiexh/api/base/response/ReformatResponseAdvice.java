@@ -43,12 +43,12 @@ public class ReformatResponseAdvice implements ResponseBodyAdvice<Object> {
 		}
 
 		if (body instanceof ProblemDetail problemDetail) {
-			return new ResponseModel(now, 0, status, httpStatus.name(), problemDetail.getDetail(), path, null);
+			return new ResponseModel(now, null, status, httpStatus.name(), problemDetail.getDetail(), path, null);
 		} else if ("/error".equals(path)) {
 			var bodyMap = (Map<String, Object>) body;
-			return new ResponseModel(now, (int) bodyMap.get("code"), status, httpStatus.name(), (String) bodyMap.get("message"), (String) bodyMap.get("path"), null);
+			return new ResponseModel(now, (String) bodyMap.get("code"), status, httpStatus.name(), (String) bodyMap.get("message"), (String) bodyMap.get("path"), null);
 		} else {
-			return new ResponseModel(now, 0, status, httpStatus.name(), null, path, body);
+			return new ResponseModel(now, null, status, httpStatus.name(), null, path, body);
 		}
 	}
 

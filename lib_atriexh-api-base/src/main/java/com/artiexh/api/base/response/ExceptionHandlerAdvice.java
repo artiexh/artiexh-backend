@@ -29,7 +29,7 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 		var responseException = new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		ResponseModel responseModel = new ResponseModel(
 			Instant.now(),
-			ex.getErrorCode().ordinal(),
+			ex.getErrorCode().name(),
 			HttpStatus.BAD_REQUEST.value(),
 			HttpStatus.BAD_REQUEST.name(),
 			ex.getMessage(),
