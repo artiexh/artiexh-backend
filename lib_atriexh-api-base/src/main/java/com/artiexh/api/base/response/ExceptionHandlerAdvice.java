@@ -1,5 +1,6 @@
 package com.artiexh.api.base.response;
 
+import com.artiexh.api.base.exception.InvalidException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -15,12 +16,29 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
+	@ExceptionHandler({InvalidException.class})
+	public ResponseEntity<?> handleBusinessException(InvalidException ex, WebRequest request) {
+		var responseException = new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		ResponseModel responseModel = new ResponseModel(
+			Instant.now(),
+			ex.getErrorCode().ordinal(),
+			HttpStatus.BAD_REQUEST.value(),
+			HttpStatus.BAD_REQUEST.name(),
+			ex.getMessage(),
+			null,
+			null
+		);
+		return handleExceptionInternal(responseException, responseModel, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+	}
+
 
 	@ExceptionHandler(EntityNotFoundException.class)
 	public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request) {
@@ -52,7 +70,6 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 		if (exception.getCause() != null && exception.getCause() instanceof InvalidFormatException) {
 			Matcher match = ENUM_MSG.matcher(exception.getCause().getMessage());
 			if (match.find()) {
-				//return new ResponseEntity<>(new ResponseBase<>(1, "values should be: " + match.group(0)), HttpStatus.BAD_REQUEST);
 				var responseException = new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error in processing enum: " + match.group(0), exception);
 				return handleExceptionInternal(responseException, null, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 			}
