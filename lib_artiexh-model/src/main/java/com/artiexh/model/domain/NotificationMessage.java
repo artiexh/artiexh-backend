@@ -10,4 +10,6 @@ import lombok.*;
 public class NotificationMessage {
 	private String content;
 	private String title;
+	private Long ownerId;
+	private Long id;
 }
