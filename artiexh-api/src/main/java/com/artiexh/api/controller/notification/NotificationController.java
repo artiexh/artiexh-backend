@@ -1,17 +1,20 @@
 package com.artiexh.api.controller.notification;
 
 import com.artiexh.api.base.common.Endpoint;
+import com.artiexh.api.base.exception.IllegalAccessException;
 import com.artiexh.api.service.notification.NotificationService;
 import com.artiexh.model.domain.NotificationMessage;
+import com.artiexh.model.rest.PageResponse;
+import com.artiexh.model.rest.PaginationAndSortingRequest;
+import com.artiexh.model.rest.notification.MessageResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @Slf4j
@@ -19,17 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = Endpoint.Notification.ROOT)
 public class NotificationController {
 	private final NotificationService notificationService;
-//	@MessageMapping("/application")
-//	@SendTo("/all/messages")
-//	public NotificationMessage sendAll(NotificationMessage message) {
-//		log.info(message.getContent());
-//		return message;
-//	}
-//
-//	@MessageMapping("/private")
-//	public void sendToSpecificUser(NotificationMessage message) {
-//		//simpMessagingTemplate.convertAndSendToUser(message.getTo(), "/specific", message);
-//	}
 
 	@PostMapping("/test")
 	public void sendAll() {
@@ -46,5 +38,25 @@ public class NotificationController {
 				.ownerId(userId)
 			.title("Arty System")
 			.build());
+	}
+
+	@GetMapping("/account")
+	public PageResponse<MessageResponse> getAllMessages(
+		Authentication authentication,
+		@ParameterObject @Valid PaginationAndSortingRequest pagination) {
+		long userId = (long) authentication.getPrincipal();
+		return new PageResponse<>(notificationService.getAll(userId, pagination.getPageable()));
+	}
+
+	@PostMapping("/{id}")
+	public void markedAsRead(
+		@PathVariable("id") Long id,
+		Authentication authentication) {
+		long userId = (long) authentication.getPrincipal();
+		try {
+			notificationService.markedAsRead(userId, id);
+		} catch (IllegalAccessException exception) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+		}
 	}
 }

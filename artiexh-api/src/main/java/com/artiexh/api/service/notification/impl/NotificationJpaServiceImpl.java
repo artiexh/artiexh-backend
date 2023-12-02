@@ -5,9 +5,8 @@ import com.artiexh.data.jpa.entity.NotificationEntity;
 import com.artiexh.data.jpa.repository.NotificationRepository;
 import com.artiexh.model.domain.NotificationMessage;
 import com.artiexh.model.mapper.NotificationMapper;
-import com.artiexh.model.rest.PageResponse;
-import com.artiexh.model.rest.notification.MessageResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,13 +21,12 @@ public class NotificationJpaServiceImpl implements NotificationJpaService {
 	private final NotificationMapper notificationMapper;
 	@Override
 	public void markedAsRead(Long notificationId) {
-		//TODO:
+		notificationRepository.markedAsRead(notificationId);
 	}
 
 	@Override
-	public PageResponse<MessageResponse> getAll(Long userId, Pageable pageable) {
-		//TODO
-		return null;
+	public Page<NotificationEntity> getAll(Long userId, Pageable pageable) {
+		return notificationRepository.findNotificationEntitiesByOwnerId(userId, pageable);
 	}
 
 	@Override

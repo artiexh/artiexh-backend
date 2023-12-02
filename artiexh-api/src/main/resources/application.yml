@@ -104,3 +104,6 @@ artiexh:
   ghtk:
     base-url: ${GHTK_BASE_URL:}
     token: ${GHTK_TOKEN:}
+  notification:
+    client-url: ${CLIENT_URL:}
+    client-url-host: ${CLIENT_URL_HOST}
