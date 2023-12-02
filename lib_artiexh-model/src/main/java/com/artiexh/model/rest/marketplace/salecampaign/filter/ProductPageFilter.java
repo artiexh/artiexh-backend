@@ -17,6 +17,7 @@ import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -41,7 +42,7 @@ public class ProductPageFilter {
 		var boolQuery = new BoolQueryBuilder();
 
 		if (campaignId != null) {
-			boolQuery.must(new TermQueryBuilder("campaign.id", campaignId));
+			boolQuery.must(new TermQueryBuilder("campaign.id", campaignId)).minimumShouldMatch(1);
 		}
 
 		if (artistId != null) {
@@ -71,7 +72,7 @@ public class ProductPageFilter {
 			boolQuery.must(new TermQueryBuilder("averageRate", averageRate));
 		}
 		if (categoryId != null) {
-			boolQuery.must(new TermQueryBuilder("category.id", categoryId));
+			boolQuery.must(new TermQueryBuilder("category.id", categoryId)).minimumShouldMatch(1);
 		}
 
 		return boolQuery;
@@ -88,14 +89,24 @@ public class ProductPageFilter {
 	}
 
 	public Query getMarketplaceQuery() {
-		var boolQuery = getBoolQueryInFilter();
-		boolQuery.must(new TermQueryBuilder("campaign.status", CampaignSaleStatus.ACTIVE.getByteValue()));
-		var queryBuilder = new NativeSearchQueryBuilder().withFilter(getBoolQueryInFilter());
+		var activeCampaignFilter = new BoolQueryBuilder();
+		activeCampaignFilter.should(new RangeQueryBuilder("campaign.public_date").lte(Instant.now()));
+		activeCampaignFilter.should(new RangeQueryBuilder("campaign.from").lte(Instant.now()));
+		activeCampaignFilter.minimumShouldMatch(1);
+
+		var filterQuery = new BoolQueryBuilder();
+		filterQuery.must(new TermQueryBuilder("campaign.status", CampaignSaleStatus.ACTIVE.getByteValue()));
+		filterQuery.must(activeCampaignFilter);
+
+		BoolQueryBuilder boolQuery = getBoolQueryInFilter();
 
 		if (StringUtils.hasText(keyword)) {
-			queryBuilder.withQuery(new MultiMatchQueryBuilder(keyword, "name").fuzziness(Fuzziness.AUTO));
+			boolQuery.should(new MultiMatchQueryBuilder(keyword, "name").fuzziness(Fuzziness.AUTO));
 		}
 
-		return queryBuilder.build();
+		return new NativeSearchQueryBuilder()
+			.withQuery(boolQuery)
+			.withFilter(filterQuery)
+			.build();
 	}
 }

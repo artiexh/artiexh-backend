@@ -22,10 +22,8 @@ public class MarketplaceSaleCampaignFilter {
 	private Long ownerId;
 	private String username;
 	private CampaignType campaignType;
-	private Instant from = Instant.now();
+	private Instant from;
 	private Instant to;
-	@JsonIgnore
-	private Instant publicDate = Instant.now();
 	private CampaignSaleStatus status;
 
 	public Specification<CampaignSaleEntity> getSpecification() {
@@ -65,7 +63,11 @@ public class MarketplaceSaleCampaignFilter {
 		Specification<CampaignSaleEntity> marketplaceCampaignSpec = (root, query, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
 
-			predicates.add(builder.lessThanOrEqualTo(root.get("publicDate"), publicDate));
+			List<Predicate> activeCampaignPredicate = new ArrayList<>();
+			activeCampaignPredicate.add(builder.lessThanOrEqualTo(root.get("publicDate"), Instant.now()));
+			activeCampaignPredicate.add(builder.lessThanOrEqualTo(root.get("from"), Instant.now()));
+
+			predicates.add(builder.or(activeCampaignPredicate.toArray(new Predicate[0])));
 
 			predicates.add(builder.equal(root.get("status"), CampaignSaleStatus.ACTIVE.getByteValue()));
 

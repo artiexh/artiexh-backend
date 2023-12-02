@@ -2,6 +2,8 @@ package com.artiexh.model.domain;
 
 import lombok.Getter;
 
+import java.util.Set;
+
 @Getter
 public enum CampaignOrderStatus {
 	PAYING(0),
@@ -9,13 +11,16 @@ public enum CampaignOrderStatus {
 	SHIPPING(2),
 	COMPLETED(3),
 	CANCELED(4),
-	REFUNDED(5);
+	REFUNDING(5);
 
 	private final int value;
 
 	CampaignOrderStatus(int value) {
 		this.value = value;
 	}
+
+	public static final Set<CampaignOrderStatus> ALLOWED_CANCEL_STATUS = Set.of(PAYING, REFUNDING);
+	public static final Set<CampaignOrderStatus> ALLOWED_REFUNDING_STATUS = Set.of(PREPARING, SHIPPING);
 
 	public static CampaignOrderStatus fromValue(int value) {
 		return switch (value) {
@@ -24,7 +29,7 @@ public enum CampaignOrderStatus {
 			case 2 -> SHIPPING;
 			case 3 -> COMPLETED;
 			case 4 -> CANCELED;
-			case 5 -> REFUNDED;
+			case 5 -> REFUNDING;
 			default -> throw new IllegalArgumentException("No such value for order status: " + value);
 		};
 	}

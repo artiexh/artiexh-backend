@@ -2,8 +2,10 @@ package com.artiexh.data.jpa.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -12,10 +14,11 @@ import java.util.Set;
 @Getter
 @Setter
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @Entity
 @Table(name = "product_inventory")
-public class ProductInventoryEntity {
+@EntityListeners(AuditingEntityListener.class)
+public class ProductInventoryEntity extends BaseAuditEntity {
 	@Id
 	@Column(name = "product_code", length = 20)
 	private String productCode;
@@ -30,11 +33,6 @@ public class ProductInventoryEntity {
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "owner_id", nullable = false)
 	private ArtistEntity owner;
-
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JoinColumn(name = "created_by", nullable = false)
-	private AccountEntity shop;
 
 	@Column(name = "status", nullable = false)
 	private Byte status;
@@ -87,10 +85,13 @@ public class ProductInventoryEntity {
 
 	@Builder.Default
 	@Column(name = "weight", nullable = false)
-	private Float weight = 0F;
+	private Float weight = 500F;
 
 	@Column(name = "manufacturing_price", precision = 38, scale = 2)
 	private BigDecimal manufacturingPrice;
+
+	@Column(name = "is_deleted")
+	private boolean isDeleted;
 
 //	@Builder.Default
 //	@ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})

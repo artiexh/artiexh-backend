@@ -22,6 +22,7 @@ public class SaleCampaignResponse {
 	private Instant publicDate;
 	private Instant from;
 	private Instant to;
+	@JsonSerialize(using = ToStringSerializer.class)
 	private Long createdBy;
 	private Instant createdDate;
 	private Instant modifiedDate;

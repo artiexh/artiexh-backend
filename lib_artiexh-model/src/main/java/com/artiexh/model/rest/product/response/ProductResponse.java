@@ -45,6 +45,8 @@ public class ProductResponse {
 	private CustomProductInfo customProduct;
 	private CampaignResponse campaign;
 	private BigDecimal manufacturingPrice;
+	private Instant createdDate;
+	private Instant modifiedDate;
 
 	@Data
 	@NoArgsConstructor

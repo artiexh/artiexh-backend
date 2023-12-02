@@ -7,7 +7,9 @@ import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.api.service.marketplace.SaleCampaignService;
 import com.artiexh.api.service.productinventory.ProductInventoryJpaService;
 import com.artiexh.data.jpa.entity.*;
+import com.artiexh.data.jpa.projection.ProductInSaleId;
 import com.artiexh.data.jpa.repository.*;
+import com.artiexh.data.opensearch.model.ProductDocument;
 import com.artiexh.model.domain.*;
 import com.artiexh.model.mapper.CampaignSaleMapper;
 import com.artiexh.model.mapper.ProductMapper;
@@ -28,10 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -128,10 +127,10 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 
 
 		for (var productInventory : productInventoryEntities) {
-			var artistProfit = productInventory.getPriceAmount().subtract(
-				productInventory.getPriceAmount()
-					.multiply(profitPercentage)
-					.divide(BigDecimal.valueOf(100), RoundingMode.HALF_EVEN)
+			var profit = productInventory.getPriceAmount()
+				.subtract(productInventory.getManufacturingPrice());
+			var artistProfit = profit.subtract(
+				profit.multiply(profitPercentage).divide(BigDecimal.valueOf(100), RoundingMode.HALF_EVEN)
 			);
 			productService.create(ProductEntity.builder()
 				.id(new ProductEntityId(productInventory.getProductCode(), entity.getId()))
@@ -197,6 +196,16 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 		entity.setThumbnailUrl(request.getThumbnailUrl());
 		entity.setType(request.getType().getByteValue());
 
+		//Update Campaign info to Opensearch
+		ProductDocument.Campaign campaignInfo = campaignSaleMapper.entityToDocument(entity);
+		Set<ProductInSaleId> productInSaleIds = productRepository.findAllByCampaignSaleId(entity.getId());
+		Map<String, ProductDocument.Campaign> campaignMap = new HashMap<>();
+		for (ProductInSaleId productInSaleId : productInSaleIds) {
+			campaignMap.put(productInSaleId.getCampaignSaleId().toString() + "-" + productInSaleId.getProductCode(), campaignInfo);
+		}
+		productOpenSearchService.updateCampaignInfo(campaignMap);
+		productService.refreshOpenSearchIndex();
+
 		return campaignSaleMapper.entityToDetailResponse(entity);
 	}
 
@@ -237,15 +246,15 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 						productEntity.getProductInventory().getProductCode(),
 						status
 					);
-					return new ProductInventoryQuantity(
-						productEntity.getProductInventory().getProductCode(),
-						(long) productEntity.getQuantity() - productEntity.getSoldQuantity()
-					);
+					return ProductInventoryQuantity.builder()
+						.productCode(productEntity.getProductInventory().getProductCode())
+						.quantity((long) productEntity.getQuantity() - productEntity.getSoldQuantity())
+						.build();
 				})
 				.collect(Collectors.toSet());
 
 			// reduce inventory quantity
-			productInventoryJpaService.reduceQuantity(entity.getId(), SourceCategory.CAMPAIGN_SALE, productQuantities);
+			productInventoryJpaService.reduceQuantity(entity.getId(), entity.getName(),SourceCategory.CAMPAIGN_SALE, productQuantities);
 		}
 	}
 
@@ -261,15 +270,15 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 					productEntity.getProductInventory().getProductCode(),
 					status
 				);
-				return new ProductInventoryQuantity(
-					productEntity.getProductInventory().getProductCode(),
-					(long) productEntity.getQuantity() - productEntity.getSoldQuantity()
-				);
+				return ProductInventoryQuantity.builder()
+					.productCode(productEntity.getProductInventory().getProductCode())
+					.quantity((long) productEntity.getQuantity() - productEntity.getSoldQuantity())
+					.build();
 			})
 			.collect(Collectors.toSet());
 
 		// reduce inventory quantity
-		productInventoryJpaService.refundQuantity(entity.getId(), SourceCategory.CAMPAIGN_SALE, productQuantities);
+		productInventoryJpaService.refundQuantity(entity.getId(), entity.getName(), SourceCategory.CAMPAIGN_SALE, productQuantities);
 	}
 
 	@Override

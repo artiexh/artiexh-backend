@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.artiexh.model.domain.CampaignStatus.ALLOWED_ADMIN_VIEW_STATUS;
+import static com.artiexh.model.domain.CampaignStatus.SAVED_PROVIDER_CONFIGS_STATUS;
 
 @Service
 @Transactional(readOnly = true)
@@ -190,11 +191,14 @@ public class CampaignServiceImpl implements CampaignService {
 		Set<CampaignHistory> campaignHistories = new HashSet<>(getCampaignHistory(campaignEntity.getId(), pagination.getPageable()).getContent());
 
 		result.setCampaignHistories(campaignHistories);
-		if (campaignEntity.getProviderId() != null) {
+
+		if (!SAVED_PROVIDER_CONFIGS_STATUS.contains(CampaignStatus.fromValue(campaignEntity.getStatus()))
+			&& (campaignEntity.getProviderId() != null)) {
 			var provider = providerRepository.getReferenceById(campaignEntity.getProviderId());
 			result.setProvider(providerMapper.entityToInfo(provider));
 			fillProviderConfigToResponse(campaignEntity.getProviderId(), result.getProducts());
 		}
+
 		return result;
 	}
 
@@ -418,7 +422,6 @@ public class CampaignServiceImpl implements CampaignService {
 			case APPROVED -> staffApproveCampaign(campaignEntity, accountEntity, request.getMessage());
 			case REJECTED -> staffRejectCampaign(campaignEntity, accountEntity, request.getMessage());
 			case MANUFACTURING -> staffStartManufactureCampaign(campaignEntity, accountEntity, request.getMessage());
-			//case MANUFACTURED -> staffFinishManufactureCampaign(campaignEntity, accountEntity, request.getMessage());
 			default ->
 				throw new IllegalArgumentException("You can only update campaign to status REQUEST_CHANGE, APPROVED or REJECTED");
 		};
@@ -458,11 +461,20 @@ public class CampaignServiceImpl implements CampaignService {
 			throw new IllegalArgumentException("You can only update campaign from WAITING to APPROVED");
 		}
 
-		campaignEntity.getProductInCampaigns().stream()
-			.map(ProductInCampaignEntity::getCustomProduct)
-			.forEach(inventoryItemEntity -> {
-				inventoryItemEntity.setCampaignLock(null);
-				customProductRepository.save(inventoryItemEntity);
+		campaignEntity.getProductInCampaigns()
+			.forEach(productInCampaign -> {
+				var customProductEntity = productInCampaign.getCustomProduct();
+				customProductEntity.setCampaignLock(null);
+				customProductRepository.save(customProductEntity);
+
+				String providerId = productInCampaign.getCampaign().getProviderId();
+				Long variantId = productInCampaign.getCustomProduct().getVariant().getId();
+				ProductVariantProviderEntity providerConfig = productVariantProviderRepository.findById(new ProductVariantProviderId(variantId, providerId))
+					.orElseThrow(() -> new IllegalArgumentException("Provider config not found for variantId: " + variantId + " and providerId: " + providerId));
+				productInCampaign.setBasePriceAmount(providerConfig.getBasePriceAmount());
+				productInCampaign.setManufacturingTime(providerConfig.getManufacturingTime());
+				productInCampaign.setMinQuantity(providerConfig.getMinQuantity());
+				productInCampaignRepository.save(productInCampaign);
 			});
 
 		campaignEntity.setStatus(CampaignStatus.APPROVED.getByteValue());
@@ -572,6 +584,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 		productInventoryJpaService.updateQuantityFromCampaignRequest(
 			campaignEntity.getId(),
+			campaignEntity.getName(),
 			productInventoryQuantities
 		);
 
@@ -626,12 +639,7 @@ public class CampaignServiceImpl implements CampaignService {
 			product.setTags(productInCampaign.getCustomProduct().getTags().stream().map(productTagMapper::entityToDomain).collect(Collectors.toSet()));
 			product.setCategory(productCategoryMapper.entityToDomain(productInCampaign.getCustomProduct().getCategory()));
 			product.setPaymentMethods(Set.of(PaymentMethod.VN_PAY.getByteValue()));
-
-			String providerId = productInCampaign.getCampaign().getProviderId();
-			Long variantId = productInCampaign.getCustomProduct().getVariant().getId();
-			ProductVariantProviderEntity providerConfig = productVariantProviderRepository.findById(new ProductVariantProviderId(variantId, providerId))
-				.orElseThrow(() -> new IllegalArgumentException("Provider config not found for variantId: " + variantId + " and providerId: " + providerId));
-			product.setManufacturingPrice(providerConfig.getBasePriceAmount());
+			product.setManufacturingPrice(productInCampaign.getBasePriceAmount());
 
 			product = productService.create(campaign.getOwner().getId(), product, productInCampaign);
 			productResponses.add(productMapper.domainToProductResponse(product));

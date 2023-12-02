@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.elasticsearch.core.query.UpdateResponse;
 
+import java.util.Map;
+
 public interface ProductOpenSearchService {
 
 	ProductDocument create(Product product);
@@ -22,6 +24,8 @@ public interface ProductOpenSearchService {
 	Page<ProductDocument> getAll(Pageable pageable, Query query);
 
 	Page<ProductSuggestion> getSuggestionInPage(Query query, Pageable pageable);
+
+	void updateCampaignInfo(Map<String, ProductDocument.Campaign> campaign);
 
 	void refreshIndex();
 }

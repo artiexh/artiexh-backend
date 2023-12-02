@@ -51,13 +51,12 @@ public interface ProductInventoryMapper {
 	@Mapping(target = "productInCampaign", ignore = true)
 	@Mapping(target = "productCode", ignore = true)
 	@Mapping(target = "owner", ignore = true)
-	@Mapping(target = "shop", ignore = true)
 	ProductInventoryEntity domainToEntity(ProductInventory product, @MappingTarget ProductInventoryEntity productInventoryEntity);
 
 	@Mapping(target = "productInCampaign.id", source = "productInCampaignId")
 	@Mapping(target = "status", constant = "AVAILABLE")
 	@Mapping(target = "deliveryType", constant = "SHIP")
-	@Mapping(target = "weight", constant = "0F")
+	@Mapping(target = "weight", constant = "500F")
 	@Mapping(target = "quantity", constant = "0L")
 	ProductInventory finalizeProductRequestToProduct(FinalizeProductRequest request);
 

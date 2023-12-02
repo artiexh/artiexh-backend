@@ -22,6 +22,7 @@ public class UpdateProductQuantitiesRequest {
 	@NotNull
 	private ProductHistoryAction action;
 	private Long sourceId;
+	private String sourceName;
 	@NotNull
 	private SourceCategory sourceCategory;
 }

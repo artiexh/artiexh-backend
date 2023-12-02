@@ -6,11 +6,9 @@ import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.base.service.SystemConfigService;
 import com.artiexh.api.base.utils.SystemConfigHelper;
 import com.artiexh.api.service.CampaignOrderService;
+import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.data.jpa.entity.*;
-import com.artiexh.data.jpa.repository.AccountRepository;
-import com.artiexh.data.jpa.repository.CampaignOrderRepository;
-import com.artiexh.data.jpa.repository.OrderHistoryRepository;
-import com.artiexh.data.jpa.repository.UserAddressRepository;
+import com.artiexh.data.jpa.repository.*;
 import com.artiexh.ghtk.client.model.GhtkResponse;
 import com.artiexh.ghtk.client.model.order.CreateOrderRequest;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeRequest;
@@ -34,12 +32,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -49,6 +49,7 @@ import java.util.stream.Collectors;
 public class CampaignOrderServiceImpl implements CampaignOrderService {
 	private final UserAddressRepository userAddressRepository;
 	private final AccountRepository accountRepository;
+	private final ProductService productService;
 	private final CampaignOrderRepository campaignOrderRepository;
 	private final OrderHistoryRepository orderHistoryRepository;
 	private final GhtkOrderService ghtkOrderService;
@@ -227,21 +228,20 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	public void cancelOrder(Long orderId, String message, Long updatedBy) throws IllegalAccessException {
 		CampaignOrderEntity order = campaignOrderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
 
+		if (!CampaignOrderStatus.ALLOWED_CANCEL_STATUS.contains(CampaignOrderStatus.fromValue(order.getStatus()))) {
+			throw new IllegalArgumentException("Order can not be canceled except for its status is PAYING or REFUNDING");
+		}
+
 		AccountEntity account = accountRepository.findById(updatedBy).orElseThrow(EntityNotFoundException::new);
 		if (!account.getId().equals(order.getOrder().getUser().getId())
 			&& (account.getRole() != Role.ADMIN.getByteValue() &&
 			account.getRole() != Role.STAFF.getByteValue())) {
 			throw new IllegalAccessException(ErrorCode.ORDER_STATUS_NOT_ALLOWED.getMessage());
 		}
-		if (order.getStatus() != CampaignOrderStatus.PAYING.getByteValue() &&
-			order.getStatus() != CampaignOrderStatus.PREPARING.getByteValue()) {
-			throw new IllegalArgumentException("Order can not be canceled if order's status are not PAYING or PREPARING");
-		}
+
 		order.setStatus(CampaignOrderStatus.CANCELED.getByteValue());
-		//TODO: revert campaign product quantity
 		campaignOrderRepository.save(order);
 
-		//TODO: update field updatedBy for history
 		OrderHistoryEntity orderHistory = OrderHistoryEntity.builder()
 			.id(OrderHistoryId.builder()
 				.campaignOrderId(order.getId())
@@ -249,27 +249,64 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 				.build())
 			.datetime(Instant.now())
 			.message(message)
+			.updatedBy(account.getUsername())
 			.build();
 		orderHistoryRepository.save(orderHistory);
 	}
 
-	@Transactional
-	@Override
-	public void refundOrder(Long orderId, Long updatedBy) {
-		CampaignOrderEntity order = campaignOrderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
-		if (!order.getStatus().equals(CampaignOrderStatus.CANCELED.getByteValue())) {
-			throw new IllegalArgumentException("Order can not be refunded before CANCELED");
+	private void revertProductQuantity(Set<OrderDetailEntity> orderDetailEntities) {
+		for (OrderDetailEntity orderDetail : orderDetailEntities) {
+			ProductEntity productInSale = orderDetail.getProduct();
+			productInSale.setSoldQuantity(productInSale.getSoldQuantity() - orderDetail.getQuantity());
+			productService.update(productInSale);
 		}
-		order.setStatus(CampaignOrderStatus.REFUNDED.getByteValue());
+	}
+
+	@Transactional(isolation = Isolation.SERIALIZABLE)
+	@Override
+	public void refundOrder(Long orderId, Long updatedBy) throws IllegalAccessException {
+		CampaignOrderEntity order = campaignOrderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
+
+		if (!CampaignOrderStatus.ALLOWED_REFUNDING_STATUS.contains(CampaignOrderStatus.fromValue(order.getStatus()))) {
+			throw new IllegalArgumentException("Order can not be refunded except for its status is PREPARING or SHIPPING");
+		}
+
+		AccountEntity account = accountRepository.findById(updatedBy).orElseThrow(() -> new IllegalAccessException(ErrorCode.ORDER_STATUS_NOT_ALLOWED.getMessage()));
+		if (!account.getId().equals(order.getOrder().getUser().getId())
+			&& (account.getRole() != Role.ADMIN.getByteValue() &&
+			account.getRole() != Role.STAFF.getByteValue())) {
+			throw new IllegalAccessException(ErrorCode.ORDER_STATUS_NOT_ALLOWED.getMessage());
+		}
+
+		order.setStatus(CampaignOrderStatus.REFUNDING.getByteValue());
+
+		//Cancel ghtk order
+		if (order.getStatus() == CampaignOrderStatus.SHIPPING.getByteValue()) {
+			var cancelOrderGhtkResponse = ghtkOrderService.cancelOrder(order.getShippingLabel())
+				.doOnError(WebClientResponseException.class, throwable -> {
+					var response = throwable.getResponseBodyAs(GhtkResponse.class);
+					throw new IllegalArgumentException(
+						"Cancel ghtk order failed: " + ((response != null && response.getMessage() != null) ? response.getMessage() : "Unknown response"));
+				})
+				.block();
+			if (cancelOrderGhtkResponse == null || !cancelOrderGhtkResponse.isSuccess()) {
+				throw new IllegalArgumentException("Cancel ghtk order failed" + (cancelOrderGhtkResponse != null ? cancelOrderGhtkResponse.getMessage() : ""));
+			}
+		}
+
+		order.setStatus(CampaignOrderStatus.REFUNDING.getByteValue());
 		campaignOrderRepository.save(order);
 
-		//TODO: update field updatedBy for history
+		//Revert campaign product quantity
+		revertProductQuantity(order.getOrderDetails());
+
 		OrderHistoryEntity orderHistory = OrderHistoryEntity.builder()
 			.id(OrderHistoryId.builder()
 				.campaignOrderId(order.getId())
 				.status(OrderHistoryStatus.REFUNDED.getByteValue())
 				.build())
 			.datetime(Instant.now())
+			.updatedBy(account.getUsername())
 			.build();
 		orderHistoryRepository.save(orderHistory);
 	}

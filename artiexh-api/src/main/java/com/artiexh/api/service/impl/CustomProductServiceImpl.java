@@ -63,7 +63,6 @@ public class CustomProductServiceImpl implements CustomProductService {
 		entity.getAttaches().addAll(attaches);
 
 		entity.setName(item.getName());
-		entity.getImageSet().clear();
 		entity.setDescription(item.getDescription());
 		entity.setMaxItemPerOrder(item.getMaxItemPerOrder());
 		entity.getTags().clear();
