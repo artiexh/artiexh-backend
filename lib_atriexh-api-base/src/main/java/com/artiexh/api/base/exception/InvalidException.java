@@ -1,14 +1,13 @@
 package com.artiexh.api.base.exception;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class InvalidException extends IllegalArgumentException {
-	private ErrorCode errorCode;
+	private final ErrorCode errorCode;
+
+	public InvalidException(ErrorCode errorCode, String message) {
+		super(message);
+		this.errorCode = errorCode;
+	}
 }
