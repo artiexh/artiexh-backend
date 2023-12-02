@@ -56,7 +56,7 @@ public interface ProductInventoryMapper {
 	@Mapping(target = "productInCampaign.id", source = "productInCampaignId")
 	@Mapping(target = "status", constant = "AVAILABLE")
 	@Mapping(target = "deliveryType", constant = "SHIP")
-	@Mapping(target = "weight", constant = "0F")
+	@Mapping(target = "weight", constant = "500F")
 	@Mapping(target = "quantity", constant = "0L")
 	ProductInventory finalizeProductRequestToProduct(FinalizeProductRequest request);
 
