@@ -33,8 +33,8 @@ public interface CampaignOrderService {
 	AdminCampaignOrderResponse updateShippingOrderStatus(Long orderId,
 														 UpdateShippingOrderRequest updateShippingOrderRequest);
 
-	void cancelOrder(Long orderId, String message, Long updatedBy) throws IllegalAccessException;
+	void cancelOrder(Long orderId, String message, Long updatedBy);
 
-	void refundOrder(Long orderId, Long createdBy) throws IllegalAccessException;
+	void refundOrder(Long orderId, Long createdBy);
 
 }

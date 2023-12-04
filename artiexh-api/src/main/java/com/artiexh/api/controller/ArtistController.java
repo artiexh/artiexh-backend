@@ -2,6 +2,7 @@ package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.service.ArtistService;
 import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.api.service.marketplace.SaleCampaignService;
@@ -95,7 +96,7 @@ public class ArtistController {
 			long userId = (long) authentication.getPrincipal();
 			return artistService.getOrderById(id, userId);
 		} catch (EntityNotFoundException exception) {
-			throw new ResponseStatusException(ErrorCode.ORDER_IS_INVALID.getCode(), ErrorCode.ORDER_IS_INVALID.getMessage(), exception);
+			throw new InvalidException(ErrorCode.ORDER_NOT_FOUND);
 		}
 	}
 
@@ -106,7 +107,7 @@ public class ArtistController {
 			Page<Post> posts = artistService.getArtistPost(id, pagination.getPageable());
 			return new PageResponse<>(posts.map(postMapper::domainToDetail));
 		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+			throw new InvalidException(ErrorCode.POST_NOT_FOUND);
 		}
 	}
 
@@ -120,7 +121,7 @@ public class ArtistController {
 		try {
 			return saleCampaignService.getDetail(id, userId);
 		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+			throw new InvalidException(ErrorCode.CAMPAIGN_SALE_NOT_FOUND);
 		}
 	}
 

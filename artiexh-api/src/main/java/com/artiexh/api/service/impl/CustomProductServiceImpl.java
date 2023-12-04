@@ -1,6 +1,7 @@
 package com.artiexh.api.service.impl;
 
 import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.service.CustomProductService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.entity.embededmodel.ImageCombination;
@@ -40,7 +41,7 @@ public class CustomProductServiceImpl implements CustomProductService {
 	@Transactional
 	public CustomProductGeneralResponse createGeneral(CustomProductGeneralRequest item) {
 		ProductVariantEntity variant = variantRepository.findById(item.getVariantId())
-			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.VARIANT_NOT_FOUND.getMessage() + item.getVariantId()));
+			.orElseThrow(() -> new InvalidException(ErrorCode.VARIANT_INFO_NOT_FOUND));
 
 		CustomProductEntity entity = customProductMapper.generalRequestToEntity(item);
 		entity.setVariant(variant);
@@ -78,7 +79,7 @@ public class CustomProductServiceImpl implements CustomProductService {
 	@Transactional
 	public CustomProductDesignResponse createDesign(CustomProductDesignRequest item) {
 		ProductVariantEntity variant = variantRepository.findById(item.getVariantId())
-			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.VARIANT_NOT_FOUND.getMessage() + item.getVariantId()));
+			.orElseThrow(() -> new InvalidException(ErrorCode.VARIANT_INFO_NOT_FOUND));
 
 		var imageSetEntity = validateImageSet(
 			item.getArtistId(),
@@ -121,14 +122,14 @@ public class CustomProductServiceImpl implements CustomProductService {
 
 	private CustomProductEntity getOldCustomProductEntity(Long id, Long variantId) {
 		CustomProductEntity entity = customProductRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + id));
+			.orElseThrow(EntityNotFoundException::new);
 
 		if (entity.getCampaignLock() != null) {
-			throw new IllegalArgumentException("customProduct is locked by campaign " + entity.getCampaignLock());
+			throw new InvalidException(ErrorCode.LOCKED_CUSTOM_PRODUCT);
 		}
 
 		if (!entity.getVariant().getId().equals(variantId)) {
-			throw new IllegalArgumentException("Cannot change variant");
+			throw new InvalidException(ErrorCode.NOT_ALLOWED_VARIANT_UPDATED);
 		}
 
 		return entity;
@@ -137,7 +138,7 @@ public class CustomProductServiceImpl implements CustomProductService {
 	private MediaEntity validateModelThumbnail(Long id, Long artistId) {
 		if (id != null) {
 			return mediaRepository.findByIdAndOwnerId(id, artistId)
-				.orElseThrow(() -> new IllegalArgumentException("You not own media " + id));
+				.orElseThrow(() -> new InvalidException(ErrorCode.MEDIA_NOT_FOUND));
 		}
 		return null;
 	}
@@ -158,15 +159,15 @@ public class CustomProductServiceImpl implements CustomProductService {
 			var combinationConfig = variantEntity.getProductTemplate().getImageCombinations().stream()
 				.filter(combination -> combination.getCode().equals(combinationCode))
 				.findAny()
-				.orElseThrow(() -> new IllegalArgumentException("combinationCode is not valid"));
+				.orElseThrow(() -> new InvalidException(ErrorCode.COMBINATION_CODE_INVALID));
 
 			if (isNotValidImagePosition(combinationConfig, imageSet)) {
-				throw new IllegalArgumentException("Image position is not valid");
+				throw new InvalidException(ErrorCode.IMAGE_SET_POSITION_INVALID);
 			}
 
 			return validateImageSetMedia(artistId, imageSet);
 		} else if (!imageSet.isEmpty()) {
-			throw new IllegalArgumentException("Cannot set imageSet without combinationCode");
+			throw new InvalidException(ErrorCode.IMAGE_SET_INVALID);
 		}
 		return Set.of();
 	}
@@ -188,13 +189,13 @@ public class CustomProductServiceImpl implements CustomProductService {
 					.positionCode(imageSet.getPositionCode())
 					.mockupImage(mediaRepository.findByIdAndOwnerId(imageSet.getMockupImageId(), artistId)
 						.orElseThrow(() ->
-							new IllegalArgumentException("mockupImageId " + imageSet.getMockupImageId() + " is not valid")
+							new InvalidException(ErrorCode.MOCKUP_IMAGE_NOT_FOUND)
 						));
 
 				if (imageSet.getManufacturingImageId() != null) {
 					imageSetEntityBuilder.manufacturingImage(
 						mediaRepository.findByIdAndOwnerId(imageSet.getManufacturingImageId(), artistId).orElseThrow(() ->
-							new IllegalArgumentException("manufacturingImageId " + imageSet.getManufacturingImageId() + " is not valid")
+							new InvalidException(ErrorCode.MANUFACTURING_IMAGE_NOT_FOUND)
 						));
 				}
 				return imageSetEntityBuilder.build();

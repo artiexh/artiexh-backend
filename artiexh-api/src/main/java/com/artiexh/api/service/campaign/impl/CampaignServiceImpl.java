@@ -1,6 +1,7 @@
 package com.artiexh.api.service.campaign.impl;
 
 import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.campaign.ProductInCampaignService;
 import com.artiexh.api.service.productinventory.ProductInventoryJpaService;
@@ -131,15 +132,15 @@ public class CampaignServiceImpl implements CampaignService {
 		validateCampaignTypeWithRole(ownerEntity, request);
 
 		var oldCampaignEntity = campaignRepository.findById(request.getId())
-			.orElseThrow(() -> new EntityNotFoundException("campaign " + request.getId() + " not valid"));
+			.orElseThrow(() -> new EntityNotFoundException("Chiến dịch " + request.getId() + " không tìm thấy"));
 
 		if (!oldCampaignEntity.getOwner().getId().equals(ownerId)) {
-			throw new IllegalArgumentException("You not own campaign " + request.getId());
+			throw new InvalidException(ErrorCode.CAMPAIGN_OWNER_INVALID);
 		}
 
 		if (!oldCampaignEntity.getStatus().equals(CampaignStatus.DRAFT.getByteValue())
 			&& !oldCampaignEntity.getStatus().equals(CampaignStatus.REQUEST_CHANGE.getByteValue())) {
-			throw new IllegalArgumentException("You can only update campaign with status DRAFT or REQUEST_CHANGE");
+			throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_REQUEST);
 		}
 
 		validateCreateCustomProductRequest(ownerEntity, request.getProviderId(), request.getProducts());
@@ -222,11 +223,11 @@ public class CampaignServiceImpl implements CampaignService {
 		CampaignType type = request.getType();
 
 		if (role == Role.ARTIST && type == CampaignType.PUBLIC) {
-			throw new IllegalArgumentException("Artist cannot create public campaign");
+			throw new InvalidException(ErrorCode.INVALID_PUBLIC_CAMPAIGN_OWNER, "Artist không thể tạo chiến dịch loại PUBLIC");
 		}
 
-		if (role == Role.ADMIN && type != CampaignType.PUBLIC) {
-			throw new IllegalArgumentException("Admin can only create public campaign");
+		if ((role == Role.ADMIN || role == Role.STAFF) && type != CampaignType.PUBLIC) {
+			throw new InvalidException(ErrorCode.INVALID_PUBLIC_CAMPAIGN_OWNER, "Quản trị viên hoặc nhân viên chỉ có tạo chiến dịch loại PUBLIC");
 		}
 	}
 
@@ -234,16 +235,16 @@ public class CampaignServiceImpl implements CampaignService {
 													String providerId,
 													Set<ProductInCampaignRequest> requests) {
 		if (providerId != null && !providerRepository.existsById(providerId)) {
-			throw new IllegalArgumentException("providerId " + providerId + " not valid");
+			throw new InvalidException(ErrorCode.PROVIDER_INFO_NOT_FOUND);
 		}
 
 		for (var productInCampaignRequest : requests) {
 			var customProductEntity = customProductRepository.findById(productInCampaignRequest.getCustomProductId())
-				.orElseThrow(() -> new IllegalArgumentException("customProduct " + productInCampaignRequest.getCustomProductId() + " not valid"));
+				.orElseThrow(() -> new InvalidException(ErrorCode.CUSTOM_PRODUCT_INFO_NOT_FOUND, ErrorCode.CUSTOM_PRODUCT_INFO_NOT_FOUND.getMessage() + productInCampaignRequest.getCustomProductId()));
 
 			if (ownerEntity.getRole() == Role.ARTIST.getByteValue()
 				&& !ownerEntity.getId().equals(customProductEntity.getArtist().getId())) {
-				throw new IllegalArgumentException("You not own customProduct " + customProductEntity.getId());
+				throw new InvalidException(ErrorCode.CUSTOM_PRODUCT_OWNER_INVALID, ErrorCode.CUSTOM_PRODUCT_OWNER_INVALID.getMessage() + customProductEntity.getId());
 			}
 
 			validateProviderSupportCustomProduct(providerId, customProductEntity, productInCampaignRequest);
@@ -257,16 +258,16 @@ public class CampaignServiceImpl implements CampaignService {
 			var providerConfig = customProductEntity.getVariant().getProviderConfigs().stream()
 				.filter(config -> providerId.equals(config.getId().getBusinessCode()))
 				.findAny()
-				.orElseThrow(() -> new IllegalArgumentException("customProduct " + customProductEntity.getId() + " is not supported by provider " + providerId));
+				.orElseThrow(() -> new InvalidException(ErrorCode.UNSUPPORTED_PROVIDER, "Bản thiết kế " + customProductEntity.getId() + " không được hỗ trợ bởi " + providerId));
 
 			if (productRequest.getQuantity() != null && providerConfig.getMinQuantity() > productRequest.getQuantity()) {
-				throw new IllegalArgumentException("product quantity must greater than " + providerConfig.getMinQuantity());
+				throw new InvalidException(ErrorCode.QUANTITY_RANGE_INVALID, ErrorCode.QUANTITY_RANGE_INVALID.getMessage() + providerConfig.getMinQuantity());
 			}
 
 			if (productRequest.getPrice() != null
 				&& productRequest.getPrice().getAmount() != null
 				&& providerConfig.getBasePriceAmount().compareTo(productRequest.getPrice().getAmount()) > 0) {
-				throw new IllegalArgumentException("product price amount must greater than " + providerConfig.getBasePriceAmount());
+				throw new InvalidException(ErrorCode.PRICE_RANGE_INVALID, ErrorCode.PRICE_RANGE_INVALID.getMessage() + providerConfig.getBasePriceAmount());
 			}
 		}
 	}
@@ -282,15 +283,15 @@ public class CampaignServiceImpl implements CampaignService {
 			.orElseThrow(() -> new UsernameNotFoundException("user " + userId + " not found"));
 
 		var campaignEntity = campaignRepository.findById(campaignId)
-			.orElseThrow(() -> new EntityNotFoundException("campaignId " + campaignId + " not valid"));
+			.orElseThrow(EntityNotFoundException::new);
 
 		if (userEntity.getRole() == Role.ADMIN.getByteValue()) {
 			if (!ALLOWED_ADMIN_VIEW_STATUS.contains(CampaignStatus.fromValue(campaignEntity.getStatus()))
 				&& !campaignEntity.getOwner().getId().equals(userId)) {
-				throw new IllegalArgumentException("You can only get campaigns after submitted");
+				throw new InvalidException(ErrorCode.CAMPAIGN_REQUEST_NOT_FOUND);
 			}
 		} else if (!campaignEntity.getOwner().getId().equals(userId)) {
-			throw new IllegalArgumentException("You not own campaign " + campaignId);
+			throw new InvalidException(ErrorCode.CAMPAIGN_OWNER_INVALID);
 		}
 
 		return buildCampaignDetailResponse(campaignEntity);
@@ -307,7 +308,7 @@ public class CampaignServiceImpl implements CampaignService {
 			ProviderEntity provider = providerRepository.findById(campaignEntity.getProviderId()).orElse(ProviderEntity.builder().build());
 			result.setProvider(providerMapper.entityToInfo(provider));
 		} else {
-			throw new IllegalArgumentException(ErrorCode.PROVIDER_NOT_FOUND.getMessage());
+			throw new InvalidException(ErrorCode.PROVIDER_INFO_NOT_FOUND);
 		}
 		return result;
 	}
@@ -316,10 +317,10 @@ public class CampaignServiceImpl implements CampaignService {
 	@Transactional
 	public CampaignResponse artistUpdateStatus(Long artistId, UpdateCampaignStatusRequest request) {
 		var campaignEntity = campaignRepository.findById(request.getId())
-			.orElseThrow(() -> new EntityNotFoundException("campaignId " + request.getId() + " not valid"));
+			.orElseThrow(() -> new EntityNotFoundException("Yêu cầu chiến dịch " + request.getId() + " không tìm thấy"));
 
 		if (!campaignEntity.getOwner().getId().equals(artistId)) {
-			throw new IllegalArgumentException("You not own campaign " + request.getId());
+			throw new InvalidException(ErrorCode.CAMPAIGN_OWNER_INVALID);
 		}
 
 		ArtistEntity artistEntity = artistRepository.getReferenceById(artistId);
@@ -327,7 +328,7 @@ public class CampaignServiceImpl implements CampaignService {
 		return switch (request.getStatus()) {
 			case CANCELED -> artistCancelCampaign(campaignEntity, artistEntity, request.getMessage());
 			case WAITING -> artistSubmitCampaign(campaignEntity, artistEntity, request.getMessage());
-			default -> throw new IllegalArgumentException("You can only update campaign to status WAITING or CANCELED");
+			default -> throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái chiến dịch chỉ có thể cập nhật sang WAITING hoặc CANCELED");
 		};
 	}
 
@@ -335,7 +336,7 @@ public class CampaignServiceImpl implements CampaignService {
 		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue()
 			&& campaignEntity.getStatus() != CampaignStatus.REQUEST_CHANGE.getByteValue()
 			&& campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
-			throw new IllegalArgumentException("You can only update campaign from DRAFT, REQUEST_CHANGE or WAITING to CANCELED");
+			throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái của chiến dịch yêu cầu chỉ có thể cập nhật từ DRAFT, REQUEST_CHANGE hoặc WAITING sang CANCELED");
 		}
 
 		if (campaignEntity.getStatus() == CampaignStatus.WAITING.getByteValue()) {
@@ -363,26 +364,23 @@ public class CampaignServiceImpl implements CampaignService {
 	private CampaignResponse artistSubmitCampaign(CampaignEntity campaignEntity, ArtistEntity artistEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue()
 			&& campaignEntity.getStatus() != CampaignStatus.REQUEST_CHANGE.getByteValue()) {
-			throw new IllegalArgumentException("You can only update campaign from DRAFT, REQUEST_CHANGE to WAITING");
+			throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED,"Trạng thái của chiến dịch yêu cầu chỉ có thể cập nhật từ DRAFT, REQUEST_CHANGE sang WAITING");
 		}
 
 		if (campaignEntity.getFrom() == null || campaignEntity.getTo() == null) {
-			throw new IllegalArgumentException("From, to must not be null");
+			throw new InvalidException(ErrorCode.FROM_TO_VALIDATION);
 		}
 
 		if (campaignEntity.getProductInCampaigns().isEmpty()) {
-			throw new IllegalArgumentException("Campaign products must not be empty");
+			throw new InvalidException(ErrorCode.PRODUCT_CAMPAIGN_VALIDATION);
 		}
 
 		for (var productInCampaignEntity : campaignEntity.getProductInCampaigns()) {
 			if (productInCampaignEntity.getQuantity() == null) {
-				throw new IllegalArgumentException("customProduct " + productInCampaignEntity.getId() + " quantity must not null");
+				throw new InvalidException(ErrorCode.PRODUCT_CAMPAIGN_QUANTITY_VALIDATION, "Sản phẩm " + productInCampaignEntity.getId() + " phải có thông tin số lượng");
 			}
-			if (productInCampaignEntity.getPriceUnit() == null) {
-				throw new IllegalArgumentException("customProduct " + productInCampaignEntity.getId() + " price.Unit must not null");
-			}
-			if (productInCampaignEntity.getPriceAmount() == null) {
-				throw new IllegalArgumentException("customProduct " + productInCampaignEntity.getId() + " price.Amount must not null");
+			if (productInCampaignEntity.getPriceUnit() == null || productInCampaignEntity.getPriceAmount() == null) {
+				throw new InvalidException(ErrorCode.PRODUCT_CAMPAIGN_PRICE_VALIDATION, "Sản phẩm " + productInCampaignEntity.getId() + " phải có thông tin giá");
 			}
 		}
 
@@ -390,7 +388,7 @@ public class CampaignServiceImpl implements CampaignService {
 			.map(ProductInCampaignEntity::getCustomProduct)
 			.forEach(customProductEntity -> {
 				if (customProductEntity.getCampaignLock() != null) {
-					throw new IllegalArgumentException("customProduct " + customProductEntity.getId() + " is locked by another campaign: " + customProductEntity.getCampaignLock());
+					throw new InvalidException(ErrorCode.LOCKED_CUSTOM_PRODUCT, "Sản phẩm thiết kế " + customProductEntity.getId() + " hiện đang thuộc về chiến dịch " + customProductEntity.getCampaignLock());
 				}
 				customProductEntity.setCampaignLock(campaignEntity.getId());
 				customProductRepository.save(customProductEntity);
@@ -423,7 +421,7 @@ public class CampaignServiceImpl implements CampaignService {
 			case REJECTED -> staffRejectCampaign(campaignEntity, accountEntity, request.getMessage());
 			case MANUFACTURING -> staffStartManufactureCampaign(campaignEntity, accountEntity, request.getMessage());
 			default ->
-				throw new IllegalArgumentException("You can only update campaign to status REQUEST_CHANGE, APPROVED or REJECTED");
+				throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái chiến dịch chỉ có thể cập nhật thành REQUEST_CHANGE, APPROVED hoặc REJECTED");
 		};
 	}
 
@@ -431,7 +429,7 @@ public class CampaignServiceImpl implements CampaignService {
 														AccountEntity accountEntity,
 														String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
-			throw new IllegalArgumentException("You can only update campaign from WAITING to REQUEST_CHANGE");
+			throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái chiến dịch chỉ có thể cập nhật từ WAITING sang REQUEST_CHANGE");
 		}
 
 		campaignEntity.getProductInCampaigns().stream()
@@ -458,7 +456,7 @@ public class CampaignServiceImpl implements CampaignService {
 												  AccountEntity accountEntity,
 												  String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
-			throw new IllegalArgumentException("You can only update campaign from WAITING to APPROVED");
+			throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái chiến dịch chỉ có thể cập nhật từ WAITING sang APPROVED");
 		}
 
 		campaignEntity.getProductInCampaigns()
@@ -470,7 +468,7 @@ public class CampaignServiceImpl implements CampaignService {
 				String providerId = productInCampaign.getCampaign().getProviderId();
 				Long variantId = productInCampaign.getCustomProduct().getVariant().getId();
 				ProductVariantProviderEntity providerConfig = productVariantProviderRepository.findById(new ProductVariantProviderId(variantId, providerId))
-					.orElseThrow(() -> new IllegalArgumentException("Provider config not found for variantId: " + variantId + " and providerId: " + providerId));
+					.orElseThrow(() -> new InvalidException(ErrorCode.UNSUPPORTED_PROVIDER, "Không tìm thấy thông tin cung cấp cho mẫu " + variantId + " và nhà cung cấp " + providerId));
 				productInCampaign.setBasePriceAmount(providerConfig.getBasePriceAmount());
 				productInCampaign.setManufacturingTime(providerConfig.getManufacturingTime());
 				productInCampaign.setMinQuantity(providerConfig.getMinQuantity());
@@ -494,7 +492,7 @@ public class CampaignServiceImpl implements CampaignService {
 												 AccountEntity accountEntity,
 												 String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.WAITING.getByteValue()) {
-			throw new IllegalArgumentException("You can only update campaign from WAITING to REJECTED");
+			throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái chiến dịch chỉ có thể cập nhật từ WAITING sang REJECTED");
 		}
 
 		campaignEntity.getProductInCampaigns().stream()
@@ -521,7 +519,7 @@ public class CampaignServiceImpl implements CampaignService {
 														   AccountEntity accountEntity,
 														   String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.APPROVED.getByteValue()) {
-			throw new IllegalArgumentException("You can only update campaign from APPROVED to MANUFACTURING");
+			throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái chiến dịch chỉ có thể cập nhật từ APPROVED sang MANUFACTURING");
 		}
 
 		campaignEntity.setStatus(CampaignStatus.MANUFACTURING.getByteValue());
@@ -544,7 +542,7 @@ public class CampaignServiceImpl implements CampaignService {
 											   Long staffId,
 											   String message) {
 		var campaignEntity = campaignRepository.findById(campaignId)
-			.orElseThrow(() -> new EntityNotFoundException("campaignId " + campaignId + " not valid"));
+			.orElseThrow(() -> new EntityNotFoundException("Chiến dịch " + campaignId + " không tìm thấy"));
 
 		Set<ProductInventoryQuantity> productInventoryQuantities = new HashSet<>();
 		Set<ProductInventoryCode> productInventoryCodes = productInventoryRepository.getAllByCampaignId(campaignEntity.getId());
@@ -561,13 +559,13 @@ public class CampaignServiceImpl implements CampaignService {
 			}
 		}
 		if (productInventoryCodes.size() != productQuantities.size() || !isProductExisted) {
-			throw new IllegalArgumentException(ErrorCode.PRODUCT_NOT_FOUND.getMessage());
+			throw new InvalidException(ErrorCode.PRODUCT_INVENTORY_INFO_NOT_FOUND);
 		}
 
 		AccountEntity accountEntity = accountRepository.getReferenceById(staffId);
 		if (campaignEntity.getStatus() != CampaignStatus.APPROVED.getByteValue()
 			&& campaignEntity.getStatus() != CampaignStatus.MANUFACTURING.getByteValue()) {
-			throw new IllegalArgumentException("You can only update campaign from APPROVED or MANUFACTURING to MANUFACTURED");
+			throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái chiến dịch chỉ có thể cập nhật từ APPROVED hoặc MANUFACTURING sang MANUFACTURED");
 		}
 
 		campaignEntity.setStatus(CampaignStatus.MANUFACTURED.getByteValue());
@@ -603,11 +601,11 @@ public class CampaignServiceImpl implements CampaignService {
 		CampaignEntity campaign = campaignRepository.findById(campaignId).orElseThrow(EntityNotFoundException::new);
 
 		if (!CampaignStatus.ALLOWED_PUBLISHED_STATUS.contains(CampaignStatus.fromValue(campaign.getStatus()))) {
-			throw new IllegalArgumentException("You can only finalized product after campaign is approved and not finished");
+			throw new InvalidException(ErrorCode.FINALIZED_CAMPAIGN_NOT_ALLOWED);
 		}
 
 		if (Boolean.TRUE.equals(campaign.getIsFinalized())) {
-			throw new IllegalArgumentException("Product in this campaign is finalized");
+			throw new InvalidException(ErrorCode.CAMPAIGN_REQUEST_FINALIZED);
 		}
 
 		Set<Long> productCampaignIds = campaign.getProductInCampaigns().stream()
@@ -618,14 +616,14 @@ public class CampaignServiceImpl implements CampaignService {
 			.collect(Collectors.toSet());
 
 		if (!productCampaignIds.equals(productIds)) {
-			throw new IllegalArgumentException("All product in campaign must be published");
+			throw new InvalidException(ErrorCode.FINALIZED_CAMPAIGN_PRODUCT_VALIDATION);
 		}
 
 		Set<ProductResponse> productResponses = new HashSet<>();
 		for (FinalizeProductRequest finalizeProductRequest : request) {
 			ProductInCampaignEntity productInCampaign =
 				productInCampaignRepository.findById(finalizeProductRequest.getProductInCampaignId())
-					.orElseThrow(() -> new IllegalArgumentException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + finalizeProductRequest.getProductInCampaignId()));
+					.orElseThrow(() -> new InvalidException(ErrorCode.PRODUCT_CAMPAIGN_INFO_NOT_FOUND, ErrorCode.PRODUCT_CAMPAIGN_INFO_NOT_FOUND.getMessage() + finalizeProductRequest.getProductInCampaignId()));
 
 			//Update ProductInCampaign
 

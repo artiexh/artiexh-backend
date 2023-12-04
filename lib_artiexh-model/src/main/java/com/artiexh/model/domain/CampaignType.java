@@ -30,7 +30,7 @@ public enum CampaignType {
 				return type;
 			}
 		}
-		throw new IllegalArgumentException("Unknown Campaign Type value: " + value);
+		throw new IndexOutOfBoundsException("Unknown Campaign Type value: " + value);
 	}
 
 	public byte getByteValue() {

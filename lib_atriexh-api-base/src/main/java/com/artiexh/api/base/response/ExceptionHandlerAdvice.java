@@ -1,9 +1,11 @@
 package com.artiexh.api.base.response;
 
+import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.base.exception.InvalidException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -24,10 +26,26 @@ import java.util.stream.Collectors;
 public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 	@ExceptionHandler({InvalidException.class})
 	public ResponseEntity<?> handleBusinessException(InvalidException ex, WebRequest request) {
-		var responseException = new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		var responseException = new ResponseStatusException(ex.getErrorCode().getCode(), ex.getMessage(), ex);
 		ResponseModel responseModel = new ResponseModel(
 			Instant.now(),
 			ex.getErrorCode().name(),
+			ex.getErrorCode().getCode().value(),
+			ex.getErrorCode().getCode().name(),
+			StringUtils.isBlank(ex.getMessage()) ? ex.getErrorCode().getMessage() : ex.getMessage(),
+			null,
+			null
+		);
+		return handleExceptionInternal(responseException, responseModel, new HttpHeaders(), ex.getErrorCode().getCode(), request);
+	}
+
+
+	@ExceptionHandler(EntityNotFoundException.class)
+	public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request) {
+		var responseException = new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		ResponseModel responseModel = new ResponseModel(
+			Instant.now(),
+			ErrorCode.ENTITY_NOT_FOUND.name(),
 			HttpStatus.BAD_REQUEST.value(),
 			HttpStatus.BAD_REQUEST.name(),
 			ex.getMessage(),
@@ -35,13 +53,6 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 			null
 		);
 		return handleExceptionInternal(responseException, responseModel, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
-	}
-
-
-	@ExceptionHandler(EntityNotFoundException.class)
-	public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request) {
-		var responseException = new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
-		return handleExceptionInternal(responseException, null, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}
 
 	@ExceptionHandler(ConstraintViolationException.class)

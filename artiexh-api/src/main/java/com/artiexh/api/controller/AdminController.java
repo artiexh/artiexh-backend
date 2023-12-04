@@ -2,6 +2,7 @@ package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.service.CampaignOrderService;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
@@ -44,7 +45,7 @@ public class AdminController {
 		try {
 			return campaignOrderService.getAdminCampaignOrderById(id);
 		} catch (EntityNotFoundException exception) {
-			throw new ResponseStatusException(ErrorCode.ORDER_IS_INVALID.getCode(), ErrorCode.ORDER_IS_INVALID.getMessage(), exception);
+			throw new InvalidException(ErrorCode.ORDER_NOT_FOUND);
 		}
 	}
 

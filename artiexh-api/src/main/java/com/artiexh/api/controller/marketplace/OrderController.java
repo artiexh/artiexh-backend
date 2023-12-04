@@ -3,6 +3,7 @@ package com.artiexh.api.controller.marketplace;
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.base.exception.ArtiexhConfigException;
 import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.service.CampaignOrderService;
 import com.artiexh.api.service.OrderService;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
@@ -41,10 +42,8 @@ public class OrderController {
 		var userId = (Long) authentication.getPrincipal();
 		try {
 			return orderService.checkout(userId, request);
-		} catch (IllegalArgumentException ex) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
 		} catch (UnsupportedOperationException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, ex.getMessage());
+			throw new InvalidException(ErrorCode.OPERATION_UNSUPPORTED, ex.getMessage());
 		}
 	}
 
@@ -56,9 +55,7 @@ public class OrderController {
 		try {
 			return campaignOrderService.getShippingFee(userId, request).block();
 		} catch (ArtiexhConfigException ex) {
-			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
-		} catch (IllegalArgumentException ex) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+			throw new InvalidException(ErrorCode.ARTIEXH_CONFIG_ERROR, ex.getMessage());
 		}
 	}
 
@@ -84,10 +81,8 @@ public class OrderController {
 					)
 				)
 				.build();
-		} catch (IllegalArgumentException ex) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
 		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage(), ex);
+			throw new InvalidException(ErrorCode.ORDER_NOT_FOUND);
 		}
 	}
 
@@ -107,11 +102,9 @@ public class OrderController {
 		try {
 			return campaignOrderService.updateShippingOrderStatus(id, updateShippingOrderRequest);
 		} catch (EntityNotFoundException exception) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.ORDER_NOT_FOUND.getMessage(), exception);
-		} catch (IllegalArgumentException exception) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
+			throw new InvalidException(ErrorCode.ORDER_NOT_FOUND);
 		} catch (ArtiexhConfigException ex) {
-			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+			throw new InvalidException(ErrorCode.ARTIEXH_CONFIG_ERROR, ex.getMessage());
 		}
 	}
 
@@ -127,15 +120,11 @@ public class OrderController {
 				case CANCELED -> campaignOrderService.cancelOrder(id, request.getMessage(), userId);
 				case REFUNDING -> campaignOrderService.refundOrder(id, userId);
 				default ->
-					throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can just update order's status REFUNDING or CANCELED ");
+					throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_ORDER_STATUS_FAILED, "Bạn chỉ có thể chuyển trạng thái sang CANCELED hoặc REFUNDING");
 			}
 			return ResponseEntity.ok().build();
-		} catch (IllegalArgumentException ex) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
 		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage(), ex);
-		} catch (IllegalAccessException ex) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN, ex.getMessage(), ex);
+			throw new InvalidException(ErrorCode.ORDER_NOT_FOUND);
 		}
 	}
 }

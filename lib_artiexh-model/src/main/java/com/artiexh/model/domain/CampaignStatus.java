@@ -49,7 +49,7 @@ public enum CampaignStatus {
 				return status;
 			}
 		}
-		throw new IllegalArgumentException("Unknown CampaignStatus value: " + value);
+		throw new IndexOutOfBoundsException("Unknown CampaignStatus value: " + value);
 	}
 
 	public byte getByteValue() {

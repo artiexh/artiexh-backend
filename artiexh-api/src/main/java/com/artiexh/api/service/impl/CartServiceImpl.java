@@ -1,6 +1,7 @@
 package com.artiexh.api.service.impl;
 
 import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.service.CartService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.CartItemRepository;
@@ -51,7 +52,7 @@ public class CartServiceImpl implements CartService {
 			userId
 		);
 		if (numOfItemsBelongToUser > 0) {
-			throw new IllegalArgumentException(ErrorCode.INVALID_ITEM.getMessage());
+			throw new InvalidException(ErrorCode.UPDATE_CART_ITEM_FAILED);
 		}
 
 		Set<CartItemEntity> cartItemEntities = items.stream().map(cartItemRequest -> {
@@ -82,7 +83,7 @@ public class CartServiceImpl implements CartService {
 	@Transactional
 	public Cart addOneItem(long userId, CartItemRequest item) {
 		if (productInventoryRepository.existsByProductCodeAndOwnerId(item.getProductCode(), userId)) {
-			throw new IllegalArgumentException(ErrorCode.INVALID_ITEM.getMessage());
+			throw new InvalidException(ErrorCode.UPDATE_CART_ITEM_FAILED);
 		}
 
 		var cartEntity = getOrCreateCartEntity(userId);

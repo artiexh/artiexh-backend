@@ -1,6 +1,7 @@
 package com.artiexh.api.service.provider.impl;
 
 import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.service.provider.ProviderService;
 import com.artiexh.data.jpa.entity.CustomProductEntity;
 import com.artiexh.data.jpa.entity.ProductVariantEntity;
@@ -11,6 +12,7 @@ import com.artiexh.model.domain.Provider;
 import com.artiexh.model.mapper.CycleAvoidingMappingContext;
 import com.artiexh.model.mapper.ProviderMapper;
 import com.artiexh.model.rest.campaign.response.CampaignProviderResponse;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,7 +36,7 @@ public class ProviderServiceImpl implements ProviderService {
 	@Transactional
 	public Provider create(Provider provider) {
 		providerRepository.findById(provider.getBusinessCode()).ifPresent(entity -> {
-			throw new IllegalArgumentException(ErrorCode.PROVIDER_EXISTED.getMessage() + entity.getBusinessCode());
+			throw new EntityExistsException();
 		});
 		ProviderEntity entity = providerMapper.domainToEntity(provider);
 		providerRepository.save(entity);
@@ -45,7 +47,7 @@ public class ProviderServiceImpl implements ProviderService {
 	@Transactional
 	public Provider update(Provider provider) {
 		ProviderEntity entity = providerRepository.findById(provider.getBusinessCode())
-			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + provider.getBusinessCode()));
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.PROVIDER_NOT_FOUND.getMessage()));
 		entity = providerMapper.domainToEntity(provider, entity);
 		providerRepository.save(entity);
 		return provider;
@@ -75,7 +77,7 @@ public class ProviderServiceImpl implements ProviderService {
 
 		for (var customProductEntity : customProductEntities) {
 			if (!customProductEntity.getArtist().getId().equals(artistId)) {
-				throw new IllegalArgumentException("You not own customProduct " + customProductEntity.getId());
+				throw new InvalidException(ErrorCode.CUSTOM_PRODUCT_OWNER_INVALID, ErrorCode.CUSTOM_PRODUCT_OWNER_INVALID.getMessage() + customProductEntity.getId());
 			}
 		}
 

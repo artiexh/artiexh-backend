@@ -1,6 +1,8 @@
 package com.artiexh.api.controller.campaign;
 
 import com.artiexh.api.base.common.Endpoint;
+import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.provider.ProviderService;
 import com.artiexh.model.domain.CampaignHistory;
@@ -46,14 +48,10 @@ public class ArtistCampaignController {
 	public CampaignDetailResponse createCampaign(Authentication authentication,
 												 @RequestBody @Validated ArtistCampaignRequest request) {
 		var role = extractRole(authentication)
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has no role"));
+			.orElseThrow(() -> new InvalidException(ErrorCode.USER_NO_ROLE));
 		long ownerId = role == Role.STAFF ? rootAdminId : (long) authentication.getPrincipal();
 
-		try {
-			return campaignService.createCampaign(ownerId, request);
-		} catch (IllegalArgumentException ex) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
-		}
+		return campaignService.createCampaign(ownerId, request);
 	}
 
 	@PutMapping("/{id}")
@@ -62,16 +60,14 @@ public class ArtistCampaignController {
 												 @PathVariable Long id,
 												 @RequestBody @Validated ArtistCampaignRequest request) {
 		var role = extractRole(authentication)
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has no role"));
+			.orElseThrow(() -> new InvalidException(ErrorCode.USER_NO_ROLE));
 		long ownerId = role == Role.STAFF ? rootAdminId : (long) authentication.getPrincipal();
 
 		request.setId(id);
 		try {
 			return campaignService.updateCampaign(ownerId, request);
-		} catch (IllegalArgumentException ex) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+			throw new InvalidException(ErrorCode.ENTITY_NOT_FOUND, ex.getMessage());
 		}
 	}
 
@@ -81,7 +77,7 @@ public class ArtistCampaignController {
 										 @PathVariable Long id,
 										 @RequestBody @Validated UpdateCampaignStatusRequest request) {
 		var role = extractRole(authentication)
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has no role"));
+			.orElseThrow(() -> new InvalidException(ErrorCode.USER_NO_ROLE));
 
 		Long userId = (Long) authentication.getPrincipal();
 		request.setId(id);
@@ -90,14 +86,12 @@ public class ArtistCampaignController {
 			return switch (role) {
 				case ARTIST -> campaignService.artistUpdateStatus(userId, request);
 				case ADMIN, STAFF -> campaignService.reviewCampaign(userId, request);
-				default -> throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has no role");
+				default -> throw new InvalidException(ErrorCode.USER_NO_ROLE);
 			};
-		} catch (IllegalArgumentException ex) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+			throw new InvalidException(ErrorCode.ENTITY_NOT_FOUND, ex.getMessage());
 		} catch (UnsupportedOperationException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+			throw new InvalidException(ErrorCode.OPERATION_UNSUPPORTED, ex.getMessage());
 		}
 
 	}
@@ -107,11 +101,7 @@ public class ArtistCampaignController {
 	public Set<CampaignProviderResponse> getProviderSupportCustomProducts(Authentication authentication,
 																		  @ParameterObject @RequestParam Set<Long> customProductIds) {
 		long artistId = (long) authentication.getPrincipal();
-		try {
-			return providerService.getAllSupportedCustomProducts(artistId, customProductIds);
-		} catch (IllegalArgumentException ex) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
-		}
+		return providerService.getAllSupportedCustomProducts(artistId, customProductIds);
 	}
 
 	@GetMapping
@@ -120,12 +110,12 @@ public class ArtistCampaignController {
 														  @ParameterObject @Validated PaginationAndSortingRequest paginationAndSortingRequest,
 														  @ParameterObject CampaignRequestFilter filter) {
 		var role = extractRole(authentication)
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has no role"));
+			.orElseThrow(() -> new InvalidException(ErrorCode.USER_NO_ROLE));
 		Long userId = (Long) authentication.getPrincipal();
 
 		if (role == Role.ARTIST) {
 			if (filter.getOwnerId() != null && !filter.getOwnerId().equals(userId.toString())) {
-				throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only get your own campaigns");
+				return new PageResponse<>();
 			} else {
 				filter.setOwnerId(userId.toString());
 			}
@@ -133,7 +123,7 @@ public class ArtistCampaignController {
 			if (filter.getStatus() == null || filter.getStatus().isEmpty()) {
 				filter.setStatus(ALLOWED_ADMIN_VIEW_STATUS);
 			} else if (!ALLOWED_ADMIN_VIEW_STATUS.containsAll(filter.getStatus())) {
-				throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only get campaigns after submitted");
+				return new PageResponse<>();
 			}
 		}
 
@@ -146,17 +136,15 @@ public class ArtistCampaignController {
 	public CampaignDetailResponse getCampaign(Authentication authentication,
 											  @PathVariable Long id) {
 		var role = extractRole(authentication)
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has no role"));
+			.orElseThrow(() -> new InvalidException(ErrorCode.USER_NO_ROLE));
 		long userId = role == Role.STAFF ? rootAdminId : (long) authentication.getPrincipal();
 
 		try {
 			return campaignService.getCampaignDetail(userId, id);
 		} catch (UsernameNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ex.getMessage(), ex);
+			throw new InvalidException(ErrorCode.USER_NO_USERNAME);
 		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
-		} catch (IllegalArgumentException ex) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN, ex.getMessage(), ex);
+			throw new InvalidException(ErrorCode.CAMPAIGN_REQUEST_NOT_FOUND);
 		}
 	}
 
@@ -165,12 +153,8 @@ public class ArtistCampaignController {
 		@PathVariable Long id,
 		@ParameterObject @Valid PaginationAndSortingRequest pagination
 	) {
-		try {
-			pagination.setSortBy("id.eventTime");
-			return new PageResponse<>(campaignService.getCampaignHistory(id, pagination.getPageable()));
-		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
-		}
+		pagination.setSortBy("id.eventTime");
+		return new PageResponse<>(campaignService.getCampaignHistory(id, pagination.getPageable()));
 	}
 
 	private Optional<Role> extractRole(Authentication authentication) {

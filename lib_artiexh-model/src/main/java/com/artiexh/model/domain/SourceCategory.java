@@ -17,7 +17,7 @@ public enum SourceCategory {
 				return action;
 			}
 		}
-		throw new IllegalArgumentException("No such value for Source Category: " + value);
+		throw new IndexOutOfBoundsException("No such value for Source Category: " + value);
 	}
 
 	public byte getByteValue() {
