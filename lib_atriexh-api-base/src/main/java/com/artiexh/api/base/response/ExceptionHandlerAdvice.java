@@ -39,6 +39,20 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 		return handleExceptionInternal(responseException, responseModel, new HttpHeaders(), ex.getErrorCode().getCode(), request);
 	}
 
+	@ExceptionHandler({IndexOutOfBoundsException.class})
+	public ResponseEntity<?> handleEnumConversionException(IndexOutOfBoundsException ex, WebRequest request) {
+		var responseException = new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		ResponseModel responseModel = new ResponseModel(
+			Instant.now(),
+			ErrorCode.ENUM_CONVERT.name(),
+			HttpStatus.BAD_REQUEST.value(),
+			HttpStatus.BAD_REQUEST.name(),
+			ex.getMessage(),
+			null,
+			null
+		);
+		return handleExceptionInternal(responseException, responseModel, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+	}
 
 	@ExceptionHandler(EntityNotFoundException.class)
 	public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request) {
