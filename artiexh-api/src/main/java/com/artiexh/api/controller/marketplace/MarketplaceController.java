@@ -1,6 +1,8 @@
 package com.artiexh.api.controller.marketplace;
 
 import com.artiexh.api.base.common.Endpoint;
+import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.service.ArtistService;
 import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.api.service.marketplace.SaleCampaignService;
@@ -55,7 +57,7 @@ public class MarketplaceController {
 		try {
 			return saleCampaignService.getDetail(id);
 		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+			throw new InvalidException(ErrorCode.CAMPAIGN_SALE_NOT_FOUND);
 		}
 	}
 
@@ -84,7 +86,7 @@ public class MarketplaceController {
 		try {
 			return productService.getByCampaignIdAndProductCode(campaignId, productCode);
 		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+			throw new InvalidException(ErrorCode.PRODUCT_IN_SALE_NOT_FOUND);
 		}
 	}
 
@@ -97,7 +99,7 @@ public class MarketplaceController {
 				saleCampaignService.getAllByArtist(username, paginationAndSortingRequest.getPageable(), filter)
 			);
 		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+			throw new InvalidException(ErrorCode.ARTIST_NOT_FOUND);
 		}
 	}
 
@@ -110,7 +112,7 @@ public class MarketplaceController {
 				productService.getAllByArtist(username, paginationAndSortingRequest.getPageable(), filter)
 			);
 		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+			throw new InvalidException(ErrorCode.ARTIST_NOT_FOUND);
 		}
 	}
 

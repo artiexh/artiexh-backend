@@ -2,6 +2,7 @@ package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.service.CustomProductService;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
@@ -33,13 +34,7 @@ public class CustomProductController {
 		try {
 			return customProductService.createGeneral(detail);
 		} catch (EntityNotFoundException exception) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-				exception.getMessage(),
-				exception);
-		} catch (IllegalArgumentException exception) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-				exception.getMessage(),
-				exception);
+			throw new InvalidException(ErrorCode.CUSTOM_PRODUCT_NOT_FOUND);
 		}
 	}
 
@@ -55,13 +50,7 @@ public class CustomProductController {
 		try {
 			return customProductService.updateGeneral(detail);
 		} catch (EntityNotFoundException exception) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-				exception.getMessage(),
-				exception);
-		} catch (IllegalArgumentException exception) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-				exception.getMessage(),
-				exception);
+			throw new InvalidException(ErrorCode.CUSTOM_PRODUCT_NOT_FOUND);
 		}
 	}
 
@@ -75,13 +64,7 @@ public class CustomProductController {
 		try {
 			return customProductService.createDesign(detail);
 		} catch (EntityNotFoundException exception) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-				exception.getMessage(),
-				exception);
-		} catch (IllegalArgumentException exception) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-				exception.getMessage(),
-				exception);
+			throw new InvalidException(ErrorCode.CUSTOM_PRODUCT_NOT_FOUND);
 		}
 	}
 
@@ -97,13 +80,7 @@ public class CustomProductController {
 		try {
 			return customProductService.updateDesign(detail);
 		} catch (EntityNotFoundException exception) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-				exception.getMessage(),
-				exception);
-		} catch (IllegalArgumentException exception) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-				exception.getMessage(),
-				exception);
+			throw new InvalidException(ErrorCode.CUSTOM_PRODUCT_NOT_FOUND);
 		}
 	}
 
@@ -120,13 +97,7 @@ public class CustomProductController {
 
 			return new PageResponse<>(itemPage);
 		} catch (EntityNotFoundException exception) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-				ErrorCode.PRODUCT_NOT_FOUND.getMessage(),
-				exception);
-		} catch (IllegalArgumentException exception) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-				exception.getMessage(),
-				exception);
+			throw new InvalidException(ErrorCode.CUSTOM_PRODUCT_NOT_FOUND);
 		}
 	}
 
@@ -137,9 +108,7 @@ public class CustomProductController {
 		try {
 			return customProductService.getGeneralById(userId, id);
 		} catch (EntityNotFoundException exception) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-				ErrorCode.PRODUCT_NOT_FOUND.getMessage(),
-				exception);
+			throw new InvalidException(ErrorCode.CUSTOM_PRODUCT_NOT_FOUND);
 		}
 	}
 
@@ -152,9 +121,7 @@ public class CustomProductController {
 			long userId = (long) authentication.getPrincipal();
 			return customProductService.getDesignById(userId, id);
 		} catch (EntityNotFoundException exception) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-				ErrorCode.PRODUCT_NOT_FOUND.getMessage(),
-				exception);
+			throw new InvalidException(ErrorCode.CUSTOM_PRODUCT_NOT_FOUND);
 		}
 	}
 
@@ -167,9 +134,7 @@ public class CustomProductController {
 			long userId = (long) authentication.getPrincipal();
 			customProductService.delete(userId, id);
 		} catch (EntityNotFoundException exception) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-				ErrorCode.PRODUCT_NOT_FOUND.getMessage(),
-				exception);
+			throw new InvalidException(ErrorCode.CUSTOM_PRODUCT_NOT_FOUND);
 		}
 	}
 }

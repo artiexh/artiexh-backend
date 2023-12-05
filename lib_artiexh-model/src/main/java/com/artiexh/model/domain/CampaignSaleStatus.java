@@ -20,7 +20,7 @@ public enum CampaignSaleStatus {
 				return status;
 			}
 		}
-		throw new IllegalArgumentException("Invalid CampaignSaleStatus value: " + value);
+		throw new IndexOutOfBoundsException("Invalid CampaignSaleStatus value: " + value);
 	}
 
 	public byte getByteValue() {

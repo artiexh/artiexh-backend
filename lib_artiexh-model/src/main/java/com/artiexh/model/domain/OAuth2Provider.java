@@ -19,7 +19,7 @@ public enum OAuth2Provider {
 				return provider;
 			}
 		}
-		throw new IllegalArgumentException("No OAuth2Provider with value " + value + " found");
+		throw new IndexOutOfBoundsException("No OAuth2Provider with value " + value + " found");
 	}
 
 }

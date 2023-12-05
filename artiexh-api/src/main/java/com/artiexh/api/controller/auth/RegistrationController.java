@@ -2,6 +2,8 @@ package com.artiexh.api.controller.auth;
 
 import com.artiexh.api.authentication.ResponseTokenProcessor;
 import com.artiexh.api.base.common.Endpoint;
+import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.service.RegistrationService;
 import com.artiexh.model.domain.Account;
 import com.artiexh.model.domain.Artist;
@@ -11,6 +13,8 @@ import com.artiexh.model.mapper.UserMapper;
 import com.artiexh.model.rest.artist.request.RegistrationArtistRequest;
 import com.artiexh.model.rest.auth.RegisterAdminRequest;
 import com.artiexh.model.rest.auth.RegisterUserRequest;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +49,8 @@ public class RegistrationController {
 			User user = registrationService.createUser(userMapper.registerUserRequestToDomain(registerUserRequest));
 			responseTokenProcessor.process(response, user.getId().toString(), user.getRole());
 			return user;
-		} catch (IllegalArgumentException ex) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+		} catch (EntityExistsException ex) {
+			throw new InvalidException(ErrorCode.USER_NAME_EXISTED);
 		}
 	}
 
@@ -57,8 +61,8 @@ public class RegistrationController {
 		Long id = (Long) authentication.getPrincipal();
 		try {
 			return registrationService.registerArtist(id, request);
-		} catch (IllegalArgumentException ex) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+		} catch (EntityNotFoundException ex) {
+			throw new InvalidException(ErrorCode.USER_NOT_FOUND);
 		}
 	}
 
@@ -66,13 +70,9 @@ public class RegistrationController {
 	@PreAuthorize("hasAuthority('ADMIN')")
 	public Account registerStaff(Authentication authentication, @RequestBody @Valid RegisterAdminRequest registerAdminRequest) {
 		if (rootAdminId.equals(authentication.getPrincipal())) {
-			try {
-				return registrationService.createStaff(accountMapper.registerStaffRequestToDomain(registerAdminRequest));
-			} catch (IllegalArgumentException ex) {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
-			}
+			return registrationService.createStaff(accountMapper.registerStaffRequestToDomain(registerAdminRequest));
 		} else {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not root admin");
+			throw new InvalidException(ErrorCode.STAFF_REGISTRATION_NOT_ALLOWED);
 		}
 
 	}

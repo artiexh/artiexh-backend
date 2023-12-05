@@ -17,7 +17,7 @@ public enum ProductType {
 				return type;
 			}
 		}
-		throw new IllegalArgumentException("No such value for ProductType: " + value);
+		throw new IndexOutOfBoundsException("No such value for ProductType: " + value);
 	}
 
 	public int getValue() {

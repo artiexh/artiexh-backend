@@ -16,7 +16,7 @@ public enum ProductHistoryAction {
 				return action;
 			}
 		}
-		throw new IllegalArgumentException("No such value for Product History Action: " + value);
+		throw new IndexOutOfBoundsException("No such value for Product History Action: " + value);
 	}
 
 	public byte getByteValue() {

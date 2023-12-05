@@ -21,7 +21,7 @@ public enum Role {
 				return role;
 			}
 		}
-		throw new IllegalArgumentException("No such value for Role: " + value);
+		throw new IndexOutOfBoundsException("No such value for Role: " + value);
 	}
 
 	public byte getByteValue() {

@@ -25,7 +25,7 @@ public enum OrderHistoryStatus {
 			case 3 -> DELIVERED;
 			case 4 -> REFUNDED;
 			case -1 -> CANCELED;
-			default -> throw new IllegalArgumentException("No OrderHistoryStatus with value " + value + " found");
+			default -> throw new IndexOutOfBoundsException("No OrderHistoryStatus with value " + value + " found");
 		};
 	}
 
