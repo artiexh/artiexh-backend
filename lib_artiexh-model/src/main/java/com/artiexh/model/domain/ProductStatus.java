@@ -20,7 +20,7 @@ public enum ProductStatus {
 				return status;
 			}
 		}
-		throw new IllegalArgumentException("No such value for ProductStatus: " + value);
+		throw new IndexOutOfBoundsException("No such value for ProductStatus: " + value);
 	}
 
 	public byte getByteValue() {

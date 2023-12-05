@@ -16,7 +16,7 @@ public enum PaymentMethod {
 				return paymentMethod;
 			}
 		}
-		throw new IllegalArgumentException("No such value for payment method: " + value);
+		throw new IndexOutOfBoundsException("No such value for payment method: " + value);
 	}
 
 	public byte getByteValue() {

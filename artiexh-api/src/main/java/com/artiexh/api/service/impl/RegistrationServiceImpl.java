@@ -1,5 +1,7 @@
 package com.artiexh.api.service.impl;
 
+import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.service.RegistrationService;
 import com.artiexh.auth.service.RecentOauth2LoginFailId;
 import com.artiexh.data.jpa.entity.*;
@@ -13,6 +15,7 @@ import com.artiexh.model.mapper.ArtistMapper;
 import com.artiexh.model.mapper.StaffMapper;
 import com.artiexh.model.mapper.UserMapper;
 import com.artiexh.model.rest.artist.request.RegistrationArtistRequest;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
@@ -59,12 +62,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 		if (!StringUtils.hasText(userEntity.getPassword()) &&
 			!StringUtils.hasText(userEntity.getGoogleId()) &&
 			!StringUtils.hasText(userEntity.getFacebookId())) {
-			throw new IllegalArgumentException("Request has no password or invalid provider sub");
+			throw new InvalidException(ErrorCode.PASSWORD_PROVIDER_SUB_NOT_FOUND);
 		}
 
 		accountRepository.findByUsername(userEntity.getUsername())
 			.ifPresent(existedUserEntity -> {
-				throw new IllegalArgumentException("Existed username");
+				throw new EntityExistsException();
 			});
 		UserEntity savedUserEntity = userRepository.save(userEntity);
 		CartEntity cartEntity = CartEntity.builder().id(savedUserEntity.getId()).build();
@@ -87,7 +90,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}
 
 		if ((int) userEntity.getRole() != Role.USER.getValue()) {
-			throw new IllegalArgumentException("User role is not USER, cannot register as ARTIST");
+			throw new InvalidException(ErrorCode.ARTIST_REGISTRATION_NOT_ALLOWED);
 		}
 
 		artistRepository.createArtistByExistedUserId(id);

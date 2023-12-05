@@ -1,6 +1,8 @@
 package com.artiexh.api.service.marketplace.impl;
 
 import com.artiexh.api.base.exception.ArtiexhConfigException;
+import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.base.service.SystemConfigService;
 import com.artiexh.api.service.marketplace.ProductOpenSearchService;
 import com.artiexh.api.service.marketplace.ProductService;
@@ -56,15 +58,15 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 	@Transactional
 	public SaleCampaignDetailResponse createSaleCampaign(long creatorId, SaleCampaignRequest request) {
 		if (request.getPublicDate().isAfter(request.getFrom())) {
-			throw new IllegalArgumentException("Public date must be before or equal to order from date");
+			throw new InvalidException(ErrorCode.PUBLIC_DATE_INVALID);
 		}
 
 		if (request.getFrom().isAfter(request.getTo())) {
-			throw new IllegalArgumentException("Order from date must be before order to date");
+			throw new InvalidException(ErrorCode.FROM_DATE_INVALID);
 		}
 
 		ArtistEntity artistEntity = artistRepository.findById(request.getArtistId())
-			.orElseThrow(() -> new EntityNotFoundException("Artist " + request.getArtistId() + " not found"));
+			.orElseThrow(() -> new InvalidException(ErrorCode.ARTIST_INFO_NOT_FOUND));
 
 
 		var entity = campaignSaleRepository.save(CampaignSaleEntity.builder()
@@ -91,14 +93,14 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 		var profitPercentage = BigDecimal.valueOf(profitPercentageInt);
 
 		CampaignEntity campaignEntity = campaignRepository.findById(campaignRequestId)
-			.orElseThrow(() -> new EntityNotFoundException("Campaign request " + campaignRequestId + " not existed"));
+			.orElseThrow(() -> new EntityNotFoundException("Yêu cầu chiến dịch " + campaignRequestId + " không tìm thấy"));
 
 		if (!Boolean.TRUE.equals(campaignEntity.getIsFinalized())) {
-			throw new IllegalArgumentException("Campaign request must be finalized before create sale campaign");
+			throw new InvalidException(ErrorCode.CAMPAIGN_REQUEST_NOT_FINALIZED);
 		}
 
 		if (campaignEntity.getCampaignSale() != null) {
-			throw new IllegalArgumentException("Campaign request is in another sale campaign");
+			throw new InvalidException(ErrorCode.CAMPAIGN_REQUEST_USED);
 		}
 
 		var entity = campaignSaleRepository.save(CampaignSaleEntity.builder()
@@ -122,7 +124,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 
 		var productInventoryEntities = productInventoryRepository.findAllByProductInCampaignIdIn(productInCampaignIds);
 		if (productInventoryEntities.size() != productInCampaignIds.size()) {
-			throw new IllegalArgumentException("Finalize campaign request is not finished");
+			throw new InvalidException(ErrorCode.PRODUCT_FINALIZED_NOT_ENOUGH);
 		}
 
 
@@ -149,45 +151,45 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 	@Transactional
 	public SaleCampaignDetailResponse updateSaleCampaign(Long id, SaleCampaignRequest request) {
 		CampaignSaleEntity entity = campaignSaleRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException("Sale campaign " + id + " not found"));
+			.orElseThrow(() -> new EntityNotFoundException("Chiến dịch bán " + id + " không tìm thấy"));
 
 		Instant now = Instant.now();
 
 		if (now.isAfter(entity.getTo())) {
-			throw new IllegalArgumentException("Cannot update sale campaign after it ends");
+			throw new InvalidException(ErrorCode.UPDATE_SALE_CAMPAIGN_FAILED);
 		}
 
 		if (now.isAfter(entity.getFrom())) {
 			if (request.getFrom() != entity.getFrom()) {
-				throw new IllegalArgumentException("Cannot update sale campaign from after it starts");
+				throw new InvalidException(ErrorCode.UPDATE_FROM_FAILED);
 			}
 			if (request.getPublicDate() != entity.getPublicDate()) {
-				throw new IllegalArgumentException("Cannot update sale campaign public date after it starts");
+				throw new InvalidException(ErrorCode.UPDATE_PUBLIC_DATE_FAILED);
 			}
 		}
 
 		if (request.getPublicDate().isAfter(request.getFrom())) {
-			throw new IllegalArgumentException("Public date must be before or equal to order from date");
+			throw new InvalidException(ErrorCode.PUBLIC_DATE_INVALID);
 		} else {
 			entity.setPublicDate(request.getPublicDate());
 		}
 
 		if (request.getFrom().isAfter(request.getTo())) {
-			throw new IllegalArgumentException("Order from date must be before order to date");
+			throw new InvalidException(ErrorCode.FROM_DATE_INVALID);
 		} else {
 			entity.setFrom(request.getFrom());
 			entity.setTo(request.getTo());
 		}
 
 		ArtistEntity artistEntity = artistRepository.findById(request.getArtistId())
-			.orElseThrow(() -> new EntityNotFoundException("Artist " + request.getArtistId() + " not found"));
+			.orElseThrow(() -> new InvalidException(ErrorCode.ARTIST_INFO_NOT_FOUND));
 
 		if (entity.getOwner().getId() == null) {
 			entity.setOwner(artistEntity);
 		} else if (entity.getProducts().isEmpty()) {
 			entity.setOwner(artistEntity);
 		} else if (!entity.getOwner().getId().equals(artistEntity.getId())) {
-			throw new IllegalArgumentException("Cannot change owner of sale campaign");
+			throw new InvalidException(ErrorCode.NOT_ALLOWED_OWNER_UPDATED);
 		}
 
 		entity.setName(request.getName());
@@ -213,7 +215,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 	@Transactional
 	public void updateStatus(Long id, CampaignSaleStatus status) {
 		CampaignSaleEntity entity = campaignSaleRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException("Sale campaign " + id + " not found"));
+			.orElseThrow(() -> new EntityNotFoundException("Chiến dịch bán " + id + " không tìm thấy"));
 
 		if (entity.getStatus() == status.getByteValue()) {
 			return;
@@ -222,7 +224,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 		switch (CampaignSaleStatus.from(entity.getStatus())) {
 			case DRAFT -> updateCampaignFromDraft(entity, status);
 			case ACTIVE -> updateCampaignFromActive(entity, status);
-			case CLOSED -> throw new IllegalArgumentException("Cannot update status of closed sale campaign");
+			case CLOSED -> throw new InvalidException(ErrorCode.NOT_ALLOWED_CLOSED_CAMPAIGN);
 		}
 	}
 
@@ -238,7 +240,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 				.map(productEntity -> {
 					// check quantity
 					if (productEntity.getQuantity() > productEntity.getProductInventory().getQuantity()) {
-						throw new IllegalArgumentException("Product inventory have not enough quantity");
+						throw new InvalidException(ErrorCode.QUANTITY_NOT_ENOUGH);
 					}
 					// update opensearch
 					productOpenSearchService.updateCampaignStatus(
@@ -291,14 +293,14 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 	public SaleCampaignDetailResponse getDetail(Long id) {
 		return campaignSaleRepository.findById(id)
 			.map(campaignSaleMapper::entityToDetailResponse)
-			.orElseThrow(() -> new EntityNotFoundException("Sale campaign not found"));
+			.orElseThrow(EntityNotFoundException::new);
 	}
 
 	@Override
 	public SaleCampaignDetailResponse getDetail(Long id, Long ownerId) {
 		return campaignSaleRepository.findCampaignSaleEntityByIdAndOwnerId(id, ownerId)
 			.map(campaignSaleMapper::entityToDetailResponse)
-			.orElseThrow(() -> new EntityNotFoundException("Sale campaign not found"));
+			.orElseThrow(EntityNotFoundException::new);
 	}
 
 	@Override
@@ -306,7 +308,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 													 Pageable pageable,
 													 MarketplaceSaleCampaignFilter filter) {
 		if (!artistRepository.existsByUsername(artistUsername)) {
-			throw new EntityNotFoundException("Artist not found");
+			throw new EntityNotFoundException();
 		}
 		filter.setUsername(artistUsername);
 		return getAll(pageable, filter.getMarketplaceSpecification());
@@ -368,26 +370,26 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.orElseThrow(() -> new EntityNotFoundException("Sale campaign " + campaignId + " not found"));
 
 		if (entity.getStatus() != CampaignSaleStatus.DRAFT.getByteValue()) {
-			throw new IllegalStateException("Cannot add product to sale campaign that is not in draft status");
+			throw new InvalidException(ErrorCode.ADD_PRODUCT_CAMPAIGN_SALE_FAILED);
 		}
 
 		if (entity.getCampaignRequest() != null) {
-			throw new IllegalArgumentException("Cannot add product to sale campaign created from campaign request");
+			throw new InvalidException(ErrorCode.ADD_PRODUCT_CAMPAIGN_SALE_FROM_REQUEST_FAILED);
 		}
 
 		if (entity.getOwner() == null) {
-			throw new IllegalArgumentException("Sale campaign must have an owner before add product");
+			throw new InvalidException(ErrorCode.OWNER_NOT_FOUND);
 		}
 
 		Stream<Product> result = requests.stream()
 			.map(request -> {
 				ProductInventoryEntity productInventory = productInventoryRepository.findById(request.getProductCode())
-					.orElseThrow(() -> new IllegalArgumentException("Product " + request.getProductCode() + " not found"));
+					.orElseThrow(() -> new InvalidException(ErrorCode.PRODUCT_INVENTORY_INFO_NOT_FOUND));
 				if (!productInventory.getOwner().getId().equals(entity.getOwner().getId())) {
-					throw new IllegalArgumentException("Product " + request.getProductCode() + " is not owned by sale campaign owner");
+					throw new InvalidException(ErrorCode.PRODUCT_INVENTORY_OWNER_INVALID, ErrorCode.PRODUCT_INVENTORY_OWNER_INVALID.getMessage() + request.getProductCode());
 				}
 				if (request.getQuantity() != null && request.getQuantity() > productInventory.getQuantity()) {
-					throw new IllegalArgumentException("Product " + request.getProductCode() + " has not enough quantity");
+					throw new InvalidException(ErrorCode.QUANTITY_NOT_ENOUGH);
 				}
 				return Pair.of(request, productInventory);
 			})
@@ -424,18 +426,18 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.orElseThrow(() -> new EntityNotFoundException("Product " + productCode + " in campaign " + campaignId + " not found"));
 
 		if (productEntity.getCampaignSale().getStatus() != CampaignSaleStatus.DRAFT.getByteValue()) {
-			throw new IllegalStateException("Cannot add product to sale campaign that is not in draft status");
+			throw new InvalidException(ErrorCode.ADD_PRODUCT_CAMPAIGN_SALE_FAILED);
 		}
 
 		if (request.getQuantity() != null) {
 			int compareResult = Integer.compare(request.getQuantity(), productEntity.getQuantity());
 			if (compareResult > 0 && productEntity.getProductInventory().getQuantity() < request.getQuantity()) {
 				// check inventory quantity
-				throw new IllegalArgumentException("Product inventory have not enough quantity");
+				throw new InvalidException(ErrorCode.QUANTITY_NOT_ENOUGH);
 			}
 			if (compareResult < 0 && request.getQuantity() < productEntity.getSoldQuantity()) {
 				// check sold quantity
-				throw new IllegalArgumentException("Product is sold more than request quantity");
+				throw new InvalidException(ErrorCode.QUANTITY_INVALID);
 			}
 		}
 
@@ -456,16 +458,16 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.orElseThrow(() -> new EntityNotFoundException("Sale campaign " + campaignId + " not found"));
 
 		if (entity.getStatus() != CampaignSaleStatus.DRAFT.getByteValue()) {
-			throw new IllegalStateException("Cannot add product to sale campaign that is not in draft status");
+			throw new InvalidException(ErrorCode.DELETE_PRODUCT_CAMPAIGN_SALE_FAILED);
 		}
 
 		if (entity.getCampaignRequest() != null) {
-			throw new IllegalArgumentException("Cannot add product to sale campaign created from campaign request");
+			throw new InvalidException((ErrorCode.DELETE_PRODUCT_CAMPAIGN_SALE_FROM_REQUEST_FAILED));
 		}
 
 		for (var productCode : productCodes) {
 			var productEntity = productRepository.findById(new ProductEntityId(productCode, campaignId))
-				.orElseThrow(() -> new IllegalArgumentException("Product " + productCode + " not in campaign"));
+				.orElseThrow(EntityNotFoundException::new);
 			productService.delete(productEntity);
 		}
 	}

@@ -3,6 +3,7 @@ package com.artiexh.api.service.impl;
 import com.artiexh.api.base.common.Const;
 import com.artiexh.api.base.exception.ArtiexhConfigException;
 import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.base.service.SystemConfigService;
 import com.artiexh.api.base.utils.SystemConfigHelper;
 import com.artiexh.api.service.CampaignOrderService;
@@ -101,7 +102,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	@Override
 	public Mono<ShipFeeResponse.ShipFee> getShippingFee(Long userId, GetShippingFeeRequest getShippingFeeRequest) {
 		var addressEntity = userAddressRepository.findByIdAndUserId(getShippingFeeRequest.getAddressId(), userId)
-			.orElseThrow(() -> new IllegalArgumentException("AddressId not belong to user"));
+			.orElseThrow(() -> new InvalidException(ErrorCode.USER_ADDRESS_NOT_FOUND));
 
 		String artiexhPickAddress = systemConfigService.getOrThrow(
 			Const.SystemConfigKey.ARTIEXH_PICK_ADDRESS,
@@ -125,8 +126,8 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 
 		return ghtkOrderService.getShipFee(request)
 			.doOnError(WebClientResponseException.class, throwable -> {
-				throw new IllegalArgumentException(
-					"Create ghtk order failed: " + throwable.getResponseBodyAs(GhtkResponse.class).getMessage());
+				throw new InvalidException(
+					ErrorCode.GET_GHTK_SHIPPING_FEE_FAILED, throwable.getResponseBodyAs(GhtkResponse.class).getMessage());
 			})
 			.map(ShipFeeResponse::getFee);
 	}
@@ -136,11 +137,11 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	public AdminCampaignOrderResponse updateShippingOrderStatus(Long orderId,
 																UpdateShippingOrderRequest updateShippingOrderRequest) {
 		CampaignOrderEntity campaignOrderEntity = campaignOrderRepository.findById(orderId).orElseThrow(
-			() -> new IllegalArgumentException("campaignOrderId " + orderId + " not found"));
+			EntityNotFoundException::new);
 
 		if (campaignOrderEntity.getStatus() != CampaignOrderStatus.PREPARING.getByteValue()) {
-			throw new IllegalArgumentException(
-				"Cannot update order status from " + CampaignOrderStatus.fromValue(campaignOrderEntity.getStatus()) + " to SHIPPING");
+			throw new InvalidException(
+				ErrorCode.UPDATE_CAMPAIGN_ORDER_STATUS_FAILED, "Không thể cập nhật trạng thái đơn hàng từ" + CampaignOrderStatus.fromValue(campaignOrderEntity.getStatus()) + " sang SHIPPING");
 		}
 
 		OrderEntity orderEntity = campaignOrderEntity.getOrder();
@@ -199,15 +200,15 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 		var ghtkCreateOrderResponse = ghtkOrderService.createOrder(request, "1.5")
 			.doOnError(WebClientResponseException.class, throwable -> {
 				var response = throwable.getResponseBodyAs(GhtkResponse.class);
-				throw new IllegalArgumentException(
-					"Create ghtk order failed: " + ((response != null && response.getMessage() != null) ? response.getMessage() : "Unknown response"));
+				throw new InvalidException(
+					ErrorCode.CREATE_GHTK_ORDER_FAILED, ((response != null && response.getMessage() != null) ? response.getMessage() : "Unknown response"));
 			})
 			.block();
 
 		if (ghtkCreateOrderResponse == null) {
-			throw new IllegalArgumentException("Create ghtk order failed: Unknown response");
+			throw new InvalidException(ErrorCode.CREATE_GHTK_ORDER_FAILED,"Không nhận được phản hồi từ Giao Hàng Tiết Kiệm");
 		} else if (ghtkCreateOrderResponse.getOrder() == null) {
-			throw new IllegalArgumentException("Create ghtk order failed: " + ghtkCreateOrderResponse.getMessage());
+			throw new InvalidException(ErrorCode.CREATE_GHTK_ORDER_FAILED, ghtkCreateOrderResponse.getMessage());
 		}
 
 		campaignOrderEntity.setStatus(CampaignOrderStatus.SHIPPING.getByteValue());
@@ -225,18 +226,18 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 
 	@Transactional
 	@Override
-	public void cancelOrder(Long orderId, String message, Long updatedBy) throws IllegalAccessException {
+	public void cancelOrder(Long orderId, String message, Long updatedBy) {
 		CampaignOrderEntity order = campaignOrderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
 
 		if (!CampaignOrderStatus.ALLOWED_CANCEL_STATUS.contains(CampaignOrderStatus.fromValue(order.getStatus()))) {
-			throw new IllegalArgumentException("Order can not be canceled except for its status is PAYING or REFUNDING");
+			throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_ORDER_STATUS_FAILED, "Đơn hàng không thể bị hủy nếu như trạng thái không phải là PAYING hoặc REFUNDING");
 		}
 
 		AccountEntity account = accountRepository.findById(updatedBy).orElseThrow(EntityNotFoundException::new);
 		if (!account.getId().equals(order.getOrder().getUser().getId())
 			&& (account.getRole() != Role.ADMIN.getByteValue() &&
 			account.getRole() != Role.STAFF.getByteValue())) {
-			throw new IllegalAccessException(ErrorCode.ORDER_STATUS_NOT_ALLOWED.getMessage());
+			throw new InvalidException(ErrorCode.ORDER_STATUS_NOT_ALLOWED);
 		}
 
 		order.setStatus(CampaignOrderStatus.CANCELED.getByteValue());
@@ -264,18 +265,18 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	@Override
-	public void refundOrder(Long orderId, Long updatedBy) throws IllegalAccessException {
+	public void refundOrder(Long orderId, Long updatedBy) {
 		CampaignOrderEntity order = campaignOrderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
 
 		if (!CampaignOrderStatus.ALLOWED_REFUNDING_STATUS.contains(CampaignOrderStatus.fromValue(order.getStatus()))) {
-			throw new IllegalArgumentException("Order can not be refunded except for its status is PREPARING or SHIPPING");
+			throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_ORDER_STATUS_FAILED, "Đơn hàng không thể hoàn lại nếu như trạng thái không phải là PREPARING hoặc SHIPPING");
 		}
 
-		AccountEntity account = accountRepository.findById(updatedBy).orElseThrow(() -> new IllegalAccessException(ErrorCode.ORDER_STATUS_NOT_ALLOWED.getMessage()));
+		AccountEntity account = accountRepository.findById(updatedBy).orElseThrow(() -> new InvalidException(ErrorCode.ORDER_STATUS_NOT_ALLOWED));
 		if (!account.getId().equals(order.getOrder().getUser().getId())
 			&& (account.getRole() != Role.ADMIN.getByteValue() &&
 			account.getRole() != Role.STAFF.getByteValue())) {
-			throw new IllegalAccessException(ErrorCode.ORDER_STATUS_NOT_ALLOWED.getMessage());
+			throw new InvalidException(ErrorCode.ORDER_STATUS_NOT_ALLOWED);
 		}
 
 		order.setStatus(CampaignOrderStatus.REFUNDING.getByteValue());
@@ -285,12 +286,12 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 			var cancelOrderGhtkResponse = ghtkOrderService.cancelOrder(order.getShippingLabel())
 				.doOnError(WebClientResponseException.class, throwable -> {
 					var response = throwable.getResponseBodyAs(GhtkResponse.class);
-					throw new IllegalArgumentException(
-						"Cancel ghtk order failed: " + ((response != null && response.getMessage() != null) ? response.getMessage() : "Unknown response"));
+					throw new InvalidException(
+						ErrorCode.CANCEL_GHTK_ORDER_FAILED, ((response != null && response.getMessage() != null) ? response.getMessage() : "Không nhận được phản hồi từ Giao Hàng Tiết Kiệm"));
 				})
 				.block();
 			if (cancelOrderGhtkResponse == null || !cancelOrderGhtkResponse.isSuccess()) {
-				throw new IllegalArgumentException("Cancel ghtk order failed" + (cancelOrderGhtkResponse != null ? cancelOrderGhtkResponse.getMessage() : ""));
+				throw new InvalidException(ErrorCode.CANCEL_GHTK_ORDER_FAILED, (cancelOrderGhtkResponse != null ? cancelOrderGhtkResponse.getMessage() : ""));
 			}
 		}
 

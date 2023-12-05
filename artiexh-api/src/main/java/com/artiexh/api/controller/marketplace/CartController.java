@@ -53,12 +53,8 @@ public class CartController {
 	public CartResponse addItemToCart(Authentication authentication,
 									  @RequestBody @Validated CartItemRequest request) {
 		long userId = (Long) authentication.getPrincipal();
-		try {
-			Cart cart = cartService.addOneItem(userId, request);
-			return cartMapper.domainToCartResponse(cart);
-		} catch (IllegalArgumentException ex) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
-		}
+		Cart cart = cartService.addOneItem(userId, request);
+		return cartMapper.domainToCartResponse(cart);
 	}
 
 	@DeleteMapping(Endpoint.Cart.ITEM)

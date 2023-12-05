@@ -1,6 +1,7 @@
 package com.artiexh.api.service.impl;
 
 import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.service.CampaignOrderService;
 import com.artiexh.api.service.OrderService;
 import com.artiexh.api.service.UserService;
@@ -12,6 +13,7 @@ import com.artiexh.model.rest.order.user.response.CampaignOrderResponsePage;
 import com.artiexh.model.rest.order.user.response.DetailUserOrderResponse;
 import com.artiexh.model.rest.order.user.response.UserCampaignOrderDetailResponse;
 import com.artiexh.model.rest.order.user.response.UserOrderResponse;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,8 +34,8 @@ public class UserServiceImpl implements UserService {
 	public DetailUserOrderResponse getOrderById(Long id, Long userId) {
 		try {
 			return orderService.getUserDetailByIdAndUserId(id, userId);
-		} catch (IllegalArgumentException ex) {
-			throw new IllegalArgumentException(ErrorCode.ORDER_IS_INVALID.getMessage());
+		} catch (EntityNotFoundException ex) {
+			throw new InvalidException(ErrorCode.ORDER_NOT_FOUND);
 		}
 	}
 

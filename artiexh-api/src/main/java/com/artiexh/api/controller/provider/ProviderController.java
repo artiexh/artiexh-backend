@@ -2,6 +2,7 @@ package com.artiexh.api.controller.provider;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.service.provider.ProviderService;
 import com.artiexh.model.domain.Provider;
 import com.artiexh.model.mapper.ProviderMapper;
@@ -10,6 +11,7 @@ import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.provider.ProviderDetail;
 import com.artiexh.model.rest.provider.ProviderInfo;
 import com.artiexh.model.rest.provider.filter.ProviderFilter;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +37,8 @@ public class ProviderController {
 			Provider provider = providerMapper.detailToDomain(detail);
 			provider = providerService.create(provider);
 			return providerMapper.domainToDetail(provider);
-		} catch (IllegalArgumentException exception) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-				exception.getMessage(),
-				exception);
+		} catch (EntityExistsException exception) {
+			throw new InvalidException(ErrorCode.PROVIDER_EXISTED);
 		}
 	}
 
@@ -58,9 +58,7 @@ public class ProviderController {
 			Provider provider = providerService.getById(businessCode);
 			return providerMapper.domainToDetail(provider);
 		} catch (EntityNotFoundException exception) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-				ErrorCode.PROVIDER_NOT_FOUND.getMessage(),
-				exception);
+			throw new InvalidException(ErrorCode.PROVIDER_NOT_FOUND, exception.getMessage());
 		}
 	}
 
@@ -75,9 +73,7 @@ public class ProviderController {
 			provider = providerService.update(provider);
 			return providerMapper.domainToDetail(provider);
 		} catch (EntityNotFoundException exception) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-				ErrorCode.PROVIDER_NOT_FOUND.getMessage(),
-				exception);
+			throw new InvalidException(ErrorCode.ENTITY_NOT_FOUND, exception.getMessage());
 		}
 	}
 
