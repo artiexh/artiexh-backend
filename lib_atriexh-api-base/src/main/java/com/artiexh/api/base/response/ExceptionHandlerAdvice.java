@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,6 +19,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -106,10 +111,24 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-		var errors = ex.getBindingResult().getFieldErrors().stream()
-			.map(fieldError -> fieldError.getField() + " " + fieldError.getDefaultMessage())
-			.collect(Collectors.joining(";"));
-		var responseException = new ResponseStatusException(HttpStatus.BAD_REQUEST, errors, ex);
-		return handleExceptionInternal(responseException, null, headers, HttpStatus.BAD_REQUEST, request);
+		Map<String, List<String>> errors = new HashMap<>();
+		ex.getBindingResult().getAllErrors().forEach((error) -> {
+			String fieldName = ((FieldError) error).getField();
+			String errorMessage = error.getDefaultMessage();
+			errors.put(fieldName, List.of(Optional.ofNullable(errorMessage).orElse("")));
+		});
+
+		var responseException = new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		ResponseModel responseModel = new ResponseModel(
+			Instant.now(),
+			ErrorCode.INVALID_ARGUMENT.name(),
+			HttpStatus.BAD_REQUEST.value(),
+			HttpStatus.BAD_REQUEST.name(),
+			ErrorCode.INVALID_ARGUMENT.getMessage(),
+			null,
+			errors
+		);
+
+		return handleExceptionInternal(responseException, responseModel, headers, HttpStatus.BAD_REQUEST, request);
 	}
 }

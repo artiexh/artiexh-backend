@@ -3,6 +3,7 @@ package com.artiexh.api.base.exception;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
+	INVALID_ARGUMENT(HttpStatus.BAD_REQUEST, "Invalid arguments"),
 	ENUM_CONVERT(HttpStatus.BAD_REQUEST, "Convert enum failed"),
 	OPERATION_UNSUPPORTED(HttpStatus.NOT_IMPLEMENTED, "Operation is not supported"),
 	ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "Entity not found"),

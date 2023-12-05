@@ -1,6 +1,7 @@
 package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
+import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.base.service.SystemConfigService;
 import com.artiexh.api.service.ConfigService;
 import com.artiexh.model.domain.ProductInCampaign;
@@ -12,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -65,5 +69,11 @@ public class ConfigController {
 	@DeleteMapping("/{key}")
 	public void deleteSystemConfig(@PathVariable String key) {
 		systemConfigService.delete(key);
+	}
+
+	@PreAuthorize("hasAuthority('ADMIN')")
+	@GetMapping("error-code")
+	public List<ErrorCode> getAllErrorCode() {
+		return Arrays.stream(ErrorCode.values()).toList();
 	}
 }
