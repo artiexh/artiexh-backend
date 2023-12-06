@@ -22,4 +22,5 @@ public class ProductHistoryPageResponse {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long sourceId;
 	private SourceCategory sourceCategory;
+	private String sourceName;
 }
