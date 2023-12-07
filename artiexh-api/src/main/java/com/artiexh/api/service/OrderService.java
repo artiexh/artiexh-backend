@@ -1,6 +1,7 @@
 package com.artiexh.api.service;
 
 import com.artiexh.data.jpa.entity.OrderEntity;
+import com.artiexh.model.rest.order.admin.response.AdminOrderResponse;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
 import com.artiexh.model.rest.order.request.PaymentQueryProperties;
 import com.artiexh.model.rest.order.user.response.DetailUserOrderResponse;
@@ -18,6 +19,7 @@ public interface OrderService {
 	DetailUserOrderResponse getUserDetailById(Long orderId);
 
 	DetailUserOrderResponse getUserDetailByIdAndUserId(Long orderId, Long userId);
+	Page<AdminOrderResponse> getAllOrder(Specification<OrderEntity> query, Pageable pagination);
 
 	String payment(Long id, PaymentQueryProperties paymentQueryProperties, Long userId, String confirmUrl);
 

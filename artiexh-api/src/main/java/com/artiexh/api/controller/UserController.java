@@ -9,7 +9,7 @@ import com.artiexh.model.domain.UserAddress;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.order.filter.OrderFilter;
-import com.artiexh.model.rest.order.request.OrderPageFilter;
+import com.artiexh.model.rest.order.request.CampaignOrderPageFilter;
 import com.artiexh.model.rest.order.user.response.CampaignOrderResponsePage;
 import com.artiexh.model.rest.order.user.response.DetailUserOrderResponse;
 import com.artiexh.model.rest.order.user.response.UserCampaignOrderDetailResponse;
@@ -141,7 +141,7 @@ public class UserController {
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
 	public PageResponse<CampaignOrderResponsePage> getAllOrder(Authentication authentication,
 															   @ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
-															   @ParameterObject @Valid OrderPageFilter filter) {
+															   @ParameterObject @Valid CampaignOrderPageFilter filter) {
 		try {
 			long userId = (long) authentication.getPrincipal();
 			var userOrdersPage = userService.getCampaignOrderInPage(

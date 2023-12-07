@@ -35,6 +35,7 @@ public interface OrderMapper {
 	@Named("entityToResponse")
 	UserOrderResponse entityToUserResponse(OrderEntity order);
 
+	@Mapping(target = "owner", source = "user")
 	@Mapping(target = "currentTransaction", source = "orderTransactions", qualifiedByName = "getCurrentTransaction")
 	@Named("entityToAdminResponse")
 	AdminOrderResponse entityToAdminResponse(OrderEntity order);
