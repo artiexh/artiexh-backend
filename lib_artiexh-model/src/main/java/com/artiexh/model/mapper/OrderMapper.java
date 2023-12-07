@@ -3,6 +3,7 @@ package com.artiexh.model.mapper;
 import com.artiexh.data.jpa.entity.OrderEntity;
 import com.artiexh.model.domain.Order;
 import com.artiexh.model.rest.order.admin.response.AdminOrderResponse;
+import com.artiexh.model.rest.order.admin.response.DetailAdminOrderResponse;
 import com.artiexh.model.rest.order.user.response.DetailUserOrderResponse;
 import com.artiexh.model.rest.order.user.response.UserOrderResponse;
 import org.mapstruct.Mapper;
@@ -43,6 +44,10 @@ public interface OrderMapper {
 	@Mapping(target = "currentTransaction", source = "orderTransactions", qualifiedByName = "getCurrentTransaction")
 	@Mapping(target = "campaignOrders", source = "campaignOrders", qualifiedByName = "entitiesToUserResponses")
 	DetailUserOrderResponse entityToUserDetailResponse(OrderEntity entity);
+
+	@Mapping(target = "currentTransaction", source = "orderTransactions", qualifiedByName = "getCurrentTransaction")
+	@Mapping(target = "campaignOrders", source = "campaignOrders", qualifiedByName = "entitiesToUserResponses")
+	DetailAdminOrderResponse entityToAdminDetailResponse(OrderEntity entity);
 
 	@Named("domainToDetailResponse")
 	DetailUserOrderResponse domainToUserDetailResponse(Order order);

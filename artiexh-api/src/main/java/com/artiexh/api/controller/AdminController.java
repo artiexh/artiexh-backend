@@ -9,6 +9,7 @@ import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
 import com.artiexh.model.rest.order.admin.response.AdminOrderResponse;
+import com.artiexh.model.rest.order.admin.response.DetailAdminOrderResponse;
 import com.artiexh.model.rest.order.request.CampaignOrderPageFilter;
 import com.artiexh.model.rest.order.request.OrderPageFilter;
 import com.artiexh.model.rest.order.user.response.AdminCampaignOrderResponsePage;
@@ -44,7 +45,7 @@ public class AdminController {
 
 	@GetMapping(Endpoint.Admin.CAMPAIGN_ORDER + "/{id}")
 	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
-	public AdminCampaignOrderResponse getOrderById(@PathVariable Long id) {
+	public AdminCampaignOrderResponse getCampaignOrderById(@PathVariable Long id) {
 		try {
 			return campaignOrderService.getAdminCampaignOrderById(id);
 		} catch (EntityNotFoundException exception) {
@@ -63,6 +64,18 @@ public class AdminController {
 			paginationAndSortingRequest.getPageable()
 		);
 		return new PageResponse<>(campaignOrderPage);
+	}
+
+	@GetMapping(Endpoint.Admin.ORDER + "/{id}")
+	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
+	public DetailAdminOrderResponse getOrderById(
+		@PathVariable Long id
+	) {
+		try {
+			return orderService.getById(id);
+		} catch (EntityNotFoundException ex) {
+			throw new InvalidException(ErrorCode.ORDER_NOT_FOUND);
+		}
 	}
 
 }

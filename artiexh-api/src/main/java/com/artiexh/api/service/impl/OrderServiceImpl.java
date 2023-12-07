@@ -20,6 +20,7 @@ import com.artiexh.model.domain.PaymentMethod;
 import com.artiexh.model.domain.ProductStatus;
 import com.artiexh.model.mapper.OrderMapper;
 import com.artiexh.model.rest.order.admin.response.AdminOrderResponse;
+import com.artiexh.model.rest.order.admin.response.DetailAdminOrderResponse;
 import com.artiexh.model.rest.order.request.CheckoutCampaign;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
 import com.artiexh.model.rest.order.request.PaymentQueryProperties;
@@ -290,6 +291,12 @@ public class OrderServiceImpl implements OrderService {
 	public Page<AdminOrderResponse> getAllOrder(Specification<OrderEntity> query, Pageable pagination) {
 		return orderRepository.findAll(query, pagination)
 			.map(orderMapper::entityToAdminResponse);
+	}
+
+	@Override
+	public DetailAdminOrderResponse getById(Long id) {
+		OrderEntity order = orderRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+		return orderMapper.entityToAdminDetailResponse(order);
 	}
 
 	@Override
