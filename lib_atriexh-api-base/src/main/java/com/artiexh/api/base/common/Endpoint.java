@@ -208,6 +208,7 @@ public final class Endpoint {
 	public static class Admin {
 		public static final String ROOT = PREFIX + "/admin";
 		public static final String CAMPAIGN_ORDER = "/campaign-order";
+		public static final String ORDER = "/order";
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)

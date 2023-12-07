@@ -17,7 +17,7 @@ import com.artiexh.model.rest.marketplace.salecampaign.filter.SaleCampaignFilter
 import com.artiexh.model.rest.marketplace.salecampaign.response.ProductMarketplaceResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignDetailResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignResponse;
-import com.artiexh.model.rest.order.request.OrderPageFilter;
+import com.artiexh.model.rest.order.request.CampaignOrderPageFilter;
 import com.artiexh.model.rest.order.user.response.CampaignOrderResponsePage;
 import com.artiexh.model.rest.order.user.response.UserCampaignOrderDetailResponse;
 import com.artiexh.model.rest.post.PostDetail;
@@ -80,7 +80,7 @@ public class ArtistController {
 	public PageResponse<CampaignOrderResponsePage> getAllOrder(
 		Authentication authentication,
 		@ParameterObject @Valid PaginationAndSortingRequest paginationAndSortingRequest,
-		@ParameterObject @Valid OrderPageFilter filter
+		@ParameterObject @Valid CampaignOrderPageFilter filter
 	) {
 		long userId = (long) authentication.getPrincipal();
 		return artistService.getAllOrder(filter.getSpecificationForArtist(userId), paginationAndSortingRequest.getPageable());
