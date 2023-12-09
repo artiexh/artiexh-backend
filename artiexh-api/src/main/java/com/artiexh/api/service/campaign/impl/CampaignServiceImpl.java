@@ -339,6 +339,7 @@ public class CampaignServiceImpl implements CampaignService {
 			default -> throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái chiến dịch chỉ có thể cập nhật sang WAITING hoặc CANCELED");
 		};
 		notificationService.sendTo(artistId, NotificationMessage.builder()
+				.type(NotificationType.PRIVATE)
 				.ownerId(artistId)
 				.title("Cập nhật trạng thái chiến dịch")
 				.content("Trạng thái chiến dịch " + campaignEntity.getId() +  " đã được cập nhật sang " + request.getStatus().name())
@@ -438,6 +439,7 @@ public class CampaignServiceImpl implements CampaignService {
 				throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái chiến dịch chỉ có thể cập nhật thành REQUEST_CHANGE, APPROVED, REJECTED hoặc MANUFACTURING");
 		};
 		notificationService.sendTo(accountEntity.getId(), NotificationMessage.builder()
+			.type(NotificationType.PRIVATE)
 			.ownerId(accountEntity.getId())
 			.title("Cập nhật trạng thái chiến dịch")
 			.content("Trạng thái chiến dịch " + campaignEntity.getId() +  " đã được cập nhật sang " + request.getStatus().name())
@@ -609,6 +611,7 @@ public class CampaignServiceImpl implements CampaignService {
 		campaignMapper.entityToResponse(campaignEntity);
 
 		notificationService.sendTo(accountEntity.getId(), NotificationMessage.builder()
+			.type(NotificationType.PRIVATE)
 			.ownerId(accountEntity.getId())
 			.title("Cập nhật trạng thái chiến dịch")
 			.content("Trạng thái chiến dịch " + campaignEntity.getId() +  " đã được cập nhật sang " + CampaignStatus.MANUFACTURED.name())
@@ -673,6 +676,7 @@ public class CampaignServiceImpl implements CampaignService {
 		campaignRepository.save(campaign);
 
 		notificationService.sendTo(campaign.getOwner().getId(), NotificationMessage.builder()
+			.type(NotificationType.PRIVATE)
 			.ownerId(campaign.getOwner().getId())
 			.title("Cập nhật trạng thái chiến dịch")
 			.content("Chiến dịch " + campaign.getId() +  " đã được xác nhận lần cuối")

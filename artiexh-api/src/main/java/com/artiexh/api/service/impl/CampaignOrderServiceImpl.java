@@ -224,6 +224,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 
 		Long ownerId = campaignOrderEntity.getOrder().getUser().getId();
 		notificationService.sendTo(ownerId, NotificationMessage.builder()
+			.type(NotificationType.PRIVATE)
 			.ownerId(ownerId)
 			.title("Cập nhật trạng thái chiến dịch")
 			.content("Đơn hàng " + campaignOrderEntity.getId() +  " đã được vận chuyển")
