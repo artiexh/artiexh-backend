@@ -25,25 +25,17 @@ public class NotificationServiceImpl implements NotificationService {
 	private final AccountRepository accountRepository;
 	private final PushNotificationService pushNotificationService;
 	private final NotificationMapper notificationMapper;
+
 	@Override
-	@Async
 	public void sendAll(NotificationMessage message) {
-		Set<NotificationEntity> notifications = accountRepository.findAll().stream()
-			.map(account -> NotificationEntity.builder()
-				.content(message.getContent())
-				.title(message.getTitle())
-				.owner(account)
-				.build())
-			.collect(Collectors.toSet());
-		notificationJpaService.saveAll(notifications);
-		pushNotificationService.sendAll(message);
+		//TODO
 	}
 
 	@Override
 	@Async
 	public void sendTo(Long userId, NotificationMessage message) {
 		notificationJpaService.save(notificationMapper.domainToEntity(message));
-		pushNotificationService.sendTo(userId, message);
+		pushNotificationService.sendTo(message);
 	}
 
 	@Override

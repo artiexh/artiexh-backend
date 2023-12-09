@@ -20,6 +20,7 @@ public class NotificationJpaServiceImpl implements NotificationJpaService {
 	private final NotificationRepository notificationRepository;
 	private final NotificationMapper notificationMapper;
 	@Override
+	@Transactional
 	public void markedAsRead(Long notificationId) {
 		notificationRepository.markedAsRead(notificationId);
 	}

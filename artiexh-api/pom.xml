@@ -16,6 +16,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>com.corundumstudio.socketio</groupId>
+			<artifactId>netty-socketio</artifactId>
+			<version>1.7.17</version>
+		</dependency>
+		<dependency>
 			<groupId>com.artiexh</groupId>
 			<artifactId>lib_atriexh-api-base</artifactId>
 			<version>1.0.0</version>

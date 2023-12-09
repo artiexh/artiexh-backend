@@ -23,24 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class NotificationController {
 	private final NotificationService notificationService;
 
-	@PostMapping("/test")
-	public void sendAll() {
-		notificationService.sendAll(NotificationMessage.builder()
-			.content("Hell to all users")
-			.title("Arty System")
-			.build());
-	}
-
-	@PostMapping("/test/{user-id}")
-	public void sendAll(@PathVariable("user-id") Long userId) {
-		notificationService.sendTo(userId, NotificationMessage.builder()
-			.content("Hell to user " + userId)
-				.ownerId(userId)
-			.title("Arty System")
-			.build());
-	}
-
-	@GetMapping("/account")
+	@GetMapping()
 	public PageResponse<MessageResponse> getAllMessages(
 		Authentication authentication,
 		@ParameterObject @Valid PaginationAndSortingRequest pagination) {

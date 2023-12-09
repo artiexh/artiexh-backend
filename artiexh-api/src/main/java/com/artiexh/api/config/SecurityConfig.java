@@ -71,6 +71,7 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.GET, Endpoint.Post.ROOT + "/**").permitAll()
 				.requestMatchers(HttpMethod.GET, Endpoint.Marketplace.ROOT + "/**").permitAll()
 				.requestMatchers("/ws/**").permitAll()
+				.requestMatchers("/socket.io/**").permitAll()
 				.anyRequest().authenticated()
 			)
 			.oauth2Login(oauth2 -> oauth2

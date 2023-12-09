@@ -2,6 +2,8 @@ package com.artiexh.api.service.notification.impl;
 
 import com.artiexh.api.service.notification.PushNotificationService;
 import com.artiexh.model.domain.NotificationMessage;
+import com.corundumstudio.socketio.SocketIOClient;
+import com.corundumstudio.socketio.SocketIOServer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -12,15 +14,25 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class PushNotificationServiceImpl implements PushNotificationService {
 	private final SimpMessagingTemplate template;
-	@Override
-	public void sendAll(NotificationMessage message) {
-		log.info("Send notification to application with message " + message);
-		template.convertAndSend("/all/messages", message);
-	}
+	private final SocketIOServer server;
+	private final String RECEIVE_EVENT = "messages";
+
+//	public void sendMessage(String room, String eventName, SocketIOClient senderClient, String message) {
+//		for (SocketIOClient client : senderClient.getNamespace().getRoomOperations(room).getClients()) {
+//			if (!client.getSessionId().equals(senderClient.getSessionId())) {
+//				client.sendEvent(eventName,
+//					NotificationMessage.builder()
+//						.title("Arty User")
+//						.content("Hi, nice to meet you")
+//						.build());
+//			}
+//		}
+//	}
 
 	@Override
-	public void sendTo(Long userId, NotificationMessage message) {
-		log.info("Send notification to user " + userId + " with message " + message);
-		template.convertAndSendToUser(userId.toString(), "specific", message);
+	public void sendTo(NotificationMessage message) {
+		for (SocketIOClient client : server.getRoomOperations(message.getOwnerId().toString()).getClients()) {
+			client.sendEvent(RECEIVE_EVENT, message);
+		}
 	}
 }
