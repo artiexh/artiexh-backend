@@ -10,6 +10,6 @@ import java.util.Set;
 public interface NotificationJpaService {
 	void markedAsRead(Long notificationId);
 	Page<NotificationEntity> getAll(Long userId, Pageable pageable);
-	void save(NotificationEntity message);
+	NotificationEntity save(NotificationEntity message);
 	void saveAll(Set<NotificationEntity> message);
 }

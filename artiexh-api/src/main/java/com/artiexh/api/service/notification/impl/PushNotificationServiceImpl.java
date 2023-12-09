@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class PushNotificationServiceImpl implements PushNotificationService {
-	private final SimpMessagingTemplate template;
 	private final SocketIOServer server;
 	private final String RECEIVE_EVENT = "messages";
 
@@ -30,8 +29,8 @@ public class PushNotificationServiceImpl implements PushNotificationService {
 //	}
 
 	@Override
-	public void sendTo(NotificationMessage message) {
-		for (SocketIOClient client : server.getRoomOperations(message.getOwnerId().toString()).getClients()) {
+	public void sendTo(Long userId, NotificationMessage message) {
+		for (SocketIOClient client : server.getRoomOperations(userId.toString()).getClients()) {
 			client.sendEvent(RECEIVE_EVENT, message);
 		}
 	}

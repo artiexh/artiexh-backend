@@ -32,8 +32,8 @@ public class NotificationJpaServiceImpl implements NotificationJpaService {
 
 	@Override
 	@Transactional
-	public void save(NotificationEntity message) {
-		notificationRepository.save(message);
+	public NotificationEntity save(NotificationEntity message) {
+		return notificationRepository.save(message);
 	}
 
 	@Override

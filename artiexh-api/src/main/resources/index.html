@@ -8,7 +8,7 @@
 <body>
 <script>
 
-    const socket = io('http://localhost:8085?room=122',{transports: ['websocket']})
+    const socket = io('http://localhost:8085?userId=122',{transports: ['websocket']})
 
     socket.on('get_message', (arg) => {
         console.log('connected', arg)

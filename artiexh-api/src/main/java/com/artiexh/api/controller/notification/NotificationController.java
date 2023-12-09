@@ -3,6 +3,7 @@ package com.artiexh.api.controller.notification;
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.base.exception.IllegalAccessException;
 import com.artiexh.api.service.notification.NotificationService;
+import com.artiexh.data.jpa.repository.CampaignOrderRepository;
 import com.artiexh.model.domain.NotificationMessage;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
@@ -22,6 +23,17 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping(value = Endpoint.Notification.ROOT)
 public class NotificationController {
 	private final NotificationService notificationService;
+
+	@PostMapping("/test/push-noti")
+	public void getAllMessages() {
+
+		Long ownerId = 456143215578222903L;
+		notificationService.sendTo(ownerId, NotificationMessage.builder()
+			.ownerId(ownerId)
+			.title("Cập nhật trạng thái chiến dịch")
+			.content("Đơn hàng " + 123 +  " đã được vận chuyển")
+			.build());
+	}
 
 	@GetMapping()
 	public PageResponse<MessageResponse> getAllMessages(
