@@ -4,6 +4,7 @@ import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.campaign.ProductInCampaignService;
+import com.artiexh.api.service.notification.NotificationService;
 import com.artiexh.api.service.productinventory.ProductInventoryJpaService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.entity.embededmodel.ProductVariantProviderId;
@@ -24,6 +25,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -54,6 +56,7 @@ public class CampaignServiceImpl implements CampaignService {
 	private final ProductInventoryJpaService productInventoryJpaService;
 	private final ProductInventoryRepository productInventoryRepository;
 	private final ProductVariantProviderRepository productVariantProviderRepository;
+	private final NotificationService notificationService;
 
 	@Override
 	@Transactional
@@ -325,11 +328,17 @@ public class CampaignServiceImpl implements CampaignService {
 
 		ArtistEntity artistEntity = artistRepository.getReferenceById(artistId);
 
-		return switch (request.getStatus()) {
+		var response = switch (request.getStatus()) {
 			case CANCELED -> artistCancelCampaign(campaignEntity, artistEntity, request.getMessage());
 			case WAITING -> artistSubmitCampaign(campaignEntity, artistEntity, request.getMessage());
 			default -> throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái chiến dịch chỉ có thể cập nhật sang WAITING hoặc CANCELED");
 		};
+		notificationService.sendTo(artistId, NotificationMessage.builder()
+				.ownerId(artistId)
+				.title("Cập nhật trạng thái chiến dịch")
+				.content("Trạng thái chiến dịch " + campaignEntity.getId() +  " đã được cập nhật sang " + request.getStatus().name())
+				.build());
+		return response;
 	}
 
 	private CampaignResponse artistCancelCampaign(CampaignEntity campaignEntity, ArtistEntity artistEntity, String message) {
@@ -415,14 +424,20 @@ public class CampaignServiceImpl implements CampaignService {
 			.orElseThrow(() -> new EntityNotFoundException("campaignId " + request.getId() + " not valid"));
 
 		AccountEntity accountEntity = accountRepository.getReferenceById(staffId);
-		return switch (request.getStatus()) {
+		var response = switch (request.getStatus()) {
 			case REQUEST_CHANGE -> staffRequestChangeCampaign(campaignEntity, accountEntity, request.getMessage());
 			case APPROVED -> staffApproveCampaign(campaignEntity, accountEntity, request.getMessage());
 			case REJECTED -> staffRejectCampaign(campaignEntity, accountEntity, request.getMessage());
 			case MANUFACTURING -> staffStartManufactureCampaign(campaignEntity, accountEntity, request.getMessage());
 			default ->
-				throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái chiến dịch chỉ có thể cập nhật thành REQUEST_CHANGE, APPROVED hoặc REJECTED");
+				throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái chiến dịch chỉ có thể cập nhật thành REQUEST_CHANGE, APPROVED, REJECTED hoặc MANUFACTURING");
 		};
+		notificationService.sendTo(accountEntity.getId(), NotificationMessage.builder()
+			.ownerId(accountEntity.getId())
+			.title("Cập nhật trạng thái chiến dịch")
+			.content("Trạng thái chiến dịch " + campaignEntity.getId() +  " đã được cập nhật sang " + request.getStatus().name())
+			.build());
+		return response;
 	}
 
 	private CampaignResponse staffRequestChangeCampaign(CampaignEntity campaignEntity,
@@ -587,6 +602,12 @@ public class CampaignServiceImpl implements CampaignService {
 		);
 
 		campaignMapper.entityToResponse(campaignEntity);
+
+		notificationService.sendTo(accountEntity.getId(), NotificationMessage.builder()
+			.ownerId(accountEntity.getId())
+			.title("Cập nhật trạng thái chiến dịch")
+			.content("Trạng thái chiến dịch " + campaignEntity.getId() +  " đã được cập nhật sang " + CampaignStatus.MANUFACTURED.name())
+			.build());
 	}
 
 	@Override
@@ -645,6 +666,12 @@ public class CampaignServiceImpl implements CampaignService {
 
 		campaign.setIsFinalized(true);
 		campaignRepository.save(campaign);
+
+		notificationService.sendTo(campaign.getOwner().getId(), NotificationMessage.builder()
+			.ownerId(campaign.getOwner().getId())
+			.title("Cập nhật trạng thái chiến dịch")
+			.content("Chiến dịch " + campaign.getId() +  " đã được xác nhận lần cuối")
+			.build());
 
 		return productResponses;
 	}

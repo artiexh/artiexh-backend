@@ -8,6 +8,7 @@ import com.artiexh.api.base.service.SystemConfigService;
 import com.artiexh.api.base.utils.SystemConfigHelper;
 import com.artiexh.api.service.CampaignOrderService;
 import com.artiexh.api.service.marketplace.ProductService;
+import com.artiexh.api.service.notification.NotificationService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.ghtk.client.model.GhtkResponse;
@@ -15,10 +16,7 @@ import com.artiexh.ghtk.client.model.order.CreateOrderRequest;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeRequest;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
 import com.artiexh.ghtk.client.service.GhtkOrderService;
-import com.artiexh.model.domain.CampaignOrder;
-import com.artiexh.model.domain.CampaignOrderStatus;
-import com.artiexh.model.domain.OrderHistoryStatus;
-import com.artiexh.model.domain.Role;
+import com.artiexh.model.domain.*;
 import com.artiexh.model.mapper.CampaignOrderMapper;
 import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
 import com.artiexh.model.rest.order.admin.response.AdminOrderResponse;
@@ -58,6 +56,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	private final CampaignOrderMapper campaignOrderMapper;
 	private final SystemConfigService systemConfigService;
 	private final SystemConfigHelper systemConfigHelper;
+	private final NotificationService notificationService;
 
 	@Override
 	public Page<CampaignOrderResponsePage> getCampaignOrderInPage(Specification<CampaignOrderEntity> specification, Pageable pageable) {
@@ -222,6 +221,13 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 		var savedOrderHistoryEntity = orderHistoryRepository.save(orderHistoryEntity);
 
 		campaignOrderEntity.getOrderHistories().add(savedOrderHistoryEntity);
+
+		Long ownerId = campaignOrderEntity.getOrder().getUser().getId();
+		notificationService.sendTo(ownerId, NotificationMessage.builder()
+			.ownerId(ownerId)
+			.title("Cập nhật trạng thái chiến dịch")
+			.content("Đơn hàng " + campaignOrderEntity.getId() +  " đã được vận chuyển")
+			.build());
 		return campaignOrderMapper.entityToAdminResponse(campaignOrderEntity);
 	}
 

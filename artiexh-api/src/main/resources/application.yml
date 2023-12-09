@@ -1,3 +1,6 @@
+socket:
+  port: ${SOCKET_PORT:}
+  host: ${SOCKET_HOST:}
 spring:
   servlet:
     multipart:
@@ -104,3 +107,4 @@ artiexh:
   ghtk:
     base-url: ${GHTK_BASE_URL:}
     token: ${GHTK_TOKEN:}
+

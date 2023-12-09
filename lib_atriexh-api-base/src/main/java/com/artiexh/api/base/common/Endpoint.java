@@ -230,4 +230,9 @@ public final class Endpoint {
 	public static class SaleCampaign {
 		public static final String ROOT = PREFIX + "/sale-campaign";
 	}
+
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Notification {
+		public static final String ROOT = PREFIX + "/notification";
+	}
 }
