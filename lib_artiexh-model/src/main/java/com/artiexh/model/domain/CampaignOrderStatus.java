@@ -30,7 +30,7 @@ public enum CampaignOrderStatus {
 			case 3 -> COMPLETED;
 			case 4 -> CANCELED;
 			case 5 -> REFUNDING;
-			default -> throw new IllegalArgumentException("No such value for order status: " + value);
+			default -> throw new IndexOutOfBoundsException("No such value for order status: " + value);
 		};
 	}
 

@@ -16,7 +16,7 @@ public enum ProductAttachType {
 				return type;
 			}
 		}
-		throw new IllegalArgumentException("No such value for ProductAttachType: " + value);
+		throw new IndexOutOfBoundsException("No such value for ProductAttachType: " + value);
 	}
 
 	public int getValue() {

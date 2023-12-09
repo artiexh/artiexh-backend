@@ -4,10 +4,7 @@ import com.artiexh.model.domain.PaymentMethod;
 import com.artiexh.model.rest.transaction.OrderTransactionResponse;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -42,4 +39,16 @@ public class AdminOrderResponse {
 	private String returnTel;
 	private String returnName;
 	private String returnEmail;
+	private Owner owner;
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class Owner {
+		@JsonSerialize(using = ToStringSerializer.class)
+		private String id;
+		private String username;
+		private String displayName;
+		private String avatarUrl;
+	}
 }

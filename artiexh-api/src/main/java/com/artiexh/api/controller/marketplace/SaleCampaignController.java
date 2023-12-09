@@ -1,6 +1,8 @@
 package com.artiexh.api.controller.marketplace;
 
 import com.artiexh.api.base.common.Endpoint;
+import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.api.service.marketplace.SaleCampaignService;
 import com.artiexh.model.rest.PageResponse;
@@ -41,8 +43,8 @@ public class SaleCampaignController {
 		Long id = (Long) authentication.getPrincipal();
 		try {
 			return saleCampaignService.createSaleCampaign(id, request);
-		} catch (IllegalArgumentException ex) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		} catch (EntityNotFoundException ex) {
+			throw new InvalidException(ErrorCode.ENTITY_NOT_FOUND, ex.getMessage());
 		}
 	}
 
@@ -53,9 +55,7 @@ public class SaleCampaignController {
 		try {
 			return saleCampaignService.updateSaleCampaign(id, request);
 		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
-		} catch (IllegalArgumentException ex) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+			throw new InvalidException(ErrorCode.ENTITY_NOT_FOUND, ex.getMessage());
 		}
 	}
 
@@ -66,9 +66,7 @@ public class SaleCampaignController {
 		try {
 			saleCampaignService.updateStatus(id, request.getStatus());
 		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
-		} catch (IllegalArgumentException ex) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+			throw new InvalidException(ErrorCode.ENTITY_NOT_FOUND, ex.getMessage());
 		}
 	}
 
@@ -79,9 +77,7 @@ public class SaleCampaignController {
 		try {
 			return saleCampaignService.createProductInSaleCampaign(id, requests);
 		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
-		} catch (IllegalArgumentException ex) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+			throw new InvalidException(ErrorCode.ENTITY_NOT_FOUND, ex.getMessage());
 		}
 	}
 
@@ -93,9 +89,7 @@ public class SaleCampaignController {
 		try {
 			return saleCampaignService.updateProductInSaleCampaign(id, productCode, request);
 		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
-		} catch (IllegalArgumentException ex) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+			throw new InvalidException(ErrorCode.ENTITY_NOT_FOUND, ex.getMessage());
 		}
 	}
 
@@ -106,9 +100,7 @@ public class SaleCampaignController {
 		try {
 			saleCampaignService.deleteProductInSaleCampaign(campaignId, productCodes);
 		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
-		} catch (IllegalArgumentException ex) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+			throw new InvalidException(ErrorCode.PRODUCT_IN_SALE_NOT_FOUND);
 		}
 	}
 
@@ -132,7 +124,7 @@ public class SaleCampaignController {
 		try {
 			return saleCampaignService.getStatistics(id);
 		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+			throw new InvalidException(ErrorCode.CAMPAIGN_SALE_NOT_FOUND);
 		}
 	}
 
@@ -144,7 +136,7 @@ public class SaleCampaignController {
 		try {
 			return saleCampaignService.getDetail(id);
 		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+			throw new InvalidException(ErrorCode.CAMPAIGN_SALE_NOT_FOUND);
 		}
 	}
 

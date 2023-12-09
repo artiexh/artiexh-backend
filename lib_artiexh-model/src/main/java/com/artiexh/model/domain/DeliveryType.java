@@ -16,7 +16,7 @@ public enum DeliveryType {
 				return type;
 			}
 		}
-		throw new IllegalArgumentException("No such value for DeliveryType: " + value);
+		throw new IndexOutOfBoundsException("No such value for DeliveryType: " + value);
 	}
 
 	public int getValue() {

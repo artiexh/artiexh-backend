@@ -15,7 +15,7 @@ public enum ProvidedProductType {
 				return type;
 			}
 		}
-		throw new IllegalArgumentException("No such value for provided product type: " + value);
+		throw new IndexOutOfBoundsException("No such value for provided product type: " + value);
 	}
 
 	public byte getByteValue() {

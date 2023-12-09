@@ -31,7 +31,7 @@ public enum CampaignHistoryAction {
 			case 7 -> MANUFACTURING;
 			case 8 -> MANUFACTURED;
 			case 9 -> PUBLISHED;
-			default -> throw new IllegalArgumentException("Unknown CampaignHistoryAction value: " + value);
+			default -> throw new IndexOutOfBoundsException("Unknown CampaignHistoryAction value: " + value);
 		};
 	}
 

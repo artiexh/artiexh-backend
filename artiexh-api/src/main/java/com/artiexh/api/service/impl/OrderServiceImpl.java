@@ -3,6 +3,7 @@ package com.artiexh.api.service.impl;
 import com.artiexh.api.base.common.Const;
 import com.artiexh.api.base.exception.ArtiexhConfigException;
 import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.base.service.SystemConfigService;
 import com.artiexh.api.base.utils.DateTimeUtils;
 import com.artiexh.api.base.utils.PaymentUtils;
@@ -18,6 +19,8 @@ import com.artiexh.model.domain.OrderHistoryStatus;
 import com.artiexh.model.domain.PaymentMethod;
 import com.artiexh.model.domain.ProductStatus;
 import com.artiexh.model.mapper.OrderMapper;
+import com.artiexh.model.rest.order.admin.response.AdminOrderResponse;
+import com.artiexh.model.rest.order.admin.response.DetailAdminOrderResponse;
 import com.artiexh.model.rest.order.request.CheckoutCampaign;
 import com.artiexh.model.rest.order.request.CheckoutRequest;
 import com.artiexh.model.rest.order.request.PaymentQueryProperties;
@@ -76,13 +79,13 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	private OrderEntity cashPaymentOrder(long userId, CheckoutRequest checkoutRequest) {
-		throw new UnsupportedOperationException("Cash payment is not supported yet");
+		throw new UnsupportedOperationException("Hiện tại không hỗ trợ thanh toán bằng tiền mặt");
 	}
 
 	private OrderEntity vnPaymentOrder(long userId, CheckoutRequest checkoutRequest) {
 		// check common data
 		var userEntity = userRepository.findById(userId)
-			.orElseThrow(() -> new IllegalArgumentException("User not existed"));
+			.orElseThrow(() -> new InvalidException(ErrorCode.USER_NOT_ALLOWED));
 
 		var address = getUserAddressEntity(userId, checkoutRequest.getAddressId());
 		CampaignOrderStatus status = CampaignOrderStatus.PAYING;
@@ -120,7 +123,7 @@ public class OrderServiceImpl implements OrderService {
 
 	private UserAddressEntity getUserAddressEntity(long userId, long addressId) {
 		return userAddressRepository.findByIdAndUserId(addressId, userId)
-			.orElseThrow(() -> new IllegalArgumentException("Address not existed"));
+			.orElseThrow(() -> new InvalidException(ErrorCode.USER_ADDRESS_NOT_FOUND));
 	}
 
 	private List<CartItemEntity> validateCampaignProductAndReduceQuantity(long userId,
@@ -133,34 +136,34 @@ public class OrderServiceImpl implements OrderService {
 
 		List<CartItemEntity> cartItemEntities = cartItemRepository.findAllById(itemIds);
 		if (itemIds.size() != cartItemEntities.size()) {
-			throw new IllegalArgumentException("itemIds not valid");
+			throw new InvalidException(ErrorCode.INVALID_ITEM);
 		}
 
 		Instant now = Instant.now();
 		campaignSaleRepository.findAllById(campaigns.stream().map(CheckoutCampaign::getCampaignId).collect(Collectors.toSet()))
 			.forEach(campaignSaleEntity -> {
 				if (now.isBefore(campaignSaleEntity.getFrom()) || now.isAfter(campaignSaleEntity.getTo())) {
-					throw new IllegalArgumentException("campaignSaleId " + campaignSaleEntity.getId() + " open from " + campaignSaleEntity.getFrom() + " to " + campaignSaleEntity.getTo());
+					throw new InvalidException(ErrorCode.CAMPAIGN_SALE_UNOPENED);
 				}
 			});
 
 		for (var cartItemEntity : cartItemEntities) {
 			if (ProductStatus.AVAILABLE.getByteValue() != cartItemEntity.getProduct().getProductInventory().getStatus()) {
-				throw new IllegalArgumentException("itemId " + cartItemEntity.getProduct().getId() + " not available");
+				throw new InvalidException(ErrorCode.UNAVAILABLE_PRODUCT, ErrorCode.UNAVAILABLE_PRODUCT.getMessage() + cartItemEntity.getProduct().getId().getProductCode());
 			}
 
 			Set<Byte> acceptedPaymentMethods = Set.of(cartItemEntity.getProduct().getProductInventory().getPaymentMethods());
 			if (!acceptedPaymentMethods.contains(paymentMethod.getByteValue())) {
-				throw new IllegalArgumentException("Not accepted payment method for product id: " + cartItemEntity.getProduct().getId());
+				throw new InvalidException(ErrorCode.PAYMENT_METHOD_UNACCEPTED, ErrorCode.PAYMENT_METHOD_UNACCEPTED.getMessage() + cartItemEntity.getProduct().getId().getProductCode());
 			}
 
 			if (cartItemEntity.getProduct().getProductInventory().getMaxItemsPerOrder() != null
 				&& cartItemEntity.getQuantity() > cartItemEntity.getProduct().getProductInventory().getMaxItemsPerOrder()) {
-				throw new IllegalArgumentException("Exceed max items per order for product id: " + cartItemEntity.getProduct().getId());
+				throw new InvalidException(ErrorCode.LIMIT_PER_ORDER, cartItemEntity.getProduct().getId().getProductCode() + ErrorCode.LIMIT_PER_ORDER.getMessage());
 			}
 
 			if (cartItemEntity.getQuantity() > (cartItemEntity.getProduct().getQuantity() - cartItemEntity.getProduct().getSoldQuantity())) {
-				throw new IllegalArgumentException("Not enough quantity for product id: " + cartItemEntity.getProduct().getId());
+				throw new InvalidException(ErrorCode.QUANTITY_NOT_ENOUGH, ErrorCode.QUANTITY_NOT_ENOUGH.getMessage() + cartItemEntity.getProduct().getId().getProductCode());
 			} else {
 				cartItemEntity.getProduct().setSoldQuantity(cartItemEntity.getProduct().getSoldQuantity() + cartItemEntity.getQuantity());
 			}
@@ -280,8 +283,20 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public DetailUserOrderResponse getUserDetailByIdAndUserId(Long orderId, Long userId) {
-		OrderEntity order = orderRepository.findByIdAndUserId(orderId, userId).orElseThrow(IllegalArgumentException::new);
+		OrderEntity order = orderRepository.findByIdAndUserId(orderId, userId).orElseThrow(EntityNotFoundException::new);
 		return orderMapper.entityToUserDetailResponse(order);
+	}
+
+	@Override
+	public Page<AdminOrderResponse> getAllOrder(Specification<OrderEntity> query, Pageable pagination) {
+		return orderRepository.findAll(query, pagination)
+			.map(orderMapper::entityToAdminResponse);
+	}
+
+	@Override
+	public DetailAdminOrderResponse getById(Long id) {
+		OrderEntity order = orderRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+		return orderMapper.entityToAdminDetailResponse(order);
 	}
 
 	@Override
@@ -293,7 +308,7 @@ public class OrderServiceImpl implements OrderService {
 		}
 
 		if (!userId.equals(bills.get(0).getOwnerId()) || !bills.get(0).getStatus().equals(CampaignOrderStatus.PAYING.getByteValue())) {
-			throw new IllegalArgumentException(ErrorCode.ORDER_IS_INVALID.getMessage());
+			throw new InvalidException(ErrorCode.ORDER_IS_NOT_ALLOWED);
 		}
 
 		BigDecimal totalPrice = BigDecimal.ZERO;

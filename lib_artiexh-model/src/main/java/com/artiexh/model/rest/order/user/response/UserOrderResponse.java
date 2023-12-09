@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -24,4 +26,5 @@ public class UserOrderResponse {
 	private String deliveryTel;
 	private String deliveryEmail;
 	private String deliveryName;
+	private Set<UserCampaignOrderResponse> campaignOrders;
 }

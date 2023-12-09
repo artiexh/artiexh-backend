@@ -4,6 +4,7 @@ import com.artiexh.data.jpa.entity.CampaignOrderEntity;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
 import com.artiexh.model.domain.CampaignOrder;
 import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
+import com.artiexh.model.rest.order.admin.response.AdminOrderResponse;
 import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
 import com.artiexh.model.rest.order.request.UpdateShippingOrderRequest;
 import com.artiexh.model.rest.order.user.response.AdminCampaignOrderResponsePage;
@@ -33,8 +34,8 @@ public interface CampaignOrderService {
 	AdminCampaignOrderResponse updateShippingOrderStatus(Long orderId,
 														 UpdateShippingOrderRequest updateShippingOrderRequest);
 
-	void cancelOrder(Long orderId, String message, Long updatedBy) throws IllegalAccessException;
+	void cancelOrder(Long orderId, String message, Long updatedBy);
 
-	void refundOrder(Long orderId, Long createdBy) throws IllegalAccessException;
+	void refundOrder(Long orderId, Long createdBy);
 
 }

@@ -15,7 +15,7 @@ public enum Model3DCode {
 				return type;
 			}
 		}
-		throw new IllegalArgumentException("No such value for Model3DCode: " + value);
+		throw new IndexOutOfBoundsException("No such value for Model3DCode: " + value);
 	}
 
 	public int getValue() {

@@ -1,6 +1,7 @@
 package com.artiexh.api.base.response;
 
 import com.artiexh.api.base.common.Endpoint;
+import com.artiexh.api.base.exception.ErrorCode;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -43,12 +44,14 @@ public class ReformatResponseAdvice implements ResponseBodyAdvice<Object> {
 		}
 
 		if (body instanceof ProblemDetail problemDetail) {
-			return new ResponseModel(now, status, httpStatus.name(), problemDetail.getDetail(), path, null);
+			return new ResponseModel(now, null, status, httpStatus.name(), problemDetail.getDetail(), path, null);
 		} else if ("/error".equals(path)) {
 			var bodyMap = (Map<String, Object>) body;
-			return new ResponseModel(now, status, httpStatus.name(), (String) bodyMap.get("message"), (String) bodyMap.get("path"), null);
+			return new ResponseModel(now, (String) bodyMap.get("code"), status, httpStatus.name(), (String) bodyMap.get("message"), (String) bodyMap.get("path"), null);
+		} else if (body instanceof ResponseModel responseModel) {
+			return new ResponseModel(now, responseModel.code(), status, httpStatus.name(), responseModel.message(), path, responseModel.data());
 		} else {
-			return new ResponseModel(now, status, httpStatus.name(), null, path, body);
+			return new ResponseModel(now, null, status, httpStatus.name(), null, path, body);
 		}
 	}
 

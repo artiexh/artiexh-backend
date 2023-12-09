@@ -18,7 +18,7 @@ public enum UserStatus {
 				return status;
 			}
 		}
-		throw new IllegalArgumentException("No such value for UserStatus: " + value);
+		throw new IndexOutOfBoundsException("No such value for UserStatus: " + value);
 	}
 
 	public int getValue() {

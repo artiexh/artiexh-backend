@@ -16,7 +16,7 @@ public enum ResponseCode {
 				return responseCode;
 			}
 		}
-		throw new IllegalArgumentException("No such code for ResponseCode: " + code);
+		throw new IndexOutOfBoundsException("No such code for ResponseCode: " + code);
 	}
 
 	public String getCode() {
