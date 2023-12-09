@@ -3,12 +3,12 @@ package com.artiexh.api.base.exception;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
-	INVALID_ARGUMENT(HttpStatus.BAD_REQUEST, "Invalid arguments"),
-	ENUM_CONVERT(HttpStatus.BAD_REQUEST, "Convert enum failed"),
-	OPERATION_UNSUPPORTED(HttpStatus.NOT_IMPLEMENTED, "Operation is not supported"),
-	ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "Entity not found"),
-	USER_NO_ROLE(HttpStatus.UNAUTHORIZED, "User has no role"),
-	USER_NO_USERNAME(HttpStatus.UNAUTHORIZED, "Username is not found"),
+	INVALID_ARGUMENT(HttpStatus.BAD_REQUEST, "Tham số không hợp lệ"),
+	ENUM_CONVERT(HttpStatus.BAD_REQUEST, "Enum không hợp lệ"),
+	OPERATION_UNSUPPORTED(HttpStatus.NOT_IMPLEMENTED, "Hành động không được hỗ trợ"),
+	ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "Thực thể không tồn tại"),
+	USER_NO_ROLE(HttpStatus.UNAUTHORIZED, "Người dùng không có role"),
+	USER_NO_USERNAME(HttpStatus.UNAUTHORIZED, "Username không tồn tại"),
 	//Registration
 	USER_NAME_EXISTED(HttpStatus.BAD_REQUEST, "Username này đã tồn tại"),
 	PASSWORD_PROVIDER_SUB_NOT_FOUND(HttpStatus.BAD_REQUEST, "Request has no password or invalid provider sub"),
