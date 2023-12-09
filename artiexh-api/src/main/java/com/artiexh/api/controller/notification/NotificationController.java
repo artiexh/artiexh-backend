@@ -24,17 +24,6 @@ import org.springframework.web.server.ResponseStatusException;
 public class NotificationController {
 	private final NotificationService notificationService;
 
-	@PostMapping("/test/push-noti")
-	public void getAllMessages() {
-
-		Long ownerId = 456143215578222903L;
-		notificationService.sendTo(ownerId, NotificationMessage.builder()
-			.ownerId(ownerId)
-			.title("Cập nhật trạng thái chiến dịch")
-			.content("Đơn hàng " + 123 +  " đã được vận chuyển")
-			.build());
-	}
-
 	@GetMapping()
 	public PageResponse<MessageResponse> getAllMessages(
 		Authentication authentication,
