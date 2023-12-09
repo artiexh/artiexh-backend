@@ -1,7 +1,9 @@
 package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.NotificationEntity;
+import com.artiexh.model.domain.CampaignType;
 import com.artiexh.model.domain.NotificationMessage;
+import com.artiexh.model.domain.NotificationType;
 import com.artiexh.model.rest.notification.MessageResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,4 +15,12 @@ public interface NotificationMapper {
 	 NotificationEntity domainToEntity(NotificationMessage message);
 
 	MessageResponse domainToResponse(NotificationEntity notification);
+
+	default Byte toValue(NotificationType type) {
+		return type.getByteValue();
+	}
+
+	default NotificationType notificationTypeFrom(byte value) {
+		return NotificationType.fromValue(value);
+	}
 }

@@ -25,7 +25,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -99,6 +98,12 @@ public class CampaignServiceImpl implements CampaignService {
 
 		campaignEntity.setProductInCampaigns(savedProductInCampaigns);
 		campaignEntity.setCampaignHistories(Set.of(createCampaignHistoryEntity));
+
+		notificationService.sendAll(Role.ADMIN, NotificationMessage.builder()
+				.type(NotificationType.GROUP)
+				.title("Yêu cầu chiến dịch mới")
+				.content("Arty vừa có một chiến dịch mới " + campaignEntity.getId())
+				.build());
 		return buildCampaignDetailResponse(campaignEntity);
 	}
 

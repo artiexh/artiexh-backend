@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -16,4 +17,6 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long>, J
 
 	@Query("select count(account.id) from AccountEntity account where account.id in :ids")
 	int countByIdsIn(@Param("ids") Long[] ids);
+
+	List<AccountEntity> findAccountEntitiesByRole(Byte role);
 }
