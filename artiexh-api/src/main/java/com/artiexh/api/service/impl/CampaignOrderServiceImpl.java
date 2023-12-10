@@ -224,6 +224,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 
 		Long ownerId = campaignOrderEntity.getOrder().getUser().getId();
 		notificationService.sendTo(ownerId, NotificationMessage.builder()
+			.type(NotificationType.PRIVATE)
 			.ownerId(ownerId)
 			.title("Cập nhật trạng thái chiến dịch")
 			.content("Đơn hàng " + campaignOrderEntity.getId() +  " đã được vận chuyển")
@@ -260,6 +261,14 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 			.updatedBy(account.getUsername())
 			.build();
 		orderHistoryRepository.save(orderHistory);
+
+		Long ownerId = order.getOrder().getUser().getId();
+		notificationService.sendTo(ownerId, NotificationMessage.builder()
+			.type(NotificationType.PRIVATE)
+			.ownerId(ownerId)
+			.title("Đơn hàng cập nhật")
+			.content("Đơn hàng " + orderId + " của bạn vừa hủy.")
+			.build());
 	}
 
 	private void revertProductQuantity(Set<OrderDetailEntity> orderDetailEntities) {
@@ -317,6 +326,14 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 			.updatedBy(account.getUsername())
 			.build();
 		orderHistoryRepository.save(orderHistory);
+
+		Long ownerId = order.getOrder().getUser().getId();
+		notificationService.sendTo(ownerId, NotificationMessage.builder()
+			.type(NotificationType.PRIVATE)
+			.ownerId(ownerId)
+			.title("Đơn hàng cập nhật")
+			.content("Đơn hàng " + orderId + " của bạn vừa được yêu cầu hoàn trả.")
+			.build());
 	}
 
 }

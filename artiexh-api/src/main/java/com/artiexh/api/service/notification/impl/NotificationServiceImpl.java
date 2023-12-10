@@ -8,10 +8,12 @@ import com.artiexh.data.jpa.entity.AccountEntity;
 import com.artiexh.data.jpa.entity.NotificationEntity;
 import com.artiexh.data.jpa.repository.AccountRepository;
 import com.artiexh.model.domain.NotificationMessage;
+import com.artiexh.model.domain.Role;
 import com.artiexh.model.mapper.NotificationMapper;
 import com.artiexh.model.rest.notification.MessageResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
@@ -29,10 +31,21 @@ public class NotificationServiceImpl implements NotificationService {
 	private final AccountRepository accountRepository;
 	private final PushNotificationService pushNotificationService;
 	private final NotificationMapper notificationMapper;
+	@Value("${artiexh.security.admin.id}")
+	private Long rootAdminId;
 	@Override
 	@Async
-	public void sendAll(NotificationMessage message) {
-		//TODO
+	public void sendAll(Role group, NotificationMessage message) {
+		List<AccountEntity> accounts = accountRepository.findAccountEntitiesByRole(group.getByteValue());
+		for (AccountEntity account : accounts) {
+			notificationJpaService.save(NotificationEntity.builder()
+					.content(message.getContent())
+					.title(message.getTitle())
+					.type(message.getType().getByteValue())
+					.owner(account)
+					.build());
+		}
+		pushNotificationService.sendTo(group.name().toLowerCase(), message);
 	}
 
 	@Override
@@ -59,7 +72,10 @@ public class NotificationServiceImpl implements NotificationService {
 	}
 
 	@Override
-	public Page<MessageResponse> getAll(Long userId, Pageable pageable) {
+	public Page<MessageResponse> getAll(Long userId, Role role, Pageable pageable) {
+		if (Role.ADMIN.equals(role) || Role.STAFF.equals(role)) {
+			userId = rootAdminId;
+		}
 		return notificationJpaService.getAll(userId, pageable).map(notificationMapper::domainToResponse);
 	}
 

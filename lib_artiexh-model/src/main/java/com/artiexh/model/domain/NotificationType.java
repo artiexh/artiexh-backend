@@ -5,7 +5,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum NotificationType {
 	GLOBAL(0),
-	USER(1);
+	PRIVATE(1),
+	GROUP(2);
 
 	private final int value;
 

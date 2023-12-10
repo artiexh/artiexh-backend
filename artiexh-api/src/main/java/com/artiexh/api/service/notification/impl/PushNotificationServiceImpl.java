@@ -31,6 +31,15 @@ public class PushNotificationServiceImpl implements PushNotificationService {
 	@Override
 	public void sendTo(Long userId, NotificationMessage message) {
 		for (SocketIOClient client : server.getRoomOperations(userId.toString()).getClients()) {
+			log.info("Sending notification for user {}", userId);
+			client.sendEvent(RECEIVE_EVENT, message);
+		}
+	}
+
+	@Override
+	public void sendTo(String groupName, NotificationMessage message) {
+		for (SocketIOClient client : server.getRoomOperations(groupName).getClients()) {
+			log.info("Sending notification for group {}", groupName);
 			client.sendEvent(RECEIVE_EVENT, message);
 		}
 	}
