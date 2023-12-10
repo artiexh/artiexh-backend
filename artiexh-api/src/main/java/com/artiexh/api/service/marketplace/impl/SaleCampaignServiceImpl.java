@@ -7,6 +7,7 @@ import com.artiexh.api.base.service.SystemConfigService;
 import com.artiexh.api.service.marketplace.ProductOpenSearchService;
 import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.api.service.marketplace.SaleCampaignService;
+import com.artiexh.api.service.notification.NotificationService;
 import com.artiexh.api.service.productinventory.ProductInventoryJpaService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.projection.ProductInSaleId;
@@ -53,6 +54,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 	private final SystemConfigService systemConfigService;
 	private final ProductOpenSearchService productOpenSearchService;
 	private final ProductInventoryJpaService productInventoryJpaService;
+	private final NotificationService notificationService;
 
 	@Override
 	@Transactional
@@ -81,6 +83,13 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.thumbnailUrl(request.getThumbnailUrl())
 			.type(request.getType().getByteValue())
 			.status(CampaignSaleStatus.DRAFT.getByteValue())
+			.build());
+
+		notificationService.sendTo(artistEntity.getId(), NotificationMessage.builder()
+			.type(NotificationType.PRIVATE)
+			.ownerId(artistEntity.getId())
+			.title("Chiến dịch mới mới")
+			.content("Bạn vưa có một chiến dịch bán mới " + entity.getId())
 			.build());
 
 		return campaignSaleMapper.entityToDetailResponse(entity);
@@ -144,6 +153,13 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 				.artistProfit(artistProfit)
 				.build());
 		}
+		Long ownerId = campaignEntity.getOwner().getId();
+		notificationService.sendTo(ownerId, NotificationMessage.builder()
+			.type(NotificationType.PRIVATE)
+			.ownerId(ownerId)
+			.title("Chiến dịch mới mới")
+			.content("Bạn vưa có một chiến dịch bán mới " + entity.getId())
+			.build());
 		return result;
 	}
 
@@ -226,6 +242,14 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			case ACTIVE -> updateCampaignFromActive(entity, status);
 			case CLOSED -> throw new InvalidException(ErrorCode.NOT_ALLOWED_CLOSED_CAMPAIGN);
 		}
+
+		Long ownerId = entity.getOwner().getId();
+		notificationService.sendTo(ownerId, NotificationMessage.builder()
+			.type(NotificationType.PRIVATE)
+			.ownerId(ownerId)
+			.title("Chiến dịch cập nhật")
+			.content("Trạng thái chiến dịch " + entity.getId() + " vừa được cập nhật sang " + status)
+			.build());
 	}
 
 	private void updateCampaignFromDraft(CampaignSaleEntity entity, CampaignSaleStatus status) {

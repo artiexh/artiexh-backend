@@ -7,6 +7,7 @@ import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,8 +37,14 @@ public class SocketIOConfig {
 		server = new SocketIOServer(config);
 		server.start();
 		server.addConnectListener((client) -> {
-			String room = client.getHandshakeData().getSingleUrlParam("userId");
-			client.joinRoom(room);
+			String privateRoom = client.getHandshakeData().getSingleUrlParam("userId");
+			String groupRoom = client.getHandshakeData().getSingleUrlParam("room");
+			if (StringUtils.isNotBlank(privateRoom)) {
+				client.joinRoom(privateRoom);
+			}
+			if (StringUtils.isNotBlank(groupRoom)) {
+				client.joinRoom(groupRoom);
+			}
 			log.info("Socket ID[{}]  Connected to socket ", client.getSessionId().toString());
 		});
 		server.addDisconnectListener(client ->
