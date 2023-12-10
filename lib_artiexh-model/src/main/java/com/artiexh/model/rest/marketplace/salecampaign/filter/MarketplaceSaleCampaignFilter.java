@@ -8,6 +8,7 @@ import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.Instant;
@@ -25,10 +26,14 @@ public class MarketplaceSaleCampaignFilter {
 	private Instant from;
 	private Instant to;
 	private CampaignSaleStatus status;
+	private String name;
 
 	public Specification<CampaignSaleEntity> getSpecification() {
 		return (root, query, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
+			if (StringUtils.isNotBlank(name)) {
+				predicates.add(builder.like(root.get("name"), "%" + name + "%"));
+			}
 
 			if (status != null) {
 				predicates.add(builder.equal(root.get("status"), status.getByteValue()));
