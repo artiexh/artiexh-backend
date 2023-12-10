@@ -6,6 +6,7 @@ import com.artiexh.model.domain.CampaignType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.criteria.Predicate;
 import lombok.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.Instant;
@@ -23,10 +24,14 @@ public class SaleCampaignFilter {
 	private CampaignSaleStatus status;
 	private Instant from;
 	private Instant to;
+	private String name;
 
 	public Specification<CampaignSaleEntity> getSpecification() {
 		return (root, query, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
+			if (StringUtils.isNotBlank(name)) {
+				predicates.add(builder.like(root.get("name"), "%" + name + "%"));
+			}
 
 			if (status != null) {
 				predicates.add(builder.equal(root.get("status"), status.getByteValue()));
