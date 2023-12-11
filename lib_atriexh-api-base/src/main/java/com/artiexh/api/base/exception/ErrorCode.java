@@ -60,6 +60,7 @@ public enum ErrorCode {
 	CREATE_GHTK_ORDER_FAILED(HttpStatus.BAD_REQUEST, "Không thể tạo đơn vận chuyển Giao Hàng Tiết Kiệm"),
 	CANCEL_GHTK_ORDER_FAILED(HttpStatus.BAD_REQUEST, "Không thể hủy đơn vận chuyển Giao Hàng Tiết Kiệm"),
 	GET_GHTK_SHIPPING_FEE_FAILED(HttpStatus.BAD_REQUEST, "Lỗi không tính được phí vận chuyển"),
+	CANCEL_ORDER_FAIL(HttpStatus.BAD_REQUEST, "Hủy đơn hàng thất bại"),
 
 	//Campaign Order
 	CAMPAIGN_ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "Đơn hàng không tồn tại"),
@@ -120,7 +121,7 @@ public enum ErrorCode {
 	CAMPAIGN_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "Không tìm thấy yêu cầu chiến dịch"),
 	CAMPAIGN_REQUEST_NOT_FINALIZED(HttpStatus.BAD_REQUEST, "Yêu cầu chiến dịch phải được xác nhận lần cuối trước khi tạo chiến dịch bán"),
 	CAMPAIGN_REQUEST_USED(HttpStatus.BAD_REQUEST, "Đã có chiến dịch bán từ yêu cầu campaign này"),
-	PRODUCT_FINALIZED_NOT_ENOUGH(HttpStatus.BAD_REQUEST,"Xác nhận yêu cầu chiến dịch phải có đủ thông tin của tất cả các sản phẩm"),
+	PRODUCT_FINALIZED_NOT_ENOUGH(HttpStatus.BAD_REQUEST, "Xác nhận yêu cầu chiến dịch phải có đủ thông tin của tất cả các sản phẩm"),
 	CAMPAIGN_OWNER_INVALID(HttpStatus.FORBIDDEN, "Bạn không sở hữu chiến dịch này"),
 	INVALID_PUBLIC_CAMPAIGN_OWNER(HttpStatus.FORBIDDEN, "Người sở hữu chiến dịch không hợp lệ"),
 	UPDATE_CAMPAIGN_REQUEST(HttpStatus.BAD_REQUEST, "Yêu cầu chiến dịch chỉ có thể cập nhật thông tin khi ở trạng thái DRAFT hoặc REQUEST_CHANGE"),
@@ -132,7 +133,7 @@ public enum ErrorCode {
 	DELETE_PRODUCT_CAMPAIGN_SALE_FROM_REQUEST_FAILED(HttpStatus.BAD_REQUEST, "Không thể xóa sản phẩm vào chiến dịch được tạo từ yêu cầu chiến dịch"),
 	UPDATE_SALE_CAMPAIGN_FAILED(HttpStatus.BAD_REQUEST, "Không thể cập nhật thông tin chiến dịch bán sau khi chiến dịch kết thúc"),
 	PUBLIC_DATE_INVALID(HttpStatus.BAD_REQUEST, "Ngày giới thiệu chiến dịch phải diễn ra trước hoặc cùng thời điểm với ngày mở bán"),
-	UPDATE_FROM_FAILED(HttpStatus.BAD_REQUEST,"Không thể cập nhật thời gian mở bán sau khi chiến dịch bán đã mở bán"),
+	UPDATE_FROM_FAILED(HttpStatus.BAD_REQUEST, "Không thể cập nhật thời gian mở bán sau khi chiến dịch bán đã mở bán"),
 	UPDATE_PUBLIC_DATE_FAILED(HttpStatus.BAD_REQUEST, "Không thể cập nhật thời gian giới thiệu sau khi chiến dịch bán đã mở bán"),
 	FROM_DATE_INVALID(HttpStatus.BAD_REQUEST, "Ngày mở bán chiến dịch phải diễn ra trước ngày kết thúc chiến dịch"),
 	NOT_ALLOWED_OWNER_UPDATED(HttpStatus.BAD_REQUEST, "Không cho phép cập nhật thông tin người sở hữu"),
