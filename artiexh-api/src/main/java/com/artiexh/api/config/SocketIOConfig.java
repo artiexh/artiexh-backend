@@ -1,5 +1,6 @@
 package com.artiexh.api.config;
 
+import com.artiexh.auth.property.ArtiexhCorsConfiguration;
 import com.corundumstudio.socketio.SocketIOServer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -21,9 +22,10 @@ public class SocketIOConfig {
 	private SocketIOServer server;
 
 	@Bean
-	public SocketIOServer socketIOServer() {
+	public SocketIOServer socketIOServer(ArtiexhCorsConfiguration artiexhCorsConfiguration) {
 		com.corundumstudio.socketio.Configuration config = new com.corundumstudio.socketio.Configuration();
 		config.setPort(port);
+		config.setOrigin(String.join(",", artiexhCorsConfiguration.getAllowedOrigins()));
 		server = new SocketIOServer(config);
 		server.start();
 		server.addConnectListener((client) -> {
