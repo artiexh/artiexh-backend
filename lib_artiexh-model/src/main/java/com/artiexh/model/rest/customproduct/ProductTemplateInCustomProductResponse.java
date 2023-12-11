@@ -5,12 +5,16 @@ import com.artiexh.data.jpa.entity.embededmodel.OptionConfig;
 import com.artiexh.model.domain.Model3DCode;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class ProductTemplateInCustomProductResponse {
 	@JsonSerialize(using = ToStringSerializer.class)

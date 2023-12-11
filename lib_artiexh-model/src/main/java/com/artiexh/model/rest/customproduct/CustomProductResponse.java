@@ -4,14 +4,18 @@ import com.artiexh.model.domain.Media;
 import com.artiexh.model.domain.ProductCategory;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 import java.util.Set;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @SuperBuilder
 public class CustomProductResponse {
 	@JsonSerialize(using = ToStringSerializer.class)
@@ -27,6 +31,8 @@ public class CustomProductResponse {
 	private Boolean isDeleted;
 
 	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
 	@Builder
 	public static class ProductVariant {
 		@JsonSerialize(using = ToStringSerializer.class)
