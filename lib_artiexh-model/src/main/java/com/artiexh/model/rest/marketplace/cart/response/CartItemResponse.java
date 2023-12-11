@@ -23,4 +23,5 @@ public class CartItemResponse {
 	private Long maxItemsPerOrder;
 	private DeliveryType deliveryType;
 	private Integer quantity;
+	private Float weight;
 }
