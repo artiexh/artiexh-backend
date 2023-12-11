@@ -13,6 +13,8 @@ import com.artiexh.api.service.CartService;
 import com.artiexh.api.service.OrderService;
 import com.artiexh.api.service.notification.NotificationService;
 import com.artiexh.data.jpa.entity.*;
+import com.artiexh.data.jpa.entity.embededmodel.ReferenceData;
+import com.artiexh.data.jpa.entity.embededmodel.ReferenceEntity;
 import com.artiexh.data.jpa.projection.Bill;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.*;
@@ -411,6 +413,10 @@ public class OrderServiceImpl implements OrderService {
 			.ownerId(userId)
 			.title("Đơn hàng cập nhật")
 			.content("Đơn hàng " + orderId + " của bạn vừa hủy.")
+			.referenceData(ReferenceData.builder()
+				.referenceEntity(ReferenceEntity.ORDER)
+				.id(String.valueOf(orderId))
+				.build())
 			.build());
 	}
 }

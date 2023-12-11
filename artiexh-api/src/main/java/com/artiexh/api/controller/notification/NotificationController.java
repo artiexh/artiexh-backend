@@ -8,6 +8,7 @@ import com.artiexh.model.domain.NotificationMessage;
 import com.artiexh.model.domain.Role;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
+import com.artiexh.model.rest.notification.MessagePageResponse;
 import com.artiexh.model.rest.notification.MessageResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,11 +30,11 @@ public class NotificationController {
 	private final NotificationService notificationService;
 
 	@GetMapping()
-	public PageResponse<MessageResponse> getAllMessages(
+	public MessagePageResponse<MessageResponse> getAllMessages(
 		Authentication authentication,
 		@ParameterObject @Valid PaginationAndSortingRequest pagination) {
 		long userId = (long) authentication.getPrincipal();
-		return new PageResponse<>(notificationService.getAll(userId, extractRole(authentication).orElse(null), pagination.getPageable()));
+		return notificationService.getAll(userId, extractRole(authentication).orElse(null), pagination.getPageable());
 	}
 
 	@PostMapping("/{id}")
