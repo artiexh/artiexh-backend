@@ -1,9 +1,13 @@
 package com.artiexh.data.jpa.entity;
 
+import com.artiexh.data.jpa.entity.embededmodel.ReferenceData;
+import com.artiexh.data.jpa.entity.embededmodel.ReferenceEntity;
 import io.hypersistence.utils.hibernate.id.Tsid;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Type;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
@@ -37,5 +41,9 @@ public class NotificationEntity extends BaseAuditEntity{
 
 	@Column(name = "type")
 	private Byte type;
+
+	@Type(JsonType.class)
+	@Column(name = "reference_data", columnDefinition = "json", nullable = false)
+	private ReferenceData referenceData;
 
 }
