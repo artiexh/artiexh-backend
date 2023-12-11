@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 public enum ResponseCode {
 	SUCCESS("00", "Giao dịch thành công"),
 	CANCEL("24", "Khách hàng hủy giao dịch"),
+	FAILED("15", "Giao dịch thất bại"),
 	OTHER("99", "Các lỗi khác");
 	private final String code;
 	private final String message;
