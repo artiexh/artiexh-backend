@@ -10,6 +10,8 @@ import com.artiexh.api.service.CampaignOrderService;
 import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.api.service.notification.NotificationService;
 import com.artiexh.data.jpa.entity.*;
+import com.artiexh.data.jpa.entity.embededmodel.ReferenceData;
+import com.artiexh.data.jpa.entity.embededmodel.ReferenceEntity;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.ghtk.client.model.GhtkResponse;
 import com.artiexh.ghtk.client.model.order.CreateOrderRequest;
@@ -19,7 +21,6 @@ import com.artiexh.ghtk.client.service.GhtkOrderService;
 import com.artiexh.model.domain.*;
 import com.artiexh.model.mapper.CampaignOrderMapper;
 import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
-import com.artiexh.model.rest.order.admin.response.AdminOrderResponse;
 import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
 import com.artiexh.model.rest.order.request.UpdateShippingOrderRequest;
 import com.artiexh.model.rest.order.user.response.AdminCampaignOrderResponsePage;
@@ -228,6 +229,10 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 			.ownerId(ownerId)
 			.title("Cập nhật trạng thái chiến dịch")
 			.content("Đơn hàng " + campaignOrderEntity.getId() +  " đã được vận chuyển")
+			.referenceData(ReferenceData.builder()
+				.referenceEntity(ReferenceEntity.CAMPAIGN_ORDER)
+				.id(campaignOrderEntity.getId())
+				.build())
 			.build());
 		return campaignOrderMapper.entityToAdminResponse(campaignOrderEntity);
 	}
@@ -268,6 +273,10 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 			.ownerId(ownerId)
 			.title("Đơn hàng cập nhật")
 			.content("Đơn hàng " + orderId + " của bạn vừa hủy.")
+			.referenceData(ReferenceData.builder()
+				.referenceEntity(ReferenceEntity.CAMPAIGN_ORDER)
+				.id(order.getId())
+				.build())
 			.build());
 	}
 
@@ -333,6 +342,10 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 			.ownerId(ownerId)
 			.title("Đơn hàng cập nhật")
 			.content("Đơn hàng " + orderId + " của bạn vừa được yêu cầu hoàn trả.")
+			.referenceData(ReferenceData.builder()
+				.referenceEntity(ReferenceEntity.CAMPAIGN_ORDER)
+				.id(order.getId())
+				.build())
 			.build());
 	}
 

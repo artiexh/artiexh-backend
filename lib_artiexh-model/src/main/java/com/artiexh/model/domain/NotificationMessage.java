@@ -1,5 +1,6 @@
 package com.artiexh.model.domain;
 
+import com.artiexh.data.jpa.entity.embededmodel.ReferenceData;
 import lombok.*;
 
 @Builder
@@ -13,4 +14,5 @@ public class NotificationMessage {
 	private String title;
 	private Long ownerId;
 	private Long id;
+	private ReferenceData referenceData;
 }
