@@ -56,4 +56,8 @@ public class ProductInCampaignEntity extends BaseAuditEntity {
 	@Column(name = "min_quantity")
 	private Integer minQuantity;
 
+	@Lob
+	@Column(name = "saved_custom_product")
+	private String savedCustomProduct;
+
 }

@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SystemConfigRepository extends JpaRepository<SystemConfigEntity, String> {
-	Page<SystemConfigEntity> findAllByKeyLike(String keyword, Pageable pageable);
+	Page<SystemConfigEntity> findAllByKeyContains(String keyword, Pageable pageable);
 }
