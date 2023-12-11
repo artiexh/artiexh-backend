@@ -7,7 +7,6 @@ import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.service.CampaignOrderService;
 import com.artiexh.api.service.OrderService;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
-import com.artiexh.model.domain.Role;
 import com.artiexh.model.mapper.OrderMapper;
 import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
 import com.artiexh.model.rest.order.request.*;
@@ -23,7 +22,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
 

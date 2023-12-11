@@ -76,4 +76,10 @@ public class ConfigController {
 	public List<ErrorCode> getAllErrorCode() {
 		return Arrays.stream(ErrorCode.values()).toList();
 	}
+
+	@PostMapping("/reload")
+	@PreAuthorize("hasAuthority('ADMIN')")
+	public void reload() {
+		systemConfigService.reload();
+	}
 }

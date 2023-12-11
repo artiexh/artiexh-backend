@@ -86,6 +86,7 @@ public interface CartMapper {
 	@Mapping(target = "remainingQuantity", expression = "java(cartItem.getProduct().getQuantity() - cartItem.getProduct().getSoldQuantity())")
 	@Mapping(target = "maxItemsPerOrder", source = "product.productInventory.maxItemsPerOrder")
 	@Mapping(target = "deliveryType", source = "product.productInventory.deliveryType")
+	@Mapping(target = "weight", source = "product.productInventory.weight")
 	CartItemResponse domainToCartItemResponse(CartItem cartItem);
 
 //	CartItemEntity domainToEntity(CartItem cartItem);
