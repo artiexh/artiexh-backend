@@ -29,4 +29,6 @@ public interface OrderService {
 
 	String confirmPayment(PaymentQueryProperties paymentQueryProperties);
 
+	void cancelOrder(long orderId, long userId, String message);
+
 }
