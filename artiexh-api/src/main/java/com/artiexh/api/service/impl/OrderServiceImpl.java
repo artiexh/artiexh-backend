@@ -385,9 +385,12 @@ public class OrderServiceImpl implements OrderService {
 		OrderEntity orderEntity = orderRepository.findById(orderId)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.ORDER_NOT_FOUND.getMessage()));
 
-		if (!orderEntity.getOrderTransactions().isEmpty()) {
-			throw new InvalidException(ErrorCode.CANCEL_ORDER_FAIL);
-		}
+		orderEntity.getCampaignOrders().stream()
+			.filter(campaignOrderEntity -> campaignOrderEntity.getStatus() != CampaignOrderStatus.PAYING.getByteValue())
+			.findAny()
+			.ifPresent(campaignOrderEntity -> {
+				throw new InvalidException(ErrorCode.CANCEL_ORDER_FAIL);
+			});
 
 		for (var campaignOrderEntity : orderEntity.getCampaignOrders()) {
 			campaignOrderEntity.setStatus(CampaignOrderStatus.CANCELED.getByteValue());
