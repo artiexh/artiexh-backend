@@ -11,7 +11,7 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
-public class CustomProductDetailResponse extends CustomProductResponse{
+public class CustomProductDetailResponse extends CustomProductResponse {
 
 	private String description;
 	private Integer maxItemPerOrder;
