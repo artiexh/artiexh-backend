@@ -3,6 +3,7 @@ package com.artiexh.api.controller;
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.base.exception.InvalidException;
+import com.artiexh.api.service.OrderService;
 import com.artiexh.api.service.UserAddressService;
 import com.artiexh.api.service.UserService;
 import com.artiexh.model.domain.UserAddress;
@@ -10,6 +11,7 @@ import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.order.filter.OrderFilter;
 import com.artiexh.model.rest.order.request.CampaignOrderPageFilter;
+import com.artiexh.model.rest.order.request.UserCancelOrderRequest;
 import com.artiexh.model.rest.order.user.response.CampaignOrderResponsePage;
 import com.artiexh.model.rest.order.user.response.DetailUserOrderResponse;
 import com.artiexh.model.rest.order.user.response.UserCampaignOrderDetailResponse;
@@ -36,6 +38,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class UserController {
 	private final UserService userService;
 	private final UserAddressService userAddressService;
+	private final OrderService orderService;
 
 	@GetMapping(Endpoint.User.ADDRESS)
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
@@ -165,6 +168,19 @@ public class UserController {
 			return userService.getCampaignOrderById(id, userId);
 		} catch (EntityNotFoundException exception) {
 			throw new InvalidException(ErrorCode.ORDER_NOT_FOUND);
+		}
+	}
+
+	@PatchMapping(Endpoint.Admin.ORDER + "/{id}/cancel")
+	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
+	public void cancelCampaignOrder(Authentication authentication,
+									@PathVariable Long id,
+									@RequestBody UserCancelOrderRequest request) {
+		long userId = (long) authentication.getPrincipal();
+		try {
+			orderService.cancelOrder(id, userId, request.getMessage());
+		} catch (EntityNotFoundException exception) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, exception.getMessage(), exception);
 		}
 	}
 

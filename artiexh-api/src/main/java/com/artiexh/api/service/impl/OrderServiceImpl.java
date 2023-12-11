@@ -11,13 +11,11 @@ import com.artiexh.api.base.utils.SystemConfigHelper;
 import com.artiexh.api.config.VnpConfigurationProperties;
 import com.artiexh.api.service.CartService;
 import com.artiexh.api.service.OrderService;
+import com.artiexh.api.service.notification.NotificationService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.projection.Bill;
 import com.artiexh.data.jpa.repository.*;
-import com.artiexh.model.domain.CampaignOrderStatus;
-import com.artiexh.model.domain.OrderHistoryStatus;
-import com.artiexh.model.domain.PaymentMethod;
-import com.artiexh.model.domain.ProductStatus;
+import com.artiexh.model.domain.*;
 import com.artiexh.model.mapper.OrderMapper;
 import com.artiexh.model.rest.order.admin.response.AdminOrderResponse;
 import com.artiexh.model.rest.order.admin.response.DetailAdminOrderResponse;
@@ -66,6 +64,7 @@ public class OrderServiceImpl implements OrderService {
 	private final StringRedisTemplate redisTemplate;
 	private final SystemConfigService systemConfigService;
 	private final SystemConfigHelper systemConfigHelper;
+	private final NotificationService notificationService;
 
 	@Override
 	@Transactional(isolation = Isolation.SERIALIZABLE)
@@ -373,5 +372,42 @@ public class OrderServiceImpl implements OrderService {
 
 		return redisTemplate.boundValueOps("payment_confirm_url_" + paymentQueryProperties.getVnp_TxnRef())
 			.getAndDelete();
+	}
+
+	@Override
+	@Transactional
+	public void cancelOrder(long orderId, long userId, String message) {
+		UserEntity userEntity = userRepository.findById(userId)
+			.orElseThrow(() -> new InvalidException(ErrorCode.USER_NOT_FOUND));
+
+		OrderEntity orderEntity = orderRepository.findById(orderId)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.ORDER_NOT_FOUND.getMessage()));
+
+		if (!orderEntity.getOrderTransactions().isEmpty()) {
+			throw new InvalidException(ErrorCode.CANCEL_ORDER_FAIL);
+		}
+
+		for (var campaignOrderEntity : orderEntity.getCampaignOrders()) {
+			campaignOrderEntity.setStatus(CampaignOrderStatus.CANCELED.getByteValue());
+			campaignOrderRepository.save(campaignOrderEntity);
+
+			OrderHistoryEntity orderHistory = OrderHistoryEntity.builder()
+				.id(OrderHistoryId.builder()
+					.campaignOrderId(campaignOrderEntity.getId())
+					.status(OrderHistoryStatus.CANCELED.getByteValue())
+					.build())
+				.datetime(Instant.now())
+				.message(message)
+				.updatedBy(userEntity.getUsername())
+				.build();
+			orderHistoryRepository.save(orderHistory);
+		}
+
+		notificationService.sendTo(userId, NotificationMessage.builder()
+			.type(NotificationType.PRIVATE)
+			.ownerId(userId)
+			.title("Đơn hàng cập nhật")
+			.content("Đơn hàng " + orderId + " của bạn vừa hủy.")
+			.build());
 	}
 }
