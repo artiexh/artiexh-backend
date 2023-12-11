@@ -1,6 +1,7 @@
 socket:
   port: ${SOCKET_PORT:}
   host: ${SOCKET_HOST:}
+  origin: ${SOCKET_ORIGIN:}
 spring:
   servlet:
     multipart:
