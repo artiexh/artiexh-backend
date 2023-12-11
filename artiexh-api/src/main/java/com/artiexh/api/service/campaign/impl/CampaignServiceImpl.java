@@ -366,16 +366,19 @@ public class CampaignServiceImpl implements CampaignService {
 				var customProductEntity = productInCampaignEntity.getCustomProduct();
 				customProductEntity.setCampaignLock(null);
 				customProductRepository.save(customProductEntity);
-
-				var savedCustomProduct = customProductMapper.entityToDetailResponse(customProductEntity);
-				try {
-					productInCampaignEntity.setSavedCustomProduct(jsonMapper.writeValueAsString(savedCustomProduct));
-					productInCampaignRepository.save(productInCampaignEntity);
-				} catch (JsonProcessingException e) {
-					log.error("Parse customProductResponse to json fail", e);
-				}
 			});
 		}
+
+		campaignEntity.getProductInCampaigns().forEach(productInCampaignEntity -> {
+			var customProductEntity = productInCampaignEntity.getCustomProduct();
+			var savedCustomProduct = customProductMapper.entityToDetailResponse(customProductEntity);
+			try {
+				productInCampaignEntity.setSavedCustomProduct(jsonMapper.writeValueAsString(savedCustomProduct));
+				productInCampaignRepository.save(productInCampaignEntity);
+			} catch (JsonProcessingException e) {
+				log.error("Parse customProductResponse to json fail", e);
+			}
+		});
 
 		campaignEntity.setStatus(CampaignStatus.CANCELED.getByteValue());
 		campaignEntity.getCampaignHistories().add(
