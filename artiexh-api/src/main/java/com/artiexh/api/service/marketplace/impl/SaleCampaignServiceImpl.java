@@ -10,6 +10,8 @@ import com.artiexh.api.service.marketplace.SaleCampaignService;
 import com.artiexh.api.service.notification.NotificationService;
 import com.artiexh.api.service.productinventory.ProductInventoryJpaService;
 import com.artiexh.data.jpa.entity.*;
+import com.artiexh.data.jpa.entity.embededmodel.ReferenceData;
+import com.artiexh.data.jpa.entity.embededmodel.ReferenceEntity;
 import com.artiexh.data.jpa.projection.ProductInSaleId;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.data.opensearch.model.ProductDocument;
@@ -89,7 +91,11 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.type(NotificationType.PRIVATE)
 			.ownerId(artistEntity.getId())
 			.title("Chiến dịch mới mới")
-			.content("Bạn vưa có một chiến dịch bán mới " + entity.getId())
+			.content("Bạn vưa có một chiến dịch bán mới " + entity.getName())
+			.referenceData(ReferenceData.builder()
+				.referenceEntity(ReferenceEntity.CAMPAIGN_SALE)
+				.id(entity.getId().toString())
+				.build())
 			.build());
 
 		return campaignSaleMapper.entityToDetailResponse(entity);
@@ -158,7 +164,11 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.type(NotificationType.PRIVATE)
 			.ownerId(ownerId)
 			.title("Chiến dịch mới mới")
-			.content("Bạn vưa có một chiến dịch bán mới " + entity.getId())
+			.content("Bạn vưa có một chiến dịch bán mới " + entity.getName())
+			.referenceData(ReferenceData.builder()
+				.referenceEntity(ReferenceEntity.CAMPAIGN_SALE)
+				.id(entity.getId().toString())
+				.build())
 			.build());
 		return result;
 	}
@@ -248,7 +258,11 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.type(NotificationType.PRIVATE)
 			.ownerId(ownerId)
 			.title("Chiến dịch cập nhật")
-			.content("Trạng thái chiến dịch " + entity.getId() + " vừa được cập nhật sang " + status)
+			.content("Trạng thái chiến dịch " + entity.getName() + " vừa được cập nhật sang " + status)
+			.referenceData(ReferenceData.builder()
+				.referenceEntity(ReferenceEntity.CAMPAIGN_SALE)
+				.id(entity.getId().toString())
+				.build())
 			.build());
 	}
 

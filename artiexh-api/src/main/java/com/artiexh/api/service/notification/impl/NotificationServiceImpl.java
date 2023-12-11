@@ -10,6 +10,7 @@ import com.artiexh.data.jpa.repository.AccountRepository;
 import com.artiexh.model.domain.NotificationMessage;
 import com.artiexh.model.domain.Role;
 import com.artiexh.model.mapper.NotificationMapper;
+import com.artiexh.model.rest.notification.MessagePageResponse;
 import com.artiexh.model.rest.notification.MessageResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,12 +39,9 @@ public class NotificationServiceImpl implements NotificationService {
 	public void sendAll(Role group, NotificationMessage message) {
 		List<AccountEntity> accounts = accountRepository.findAccountEntitiesByRole(group.getByteValue());
 		for (AccountEntity account : accounts) {
-			notificationJpaService.save(NotificationEntity.builder()
-					.content(message.getContent())
-					.title(message.getTitle())
-					.type(message.getType().getByteValue())
-					.owner(account)
-					.build());
+			NotificationEntity notification = notificationMapper.domainToEntity(message);
+			notification.setOwner(account);
+			notificationJpaService.save(notification);
 		}
 		pushNotificationService.sendTo(group.name().toLowerCase(), message);
 	}
@@ -62,21 +60,21 @@ public class NotificationServiceImpl implements NotificationService {
 	public void sendTo(List<Long> userId, NotificationMessage message) {
 		List<AccountEntity> accounts = accountRepository.findAllById(userId);
 		for (AccountEntity account : accounts) {
-			notificationJpaService.save(NotificationEntity.builder()
-				.content(message.getContent())
-				.title(message.getTitle())
-				.owner(account)
-				.build());
+			NotificationEntity notification = notificationMapper.domainToEntity(message);
+			notification.setOwner(account);
+			notificationJpaService.save(notification);
 			pushNotificationService.sendTo(account.getId(), message);
 		}
 	}
 
 	@Override
-	public Page<MessageResponse> getAll(Long userId, Role role, Pageable pageable) {
+	public MessagePageResponse<MessageResponse> getAll(Long userId, Role role, Pageable pageable) {
 		if (Role.ADMIN.equals(role) || Role.STAFF.equals(role)) {
 			userId = rootAdminId;
 		}
-		return notificationJpaService.getAll(userId, pageable).map(notificationMapper::domainToResponse);
+		Page<MessageResponse> notificationPage = notificationJpaService.getAll(userId, pageable).map(notificationMapper::domainToResponse);
+		int unreadCount = notificationJpaService.unreadCount(userId);
+		return new MessagePageResponse<>(notificationPage, unreadCount);
 	}
 
 	@Override

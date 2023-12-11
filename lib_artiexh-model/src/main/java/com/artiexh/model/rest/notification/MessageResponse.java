@@ -1,6 +1,7 @@
 package com.artiexh.model.rest.notification;
 
 import com.artiexh.model.domain.NotificationType;
+import com.artiexh.data.jpa.entity.embededmodel.ReferenceData;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.*;
@@ -21,4 +22,5 @@ public class MessageResponse {
 	private Instant readAt;
 	private Instant createdDate;
 	private Instant modifiedDate;
+	private ReferenceData referenceData;
 }

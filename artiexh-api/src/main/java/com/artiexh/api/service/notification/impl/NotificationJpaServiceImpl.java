@@ -31,6 +31,11 @@ public class NotificationJpaServiceImpl implements NotificationJpaService {
 	}
 
 	@Override
+	public int unreadCount(Long userId) {
+		return notificationRepository.countUnreadMessages(userId);
+	}
+
+	@Override
 	@Transactional
 	public NotificationEntity save(NotificationEntity message) {
 		return notificationRepository.save(message);
