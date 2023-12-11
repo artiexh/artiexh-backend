@@ -94,7 +94,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.content("Bạn vưa có một chiến dịch bán mới " + entity.getName())
 			.referenceData(ReferenceData.builder()
 				.referenceEntity(ReferenceEntity.CAMPAIGN_SALE)
-				.id(entity.getId())
+				.id(entity.getId().toString())
 				.build())
 			.build());
 
@@ -167,7 +167,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.content("Bạn vưa có một chiến dịch bán mới " + entity.getName())
 			.referenceData(ReferenceData.builder()
 				.referenceEntity(ReferenceEntity.CAMPAIGN_SALE)
-				.id(entity.getId())
+				.id(entity.getId().toString())
 				.build())
 			.build());
 		return result;
@@ -261,7 +261,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.content("Trạng thái chiến dịch " + entity.getName() + " vừa được cập nhật sang " + status)
 			.referenceData(ReferenceData.builder()
 				.referenceEntity(ReferenceEntity.CAMPAIGN_SALE)
-				.id(entity.getId())
+				.id(entity.getId().toString())
 				.build())
 			.build());
 	}

@@ -412,7 +412,7 @@ public class OrderServiceImpl implements OrderService {
 			.content("Đơn hàng " + orderId + " của bạn vừa hủy.")
 			.referenceData(ReferenceData.builder()
 				.referenceEntity(ReferenceEntity.ORDER)
-				.id(orderId)
+				.id(String.valueOf(orderId))
 				.build())
 			.build());
 	}

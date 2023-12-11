@@ -107,7 +107,7 @@ public class CampaignServiceImpl implements CampaignService {
 				.content("Arty vừa có một yêu cầu chiến dịch mới " + campaignEntity.getName())
 				.referenceData(ReferenceData.builder()
 					.referenceEntity(ReferenceEntity.CAMPAIGN_REQUEST)
-					.id(campaignEntity.getId())
+					.id(campaignEntity.getId().toString())
 					.build())
 				.build());
 		return buildCampaignDetailResponse(campaignEntity);
@@ -351,7 +351,7 @@ public class CampaignServiceImpl implements CampaignService {
 			.content("Trạng thái chiến dịch " + campaignEntity.getName() +  " đã được cập nhật sang " + request.getStatus().name())
 			.referenceData(ReferenceData.builder()
 				.referenceEntity(ReferenceEntity.CAMPAIGN_REQUEST)
-				.id(campaignEntity.getId())
+				.id(campaignEntity.getId().toString())
 				.build())
 			.build());
 		return response;
@@ -457,7 +457,7 @@ public class CampaignServiceImpl implements CampaignService {
 			.content("Trạng thái chiến dịch " + campaignEntity.getName() +  " đã được cập nhật sang " + request.getStatus().name())
 			.referenceData(ReferenceData.builder()
 				.referenceEntity(ReferenceEntity.CAMPAIGN_REQUEST)
-				.id(campaignEntity.getId())
+				.id(campaignEntity.getId().toString())
 				.build())
 			.build());
 		return response;
@@ -634,7 +634,7 @@ public class CampaignServiceImpl implements CampaignService {
 			.content("Trạng thái chiến dịch " + campaignEntity.getName() +  " đã được cập nhật sang " + CampaignStatus.MANUFACTURED.name())
 			.referenceData(ReferenceData.builder()
 				.referenceEntity(ReferenceEntity.CAMPAIGN_REQUEST)
-				.id(campaignEntity.getId())
+				.id(campaignEntity.getId().toString())
 				.build())
 			.build());
 	}
@@ -704,7 +704,7 @@ public class CampaignServiceImpl implements CampaignService {
 			.content("Chiến dịch " + campaign.getName() +  " đã được xác nhận lần cuối")
 			.referenceData(ReferenceData.builder()
 				.referenceEntity(ReferenceEntity.CAMPAIGN_REQUEST)
-				.id(campaign.getId())
+				.id(campaign.getId().toString())
 				.build())
 			.build());
 

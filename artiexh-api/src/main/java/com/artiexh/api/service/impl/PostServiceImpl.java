@@ -1,14 +1,19 @@
 package com.artiexh.api.service.impl;
 
 import com.artiexh.api.service.PostService;
+import com.artiexh.api.service.notification.NotificationService;
 import com.artiexh.data.jpa.entity.ArtistEntity;
 import com.artiexh.data.jpa.entity.PostCommentEntity;
 import com.artiexh.data.jpa.entity.PostEntity;
 import com.artiexh.data.jpa.entity.UserEntity;
+import com.artiexh.data.jpa.entity.embededmodel.ReferenceData;
+import com.artiexh.data.jpa.entity.embededmodel.ReferenceEntity;
 import com.artiexh.data.jpa.repository.ArtistRepository;
 import com.artiexh.data.jpa.repository.PostCommentRepository;
 import com.artiexh.data.jpa.repository.PostRepository;
 import com.artiexh.data.jpa.repository.UserRepository;
+import com.artiexh.model.domain.NotificationMessage;
+import com.artiexh.model.domain.NotificationType;
 import com.artiexh.model.domain.Post;
 import com.artiexh.model.domain.PostComment;
 import com.artiexh.model.mapper.PostCommentMapper;
@@ -31,6 +36,7 @@ public class PostServiceImpl implements PostService {
 	private final UserRepository userRepository;
 	private final PostMapper postMapper;
 	private final PostCommentMapper postCommentMapper;
+	private final NotificationService notificationService;
 
 	@Override
 	@Transactional
@@ -75,7 +81,21 @@ public class PostServiceImpl implements PostService {
 		postCommentRepository.save(postCommentEntity);
 
 		postRepository.updateNumOfComments(postId);
-		return postCommentMapper.entityToDomain(postCommentEntity);
+		postComment = postCommentMapper.entityToDomain(postCommentEntity);
+
+		Long ownerId = post.getOwner().getId();
+		notificationService.sendTo(userId, NotificationMessage.builder()
+			.type(NotificationType.PRIVATE)
+			.ownerId(userId)
+			.title("Bình luận mới")
+			.content("Bài đăng của bạn vừa có bình luận mới")
+			.referenceData(ReferenceData.builder()
+				.referenceEntity(ReferenceEntity.POST)
+				.id(ownerId.toString())
+				.build())
+			.build());
+
+		return postComment;
 	}
 
 	@Override

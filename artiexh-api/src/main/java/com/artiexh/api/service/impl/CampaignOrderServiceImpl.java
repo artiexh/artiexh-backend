@@ -231,7 +231,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 			.content("Đơn hàng " + campaignOrderEntity.getId() +  " đã được vận chuyển")
 			.referenceData(ReferenceData.builder()
 				.referenceEntity(ReferenceEntity.CAMPAIGN_ORDER)
-				.id(campaignOrderEntity.getId())
+				.id(campaignOrderEntity.getId().toString())
 				.build())
 			.build());
 		return campaignOrderMapper.entityToAdminResponse(campaignOrderEntity);
@@ -275,7 +275,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 			.content("Đơn hàng " + orderId + " của bạn vừa hủy.")
 			.referenceData(ReferenceData.builder()
 				.referenceEntity(ReferenceEntity.CAMPAIGN_ORDER)
-				.id(order.getId())
+				.id(order.getId().toString())
 				.build())
 			.build());
 	}
@@ -344,7 +344,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 			.content("Đơn hàng " + orderId + " của bạn vừa được yêu cầu hoàn trả.")
 			.referenceData(ReferenceData.builder()
 				.referenceEntity(ReferenceEntity.CAMPAIGN_ORDER)
-				.id(order.getId())
+				.id(order.getId().toString())
 				.build())
 			.build());
 	}

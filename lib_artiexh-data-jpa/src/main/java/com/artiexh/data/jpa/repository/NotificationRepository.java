@@ -16,4 +16,7 @@ public interface NotificationRepository extends JpaRepository<NotificationEntity
 	@Modifying()
 	@Query("update NotificationEntity notification set notification.readAt = instant where notification.id = :id")
 	void markedAsRead(@Param("id") Long id);
+
+	@Query(value = "select count(notification.id) from NotificationEntity notification where notification.owner.id = :userId and notification.readAt is null")
+	int countUnreadMessages(@Param("userId") Long userId);
 }

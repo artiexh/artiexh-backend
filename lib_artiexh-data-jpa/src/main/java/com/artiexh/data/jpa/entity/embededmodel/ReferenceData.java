@@ -8,6 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class ReferenceData {
-	private Long id;
+	private String id;
 	private ReferenceEntity referenceEntity;
 }
