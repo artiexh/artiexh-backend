@@ -440,9 +440,11 @@ public class CampaignServiceImpl implements CampaignService {
 			default ->
 				throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái chiến dịch chỉ có thể cập nhật thành REQUEST_CHANGE, APPROVED, REJECTED hoặc MANUFACTURING");
 		};
-		notificationService.sendTo(accountEntity.getId(), NotificationMessage.builder()
+
+		Long ownerId = campaignEntity.getOwner().getId();
+		notificationService.sendTo(ownerId, NotificationMessage.builder()
 			.type(NotificationType.PRIVATE)
-			.ownerId(accountEntity.getId())
+			.ownerId(ownerId)
 			.title("Cập nhật trạng thái chiến dịch")
 			.content("Trạng thái chiến dịch " + campaignEntity.getId() + " đã được cập nhật sang " + request.getStatus().name())
 			.build());
