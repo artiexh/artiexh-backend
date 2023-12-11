@@ -72,7 +72,7 @@ public class SystemConfigServiceImpl implements SystemConfigService {
 	@Override
 	public Page<SystemConfig> getAll(String keyword, Pageable pageable) {
 		if (keyword != null) {
-			return repository.findAllByKeyLike(keyword, pageable).map(entity -> new SystemConfig(entity.getKey(), entity.getValue(), entity.getUpdatedBy(), entity.getModifiedDate(), entity.getCreatedDate()));
+			return repository.findAllByKeyContains(keyword, pageable).map(entity -> new SystemConfig(entity.getKey(), entity.getValue(), entity.getUpdatedBy(), entity.getModifiedDate(), entity.getCreatedDate()));
 		} else {
 			return repository.findAll(pageable).map(entity -> new SystemConfig(entity.getKey(), entity.getValue(), entity.getUpdatedBy(), entity.getModifiedDate(), entity.getCreatedDate()));
 		}

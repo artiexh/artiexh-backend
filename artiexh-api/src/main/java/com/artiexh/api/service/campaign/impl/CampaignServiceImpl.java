@@ -100,10 +100,10 @@ public class CampaignServiceImpl implements CampaignService {
 		campaignEntity.setCampaignHistories(Set.of(createCampaignHistoryEntity));
 
 		notificationService.sendAll(Role.ADMIN, NotificationMessage.builder()
-				.type(NotificationType.GROUP)
-				.title("Yêu cầu chiến dịch mới")
-				.content("Arty vừa có một chiến dịch mới " + campaignEntity.getId())
-				.build());
+			.type(NotificationType.GROUP)
+			.title("Yêu cầu chiến dịch mới")
+			.content("Arty vừa có một chiến dịch mới " + campaignEntity.getId())
+			.build());
 		return buildCampaignDetailResponse(campaignEntity);
 	}
 
@@ -336,14 +336,15 @@ public class CampaignServiceImpl implements CampaignService {
 		var response = switch (request.getStatus()) {
 			case CANCELED -> artistCancelCampaign(campaignEntity, artistEntity, request.getMessage());
 			case WAITING -> artistSubmitCampaign(campaignEntity, artistEntity, request.getMessage());
-			default -> throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái chiến dịch chỉ có thể cập nhật sang WAITING hoặc CANCELED");
+			default ->
+				throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái chiến dịch chỉ có thể cập nhật sang WAITING hoặc CANCELED");
 		};
 		notificationService.sendTo(artistId, NotificationMessage.builder()
-				.type(NotificationType.PRIVATE)
-				.ownerId(artistId)
-				.title("Cập nhật trạng thái chiến dịch")
-				.content("Trạng thái chiến dịch " + campaignEntity.getId() +  " đã được cập nhật sang " + request.getStatus().name())
-				.build());
+			.type(NotificationType.PRIVATE)
+			.ownerId(artistId)
+			.title("Cập nhật trạng thái chiến dịch")
+			.content("Trạng thái chiến dịch " + campaignEntity.getId() + " đã được cập nhật sang " + request.getStatus().name())
+			.build());
 		return response;
 	}
 
@@ -373,13 +374,14 @@ public class CampaignServiceImpl implements CampaignService {
 				.build()
 		);
 
+
 		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
 	}
 
 	private CampaignResponse artistSubmitCampaign(CampaignEntity campaignEntity, ArtistEntity artistEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue()
 			&& campaignEntity.getStatus() != CampaignStatus.REQUEST_CHANGE.getByteValue()) {
-			throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED,"Trạng thái của chiến dịch yêu cầu chỉ có thể cập nhật từ DRAFT, REQUEST_CHANGE sang WAITING");
+			throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái của chiến dịch yêu cầu chỉ có thể cập nhật từ DRAFT, REQUEST_CHANGE sang WAITING");
 		}
 
 		if (campaignEntity.getFrom() == null || campaignEntity.getTo() == null) {
@@ -444,7 +446,7 @@ public class CampaignServiceImpl implements CampaignService {
 			.type(NotificationType.PRIVATE)
 			.ownerId(ownerId)
 			.title("Cập nhật trạng thái chiến dịch")
-			.content("Trạng thái chiến dịch " + campaignEntity.getId() +  " đã được cập nhật sang " + request.getStatus().name())
+			.content("Trạng thái chiến dịch " + campaignEntity.getId() + " đã được cập nhật sang " + request.getStatus().name())
 			.build());
 		return response;
 	}
@@ -616,7 +618,7 @@ public class CampaignServiceImpl implements CampaignService {
 			.type(NotificationType.PRIVATE)
 			.ownerId(accountEntity.getId())
 			.title("Cập nhật trạng thái chiến dịch")
-			.content("Trạng thái chiến dịch " + campaignEntity.getId() +  " đã được cập nhật sang " + CampaignStatus.MANUFACTURED.name())
+			.content("Trạng thái chiến dịch " + campaignEntity.getId() + " đã được cập nhật sang " + CampaignStatus.MANUFACTURED.name())
 			.build());
 	}
 
@@ -681,7 +683,7 @@ public class CampaignServiceImpl implements CampaignService {
 			.type(NotificationType.PRIVATE)
 			.ownerId(campaign.getOwner().getId())
 			.title("Cập nhật trạng thái chiến dịch")
-			.content("Chiến dịch " + campaign.getId() +  " đã được xác nhận lần cuối")
+			.content("Chiến dịch " + campaign.getId() + " đã được xác nhận lần cuối")
 			.build());
 
 		return productResponses;
