@@ -30,7 +30,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.util.Pair;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -516,9 +515,8 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 
 	@Override
 	@Transactional
-	@Scheduled(cron = "${cron.close-expired-sale-campaigns}")
 	public void closeExpiredSaleCampaigns() {
 		Instant closedTime = Instant.now().minus(Duration.ofDays(3));
-		campaignSaleRepository.closeExpiredSaleCampaigns(closedTime);
+		campaignSaleRepository.closeExpiredSaleCampaigns(closedTime, Instant.now());
 	}
 }
