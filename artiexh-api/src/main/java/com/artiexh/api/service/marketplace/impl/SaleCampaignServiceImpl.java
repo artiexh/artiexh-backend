@@ -18,6 +18,7 @@ import com.artiexh.data.opensearch.model.ProductDocument;
 import com.artiexh.model.domain.*;
 import com.artiexh.model.mapper.CampaignSaleMapper;
 import com.artiexh.model.mapper.ProductMapper;
+import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.MarketplaceSaleCampaignFilter;
 import com.artiexh.model.rest.marketplace.salecampaign.request.ProductInSaleRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.request.SaleCampaignRequest;
@@ -356,9 +357,13 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public CampaignStatistics getStatistics(Long campaignId) {
 		CampaignSaleEntity campaignEntity = campaignSaleRepository.findById(campaignId).orElseThrow(EntityNotFoundException::new);
-		List<ProductEntity> products = campaignEntity.getProducts().stream().sorted(Comparator.comparingInt(ProductEntity::getSoldQuantity).reversed()).toList();
+
+		PaginationAndSortingRequest pagination = new PaginationAndSortingRequest();
+		pagination.setSortBy("soldQuantity");
+		List<ProductEntity> products = getSoldProduct(campaignId, pagination.getPageable()).getContent();
 
 		BigDecimal revenue = BigDecimal.ZERO;
 		BigDecimal profit = BigDecimal.ZERO;
@@ -369,16 +374,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			profit = profit.add(product.getArtistProfit().multiply(BigDecimal.valueOf(product.getSoldQuantity())));
 
 			productStatisticResponses.add(
-				ProductStatisticResponse.builder()
-					.name(product.getProductInventory().getName())
-					.productCode(product.getProductInventory().getProductCode())
-					.soldQuantity(Long.valueOf(product.getSoldQuantity()))
-					.revenue(Money.builder()
-						.amount(product.getPriceAmount().multiply(BigDecimal.valueOf(product.getSoldQuantity())))
-						.unit("VND")
-						.build())
-					.quantity(Long.valueOf(product.getQuantity()))
-					.build()
+				productMapper.entityToStatisticResponse(product)
 			);
 		}
 
@@ -518,5 +514,14 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 	public void closeExpiredSaleCampaigns() {
 		Instant closedTime = Instant.now().minus(Duration.ofDays(3));
 		campaignSaleRepository.closeExpiredSaleCampaigns(closedTime, Instant.now());
+	}
+
+	@Override
+	public Page<ProductStatisticResponse> getProductStatistic(Long campaignSaleId, Pageable pageable) {
+		return getSoldProduct(campaignSaleId, pageable).map(productMapper::entityToStatisticResponse);
+	}
+
+	private Page<ProductEntity> getSoldProduct(Long campaignSaleId, Pageable pageable) {
+		return productRepository.findProductEntitiesByCampaignSaleId(campaignSaleId, pageable);
 	}
 }

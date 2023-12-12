@@ -1,15 +1,13 @@
 package com.artiexh.api.service.marketplace;
 
 import com.artiexh.data.jpa.entity.CampaignSaleEntity;
+import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.model.domain.CampaignSaleStatus;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.MarketplaceSaleCampaignFilter;
 import com.artiexh.model.rest.marketplace.salecampaign.request.ProductInSaleRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.request.SaleCampaignRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.request.UpdateProductInSaleRequest;
-import com.artiexh.model.rest.marketplace.salecampaign.response.CampaignStatistics;
-import com.artiexh.model.rest.marketplace.salecampaign.response.ProductResponse;
-import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignDetailResponse;
-import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.response.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -37,6 +35,8 @@ public interface SaleCampaignService {
 											  MarketplaceSaleCampaignFilter filter);
 
 	CampaignStatistics getStatistics(Long campaignId);
+
+	Page<ProductStatisticResponse> getProductStatistic(Long campaignSaleId, Pageable pageable);
 
 	Set<ProductResponse> createProductInSaleCampaign(Long campaignId, Set<ProductInSaleRequest> requests);
 

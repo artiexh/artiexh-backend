@@ -5,6 +5,7 @@ import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.api.service.marketplace.SaleCampaignService;
+import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.ProductPageFilter;
@@ -13,13 +14,12 @@ import com.artiexh.model.rest.marketplace.salecampaign.request.ProductInSaleRequ
 import com.artiexh.model.rest.marketplace.salecampaign.request.SaleCampaignRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.request.UpdateProductInSaleRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.request.UpdateSaleCampaignStatusRequest;
-import com.artiexh.model.rest.marketplace.salecampaign.response.CampaignStatistics;
-import com.artiexh.model.rest.marketplace.salecampaign.response.ProductResponse;
-import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignDetailResponse;
-import com.artiexh.model.rest.marketplace.salecampaign.response.SaleCampaignResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.response.*;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
@@ -33,6 +33,7 @@ import java.util.Set;
 public class SaleCampaignController {
 	private final SaleCampaignService saleCampaignService;
 	private final ProductService productService;
+	private final ProductMapper productMapper;
 
 	@PostMapping
 	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
@@ -121,6 +122,20 @@ public class SaleCampaignController {
 	) {
 		try {
 			return saleCampaignService.getStatistics(id);
+		} catch (EntityNotFoundException ex) {
+			throw new InvalidException(ErrorCode.CAMPAIGN_SALE_NOT_FOUND);
+		}
+	}
+
+	@GetMapping("/{id}/sold-product")
+	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF','ARTIST')")
+	public PageResponse<ProductStatisticResponse> getSoldProduct(
+		@PathVariable("id") Long id,
+		@ParameterObject @Valid PaginationAndSortingRequest pagination
+	) {
+		try {
+			Page<ProductStatisticResponse> page = saleCampaignService.getProductStatistic(id, pagination.getPageable());
+			return new PageResponse<>(page);
 		} catch (EntityNotFoundException ex) {
 			throw new InvalidException(ErrorCode.CAMPAIGN_SALE_NOT_FOUND);
 		}
