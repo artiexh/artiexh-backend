@@ -12,7 +12,10 @@ import com.artiexh.api.service.notification.NotificationService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.entity.embededmodel.ReferenceData;
 import com.artiexh.data.jpa.entity.embededmodel.ReferenceEntity;
-import com.artiexh.data.jpa.repository.*;
+import com.artiexh.data.jpa.repository.AccountRepository;
+import com.artiexh.data.jpa.repository.CampaignOrderRepository;
+import com.artiexh.data.jpa.repository.OrderHistoryRepository;
+import com.artiexh.data.jpa.repository.UserAddressRepository;
 import com.artiexh.ghtk.client.model.GhtkResponse;
 import com.artiexh.ghtk.client.model.order.CreateOrderRequest;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeRequest;
@@ -207,7 +210,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 			.block();
 
 		if (ghtkCreateOrderResponse == null) {
-			throw new InvalidException(ErrorCode.CREATE_GHTK_ORDER_FAILED,"Không nhận được phản hồi từ Giao Hàng Tiết Kiệm");
+			throw new InvalidException(ErrorCode.CREATE_GHTK_ORDER_FAILED, "Không nhận được phản hồi từ Giao Hàng Tiết Kiệm");
 		} else if (ghtkCreateOrderResponse.getOrder() == null) {
 			throw new InvalidException(ErrorCode.CREATE_GHTK_ORDER_FAILED, ghtkCreateOrderResponse.getMessage());
 		}
@@ -228,7 +231,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 			.type(NotificationType.PRIVATE)
 			.ownerId(ownerId)
 			.title("Cập nhật trạng thái chiến dịch")
-			.content("Đơn hàng " + campaignOrderEntity.getId() +  " đã được vận chuyển")
+			.content("Đơn hàng " + campaignOrderEntity.getId() + " đã được vận chuyển")
 			.referenceData(ReferenceData.builder()
 				.referenceEntity(ReferenceEntity.CAMPAIGN_ORDER)
 				.id(campaignOrderEntity.getId().toString())

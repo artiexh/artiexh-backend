@@ -7,7 +7,6 @@ import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.data.jpa.entity.ArtistEntity;
 import com.artiexh.data.jpa.entity.CampaignOrderEntity;
 import com.artiexh.data.jpa.entity.SubscriptionEntity;
-import com.artiexh.data.jpa.entity.WardEntity;
 import com.artiexh.data.jpa.repository.ArtistRepository;
 import com.artiexh.data.jpa.repository.CampaignOrderRepository;
 import com.artiexh.data.jpa.repository.OrderHistoryRepository;
@@ -60,7 +59,7 @@ public class ArtistServiceImpl implements ArtistService {
 
 	@Override
 	public Page<ArtistProfileResponse> getAllProfile(Specification<ArtistEntity> specification, Pageable pageable) {
-		return artistRepository.findAll(specification ,pageable).map(artistMapper::entityToProfileResponse);
+		return artistRepository.findAll(specification, pageable).map(artistMapper::entityToProfileResponse);
 	}
 
 	@Override

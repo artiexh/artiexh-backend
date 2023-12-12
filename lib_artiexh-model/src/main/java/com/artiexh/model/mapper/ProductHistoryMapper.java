@@ -2,7 +2,9 @@ package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.ProductHistoryDetailEntity;
 import com.artiexh.data.jpa.entity.ProductHistoryEntity;
-import com.artiexh.model.domain.*;
+import com.artiexh.model.domain.ProductHistory;
+import com.artiexh.model.domain.ProductHistoryAction;
+import com.artiexh.model.domain.SourceCategory;
 import com.artiexh.model.rest.producthistory.ProductHistoryDetailPageResponse;
 import com.artiexh.model.rest.producthistory.producthistory.ProductHistoryPageResponse;
 import com.artiexh.model.rest.producthistory.producthistory.ProductHistoryResponse;
@@ -18,11 +20,16 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface ProductHistoryMapper {
 	@Mapping(target = "productHistoryDetails", ignore = true)
 	ProductHistory entityToDomainWithoutProductHistoryDetail(ProductHistoryEntity entity);
+
 	ProductHistory entityToDomain(ProductHistoryEntity entity);
+
 	ProductHistoryPageResponse domainToPageResponse(ProductHistory productHistory);
+
 	@Named("entityToPageResponse")
 	ProductHistoryPageResponse domainToPageResponse(ProductHistoryEntity productHistory);
+
 	ProductHistoryResponse domainToResponse(ProductHistory productHistory);
+
 	@Mapping(target = "productHistory", source = "productHistory", qualifiedByName = "entityToPageResponse")
 	@Mapping(target = "remainingQuantity", source = "currentQuantity")
 	ProductHistoryDetailPageResponse entityToDetailPageResponse(ProductHistoryDetailEntity entity);

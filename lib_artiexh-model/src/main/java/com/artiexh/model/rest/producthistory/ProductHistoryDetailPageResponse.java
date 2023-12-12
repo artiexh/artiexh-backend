@@ -2,7 +2,6 @@ package com.artiexh.model.rest.producthistory;
 
 import com.artiexh.model.domain.ProductInventoryQuantity;
 import com.artiexh.model.rest.producthistory.producthistory.ProductHistoryPageResponse;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Getter

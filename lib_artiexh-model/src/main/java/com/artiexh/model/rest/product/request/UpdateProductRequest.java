@@ -2,7 +2,6 @@ package com.artiexh.model.rest.product.request;
 
 import com.artiexh.model.domain.*;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

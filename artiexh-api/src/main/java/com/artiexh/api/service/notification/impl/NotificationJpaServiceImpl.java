@@ -3,7 +3,6 @@ package com.artiexh.api.service.notification.impl;
 import com.artiexh.api.service.notification.NotificationJpaService;
 import com.artiexh.data.jpa.entity.NotificationEntity;
 import com.artiexh.data.jpa.repository.NotificationRepository;
-import com.artiexh.model.domain.NotificationMessage;
 import com.artiexh.model.mapper.NotificationMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +18,7 @@ import java.util.Set;
 public class NotificationJpaServiceImpl implements NotificationJpaService {
 	private final NotificationRepository notificationRepository;
 	private final NotificationMapper notificationMapper;
+
 	@Override
 	@Transactional
 	public void markedAsRead(Long notificationId) {
