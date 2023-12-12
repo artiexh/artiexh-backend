@@ -25,6 +25,6 @@ public interface CampaignSaleRepository
 	Stream<CampaignSaleEntity> streamAllByFromBeforeAndToAfter(@Param("currentTime") Instant currentTime);
 
 	@Modifying
-	@Query("update CampaignSaleEntity cs set cs.status = -1 where cs.to >= :closedTime")
+	@Query("update CampaignSaleEntity cs set cs.status = cast(-1 as byte) where cs.to >= :closedTime")
 	void closeExpiredSaleCampaigns(@Param("closedTime") Instant closedTime);
 }
