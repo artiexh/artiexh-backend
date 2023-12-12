@@ -7,8 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Set;
-
 @Repository
 public interface CampaignHistoryRepository extends JpaRepository<CampaignHistoryEntity, CampaignHistoryId> {
 	Page<CampaignHistoryEntity> findCampaignHistoryEntitiesByIdCampaignId(Long campaignId, Pageable pageable);

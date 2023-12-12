@@ -3,7 +3,6 @@ package com.artiexh.data.jpa.entity.embededmodel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
 
 import java.io.Serial;

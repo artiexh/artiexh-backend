@@ -1,6 +1,5 @@
 package com.artiexh.model.rest.order.request;
 
-import com.artiexh.data.jpa.entity.CampaignOrderEntity;
 import com.artiexh.data.jpa.entity.OrderEntity;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;

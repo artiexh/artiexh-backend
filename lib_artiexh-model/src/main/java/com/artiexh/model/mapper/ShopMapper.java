@@ -6,7 +6,6 @@ import com.artiexh.model.domain.Shop;
 import com.artiexh.model.rest.address.AddressResponse;
 import com.artiexh.model.rest.artist.request.RegistrationArtistRequest;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
@@ -21,9 +20,10 @@ public interface ShopMapper {
 	Shop requestToDomain(RegistrationArtistRequest request);
 
 	@Named("basicShopInfo")
-	//@Mapping(target = "owner", source = ".", qualifiedByName = "basicArtistInfo")
-	Shop entityToDomain(ArtistEntity entity);
 		//@Mapping(target = "owner", source = ".", qualifiedByName = "basicArtistInfo")
+	Shop entityToDomain(ArtistEntity entity);
+
+	//@Mapping(target = "owner", source = ".", qualifiedByName = "basicArtistInfo")
 	Shop entityToDomain(AccountEntity entity);
 
 	AddressResponse entityToShopAddressResponse(ArtistEntity entity);

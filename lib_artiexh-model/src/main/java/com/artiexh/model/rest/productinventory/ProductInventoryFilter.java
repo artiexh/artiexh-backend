@@ -1,10 +1,6 @@
 package com.artiexh.model.rest.productinventory;
 
-import com.artiexh.data.jpa.entity.CollectionEntity;
 import com.artiexh.data.jpa.entity.ProductInventoryEntity;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.impl.StringArraySerializer;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.persistence.criteria.Predicate;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;

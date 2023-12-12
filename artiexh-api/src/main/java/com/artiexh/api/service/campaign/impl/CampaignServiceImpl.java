@@ -18,11 +18,8 @@ import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.campaign.request.*;
 import com.artiexh.model.rest.campaign.response.*;
 import com.artiexh.model.rest.product.response.ProductResponse;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -38,7 +35,6 @@ import java.util.stream.Collectors;
 import static com.artiexh.model.domain.CampaignStatus.ALLOWED_ADMIN_VIEW_STATUS;
 import static com.artiexh.model.domain.CampaignStatus.SAVED_PROVIDER_CONFIGS_STATUS;
 
-@Log4j2
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -58,12 +54,10 @@ public class CampaignServiceImpl implements CampaignService {
 	private final ProductInCampaignService productInCampaignService;
 	private final ProductTagMapper productTagMapper;
 	private final ProductCategoryMapper productCategoryMapper;
-	private final CustomProductMapper customProductMapper;
 	private final ProductInventoryJpaService productInventoryJpaService;
 	private final ProductInventoryRepository productInventoryRepository;
 	private final ProductVariantProviderRepository productVariantProviderRepository;
 	private final NotificationService notificationService;
-	private final ObjectMapper jsonMapper;
 
 	@Override
 	@Transactional
@@ -107,6 +101,15 @@ public class CampaignServiceImpl implements CampaignService {
 		campaignEntity.setProductInCampaigns(savedProductInCampaigns);
 		campaignEntity.setCampaignHistories(Set.of(createCampaignHistoryEntity));
 
+		notificationService.sendAll(Role.ADMIN, NotificationMessage.builder()
+			.type(NotificationType.GROUP)
+			.title("Yêu cầu chiến dịch mới")
+			.content("Arty vừa có một yêu cầu chiến dịch mới " + campaignEntity.getName())
+			.referenceData(ReferenceData.builder()
+				.referenceEntity(ReferenceEntity.CAMPAIGN_REQUEST)
+				.id(campaignEntity.getId().toString())
+				.build())
+			.build());
 		return buildCampaignDetailResponse(campaignEntity);
 	}
 
@@ -339,13 +342,14 @@ public class CampaignServiceImpl implements CampaignService {
 		var response = switch (request.getStatus()) {
 			case CANCELED -> artistCancelCampaign(campaignEntity, artistEntity, request.getMessage());
 			case WAITING -> artistSubmitCampaign(campaignEntity, artistEntity, request.getMessage());
-			default -> throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái chiến dịch chỉ có thể cập nhật sang WAITING hoặc CANCELED");
+			default ->
+				throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái chiến dịch chỉ có thể cập nhật sang WAITING hoặc CANCELED");
 		};
 		notificationService.sendTo(artistId, NotificationMessage.builder()
 			.type(NotificationType.PRIVATE)
 			.ownerId(artistId)
 			.title("Cập nhật trạng thái chiến dịch")
-			.content("Trạng thái chiến dịch " + campaignEntity.getName() +  " đã được cập nhật sang " + request.getStatus().name())
+			.content("Trạng thái chiến dịch " + campaignEntity.getName() + " đã được cập nhật sang " + request.getStatus().name())
 			.referenceData(ReferenceData.builder()
 				.referenceEntity(ReferenceEntity.CAMPAIGN_REQUEST)
 				.id(campaignEntity.getId().toString())
@@ -362,23 +366,13 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 
 		if (campaignEntity.getStatus() == CampaignStatus.WAITING.getByteValue()) {
-			campaignEntity.getProductInCampaigns().forEach(productInCampaignEntity -> {
-				var customProductEntity = productInCampaignEntity.getCustomProduct();
-				customProductEntity.setCampaignLock(null);
-				customProductRepository.save(customProductEntity);
-			});
+			campaignEntity.getProductInCampaigns().stream()
+				.map(ProductInCampaignEntity::getCustomProduct)
+				.forEach(customProductEntity -> {
+					customProductEntity.setCampaignLock(null);
+					customProductRepository.save(customProductEntity);
+				});
 		}
-
-		campaignEntity.getProductInCampaigns().forEach(productInCampaignEntity -> {
-			var customProductEntity = productInCampaignEntity.getCustomProduct();
-			var savedCustomProduct = customProductMapper.entityToDetailResponse(customProductEntity);
-			try {
-				productInCampaignEntity.setSavedCustomProduct(jsonMapper.writeValueAsString(savedCustomProduct));
-				productInCampaignRepository.save(productInCampaignEntity);
-			} catch (JsonProcessingException e) {
-				log.error("Parse customProductResponse to json fail", e);
-			}
-		});
 
 		campaignEntity.setStatus(CampaignStatus.CANCELED.getByteValue());
 		campaignEntity.getCampaignHistories().add(
@@ -396,7 +390,7 @@ public class CampaignServiceImpl implements CampaignService {
 	private CampaignResponse artistSubmitCampaign(CampaignEntity campaignEntity, ArtistEntity artistEntity, String message) {
 		if (campaignEntity.getStatus() != CampaignStatus.DRAFT.getByteValue()
 			&& campaignEntity.getStatus() != CampaignStatus.REQUEST_CHANGE.getByteValue()) {
-			throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED,"Trạng thái của chiến dịch yêu cầu chỉ có thể cập nhật từ DRAFT, REQUEST_CHANGE sang WAITING");
+			throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái của chiến dịch yêu cầu chỉ có thể cập nhật từ DRAFT, REQUEST_CHANGE sang WAITING");
 		}
 
 		if (campaignEntity.getFrom() == null || campaignEntity.getTo() == null) {
@@ -461,7 +455,7 @@ public class CampaignServiceImpl implements CampaignService {
 			.type(NotificationType.PRIVATE)
 			.ownerId(ownerId)
 			.title("Cập nhật trạng thái chiến dịch")
-			.content("Trạng thái chiến dịch " + campaignEntity.getName() +  " đã được cập nhật sang " + request.getStatus().name())
+			.content("Trạng thái chiến dịch " + campaignEntity.getName() + " đã được cập nhật sang " + request.getStatus().name())
 			.referenceData(ReferenceData.builder()
 				.referenceEntity(ReferenceEntity.CAMPAIGN_REQUEST)
 				.id(campaignEntity.getId().toString())
@@ -517,13 +511,6 @@ public class CampaignServiceImpl implements CampaignService {
 				productInCampaign.setBasePriceAmount(providerConfig.getBasePriceAmount());
 				productInCampaign.setManufacturingTime(providerConfig.getManufacturingTime());
 				productInCampaign.setMinQuantity(providerConfig.getMinQuantity());
-				var savedCustomProduct = customProductMapper.entityToDetailResponse(customProductEntity);
-				try {
-					productInCampaign.setSavedCustomProduct(jsonMapper.writeValueAsString(savedCustomProduct));
-					productInCampaignRepository.save(productInCampaign);
-				} catch (JsonProcessingException e) {
-					log.error("Parse customProductResponse to json fail", e);
-				}
 				productInCampaignRepository.save(productInCampaign);
 			});
 
@@ -547,19 +534,12 @@ public class CampaignServiceImpl implements CampaignService {
 			throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái chiến dịch chỉ có thể cập nhật từ WAITING sang REJECTED");
 		}
 
-		campaignEntity.getProductInCampaigns().forEach(productInCampaignEntity -> {
-			var inventoryItemEntity = productInCampaignEntity.getCustomProduct();
-			inventoryItemEntity.setCampaignLock(null);
-			customProductRepository.save(inventoryItemEntity);
-
-			var savedCustomProduct = customProductMapper.entityToDetailResponse(productInCampaignEntity.getCustomProduct());
-			try {
-				productInCampaignEntity.setSavedCustomProduct(jsonMapper.writeValueAsString(savedCustomProduct));
-				productInCampaignRepository.save(productInCampaignEntity);
-			} catch (JsonProcessingException e) {
-				log.error("Parse customProductResponse to json fail", e);
-			}
-		});
+		campaignEntity.getProductInCampaigns().stream()
+			.map(ProductInCampaignEntity::getCustomProduct)
+			.forEach(inventoryItemEntity -> {
+				inventoryItemEntity.setCampaignLock(null);
+				customProductRepository.save(inventoryItemEntity);
+			});
 
 		campaignEntity.setStatus(CampaignStatus.REJECTED.getByteValue());
 		campaignEntity.getCampaignHistories().add(
@@ -652,7 +632,7 @@ public class CampaignServiceImpl implements CampaignService {
 			.type(NotificationType.PRIVATE)
 			.ownerId(ownerId)
 			.title("Cập nhật trạng thái chiến dịch")
-			.content("Trạng thái chiến dịch " + campaignEntity.getName() +  " đã được cập nhật sang " + CampaignStatus.MANUFACTURED.name())
+			.content("Trạng thái chiến dịch " + campaignEntity.getName() + " đã được cập nhật sang " + CampaignStatus.MANUFACTURED.name())
 			.referenceData(ReferenceData.builder()
 				.referenceEntity(ReferenceEntity.CAMPAIGN_REQUEST)
 				.id(campaignEntity.getId().toString())
@@ -722,7 +702,7 @@ public class CampaignServiceImpl implements CampaignService {
 			.type(NotificationType.PRIVATE)
 			.ownerId(ownerId)
 			.title("Cập nhật trạng thái chiến dịch")
-			.content("Chiến dịch " + campaign.getName() +  " đã được xác nhận lần cuối")
+			.content("Chiến dịch " + campaign.getName() + " đã được xác nhận lần cuối")
 			.referenceData(ReferenceData.builder()
 				.referenceEntity(ReferenceEntity.CAMPAIGN_REQUEST)
 				.id(campaign.getId().toString())

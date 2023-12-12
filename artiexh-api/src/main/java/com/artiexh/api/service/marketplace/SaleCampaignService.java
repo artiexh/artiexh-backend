@@ -45,4 +45,6 @@ public interface SaleCampaignService {
 												UpdateProductInSaleRequest request);
 
 	void deleteProductInSaleCampaign(Long campaignId, Set<String> productCodes);
+
+	void closeExpiredSaleCampaigns();
 }

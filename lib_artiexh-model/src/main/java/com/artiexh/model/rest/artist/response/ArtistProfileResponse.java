@@ -1,7 +1,6 @@
 package com.artiexh.model.rest.artist.response;
 
 import com.artiexh.model.domain.Subscription;
-import com.artiexh.model.domain.Ward;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;

@@ -1,11 +1,12 @@
 package com.artiexh.model.rest.campaign.request;
 
-import com.artiexh.model.domain.*;
+import com.artiexh.model.domain.Money;
+import com.artiexh.model.domain.ProductAttach;
+import com.artiexh.model.domain.ProductType;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
