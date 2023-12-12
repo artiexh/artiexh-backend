@@ -9,7 +9,8 @@ public enum OrderHistoryStatus {
 	SHIPPED(2),
 	DELIVERED(3),
 	REFUNDED(4),
-	CANCELED(-1);
+	CANCELED(-1),
+	SHIPPING_FAIL(5);
 
 	private final int value;
 
