@@ -37,6 +37,9 @@ public class NotificationServiceImpl implements NotificationService {
 	@Override
 	@Async
 	public void sendAll(Role group, NotificationMessage message) {
+		if (group.equals(Role.STAFF)) {
+			group = Role.ADMIN;
+		}
 		List<AccountEntity> accounts = accountRepository.findAccountEntitiesByRole(group.getByteValue());
 		message.setType(NotificationType.GROUP);
 		for (AccountEntity account : accounts) {
