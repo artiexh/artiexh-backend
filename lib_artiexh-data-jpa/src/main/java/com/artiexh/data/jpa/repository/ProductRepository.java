@@ -4,6 +4,8 @@ import com.artiexh.data.jpa.entity.ProductEntity;
 import com.artiexh.data.jpa.entity.ProductEntityId;
 import com.artiexh.data.jpa.projection.ProductInSaleId;
 import jakarta.persistence.QueryHint;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -37,6 +39,8 @@ public interface ProductRepository extends JpaRepository<ProductEntity, ProductE
 //	Set<ProductEntity> findAllByIdIn(Set<Long> ids);
 
 //	int countAllByIdIn(Collection<Long> id);
+
+	Page<ProductEntity> findProductEntitiesByCampaignSaleId(Long campaignSaleId, Pageable pageable);
 
 	@QueryHints(value = {
 		@QueryHint(name = HINT_FETCH_SIZE, value = "1"),
