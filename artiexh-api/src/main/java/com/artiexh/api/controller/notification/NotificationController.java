@@ -37,7 +37,7 @@ public class NotificationController {
 		return notificationService.getAll(userId, extractRole(authentication).orElse(null), pagination.getPageable());
 	}
 
-	@PostMapping("/{id}")
+	@PutMapping("/{id}")
 	public void markedAsRead(
 		@PathVariable("id") Long id,
 		Authentication authentication) {
