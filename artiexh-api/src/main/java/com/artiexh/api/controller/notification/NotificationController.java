@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
@@ -51,6 +52,7 @@ public class NotificationController {
 	}
 
 	@PostMapping()
+	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
 	public void pushNotification(@Valid @RequestBody MessageRequest notificationMessage) {
 		try {
 			notificationService.sendAll(notificationMessage.getGroup(), notificationMapper.requestToDomain(notificationMessage));
