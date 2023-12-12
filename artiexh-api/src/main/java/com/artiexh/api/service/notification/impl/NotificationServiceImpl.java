@@ -8,6 +8,7 @@ import com.artiexh.data.jpa.entity.AccountEntity;
 import com.artiexh.data.jpa.entity.NotificationEntity;
 import com.artiexh.data.jpa.repository.AccountRepository;
 import com.artiexh.model.domain.NotificationMessage;
+import com.artiexh.model.domain.NotificationType;
 import com.artiexh.model.domain.Role;
 import com.artiexh.model.mapper.NotificationMapper;
 import com.artiexh.model.rest.notification.MessagePageResponse;
@@ -37,6 +38,7 @@ public class NotificationServiceImpl implements NotificationService {
 	@Async
 	public void sendAll(Role group, NotificationMessage message) {
 		List<AccountEntity> accounts = accountRepository.findAccountEntitiesByRole(group.getByteValue());
+		message.setType(NotificationType.GROUP);
 		for (AccountEntity account : accounts) {
 			NotificationEntity notification = notificationMapper.domainToEntity(message);
 			notification.setOwner(account);

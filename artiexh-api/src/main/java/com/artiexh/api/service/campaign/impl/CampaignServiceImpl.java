@@ -100,16 +100,6 @@ public class CampaignServiceImpl implements CampaignService {
 
 		campaignEntity.setProductInCampaigns(savedProductInCampaigns);
 		campaignEntity.setCampaignHistories(Set.of(createCampaignHistoryEntity));
-
-		notificationService.sendAll(Role.ADMIN, NotificationMessage.builder()
-			.type(NotificationType.GROUP)
-			.title("Yêu cầu chiến dịch mới")
-			.content("Arty vừa có một yêu cầu chiến dịch mới " + campaignEntity.getName())
-			.referenceData(ReferenceData.builder()
-				.referenceEntity(ReferenceEntity.CAMPAIGN_REQUEST)
-				.id(campaignEntity.getId().toString())
-				.build())
-			.build());
 		return buildCampaignDetailResponse(campaignEntity);
 	}
 
