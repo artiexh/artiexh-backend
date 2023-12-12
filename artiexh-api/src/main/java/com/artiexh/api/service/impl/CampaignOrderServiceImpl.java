@@ -354,8 +354,9 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	}
 
 	@Override
+	@Transactional
 	public void updateShipment(ShipmentRequest request) {
-		switch (request.getStatusId()) {
+		switch (request.getStatus_id()) {
 			case -1, 7, 21, 11:
 				updateFailShipment(request);
 				break;
@@ -439,7 +440,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 
 	private CampaignOrderEntity getCampaignOrder(ShipmentRequest request) {
 		try {
-			long id = Long.parseLong(request.getPartnerId());
+			long id = Long.parseLong(request.getPartner_id());
 			return campaignOrderRepository.findById(id).orElse(null);
 		} catch (Exception ex) {
 			log.warn("Parse partner_id to long fail", ex);
