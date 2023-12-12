@@ -1,7 +1,9 @@
 package com.artiexh.api.service.campaign.impl;
 
+import com.artiexh.api.base.exception.ArtiexhConfigException;
 import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.base.exception.InvalidException;
+import com.artiexh.api.base.service.SystemConfigService;
 import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.campaign.ProductInCampaignService;
 import com.artiexh.api.service.notification.NotificationService;
@@ -32,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.artiexh.api.base.common.Const.SystemConfigKey.DEFAULT_PROFIT_PERCENTAGE;
 import static com.artiexh.model.domain.CampaignStatus.ALLOWED_ADMIN_VIEW_STATUS;
 import static com.artiexh.model.domain.CampaignStatus.SAVED_PROVIDER_CONFIGS_STATUS;
 
@@ -58,6 +61,7 @@ public class CampaignServiceImpl implements CampaignService {
 	private final ProductInventoryRepository productInventoryRepository;
 	private final ProductVariantProviderRepository productVariantProviderRepository;
 	private final NotificationService notificationService;
+	private final SystemConfigService systemConfigService;
 
 	@Override
 	@Transactional
@@ -513,6 +517,9 @@ public class CampaignServiceImpl implements CampaignService {
 				.updatedBy(accountEntity.getUsername())
 				.build()
 		);
+
+		int profitPercentage = Integer.parseInt(systemConfigService.getOrThrow(DEFAULT_PROFIT_PERCENTAGE, () -> new ArtiexhConfigException("Missing artiexh default profit percentage")));
+		campaignEntity.setAdminProfitPercentage(profitPercentage);
 
 		return campaignMapper.entityToResponse(campaignRepository.save(campaignEntity));
 	}

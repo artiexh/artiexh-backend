@@ -76,4 +76,7 @@ public class CampaignEntity {
 	@OneToOne(mappedBy = "campaignRequest")
 	private CampaignSaleEntity campaignSale;
 
+	@Column(name = "admin_profit_percentage")
+	private Integer adminProfitPercentage;
+
 }

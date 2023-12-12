@@ -1,8 +1,6 @@
 package com.artiexh.model.rest.marketplace.salecampaign.request;
 
 import com.artiexh.model.domain.CampaignType;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -21,15 +19,12 @@ public class SaleCampaignRequest {
 	private String description;
 
 	@NotNull
-	@FutureOrPresent
 	private Instant publicDate;
 
 	@NotNull
-	@FutureOrPresent
 	private Instant from;
 
 	@NotNull
-	@Future
 	private Instant to;
 
 	private String content;
