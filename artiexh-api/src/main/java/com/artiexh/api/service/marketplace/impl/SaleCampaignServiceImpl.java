@@ -179,18 +179,24 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 		CampaignSaleEntity entity = campaignSaleRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException("Chiến dịch bán " + id + " không tìm thấy"));
 
-		Instant now = Instant.now();
-
-		if (now.isAfter(entity.getTo())) {
+		if (entity.getStatus() == CampaignSaleStatus.CLOSED.getByteValue()) {
 			throw new InvalidException(ErrorCode.UPDATE_SALE_CAMPAIGN_FAILED);
 		}
 
-		if (now.isAfter(entity.getFrom())) {
-			if (request.getFrom() != entity.getFrom()) {
-				throw new InvalidException(ErrorCode.UPDATE_FROM_FAILED);
+		if (entity.getStatus() == CampaignSaleStatus.ACTIVE.getByteValue()) {
+			Instant now = Instant.now();
+
+			if (now.isAfter(entity.getTo())) {
+				throw new InvalidException(ErrorCode.UPDATE_SALE_CAMPAIGN_FAILED);
 			}
-			if (request.getPublicDate() != entity.getPublicDate()) {
-				throw new InvalidException(ErrorCode.UPDATE_PUBLIC_DATE_FAILED);
+
+			if (now.isAfter(entity.getFrom())) {
+				if (request.getFrom() != entity.getFrom()) {
+					throw new InvalidException(ErrorCode.UPDATE_FROM_FAILED);
+				}
+				if (request.getPublicDate() != entity.getPublicDate()) {
+					throw new InvalidException(ErrorCode.UPDATE_PUBLIC_DATE_FAILED);
+				}
 			}
 		}
 
