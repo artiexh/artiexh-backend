@@ -6,11 +6,15 @@ import com.artiexh.model.domain.*;
 import com.artiexh.model.rest.marketplace.salecampaign.response.ProductInSaleCampaignResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.ProductMarketplaceResponse;
 import com.artiexh.model.rest.marketplace.salecampaign.response.ProductResponse;
+import com.artiexh.model.rest.marketplace.salecampaign.response.ProductStatisticResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
+import java.math.BigDecimal;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 @Mapper(
@@ -157,6 +161,19 @@ public interface ProductMapper {
 	ProductDocument entityToDocument(ProductEntity entity);
 
 	ProductDocument.Campaign campaignToCampaignDocument(CampaignSale campaign);
+
+	default ProductStatisticResponse entityToStatisticResponse(ProductEntity product) {
+		return ProductStatisticResponse.builder()
+			.name(product.getProductInventory().getName())
+			.productCode(product.getProductInventory().getProductCode())
+			.soldQuantity(Long.valueOf(product.getSoldQuantity()))
+			.revenue(Money.builder()
+				.amount(product.getPriceAmount().multiply(BigDecimal.valueOf(product.getSoldQuantity())))
+				.unit("VND")
+				.build())
+			.quantity(Long.valueOf(product.getQuantity()))
+			.build();
+	}
 
 //	default Page<ProductResponse> productPageToProductResponsePage(Page<Product> productPage) {
 //		return productPage.map(this::domainToProductResponse);
