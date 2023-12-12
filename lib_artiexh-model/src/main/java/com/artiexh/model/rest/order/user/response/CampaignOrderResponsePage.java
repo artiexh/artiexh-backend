@@ -28,4 +28,6 @@ public class CampaignOrderResponsePage {
 	private Instant modifiedDate;
 
 	private Instant createdDate;
+
+	private String shippingLabel;
 }
