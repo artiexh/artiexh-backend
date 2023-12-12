@@ -1,7 +1,7 @@
 package com.artiexh.model.rest.notification;
 
-import com.artiexh.model.domain.NotificationType;
 import com.artiexh.data.jpa.entity.embededmodel.ReferenceData;
+import com.artiexh.model.domain.NotificationType;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.*;

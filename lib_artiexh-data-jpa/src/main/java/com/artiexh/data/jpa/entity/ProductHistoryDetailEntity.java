@@ -3,7 +3,6 @@ package com.artiexh.data.jpa.entity;
 import com.artiexh.data.jpa.entity.embededmodel.ProductHistoryEntityDetailId;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Builder
 @NoArgsConstructor

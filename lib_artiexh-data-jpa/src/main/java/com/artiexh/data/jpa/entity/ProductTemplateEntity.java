@@ -5,7 +5,6 @@ import com.artiexh.data.jpa.entity.embededmodel.OptionConfig;
 import io.hypersistence.utils.hibernate.id.Tsid;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

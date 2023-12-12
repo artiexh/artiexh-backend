@@ -25,6 +25,7 @@ import com.artiexh.model.rest.marketplace.salecampaign.request.UpdateProductInSa
 import com.artiexh.model.rest.marketplace.salecampaign.response.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -34,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,6 +43,7 @@ import java.util.stream.Stream;
 
 import static com.artiexh.api.base.common.Const.SystemConfigKey.DEFAULT_PROFIT_PERCENTAGE;
 
+@Log4j2
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
@@ -294,7 +297,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 				.collect(Collectors.toSet());
 
 			// reduce inventory quantity
-			productInventoryJpaService.reduceQuantity(entity.getId(), entity.getName(),SourceCategory.CAMPAIGN_SALE, productQuantities);
+			productInventoryJpaService.reduceQuantity(entity.getId(), entity.getName(), SourceCategory.CAMPAIGN_SALE, productQuantities);
 		}
 	}
 
@@ -508,5 +511,12 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 				.orElseThrow(EntityNotFoundException::new);
 			productService.delete(productEntity);
 		}
+	}
+
+	@Override
+	@Transactional
+	public void closeExpiredSaleCampaigns() {
+		Instant closedTime = Instant.now().minus(Duration.ofDays(3));
+		campaignSaleRepository.closeExpiredSaleCampaigns(closedTime, Instant.now());
 	}
 }

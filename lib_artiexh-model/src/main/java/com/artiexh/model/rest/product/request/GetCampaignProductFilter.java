@@ -6,16 +6,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.opensearch.common.unit.Fuzziness;
 import org.opensearch.data.client.orhlc.NativeSearchQueryBuilder;
-import org.opensearch.index.query.*;
+import org.opensearch.index.query.BoolQueryBuilder;
+import org.opensearch.index.query.RangeQueryBuilder;
+import org.opensearch.index.query.TermQueryBuilder;
+import org.opensearch.index.query.TermsQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.Query;
-import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter

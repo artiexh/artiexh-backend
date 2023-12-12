@@ -6,8 +6,8 @@ import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.service.CampaignOrderService;
 import com.artiexh.api.service.OrderService;
+import com.artiexh.ghtk.client.model.ShipmentRequest;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
-import com.artiexh.model.mapper.OrderMapper;
 import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
 import com.artiexh.model.rest.order.request.*;
 import com.artiexh.model.rest.order.response.PaymentResponse;
@@ -31,7 +31,6 @@ import java.net.URI;
 public class OrderController {
 	private final OrderService orderService;
 	private final CampaignOrderService campaignOrderService;
-	private final OrderMapper orderMapper;
 
 	@PostMapping(Endpoint.Order.CHECKOUT)
 	@PreAuthorize("hasAnyAuthority('USER', 'ARTIST')")
@@ -125,4 +124,10 @@ public class OrderController {
 			throw new InvalidException(ErrorCode.ORDER_NOT_FOUND);
 		}
 	}
+
+	@PostMapping("/shipment")
+	public void updateShipment(@ParameterObject ShipmentRequest request) {
+		campaignOrderService.updateShipment(request);
+	}
+
 }

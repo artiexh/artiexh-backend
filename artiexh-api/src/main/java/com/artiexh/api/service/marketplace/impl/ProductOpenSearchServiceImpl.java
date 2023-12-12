@@ -7,12 +7,10 @@ import com.artiexh.model.domain.Product;
 import com.artiexh.model.domain.ProductSuggestion;
 import com.artiexh.model.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
-import org.opensearch.index.reindex.UpdateByQueryRequestBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.*;
 import org.springframework.data.elasticsearch.core.query.Query;
-import org.springframework.data.elasticsearch.core.query.UpdateQuery;
 import org.springframework.data.elasticsearch.core.query.UpdateResponse;
 import org.springframework.stereotype.Service;
 

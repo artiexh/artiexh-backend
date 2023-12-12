@@ -1,11 +1,13 @@
 package com.artiexh.data.jpa.entity;
 
 import com.artiexh.data.jpa.entity.embededmodel.ReferenceData;
-import com.artiexh.data.jpa.entity.embededmodel.ReferenceEntity;
 import io.hypersistence.utils.hibernate.id.Tsid;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Type;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -20,7 +22,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
 @EntityListeners(AuditingEntityListener.class)
-public class NotificationEntity extends BaseAuditEntity{
+public class NotificationEntity extends BaseAuditEntity {
 	@Id
 	@Tsid
 	@Column(name = "id", nullable = false)

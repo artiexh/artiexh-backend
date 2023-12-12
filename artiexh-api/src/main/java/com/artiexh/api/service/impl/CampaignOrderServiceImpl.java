@@ -12,8 +12,12 @@ import com.artiexh.api.service.notification.NotificationService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.entity.embededmodel.ReferenceData;
 import com.artiexh.data.jpa.entity.embededmodel.ReferenceEntity;
-import com.artiexh.data.jpa.repository.*;
+import com.artiexh.data.jpa.repository.AccountRepository;
+import com.artiexh.data.jpa.repository.CampaignOrderRepository;
+import com.artiexh.data.jpa.repository.OrderHistoryRepository;
+import com.artiexh.data.jpa.repository.UserAddressRepository;
 import com.artiexh.ghtk.client.model.GhtkResponse;
+import com.artiexh.ghtk.client.model.ShipmentRequest;
 import com.artiexh.ghtk.client.model.order.CreateOrderRequest;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeRequest;
 import com.artiexh.ghtk.client.model.shipfee.ShipFeeResponse;
@@ -207,7 +211,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 			.block();
 
 		if (ghtkCreateOrderResponse == null) {
-			throw new InvalidException(ErrorCode.CREATE_GHTK_ORDER_FAILED,"Không nhận được phản hồi từ Giao Hàng Tiết Kiệm");
+			throw new InvalidException(ErrorCode.CREATE_GHTK_ORDER_FAILED, "Không nhận được phản hồi từ Giao Hàng Tiết Kiệm");
 		} else if (ghtkCreateOrderResponse.getOrder() == null) {
 			throw new InvalidException(ErrorCode.CREATE_GHTK_ORDER_FAILED, ghtkCreateOrderResponse.getMessage());
 		}
@@ -228,7 +232,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 			.type(NotificationType.PRIVATE)
 			.ownerId(ownerId)
 			.title("Cập nhật trạng thái chiến dịch")
-			.content("Đơn hàng " + campaignOrderEntity.getId() +  " đã được vận chuyển")
+			.content("Đơn hàng " + campaignOrderEntity.getId() + " đã được vận chuyển")
 			.referenceData(ReferenceData.builder()
 				.referenceEntity(ReferenceEntity.CAMPAIGN_ORDER)
 				.id(campaignOrderEntity.getId().toString())
@@ -347,6 +351,100 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 				.id(order.getId().toString())
 				.build())
 			.build());
+	}
+
+	@Override
+	public void updateShipment(ShipmentRequest request) {
+		switch (request.getStatusId()) {
+			case -1, 7, 21, 11:
+				updateFailShipment(request);
+				break;
+			case 6:
+				updateSuccessShipment(request);
+				break;
+		}
+	}
+
+	private void updateFailShipment(ShipmentRequest request) {
+		CampaignOrderEntity entity = getCampaignOrder(request);
+		if (entity == null) {
+			return;
+		}
+
+		if (entity.getStatus() != CampaignOrderStatus.SHIPPING.getByteValue()) {
+			return;
+		}
+
+		entity.setStatus(CampaignOrderStatus.REFUNDING.getByteValue());
+		campaignOrderRepository.save(entity);
+
+		OrderHistoryEntity orderHistory = OrderHistoryEntity.builder()
+			.id(OrderHistoryId.builder()
+				.campaignOrderId(entity.getId())
+				.status(OrderHistoryStatus.SHIPPING_FAIL.getByteValue())
+				.build())
+			.datetime(Instant.now())
+			.message(request.getReason())
+			.build();
+		orderHistoryRepository.save(orderHistory);
+
+		Long ownerId = entity.getOrder().getUser().getId();
+		notificationService.sendTo(ownerId, NotificationMessage.builder()
+			.type(NotificationType.PRIVATE)
+			.ownerId(ownerId)
+			.title("Đơn hàng cập nhật")
+			.content("Đơn hàng " + entity.getId() + " của bạn vận chuyển thất bại.")
+			.referenceData(ReferenceData.builder()
+				.referenceEntity(ReferenceEntity.CAMPAIGN_ORDER)
+				.id(entity.getId().toString())
+				.build())
+			.build());
+	}
+
+	private void updateSuccessShipment(ShipmentRequest request) {
+		CampaignOrderEntity entity = getCampaignOrder(request);
+		if (entity == null) {
+			return;
+		}
+
+		if (entity.getStatus() != CampaignOrderStatus.SHIPPING.getByteValue()) {
+			return;
+		}
+
+		entity.setStatus(CampaignOrderStatus.COMPLETED.getByteValue());
+		campaignOrderRepository.save(entity);
+
+		OrderHistoryEntity orderHistory = OrderHistoryEntity.builder()
+			.id(OrderHistoryId.builder()
+				.campaignOrderId(entity.getId())
+				.status(OrderHistoryStatus.DELIVERED.getByteValue())
+				.build())
+			.datetime(Instant.now())
+			.message(request.getReason())
+			.build();
+		orderHistoryRepository.save(orderHistory);
+
+		Long ownerId = entity.getOrder().getUser().getId();
+		notificationService.sendTo(ownerId, NotificationMessage.builder()
+			.type(NotificationType.PRIVATE)
+			.ownerId(ownerId)
+			.title("Đơn hàng cập nhật")
+			.content("Đơn hàng " + entity.getId() + " của bạn vận chuyển thành công.")
+			.referenceData(ReferenceData.builder()
+				.referenceEntity(ReferenceEntity.CAMPAIGN_ORDER)
+				.id(entity.getId().toString())
+				.build())
+			.build());
+	}
+
+	private CampaignOrderEntity getCampaignOrder(ShipmentRequest request) {
+		try {
+			long id = Long.parseLong(request.getPartnerId());
+			return campaignOrderRepository.findById(id).orElse(null);
+		} catch (Exception ex) {
+			log.warn("Parse partner_id to long fail", ex);
+			return null;
+		}
 	}
 
 }

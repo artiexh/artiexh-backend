@@ -1,7 +1,6 @@
 package com.artiexh.model.rest.artist.request;
 
 import com.artiexh.data.jpa.entity.ArtistEntity;
-import com.artiexh.data.jpa.entity.CampaignSaleEntity;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ArtistFilter {
 	private String name;
+
 	public Specification<ArtistEntity> getSpecification() {
 		return (root, query, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();

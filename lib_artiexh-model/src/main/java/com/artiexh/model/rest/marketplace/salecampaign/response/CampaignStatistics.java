@@ -1,15 +1,12 @@
 package com.artiexh.model.rest.marketplace.salecampaign.response;
 
 import com.artiexh.model.domain.Money;
-import com.artiexh.model.domain.Product;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter

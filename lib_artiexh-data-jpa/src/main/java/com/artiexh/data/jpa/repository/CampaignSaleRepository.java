@@ -3,10 +3,7 @@ package com.artiexh.data.jpa.repository;
 import com.artiexh.data.jpa.entity.CampaignSaleEntity;
 import jakarta.persistence.QueryHint;
 import org.hibernate.jpa.HibernateHints;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.jpa.repository.QueryHints;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -26,4 +23,8 @@ public interface CampaignSaleRepository
 	})
 	@Query("select cs from CampaignSaleEntity cs where (cs.publicDate <= :currentTime or cs.from <= :currentTime) and cs.to >= :currentTime")
 	Stream<CampaignSaleEntity> streamAllByFromBeforeAndToAfter(@Param("currentTime") Instant currentTime);
+
+	@Modifying
+	@Query("update CampaignSaleEntity cs set cs.status = cast((-1) as byte), cs.modifiedDate = :modifiedDate where cs.status = cast(1 as byte) and cs.to <= :closedTime")
+	void closeExpiredSaleCampaigns(@Param("closedTime") Instant closedTime, @Param("modifiedDate") Instant modifiedDate);
 }
