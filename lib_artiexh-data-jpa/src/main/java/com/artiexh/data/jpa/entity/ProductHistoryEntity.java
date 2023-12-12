@@ -7,7 +7,6 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Getter

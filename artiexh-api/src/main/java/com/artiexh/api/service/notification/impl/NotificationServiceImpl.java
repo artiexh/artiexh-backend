@@ -21,8 +21,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -34,6 +32,7 @@ public class NotificationServiceImpl implements NotificationService {
 	private final NotificationMapper notificationMapper;
 	@Value("${artiexh.security.admin.id}")
 	private Long rootAdminId;
+
 	@Override
 	@Async
 	public void sendAll(Role group, NotificationMessage message) {
@@ -80,7 +79,7 @@ public class NotificationServiceImpl implements NotificationService {
 	@Override
 	public void markedAsRead(Long userId, Long notificationId) {
 		if (accountRepository.findById(userId).isEmpty()) {
-			throw  new IllegalAccessException();
+			throw new IllegalAccessException();
 		}
 		notificationJpaService.markedAsRead(notificationId);
 	}

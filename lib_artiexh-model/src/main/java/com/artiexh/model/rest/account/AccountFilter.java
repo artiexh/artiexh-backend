@@ -1,7 +1,6 @@
 package com.artiexh.model.rest.account;
 
 import com.artiexh.data.jpa.entity.AccountEntity;
-import com.artiexh.model.domain.CampaignType;
 import com.artiexh.model.domain.Role;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;

@@ -3,7 +3,6 @@ package com.artiexh.model.rest.marketplace.salecampaign.filter;
 import com.artiexh.data.jpa.entity.CampaignSaleEntity;
 import com.artiexh.model.domain.CampaignSaleStatus;
 import com.artiexh.model.domain.CampaignType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
 import lombok.Data;

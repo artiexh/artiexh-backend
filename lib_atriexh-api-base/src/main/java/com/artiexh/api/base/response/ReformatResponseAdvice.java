@@ -1,7 +1,6 @@
 package com.artiexh.api.base.response;
 
 import com.artiexh.api.base.common.Endpoint;
-import com.artiexh.api.base.exception.ErrorCode;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

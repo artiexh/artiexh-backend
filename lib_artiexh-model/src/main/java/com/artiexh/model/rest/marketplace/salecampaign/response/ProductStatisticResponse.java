@@ -2,7 +2,6 @@ package com.artiexh.model.rest.marketplace.salecampaign.response;
 
 import com.artiexh.model.domain.Money;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
