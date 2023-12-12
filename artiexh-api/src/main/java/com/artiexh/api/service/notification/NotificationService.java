@@ -1,6 +1,7 @@
 package com.artiexh.api.service.notification;
 
 import com.artiexh.model.domain.NotificationMessage;
+import com.artiexh.model.domain.NotificationType;
 import com.artiexh.model.domain.Role;
 import com.artiexh.model.rest.notification.MessagePageResponse;
 import com.artiexh.model.rest.notification.MessageResponse;
