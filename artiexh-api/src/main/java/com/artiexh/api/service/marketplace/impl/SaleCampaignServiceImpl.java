@@ -464,8 +464,8 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 		ProductEntity productEntity = productRepository.findById(new ProductEntityId(productCode, campaignId))
 			.orElseThrow(() -> new EntityNotFoundException("Product " + productCode + " in campaign " + campaignId + " not found"));
 
-		if (productEntity.getCampaignSale().getStatus() != CampaignSaleStatus.DRAFT.getByteValue()) {
-			throw new InvalidException(ErrorCode.ADD_PRODUCT_CAMPAIGN_SALE_FAILED);
+		if (productEntity.getCampaignSale().getStatus() == CampaignSaleStatus.CLOSED.getByteValue()) {
+			throw new InvalidException(ErrorCode.UPDATE_PRODUCT_CAMPAIGN_SALE_FAILED);
 		}
 
 		if (request.getQuantity() != null) {
