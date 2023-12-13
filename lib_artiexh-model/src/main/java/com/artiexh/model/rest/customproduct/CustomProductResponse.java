@@ -24,6 +24,7 @@ public class CustomProductResponse {
 	private Instant createdDate;
 	private Instant modifiedDate;
 	private ProductVariant variant;
+	private Boolean isDeleted;
 
 	@Data
 	@Builder
