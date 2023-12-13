@@ -196,7 +196,7 @@ public class OrderServiceImpl implements OrderService {
 		WardEntity artiexhPickWard = systemConfigHelper.getArtiexhWardEntity();
 
 		var orderEntity = OrderEntity.builder()
-			.deliveryName(userEntity.getDisplayName())
+			.deliveryName(address.getReceiverName())
 			.deliveryAddress(address.getAddress())
 			.deliveryWard(address.getWard().getFullName())
 			.deliveryDistrict(address.getWard().getDistrict().getFullName())

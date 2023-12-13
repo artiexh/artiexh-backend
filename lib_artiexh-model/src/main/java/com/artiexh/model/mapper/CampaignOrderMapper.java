@@ -69,6 +69,8 @@ public interface CampaignOrderMapper {
 	CampaignOrderResponsePage entityToUserResponsePage(CampaignOrderEntity campaignOrder);
 
 	@Mapping(target = "campaignSale", qualifiedByName = "entityToResponse")
+	@Mapping(target = "user", source = "order.user")
+	@Mapping(target = "shipment", source = "order")
 	AdminCampaignOrderResponsePage entityToAdminResponsePage(CampaignOrderEntity campaignOrder);
 
 	@Named("domainToUserResponsePage")

@@ -72,6 +72,9 @@ public class AccountServiceImpl implements AccountService {
 				profile.setNumOfSubscriptions(subscriptionRepository.countByUserId(entity.getId()));
 				yield profile;
 			}
+			case STAFF, ADMIN -> {
+				yield staffMapper.entityToProfile((StaffEntity) entity);
+			}
 			default -> null;
 		};
 	}
