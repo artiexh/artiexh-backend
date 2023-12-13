@@ -80,7 +80,15 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	public Page<AdminCampaignOrderResponsePage> getAdminCampaignOrderInPage(Specification<CampaignOrderEntity> specification,
 																			Pageable pageable) {
 		return campaignOrderRepository.findAll(specification, pageable)
-			.map(campaignOrderMapper::entityToAdminResponsePage);
+			.map( entity -> {
+				AdminCampaignOrderResponsePage page = campaignOrderMapper.entityToAdminResponsePage(entity);
+				BigDecimal totalPrice = BigDecimal.ZERO;
+				for (OrderDetailEntity orderDetail : entity.getOrderDetails()) {
+					totalPrice = totalPrice.add(orderDetail.getProduct().getPriceAmount().multiply(BigDecimal.valueOf(orderDetail.getQuantity())));
+				}
+				page.setTotalPrice(totalPrice);
+				return page;
+			});
 	}
 
 	@Override

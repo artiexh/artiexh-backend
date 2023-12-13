@@ -22,6 +22,7 @@ import com.artiexh.model.rest.campaign.response.*;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -339,9 +340,8 @@ public class CampaignServiceImpl implements CampaignService {
 			default ->
 				throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái chiến dịch chỉ có thể cập nhật sang WAITING hoặc CANCELED");
 		};
-		notificationService.sendTo(artistId, NotificationMessage.builder()
-			.type(NotificationType.PRIVATE)
-			.ownerId(artistId)
+		notificationService.sendAll(Role.ADMIN, NotificationMessage.builder()
+			.type(NotificationType.GROUP)
 			.title("Cập nhật trạng thái chiến dịch")
 			.content("Trạng thái chiến dịch " + campaignEntity.getName() + " đã được cập nhật sang " + request.getStatus().name())
 			.referenceData(ReferenceData.builder()

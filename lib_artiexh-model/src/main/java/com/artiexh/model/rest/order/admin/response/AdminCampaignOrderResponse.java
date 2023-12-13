@@ -17,9 +17,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdminCampaignOrderResponse extends AdminCampaignOrderResponsePage {
-	private Set<OrderDetailResponse> orderDetails;
-	private BigDecimal shippingFee;
 	private List<OrderHistory> orderHistories;
-	private String shippingLabel;
 	private AdminOrderResponse order;
 }
