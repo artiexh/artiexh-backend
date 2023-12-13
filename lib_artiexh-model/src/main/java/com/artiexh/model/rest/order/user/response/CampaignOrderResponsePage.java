@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Getter
@@ -30,4 +31,6 @@ public class CampaignOrderResponsePage {
 	private Instant createdDate;
 
 	private String shippingLabel;
+
+	private BigDecimal shippingFee;
 }

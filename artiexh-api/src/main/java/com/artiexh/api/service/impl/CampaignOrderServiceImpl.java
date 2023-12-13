@@ -27,6 +27,7 @@ import com.artiexh.model.mapper.CampaignOrderMapper;
 import com.artiexh.model.rest.order.admin.response.AdminCampaignOrderResponse;
 import com.artiexh.model.rest.order.request.GetShippingFeeRequest;
 import com.artiexh.model.rest.order.request.UpdateShippingOrderRequest;
+import com.artiexh.model.rest.order.response.OrderDetailResponse;
 import com.artiexh.model.rest.order.user.response.AdminCampaignOrderResponsePage;
 import com.artiexh.model.rest.order.user.response.CampaignOrderResponsePage;
 import com.artiexh.model.rest.order.user.response.UserCampaignOrderDetailResponse;
@@ -80,7 +81,15 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	public Page<AdminCampaignOrderResponsePage> getAdminCampaignOrderInPage(Specification<CampaignOrderEntity> specification,
 																			Pageable pageable) {
 		return campaignOrderRepository.findAll(specification, pageable)
-			.map(campaignOrderMapper::entityToAdminResponsePage);
+			.map( entity -> {
+				AdminCampaignOrderResponsePage page = campaignOrderMapper.entityToAdminResponsePage(entity);
+				BigDecimal totalPrice = BigDecimal.ZERO;
+				for (OrderDetailResponse orderDetail : page.getOrderDetails()) {
+					totalPrice = totalPrice.add(orderDetail.getPrice().getAmount().multiply(BigDecimal.valueOf(orderDetail.getQuantity())));
+				}
+				page.setTotalPrice(totalPrice.add(page.getShippingFee()));
+				return page;
+			});
 	}
 
 	@Override
