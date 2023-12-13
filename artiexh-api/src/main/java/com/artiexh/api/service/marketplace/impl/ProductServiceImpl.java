@@ -78,7 +78,7 @@ public class ProductServiceImpl implements ProductService {
 	public Page<ProductMarketplaceResponse> getAllByArtist(String artistUsername, Pageable pageable, ProductPageFilter filter) {
 		if (artistRepository.existsByUsername(artistUsername)) {
 			filter.setArtistUsername(artistUsername);
-			return getAllMarketplaceResponse(pageable, filter.getMarketplaceQuery());
+			return getAllMarketplaceResponse(pageable, filter.getMarketplaceQuery(true));
 		} else {
 			throw new EntityNotFoundException("Artist not found");
 		}
@@ -106,53 +106,4 @@ public class ProductServiceImpl implements ProductService {
 	public void refreshOpenSearchIndex() {
 		productOpenSearchService.refreshIndex();
 	}
-
-//	@Override
-//	public Page<Product> getInPage(Query query, Pageable pageable) {
-//		var productPage = openSearchProductService.getInPage(query, pageable);
-//		return jpaProductService.fillProductPage(productPage);
-//	}
-//
-//	@Override
-//	public Product getDetail(long id) {
-//		return jpaProductService.getDetail(id);
-//	}
-//
-//	@Override
-//	public Product create(long artistId, Product product, ProductInCampaignEntity productInCampaign) {
-//		Product result;
-//		try {
-//			result = jpaProductService.create(artistId, product, productInCampaign);
-//			openSearchProductService.save(result);
-//		} catch (Exception e) {
-//			log.warn("Insert product to db fail", e);
-//			throw e;
-//		}
-//		return result;
-//	}
-//
-//	@Override
-//	public Product update(long artistId, Product product) {
-//		Product result;
-//		try {
-//			result = jpaProductService.update(artistId, product);
-//			openSearchProductService.update(result);
-//		} catch (Exception e) {
-//			log.warn("Update product to db fail", e);
-//			throw e;
-//		}
-//		return result;
-//	}
-//
-//	@Override
-//	public void delete(long userId, long productId) {
-//		try {
-//			jpaProductService.delete(userId, productId);
-//			openSearchProductService.delete(productId);
-//		} catch (Exception e) {
-//			log.warn("Delete product from db fail", e);
-//			throw e;
-//		}
-//
-//	}
 }
