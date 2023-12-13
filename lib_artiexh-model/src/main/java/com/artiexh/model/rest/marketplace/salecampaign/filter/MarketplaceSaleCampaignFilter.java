@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
@@ -63,7 +64,7 @@ public class MarketplaceSaleCampaignFilter {
 		};
 	}
 
-	public Specification<CampaignSaleEntity> getMarketplaceSpecification() {
+	public Specification<CampaignSaleEntity> getMarketplaceSpecification(boolean isArtistPage) {
 		Specification<CampaignSaleEntity> marketplaceCampaignSpec = (root, query, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
 
@@ -75,11 +76,13 @@ public class MarketplaceSaleCampaignFilter {
 
 			predicates.add(builder.equal(root.get("status"), CampaignSaleStatus.ACTIVE.getByteValue()));
 
-			if (campaignType != null && CampaignType.MARKETPLACE_VIEW_TYPE.contains(campaignType)) {
+			Set<CampaignType> allowedViewType = isArtistPage ? CampaignType.ARTIST_VIEW_TYPE : CampaignType.MARKETPLACE_VIEW_TYPE;
+
+			if (campaignType != null && allowedViewType.contains(campaignType)) {
 				predicates.add(builder.equal(root.get("type"), campaignType.getByteValue()));
 			} else {
 				predicates.add(root.get("type").in(
-					CampaignType.MARKETPLACE_VIEW_TYPE.stream()
+					allowedViewType.stream()
 						.map(CampaignType::getByteValue)
 						.collect(Collectors.toSet())
 				));
@@ -89,4 +92,5 @@ public class MarketplaceSaleCampaignFilter {
 		};
 		return getSpecification().and(marketplaceCampaignSpec);
 	}
+
 }
