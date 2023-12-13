@@ -5,7 +5,6 @@ import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.api.service.marketplace.SaleCampaignService;
-import com.artiexh.model.mapper.ProductMapper;
 import com.artiexh.model.rest.PageResponse;
 import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.marketplace.salecampaign.filter.ProductPageFilter;
@@ -33,7 +32,6 @@ import java.util.Set;
 public class SaleCampaignController {
 	private final SaleCampaignService saleCampaignService;
 	private final ProductService productService;
-	private final ProductMapper productMapper;
 
 	@PostMapping
 	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")

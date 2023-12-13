@@ -2,7 +2,6 @@ package com.artiexh.api.service.marketplace.impl;
 
 import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.base.exception.InvalidException;
-import com.artiexh.api.base.service.SystemConfigService;
 import com.artiexh.api.service.marketplace.ProductOpenSearchService;
 import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.api.service.marketplace.SaleCampaignService;
@@ -54,7 +53,6 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 	private final CampaignSaleMapper campaignSaleMapper;
 	private final ProductMapper productMapper;
 	private final ProductService productService;
-	private final SystemConfigService systemConfigService;
 	private final ProductOpenSearchService productOpenSearchService;
 	private final ProductInventoryJpaService productInventoryJpaService;
 	private final NotificationService notificationService;
@@ -179,18 +177,24 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 		CampaignSaleEntity entity = campaignSaleRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException("Chiến dịch bán " + id + " không tìm thấy"));
 
-		Instant now = Instant.now();
-
-		if (now.isAfter(entity.getTo())) {
+		if (entity.getStatus() == CampaignSaleStatus.CLOSED.getByteValue()) {
 			throw new InvalidException(ErrorCode.UPDATE_SALE_CAMPAIGN_FAILED);
 		}
 
-		if (now.isAfter(entity.getFrom())) {
-			if (request.getFrom() != entity.getFrom()) {
-				throw new InvalidException(ErrorCode.UPDATE_FROM_FAILED);
+		if (entity.getStatus() == CampaignSaleStatus.ACTIVE.getByteValue()) {
+			Instant now = Instant.now();
+
+			if (now.isAfter(entity.getTo())) {
+				throw new InvalidException(ErrorCode.UPDATE_SALE_CAMPAIGN_FAILED);
 			}
-			if (request.getPublicDate() != entity.getPublicDate()) {
-				throw new InvalidException(ErrorCode.UPDATE_PUBLIC_DATE_FAILED);
+
+			if (now.isAfter(entity.getFrom())) {
+				if (request.getFrom() != entity.getFrom()) {
+					throw new InvalidException(ErrorCode.UPDATE_FROM_FAILED);
+				}
+				if (request.getPublicDate() != entity.getPublicDate()) {
+					throw new InvalidException(ErrorCode.UPDATE_PUBLIC_DATE_FAILED);
+				}
 			}
 		}
 
@@ -349,7 +353,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			throw new EntityNotFoundException();
 		}
 		filter.setUsername(artistUsername);
-		return getAll(pageable, filter.getMarketplaceSpecification());
+		return getAll(pageable, filter.getMarketplaceSpecification(true));
 	}
 
 	@Override
@@ -458,8 +462,8 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 		ProductEntity productEntity = productRepository.findById(new ProductEntityId(productCode, campaignId))
 			.orElseThrow(() -> new EntityNotFoundException("Product " + productCode + " in campaign " + campaignId + " not found"));
 
-		if (productEntity.getCampaignSale().getStatus() != CampaignSaleStatus.DRAFT.getByteValue()) {
-			throw new InvalidException(ErrorCode.ADD_PRODUCT_CAMPAIGN_SALE_FAILED);
+		if (productEntity.getCampaignSale().getStatus() == CampaignSaleStatus.CLOSED.getByteValue()) {
+			throw new InvalidException(ErrorCode.UPDATE_PRODUCT_CAMPAIGN_SALE_FAILED);
 		}
 
 		if (request.getQuantity() != null) {
@@ -509,7 +513,8 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 	@Transactional
 	public void closeExpiredSaleCampaigns() {
 		Instant closedTime = Instant.now().minus(Duration.ofDays(3));
-		campaignSaleRepository.closeExpiredSaleCampaigns(closedTime, Instant.now());
+		campaignSaleRepository.streamAllByStatusAndToBefore(CampaignSaleStatus.ACTIVE.getByteValue(), closedTime)
+			.forEach(campaignSaleEntity -> updateCampaignFromActive(campaignSaleEntity, CampaignSaleStatus.CLOSED));
 	}
 
 	@Override

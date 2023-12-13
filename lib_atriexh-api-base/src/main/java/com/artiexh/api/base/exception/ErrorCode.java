@@ -128,6 +128,7 @@ public enum ErrorCode {
 	//CAMPAIGN_SALE
 	CAMPAIGN_SALE_UNOPENED(HttpStatus.BAD_REQUEST, "Chiến dịch hiện không cho phép đặt hàng sản phẩm"),
 	ADD_PRODUCT_CAMPAIGN_SALE_FAILED(HttpStatus.BAD_REQUEST, "Không thể thêm sản phẩm khi chiến dịch không ở trạng thái DRAFT"),
+	UPDATE_PRODUCT_CAMPAIGN_SALE_FAILED(HttpStatus.BAD_REQUEST, "Không thể cập  nhậtsản phẩm khi chiến dịch ở trạng thái CLOSED"),
 	ADD_PRODUCT_CAMPAIGN_SALE_FROM_REQUEST_FAILED(HttpStatus.BAD_REQUEST, "Không thể thêm sản phẩm vào chiến dịch được tạo từ yêu cầu chiến dịch"),
 	DELETE_PRODUCT_CAMPAIGN_SALE_FAILED(HttpStatus.BAD_REQUEST, "Không thể xóa sản phẩm khi chiến dịch không ở trạng thái DRAFT"),
 	DELETE_PRODUCT_CAMPAIGN_SALE_FROM_REQUEST_FAILED(HttpStatus.BAD_REQUEST, "Không thể xóa sản phẩm vào chiến dịch được tạo từ yêu cầu chiến dịch"),
