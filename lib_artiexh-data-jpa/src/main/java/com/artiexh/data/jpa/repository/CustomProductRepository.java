@@ -16,6 +16,6 @@ public interface CustomProductRepository extends JpaRepository<CustomProductEnti
 	Optional<CustomProductEntity> findByIdAndArtistId(Long id, Long artistId);
 
 	@Modifying
-	@Query(value = "delete from CustomProductEntity item where item.id = :id")
+	@Query(value = "update CustomProductEntity item set item.isDeleted = true where item.id = :id")
 	void deleteById(@NotNull @Param("id") Long id);
 }

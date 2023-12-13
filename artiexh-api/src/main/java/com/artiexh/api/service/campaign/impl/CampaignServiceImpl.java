@@ -22,7 +22,6 @@ import com.artiexh.model.rest.campaign.response.*;
 import com.artiexh.model.rest.product.response.ProductResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -88,6 +87,9 @@ public class CampaignServiceImpl implements CampaignService {
 
 		var savedProductInCampaigns = request.getProducts().stream().map(productInCampaignRequest -> {
 			var customProductEntity = customProductRepository.getReferenceById(productInCampaignRequest.getCustomProductId());
+			if (Boolean.TRUE.equals(customProductEntity.getIsDeleted())) {
+				throw new InvalidException(ErrorCode.DELETED_CUSTOM_PRODUCT);
+			}
 
 			var productInCampaignEntity = productInCampaignMapper.createRequestToEntity(productInCampaignRequest);
 			productInCampaignEntity.setCustomProduct(customProductEntity);
@@ -174,6 +176,9 @@ public class CampaignServiceImpl implements CampaignService {
 					productInCampaignEntity.setCampaign(oldCampaignEntity);
 				}
 
+				if (Boolean.TRUE.equals(productInCampaignEntity.getCustomProduct().getIsDeleted())) {
+					throw new InvalidException(ErrorCode.DELETED_CUSTOM_PRODUCT);
+				}
 				return productInCampaignRepository.save(productInCampaignEntity);
 			})
 			.collect(Collectors.toSet());

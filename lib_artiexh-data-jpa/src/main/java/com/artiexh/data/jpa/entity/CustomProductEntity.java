@@ -71,4 +71,9 @@ public class CustomProductEntity extends BaseAuditEntity {
 		cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = "custom_product_id")
 	private Set<ProductAttachEntity> attaches;
+
+	@Builder.Default
+	@Column(name = "is_deleted")
+	private Boolean isDeleted = false;
+
 }

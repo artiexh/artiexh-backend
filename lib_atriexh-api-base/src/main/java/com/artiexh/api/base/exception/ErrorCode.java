@@ -89,6 +89,7 @@ public enum ErrorCode {
 	QUANTITY_RANGE_INVALID(HttpStatus.BAD_REQUEST, "Số lượng sản phẩm phải lớn hơn số lượng sản xuất tối thiểu"),
 	PRICE_RANGE_INVALID(HttpStatus.BAD_REQUEST, "Giá sản phẩm phải lớn hơn giá sản xuất tối thiểu"),
 	LOCKED_CUSTOM_PRODUCT(HttpStatus.BAD_REQUEST, "Thiết kế của bạn hiện tại đang thuộc chiến dịch khác"),
+	DELETED_CUSTOM_PRODUCT(HttpStatus.BAD_REQUEST, "Thiết kế của bạn đã bị xóa"),
 	COMBINATION_CODE_INVALID(HttpStatus.BAD_REQUEST, "Combination code không hợp lệ"),
 	IMAGE_SET_POSITION_INVALID(HttpStatus.BAD_REQUEST, "Vị trí ảnh không hợp lệ"),
 	IMAGE_SET_INVALID(HttpStatus.BAD_REQUEST, "Không thể tạo image set mà không có combination code"),
