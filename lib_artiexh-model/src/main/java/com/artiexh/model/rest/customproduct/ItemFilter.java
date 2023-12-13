@@ -33,6 +33,8 @@ public class ItemFilter {
 			List<Predicate> predicates = new ArrayList<>();
 			predicates.add(builder.equal(root.get("artist").get("id"), artistId));
 
+			predicates.add(builder.equal(root.get("isDeleted"), false));
+
 			if (name != null) {
 				predicates.add(builder.like(root.get("name"), "%" + name + "%"));
 			}
