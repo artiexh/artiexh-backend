@@ -355,7 +355,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			throw new EntityNotFoundException();
 		}
 		filter.setUsername(artistUsername);
-		return getAll(pageable, filter.getMarketplaceSpecification());
+		return getAll(pageable, filter.getMarketplaceSpecification(true));
 	}
 
 	@Override
