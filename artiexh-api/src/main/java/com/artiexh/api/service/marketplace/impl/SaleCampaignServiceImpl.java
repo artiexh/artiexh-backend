@@ -2,7 +2,6 @@ package com.artiexh.api.service.marketplace.impl;
 
 import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.base.exception.InvalidException;
-import com.artiexh.api.base.service.SystemConfigService;
 import com.artiexh.api.service.marketplace.ProductOpenSearchService;
 import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.api.service.marketplace.SaleCampaignService;
@@ -54,7 +53,6 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 	private final CampaignSaleMapper campaignSaleMapper;
 	private final ProductMapper productMapper;
 	private final ProductService productService;
-	private final SystemConfigService systemConfigService;
 	private final ProductOpenSearchService productOpenSearchService;
 	private final ProductInventoryJpaService productInventoryJpaService;
 	private final NotificationService notificationService;
@@ -515,7 +513,8 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 	@Transactional
 	public void closeExpiredSaleCampaigns() {
 		Instant closedTime = Instant.now().minus(Duration.ofDays(3));
-		campaignSaleRepository.closeExpiredSaleCampaigns(closedTime, Instant.now());
+		campaignSaleRepository.streamAllByStatusAndToBefore(CampaignSaleStatus.ACTIVE.getByteValue(), closedTime)
+			.forEach(campaignSaleEntity -> updateCampaignFromActive(campaignSaleEntity, CampaignSaleStatus.CLOSED));
 	}
 
 	@Override
