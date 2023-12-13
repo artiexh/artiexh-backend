@@ -30,16 +30,6 @@ public interface ProductRepository extends JpaRepository<ProductEntity, ProductE
 	)
 	Set<ProductInSaleId> findAllByCampaignSaleId(@Param("id") Long campaignSaleId);
 
-//	@Modifying
-//	@Query("update ProductEntity entity set entity.status = cast(1 as byte) where entity.id = :id")
-//	void softDelete(long id);
-//
-//	Set<ProductEntity> findAllByIdInAndShopIdAndStatus(Set<Long> ids, Long shopId, byte status);
-//
-//	Set<ProductEntity> findAllByIdIn(Set<Long> ids);
-
-//	int countAllByIdIn(Collection<Long> id);
-
 	Page<ProductEntity> findProductEntitiesByCampaignSaleId(Long campaignSaleId, Pageable pageable);
 
 	@QueryHints(value = {
@@ -48,5 +38,6 @@ public interface ProductRepository extends JpaRepository<ProductEntity, ProductE
 		@QueryHint(name = HINT_READ_ONLY, value = "true")
 	})
 	@Query("select p from ProductEntity p")
-	Stream<ProductEntity> streamAllByAvailableStatus();
+	Stream<ProductEntity> streamAll();
+
 }
