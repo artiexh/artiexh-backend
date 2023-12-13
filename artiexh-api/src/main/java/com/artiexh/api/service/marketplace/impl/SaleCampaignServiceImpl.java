@@ -466,24 +466,69 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			throw new InvalidException(ErrorCode.UPDATE_PRODUCT_CAMPAIGN_SALE_FAILED);
 		}
 
-		if (request.getQuantity() != null) {
-			int compareResult = Integer.compare(request.getQuantity(), productEntity.getQuantity());
-			if (compareResult > 0 && productEntity.getProductInventory().getQuantity() < request.getQuantity()) {
-				// check inventory quantity
-				throw new InvalidException(ErrorCode.QUANTITY_NOT_ENOUGH);
-			}
-			if (compareResult < 0 && request.getQuantity() < productEntity.getSoldQuantity()) {
-				// check sold quantity
-				throw new InvalidException(ErrorCode.QUANTITY_INVALID);
+		if (request.getPrice() != null) {
+			if (productEntity.getCampaignSale().getCampaignRequest() != null) {
+				throw new InvalidException(ErrorCode.UPDATE_PRODUCT_CAMPAIGN_SALE_FROM_REQUEST_FAILED);
+			} else {
+				productEntity.setPriceAmount(request.getPrice().getAmount());
+				productEntity.setPriceUnit(request.getPrice().getUnit());
 			}
 		}
 
-		productEntity.setQuantity(request.getQuantity());
-		if (request.getPrice() != null) {
-			productEntity.setPriceAmount(request.getPrice().getAmount());
-			productEntity.setPriceUnit(request.getPrice().getUnit());
+		if (request.getArtistProfit() != null) {
+			if (productEntity.getCampaignSale().getCampaignRequest() != null) {
+				throw new InvalidException(ErrorCode.UPDATE_PRODUCT_CAMPAIGN_SALE_FROM_REQUEST_FAILED);
+			} else {
+				productEntity.setArtistProfit(request.getArtistProfit());
+			}
 		}
-		productEntity.setArtistProfit(request.getArtistProfit());
+
+		if (request.getQuantity() != null) {
+			int compareResult = Integer.compare(request.getQuantity(), productEntity.getQuantity());
+
+			if (compareResult > 0) {
+				// add quantity
+				if (productEntity.getProductInventory().getQuantity() < (request.getQuantity() - productEntity.getQuantity())) {
+					throw new InvalidException(ErrorCode.QUANTITY_NOT_ENOUGH);
+				} else {
+					Set<ProductInventoryQuantity> productQuantities = Set.of(
+						ProductInventoryQuantity.builder()
+							.productCode(productEntity.getProductInventory().getProductCode())
+							.quantity((long) request.getQuantity() - productEntity.getQuantity())
+							.build()
+					);
+					productInventoryJpaService.reduceQuantity(
+						campaignId,
+						productEntity.getCampaignSale().getName(),
+						SourceCategory.CAMPAIGN_SALE,
+						productQuantities
+					);
+					productEntity.setQuantity(request.getQuantity());
+				}
+			}
+
+			if (compareResult < 0) {
+				// reduce quantity
+				if (request.getQuantity() < productEntity.getSoldQuantity()) {
+					// check sold quantity
+					throw new InvalidException(ErrorCode.QUANTITY_INVALID);
+				} else {
+					Set<ProductInventoryQuantity> productQuantities = Set.of(
+						ProductInventoryQuantity.builder()
+							.productCode(productEntity.getProductInventory().getProductCode())
+							.quantity((long) productEntity.getQuantity() - request.getQuantity())
+							.build()
+					);
+					productInventoryJpaService.refundQuantity(
+						campaignId,
+						productEntity.getCampaignSale().getName(),
+						SourceCategory.CAMPAIGN_SALE,
+						productQuantities
+					);
+					productEntity.setQuantity(request.getQuantity());
+				}
+			}
+		}
 
 		return productMapper.domainToProductResponse(productService.update(productEntity));
 	}
