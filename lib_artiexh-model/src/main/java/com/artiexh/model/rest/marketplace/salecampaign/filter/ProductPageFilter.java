@@ -1,6 +1,7 @@
 package com.artiexh.model.rest.marketplace.salecampaign.filter;
 
 import com.artiexh.model.domain.CampaignSaleStatus;
+import com.artiexh.model.domain.CampaignType;
 import com.artiexh.model.domain.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -88,15 +89,23 @@ public class ProductPageFilter {
 		return queryBuilder.build();
 	}
 
-	public Query getMarketplaceQuery() {
+	public Query getMarketplaceQuery(boolean isArtistPage) {
 		var activeCampaignFilter = new BoolQueryBuilder();
 		activeCampaignFilter.should(new RangeQueryBuilder("campaign.public_date").lte(Instant.now()));
 		activeCampaignFilter.should(new RangeQueryBuilder("campaign.from").lte(Instant.now()));
 		activeCampaignFilter.minimumShouldMatch(1);
 
+		var campaignTypeFilter = new BoolQueryBuilder();
+		Set<CampaignType> allowedViewType = isArtistPage ? CampaignType.ARTIST_VIEW_TYPE : CampaignType.MARKETPLACE_VIEW_TYPE;
+		for (var campaignType : allowedViewType) {
+			campaignTypeFilter.should(new TermQueryBuilder("campaign.type", campaignType.getByteValue()));
+		}
+		campaignTypeFilter.minimumShouldMatch(1);
+
 		var filterQuery = new BoolQueryBuilder();
 		filterQuery.must(new TermQueryBuilder("campaign.status", CampaignSaleStatus.ACTIVE.getByteValue()));
 		filterQuery.must(activeCampaignFilter);
+		filterQuery.must(campaignTypeFilter);
 
 		BoolQueryBuilder boolQuery = getBoolQueryInFilter();
 

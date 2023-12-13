@@ -75,7 +75,7 @@ public class MarketplaceController {
 																		@ParameterObject ProductPageFilter filter) {
 		return new PageResponse<>(productService.getAllMarketplaceResponse(
 			paginationAndSortingRequest.getPageable(),
-			filter.getMarketplaceQuery())
+			filter.getMarketplaceQuery(false))
 		);
 	}
 
