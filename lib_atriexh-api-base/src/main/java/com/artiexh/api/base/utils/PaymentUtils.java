@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -27,7 +28,8 @@ public class PaymentUtils {
 											String vnpCurrCode,
 											String vnpLocale,
 											String vnpPaymentViewUrl,
-											String vnpSecretHash) {
+											String vnpSecretHash,
+											Duration expireTime) {
 		Map<String, String> vnpParams = new HashMap<>();
 		vnpParams.put("vnp_Version", vnpVersion);
 		vnpParams.put("vnp_Command", vnpCommand);
@@ -62,7 +64,7 @@ public class PaymentUtils {
 		String vnpCreateDate = time.format(formatter);
 
 		vnpParams.put("vnp_CreateDate", vnpCreateDate);
-		time = time.plusMinutes(15);
+		time = time.plus(expireTime);
 		String vnpExpireDate = time.format(formatter);
 		vnpParams.put("vnp_ExpireDate", vnpExpireDate);
 		List<String> fieldNames = new ArrayList<>(vnpParams.keySet());

@@ -10,6 +10,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+
 @Log4j2
 @Service
 @RequiredArgsConstructor
@@ -32,6 +34,21 @@ public class SystemConfigHelper {
 				log.warn("WardId not existed");
 				return new ArtiexhConfigException("WardId not existed");
 			});
+	}
+
+	public Duration getDuration(String key, long defaultMillis) {
+		try {
+			String value = systemConfigService.get(key);
+			if (value == null) {
+				log.warn("Duration is not configured, using default value");
+				return Duration.ofMillis(defaultMillis);
+			}
+			long longValue = Long.parseLong(value);
+			return Duration.ofMillis(longValue);
+		} catch (Exception ex) {
+			log.warn("Duration is not a valid format");
+			return Duration.ofMillis(defaultMillis);
+		}
 	}
 
 }

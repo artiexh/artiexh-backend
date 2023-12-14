@@ -61,6 +61,7 @@ public enum ErrorCode {
 	CANCEL_GHTK_ORDER_FAILED(HttpStatus.BAD_REQUEST, "Không thể hủy đơn vận chuyển Giao Hàng Tiết Kiệm"),
 	GET_GHTK_SHIPPING_FEE_FAILED(HttpStatus.BAD_REQUEST, "Lỗi không tính được phí vận chuyển"),
 	CANCEL_ORDER_FAIL(HttpStatus.BAD_REQUEST, "Hủy đơn hàng thất bại"),
+	TIMEOUT_ORDER(HttpStatus.BAD_REQUEST, "Đơn hàng đã quá thời gian cho phép"),
 
 	//Campaign Order
 	CAMPAIGN_ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "Đơn hàng không tồn tại"),
