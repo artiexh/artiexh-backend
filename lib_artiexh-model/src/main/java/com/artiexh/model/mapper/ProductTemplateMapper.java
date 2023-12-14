@@ -19,11 +19,13 @@ import java.util.stream.Collectors;
 	uses = {ProviderMapper.class, ProductCategoryMapper.class, ProductAttachMapper.class, MediaMapper.class, DateTimeMapper.class}
 )
 public interface ProductTemplateMapper {
+	@Mapping(target = "isDeleted", source = "deleted")
 	ProductTemplate entityToDomain(ProductTemplateEntity entity, @Context CycleAvoidingMappingContext context);
 
 	@Named("entityToBasicDomain")
 	@Mapping(target = "providers", ignore = true)
 	@Mapping(target = "productVariants", ignore = true)
+	@Mapping(target = "isDeleted", source = "deleted")
 	ProductTemplate entityToBasicDomain(ProductTemplateEntity entity);
 
 	@Mapping(target = "createdDate", ignore = true)
@@ -37,6 +39,7 @@ public interface ProductTemplateMapper {
 	ProductTemplateEntity domainToEntity(ProductTemplate domain, @MappingTarget ProductTemplateEntity entity);
 
 	@Mapping(target = "category", source = "categoryId")
+	@Mapping(target = "isDeleted", source = "isDeleted")
 	@Mapping(target = "providers", source = "businessCodes")
 	@Mapping(target = "modelFile", source = "modelFileId", qualifiedByName = "idToDomain")
 	ProductTemplate detailToDomain(ProductTemplateDetail detail);
@@ -46,9 +49,11 @@ public interface ProductTemplateMapper {
 	ProductTemplate detailToDomain(UpdateProductTemplateDetail detail);
 
 	@Mapping(target = "providers", source = "providers", qualifiedByName = "domainSetToDetailSetWithoutProductTemplates")
+	@Mapping(target = "isDeleted", source = "deleted")
 	ProductTemplateDetail domainToDetail(ProductTemplate domain);
 
 	@Named("domainToInfo")
+	@Mapping(target = "isDeleted", source = "deleted")
 	ProductTemplateInfo domainToInfo(ProductTemplate domain);
 
 	@IterableMapping(qualifiedByName = "domainToInfo")

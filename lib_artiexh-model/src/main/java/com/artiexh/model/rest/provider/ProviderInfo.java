@@ -54,5 +54,5 @@ public class ProviderInfo {
 	private Set<ProviderCategory> categories;
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	private boolean isDeleted;
+	private Boolean isDeleted;
 }
