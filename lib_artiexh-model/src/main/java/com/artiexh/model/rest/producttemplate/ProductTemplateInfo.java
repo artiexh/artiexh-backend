@@ -83,4 +83,7 @@ public class ProductTemplateInfo {
 	@Size(max = 20)
 	@NotBlank
 	private String code;
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private Boolean isDeleted;
 }

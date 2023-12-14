@@ -26,18 +26,22 @@ public interface ProviderMapper {
 	@Mapping(target = "productTemplates", ignore = true)
 	ProviderEntity domainToEntity(Provider domain, @MappingTarget ProviderEntity entity);
 
+	@Mapping(target = "isDeleted", source = "deleted")
 	Provider entityToDomain(ProviderEntity entity, @Context CycleAvoidingMappingContext context);
 
 	@Named("entityToBasicDomain")
 	@Mapping(target = "productVariants", ignore = true)
 	@Mapping(target = "productTemplates", ignore = true)
+	@Mapping(target = "isDeleted", source = "deleted")
 	Provider entityToBasicDomain(ProviderEntity entity);
 
 	@Mapping(target = "productTemplates", source = "productTemplates", qualifiedByName = "domainSetToInfoSet")
+	@Mapping(target = "isDeleted", source = "deleted")
 	ProviderDetail domainToDetail(Provider domain);
 
 	@Mapping(target = "productTemplates", source = "productTemplates", ignore = true)
 	@Named("domainToDetailWithoutProductTemplates")
+	@Mapping(target = "isDeleted", source = "deleted")
 	ProviderDetail domainToDetailWithoutProductTemplates(Provider domain);
 
 	@IterableMapping(qualifiedByName = "domainToDetailWithoutProductTemplates")
@@ -45,6 +49,7 @@ public interface ProviderMapper {
 	Set<ProviderDetail> domainSetToDetailSetWithoutProductTemplates(Set<Provider> domain);
 
 	@Named("domainToInfo")
+	@Mapping(target = "isDeleted", source = "deleted")
 	ProviderInfo domainToInfo(Provider domain);
 
 	@Mapping(target = "categoryIds", ignore = true)

@@ -102,7 +102,7 @@ public class ProductTemplateServiceImpl implements ProductTemplateService {
 	@Transactional(readOnly = true)
 	public ProductTemplate getById(Long id) {
 		ProductTemplateEntity entity = productTemplateRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage() + id));
+			.orElseThrow(EntityNotFoundException::new);
 		return productTemplateMapper.entityToDomain(entity, new CycleAvoidingMappingContext());
 	}
 
@@ -132,5 +132,13 @@ public class ProductTemplateServiceImpl implements ProductTemplateService {
 		}
 
 		return productTemplateMapper.entityToDomain(entity, new CycleAvoidingMappingContext());
+	}
+
+	@Override
+	@Transactional
+	public void delete(Long id) {
+		ProductTemplateEntity entity = productTemplateRepository.findById(id)
+			.orElseThrow(EntityNotFoundException::new);
+		productTemplateRepository.delete(id);
 	}
 }

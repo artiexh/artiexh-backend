@@ -5,10 +5,7 @@ import com.artiexh.data.jpa.entity.embededmodel.OptionConfig;
 import io.hypersistence.utils.hibernate.id.Tsid;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Type;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -83,4 +80,8 @@ public class ProductTemplateEntity extends BaseAuditEntity {
 
 	@Column(name = "code", length = 20)
 	private String code;
+
+	@Column(name = "is_deleted", nullable = false)
+	@Builder.Default
+	private boolean isDeleted = false;
 }
