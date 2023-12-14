@@ -24,7 +24,7 @@ public interface ProviderRepository extends JpaRepository<ProviderEntity, String
 		select provider
 		from ProviderEntity provider
 		left join ProductVariantProviderEntity config on provider.businessCode = config.id.businessCode
-		where config.id.productVariantId in :variantIds""")
+		where config.id.productVariantId in :variantIds and provider.isDeleted = false""")
 	Set<ProviderEntity> findAllByProductVariantIds(Set<Long> variantIds);
 
 	int countByBusinessCodeIn(Set<String> businessCode);
