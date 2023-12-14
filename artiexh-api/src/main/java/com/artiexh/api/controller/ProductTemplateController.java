@@ -98,7 +98,7 @@ public class ProductTemplateController {
 
 	}
 
-	@GetMapping(Endpoint.ProductTemplate.DETAIL)
+	@DeleteMapping(Endpoint.ProductTemplate.DETAIL)
 	public void delete(@PathVariable("id") Long id) {
 		try {
 			productTemplateService.delete(id);

@@ -19,7 +19,7 @@ public interface ProductTemplateRepository extends JpaRepository<ProductTemplate
 		"where product.id = :productTemplateId and product.hasVariant = false")
 	void updateVariant(@Param("productTemplateId") Long productTemplateId);
 
-	@Modifying
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Query("update ProductTemplateEntity template set template.isDeleted = true where template.id = :id")
 	void delete(@Param("id") Long id);
 

@@ -75,7 +75,7 @@ public class ProviderController {
 		}
 	}
 
-	@GetMapping(Endpoint.Provider.DETAIL)
+	@DeleteMapping(Endpoint.Provider.DETAIL)
 	public void delete(@PathVariable("id") String businessCode) {
 		try {
 			providerService.delete(businessCode);

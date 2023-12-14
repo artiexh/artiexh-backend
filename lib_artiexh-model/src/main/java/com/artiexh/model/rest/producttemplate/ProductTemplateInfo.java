@@ -85,5 +85,5 @@ public class ProductTemplateInfo {
 	private String code;
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	private boolean isDeleted;
+	private Boolean isDeleted;
 }
