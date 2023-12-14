@@ -14,6 +14,8 @@ public final class Const {
 		public static final String ARTIEXH_PICK_EMAIL = "artiexh.pick.email";
 		public static final String ARTIEXH_PICK_NAME = "artiexh.pick.name";
 		public static final String DEFAULT_PROFIT_PERCENTAGE = "artiexh.profit.percentage";
+		public static final String ORDER_TIMEOUT = "order.timeout";
+		public static final String ORDER_PAYING_TIMEOUT = "order.paying.timeout";
 	}
 
 }

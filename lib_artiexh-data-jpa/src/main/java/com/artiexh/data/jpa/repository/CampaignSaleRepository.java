@@ -20,7 +20,6 @@ public interface CampaignSaleRepository
 	@QueryHints(value = {
 		@QueryHint(name = HibernateHints.HINT_FETCH_SIZE, value = "1"),
 		@QueryHint(name = HibernateHints.HINT_CACHEABLE, value = "false"),
-		@QueryHint(name = HibernateHints.HINT_READ_ONLY, value = "true")
 	})
 	Stream<CampaignSaleEntity> streamAllByStatusAndToBefore(byte status, Instant to);
 }

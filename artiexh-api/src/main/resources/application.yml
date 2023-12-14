@@ -25,7 +25,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
-    show-sql: true
+    show-sql: false
   data:
     redis:
       host: ${REDIS_HOST:}
@@ -109,3 +109,4 @@ artiexh:
     token: ${GHTK_TOKEN:}
 cron:
   close-expired-sale-campaigns: ${CRON_CLOSE_EXPIRED_SALE_CAMPAIGNS:}
+  close-timeout-orders: ${CRON_CLOSE_TIMEOUT_ORDERS:}
