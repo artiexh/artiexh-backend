@@ -186,11 +186,13 @@ public class CustomProductServiceImpl implements CustomProductService {
 		return imageSets.stream()
 			.map(imageSet -> {
 				var imageSetEntityBuilder = ImageSetEntity.builder()
-					.positionCode(imageSet.getPositionCode())
-					.mockupImage(mediaRepository.findByIdAndOwnerId(imageSet.getMockupImageId(), artistId)
-						.orElseThrow(() ->
+					.positionCode(imageSet.getPositionCode());
+				if (imageSet.getMockupImageId() != null) {
+					imageSetEntityBuilder.mockupImage(
+						mediaRepository.findByIdAndOwnerId(imageSet.getMockupImageId(), artistId).orElseThrow(() ->
 							new InvalidException(ErrorCode.MOCKUP_IMAGE_NOT_FOUND)
 						));
+				}
 
 				if (imageSet.getManufacturingImageId() != null) {
 					imageSetEntityBuilder.manufacturingImage(

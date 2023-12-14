@@ -42,7 +42,6 @@ public class CustomProductDesignRequest {
 	public static class ImageSet {
 		@NotNull
 		private String positionCode;
-		@NotNull
 		private Long mockupImageId;
 		private Long manufacturingImageId;
 	}
