@@ -22,11 +22,15 @@ public class ProductTemplateFilter {
 	private String name;
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long categoryId;
+	private Boolean isDeleted;
 
 	public Specification<ProductTemplateEntity> getSpecification() {
 		return (root, cQuery, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			predicates.add(builder.equal(root.get("hasVariant"), true));
+			if (isDeleted != null) {
+				predicates.add(builder.equal(root.get("isDeleted"), isDeleted));
+			}
 			if (StringUtils.isNotBlank(name)) {
 				predicates.add(builder.like(root.get("name"), "%" + name + "%"));
 			}

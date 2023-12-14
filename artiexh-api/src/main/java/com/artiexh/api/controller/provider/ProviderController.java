@@ -75,4 +75,13 @@ public class ProviderController {
 		}
 	}
 
+	@DeleteMapping(Endpoint.Provider.DETAIL)
+	public void delete(@PathVariable("id") String businessCode) {
+		try {
+			providerService.delete(businessCode);
+		} catch (EntityNotFoundException exception) {
+			throw new InvalidException(ErrorCode.PROVIDER_NOT_FOUND);
+		}
+
+	}
 }

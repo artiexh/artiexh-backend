@@ -45,4 +45,6 @@ public class ProductTemplate {
 	private Set<ProductAttach> attaches;
 
 	private String code;
+
+	private boolean isDeleted;
 }

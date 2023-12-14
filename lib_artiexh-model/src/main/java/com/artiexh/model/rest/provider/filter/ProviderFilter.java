@@ -30,10 +30,14 @@ public class ProviderFilter {
 	private String businessName;
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Set<Long> categoryIds;
+	private Boolean isDeleted;
 
 	public Specification<ProviderEntity> getSpecification() {
 		return (root, cQuery, builder) -> {
 			List<Predicate> predicates = new ArrayList<>();
+			if (isDeleted != null) {
+				predicates.add(builder.equal(root.get("isDeleted"), isDeleted));
+			}
 			if (StringUtils.isNotEmpty(businessName)) {
 				predicates.add(builder.like(root.get("businessName"), "%" + businessName + "%"));
 			}

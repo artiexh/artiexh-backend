@@ -55,4 +55,7 @@ public class ProviderEntity {
 		inverseJoinColumns = @JoinColumn(name = "provider_category_id"))
 	private Set<ProviderCategoryEntity> categories = new LinkedHashSet<>();
 
+	@Column(name = "is_deleted", nullable = false)
+	@Builder.Default
+	private boolean isDeleted = false;
 }

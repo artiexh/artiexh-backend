@@ -4,6 +4,7 @@ import com.artiexh.data.jpa.entity.ProviderEntity;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -27,4 +28,8 @@ public interface ProviderRepository extends JpaRepository<ProviderEntity, String
 	Set<ProviderEntity> findAllByProductVariantIds(Set<Long> variantIds);
 
 	int countByBusinessCodeIn(Set<String> businessCode);
+
+	@Modifying
+	@Query("update ProviderEntity provider set provider.isDeleted = true where provider.businessCode = :id")
+	void delete(@Param("id") String businessCode);
 }
