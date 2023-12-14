@@ -31,4 +31,6 @@ public interface OrderService {
 
 	void cancelOrder(long orderId, long userId, String message);
 
+	void closedTimeoutOrder();
+
 }

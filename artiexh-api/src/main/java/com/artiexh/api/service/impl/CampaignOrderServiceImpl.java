@@ -81,7 +81,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	public Page<AdminCampaignOrderResponsePage> getAdminCampaignOrderInPage(Specification<CampaignOrderEntity> specification,
 																			Pageable pageable) {
 		return campaignOrderRepository.findAll(specification, pageable)
-			.map( entity -> {
+			.map(entity -> {
 				AdminCampaignOrderResponsePage page = campaignOrderMapper.entityToAdminResponsePage(entity);
 				BigDecimal totalPrice = BigDecimal.ZERO;
 				for (OrderDetailResponse orderDetail : page.getOrderDetails()) {
@@ -269,6 +269,9 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 		order.setStatus(CampaignOrderStatus.CANCELED.getByteValue());
 		campaignOrderRepository.save(order);
 
+		//Revert campaign product quantity
+		revertProductQuantity(order.getOrderDetails());
+
 		OrderHistoryEntity orderHistory = OrderHistoryEntity.builder()
 			.id(OrderHistoryId.builder()
 				.campaignOrderId(order.getId())
@@ -335,9 +338,6 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 
 		order.setStatus(CampaignOrderStatus.REFUNDING.getByteValue());
 		campaignOrderRepository.save(order);
-
-		//Revert campaign product quantity
-		revertProductQuantity(order.getOrderDetails());
 
 		OrderHistoryEntity orderHistory = OrderHistoryEntity.builder()
 			.id(OrderHistoryId.builder()

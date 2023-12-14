@@ -113,4 +113,8 @@ public class OrderEntity extends BaseAuditEntity {
 	@Column(name = "delivery_name")
 	private String deliveryName;
 
+	@Builder.Default
+	@Column(name = "status", nullable = false)
+	private Byte status = 0;
+
 }

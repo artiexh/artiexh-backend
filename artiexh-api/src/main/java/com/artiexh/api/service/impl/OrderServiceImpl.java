@@ -9,12 +9,10 @@ import com.artiexh.api.base.utils.DateTimeUtils;
 import com.artiexh.api.base.utils.PaymentUtils;
 import com.artiexh.api.base.utils.SystemConfigHelper;
 import com.artiexh.api.config.VnpConfigurationProperties;
+import com.artiexh.api.service.CampaignOrderService;
 import com.artiexh.api.service.CartService;
 import com.artiexh.api.service.OrderService;
-import com.artiexh.api.service.notification.NotificationService;
 import com.artiexh.data.jpa.entity.*;
-import com.artiexh.data.jpa.entity.embededmodel.ReferenceData;
-import com.artiexh.data.jpa.entity.embededmodel.ReferenceEntity;
 import com.artiexh.data.jpa.projection.Bill;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.model.domain.*;
@@ -29,6 +27,7 @@ import com.artiexh.model.rest.order.user.response.UserOrderResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -38,6 +37,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
@@ -49,7 +49,6 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @Slf4j
 public class OrderServiceImpl implements OrderService {
-	private final CartRepository cartRepository;
 	private final CampaignSaleRepository campaignSaleRepository;
 	private final UserRepository userRepository;
 	private final ProductRepository productRepository;
@@ -66,7 +65,9 @@ public class OrderServiceImpl implements OrderService {
 	private final StringRedisTemplate redisTemplate;
 	private final SystemConfigService systemConfigService;
 	private final SystemConfigHelper systemConfigHelper;
-	private final NotificationService notificationService;
+	private final CampaignOrderService campaignOrderService;
+	@Value("${artiexh.security.admin.id}")
+	private Long rootAdminId;
 
 	@Override
 	@Transactional(isolation = Isolation.SERIALIZABLE)
@@ -312,6 +313,16 @@ public class OrderServiceImpl implements OrderService {
 			throw new InvalidException(ErrorCode.ORDER_IS_NOT_ALLOWED);
 		}
 
+		if (bills.get(0).getOrderStatus().equals(OrderStatus.CLOSED.getByteValue())) {
+			throw new InvalidException(ErrorCode.TIMEOUT_ORDER);
+		}
+
+		Duration timeoutOrder = systemConfigHelper.getDuration(Const.SystemConfigKey.ORDER_TIMEOUT, 43200000);
+		Instant closedTime = Instant.now().minus(timeoutOrder);
+		if (bills.get(0).getCreatedDate().isBefore(closedTime)) {
+			throw new InvalidException(ErrorCode.TIMEOUT_ORDER);
+		}
+
 		BigDecimal totalPrice = BigDecimal.ZERO;
 		for (Bill bill : bills) {
 			totalPrice = totalPrice.add(bill.getOrderAmount());
@@ -320,6 +331,8 @@ public class OrderServiceImpl implements OrderService {
 		redisTemplate.boundValueOps("payment_confirm_url_" + id).set(confirmUrl);
 
 		String vnpOrderInfo = "Thanh toan don hang " + id;
+
+		Duration expireTime = systemConfigHelper.getDuration(Const.SystemConfigKey.ORDER_PAYING_TIMEOUT, 900000);
 
 		return PaymentUtils.generatePaymentUrl(
 			vnpProperties.getVersion(),
@@ -333,7 +346,8 @@ public class OrderServiceImpl implements OrderService {
 			bills.get(0).getPriceUnit(),
 			"vn",
 			vnpProperties.getUrl(),
-			vnpProperties.getSecretKey()
+			vnpProperties.getSecretKey(),
+			expireTime
 		);
 	}
 
@@ -379,9 +393,6 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	@Transactional
 	public void cancelOrder(long orderId, long userId, String message) {
-		UserEntity userEntity = userRepository.findById(userId)
-			.orElseThrow(() -> new InvalidException(ErrorCode.USER_NOT_FOUND));
-
 		OrderEntity orderEntity = orderRepository.findById(orderId)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.ORDER_NOT_FOUND.getMessage()));
 
@@ -390,30 +401,28 @@ public class OrderServiceImpl implements OrderService {
 		}
 
 		for (var campaignOrderEntity : orderEntity.getCampaignOrders()) {
-			campaignOrderEntity.setStatus(CampaignOrderStatus.CANCELED.getByteValue());
-			campaignOrderRepository.save(campaignOrderEntity);
-
-			OrderHistoryEntity orderHistory = OrderHistoryEntity.builder()
-				.id(OrderHistoryId.builder()
-					.campaignOrderId(campaignOrderEntity.getId())
-					.status(OrderHistoryStatus.CANCELED.getByteValue())
-					.build())
-				.datetime(Instant.now())
-				.message(message)
-				.updatedBy(userEntity.getUsername())
-				.build();
-			orderHistoryRepository.save(orderHistory);
+			campaignOrderService.cancelOrder(campaignOrderEntity.getId(), message, userId);
 		}
+	}
 
-		notificationService.sendTo(userId, NotificationMessage.builder()
-			.type(NotificationType.PRIVATE)
-			.ownerId(userId)
-			.title("Đơn hàng cập nhật")
-			.content("Đơn hàng " + orderId + " của bạn vừa hủy.")
-			.referenceData(ReferenceData.builder()
-				.referenceEntity(ReferenceEntity.ORDER)
-				.id(String.valueOf(orderId))
-				.build())
-			.build());
+	@Override
+	@Transactional
+	public void closedTimeoutOrder() {
+		Duration timeoutOrder = systemConfigHelper.getDuration(Const.SystemConfigKey.ORDER_TIMEOUT, 43200000);
+		Duration paymentExpireTime = systemConfigHelper.getDuration(Const.SystemConfigKey.ORDER_PAYING_TIMEOUT, 900000);
+		Duration deltaTime = Duration.ofMinutes(5);
+		Instant closedTime = Instant.now().minus(timeoutOrder).minus(paymentExpireTime).minus(deltaTime);
+		orderRepository.streamAllByStatusAndCreatedDateBefore(OrderStatus.PAYING.getByteValue(), closedTime)
+			.forEach(orderEntity -> {
+				orderEntity.getCampaignOrders().forEach(campaignOrderEntity ->
+					campaignOrderService.cancelOrder(
+						campaignOrderEntity.getId(),
+						"Đơn hàng đã quá thời gian thanh toán",
+						rootAdminId
+					)
+				);
+				orderEntity.setStatus(OrderStatus.CLOSED.getByteValue());
+				orderRepository.save(orderEntity);
+			});
 	}
 }
