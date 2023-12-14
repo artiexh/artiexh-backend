@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface ProductTemplateRepository extends JpaRepository<ProductTemplateEntity, Long>,
 	JpaSpecificationExecutor<ProductTemplateEntity> {
@@ -16,4 +18,10 @@ public interface ProductTemplateRepository extends JpaRepository<ProductTemplate
 		"set product.hasVariant = true " +
 		"where product.id = :productTemplateId and product.hasVariant = false")
 	void updateVariant(@Param("productTemplateId") Long productTemplateId);
+
+	@Modifying
+	@Query("update ProductTemplateEntity template set template.isDeleted = true where template.id = :id")
+	void delete(@Param("id") Long id);
+
+	Optional<ProductTemplateEntity> findProductTemplateEntityByIdAndIsDeleted(Long id, boolean deleted);
 }

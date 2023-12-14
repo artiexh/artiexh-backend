@@ -110,4 +110,10 @@ public class ProviderServiceImpl implements ProviderService {
 			.collect(Collectors.toSet());
 	}
 
+	@Override
+	public void delete(String businessCode) {
+		ProviderEntity provider = providerRepository.findById(businessCode).orElseThrow(EntityNotFoundException::new);
+		providerRepository.delete(businessCode);
+	}
+
 }

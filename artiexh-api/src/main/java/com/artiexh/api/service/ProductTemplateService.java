@@ -16,4 +16,6 @@ public interface ProductTemplateService {
 	ProductTemplate getById(Long id);
 
 	ProductTemplate updateProductTemplateConfig(ProductTemplate product);
+
+	void delete(Long id);
 }

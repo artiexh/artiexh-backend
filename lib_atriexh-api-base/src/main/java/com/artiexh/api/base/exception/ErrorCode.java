@@ -82,6 +82,9 @@ public enum ErrorCode {
 	VARIANT_INFO_NOT_FOUND(HttpStatus.BAD_REQUEST, "Không tìm thấy mẫu sản phẩm"),
 	NOT_ALLOWED_VARIANT_UPDATED(HttpStatus.BAD_REQUEST, "Không cho phép cập nhật thông tin mẫu sản phẩm"),
 
+	//Template
+	TEMPLATE_NOT_FOUND(HttpStatus.NOT_FOUND, "Không tìm thấy mẫu san phẩm"),
+
 	//Custom Product
 	CUSTOM_PRODUCT_INFO_NOT_FOUND(HttpStatus.BAD_REQUEST, "Không tìm thấy sản phẩm thiết kế "),
 	CUSTOM_PRODUCT_OWNER_INVALID(HttpStatus.FORBIDDEN, "Bạn không sở hữu sản phẩm thiết kế "),

@@ -33,4 +33,6 @@ public class Provider {
 	private String imageUrl;
 
 	private Set<ProviderCategory> categories;
+
+	private boolean isDeleted;
 }

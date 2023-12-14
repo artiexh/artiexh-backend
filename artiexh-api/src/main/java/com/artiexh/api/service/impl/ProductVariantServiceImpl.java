@@ -111,6 +111,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 	@Override
 	@Transactional
 	public Set<ProductVariant> create(Set<ProductVariant> products, Long productTemplateId) {
+		productTemplateRepository.findProductTemplateEntityByIdAndIsDeleted(productTemplateId, false);
 		Set<ProductVariant> result = new HashSet<>();
 		for (ProductVariant productVariant : products) {
 			productVariant.setProductTemplateId(productTemplateId);

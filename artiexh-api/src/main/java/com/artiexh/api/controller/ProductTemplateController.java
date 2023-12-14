@@ -1,6 +1,8 @@
 package com.artiexh.api.controller;
 
 import com.artiexh.api.base.common.Endpoint;
+import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.service.ProductTemplateService;
 import com.artiexh.model.domain.ProductTemplate;
 import com.artiexh.model.mapper.ProductTemplateMapper;
@@ -91,7 +93,17 @@ public class ProductTemplateController {
 			ProductTemplate productTemplate = productTemplateService.getById(id);
 			return mapper.domainToDetail(productTemplate);
 		} catch (EntityNotFoundException exception) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, exception.getMessage());
+			throw new InvalidException(ErrorCode.TEMPLATE_NOT_FOUND);
+		}
+
+	}
+
+	@GetMapping(Endpoint.ProductTemplate.DETAIL)
+	public void delete(@PathVariable("id") Long id) {
+		try {
+			productTemplateService.delete(id);
+		} catch (EntityNotFoundException exception) {
+			throw new InvalidException(ErrorCode.TEMPLATE_NOT_FOUND);
 		}
 
 	}
