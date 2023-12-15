@@ -17,6 +17,7 @@ public final class Const {
 		public static final String ORDER_TIMEOUT = "order.timeout";
 		public static final String ORDER_PAYING_TIMEOUT = "order.paying.timeout";
 		public static final String GHTK_ENABLE = "order.ghtk.enable";
+		public static final String FILE_ACCESS_STRATEGY = "file.access.strategy";
 	}
 
 }

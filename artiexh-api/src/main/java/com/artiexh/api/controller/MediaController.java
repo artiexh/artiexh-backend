@@ -1,10 +1,10 @@
 package com.artiexh.api.controller;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.S3Object;
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.base.exception.ErrorCode;
-import com.artiexh.api.service.StorageService;
+import com.artiexh.api.service.media.FileStreamResponse;
+import com.artiexh.api.service.media.StorageService;
 import com.artiexh.model.domain.Role;
 import com.artiexh.model.rest.media.FileResponseList;
 import com.artiexh.model.rest.media.UpdateSharedUsersRequest;
@@ -73,9 +73,9 @@ public class MediaController {
 		try {
 			boolean isStaff = authentication.getAuthorities().stream()
 				.anyMatch(r -> r.getAuthority().equals(Role.ADMIN.name()) || r.getAuthority().equals(Role.STAFF.name()));
-			S3Object s3Object = storageService.download(id, userId, isStaff);
-			String contentType = s3Object.getObjectMetadata().getContentType();
-			var bytes = s3Object.getObjectContent().readAllBytes();
+			FileStreamResponse object = storageService.download(id, userId, isStaff);
+			String contentType = object.getContentType();
+			var bytes = object.getContent().readAllBytes();
 
 			HttpHeaders header = new HttpHeaders();
 			header.setContentType(MediaType.valueOf(contentType));
