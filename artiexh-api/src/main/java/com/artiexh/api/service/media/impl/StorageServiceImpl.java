@@ -20,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -102,7 +101,7 @@ public class StorageServiceImpl implements StorageService {
 	}
 
 	@Override
-	public FileStreamResponse download(Long id, Long userId, boolean isStaff) throws MalformedURLException {
+	public FileStreamResponse download(Long id, Long userId, boolean isStaff) throws IOException {
 		String fileName;
 		MediaEntity media;
 		if (!isStaff) {

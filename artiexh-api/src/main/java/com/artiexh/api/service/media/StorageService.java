@@ -5,7 +5,6 @@ import com.artiexh.model.rest.media.FileResponseList;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.List;
 
 public interface StorageService {
@@ -15,5 +14,5 @@ public interface StorageService {
 
 	void updateSharedUsers(Long userId, Long[] sharedIds, Long mediaId);
 
-	FileStreamResponse download(Long id, Long userId, boolean isAdmin) throws MalformedURLException;
+	FileStreamResponse download(Long id, Long userId, boolean isAdmin) throws IOException;
 }

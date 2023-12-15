@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +22,7 @@ public class FileAccessProxy implements FileAccessStrategy {
 
 	@Override
 	public String upload(File file, String fileName, boolean isPublic) throws IOException {
-		String strategy = systemConfigService.getOrDefault(Const.SystemConfigKey.FILE_ACCESS_STRATEGY, "s3");
+		String strategy = systemConfigService.getOrDefault(Const.SystemConfigKey.FILE_ACCESS_STRATEGY, S3);
 
 		return switch (strategy) {
 			case S3 -> s3FileAccessStrategy.upload(file, fileName, isPublic);
@@ -33,8 +32,8 @@ public class FileAccessProxy implements FileAccessStrategy {
 	}
 
 	@Override
-	public FileStreamResponse download(String fileName) throws MalformedURLException {
-		String strategy = systemConfigService.getOrDefault(Const.SystemConfigKey.FILE_ACCESS_STRATEGY, "s3");
+	public FileStreamResponse download(String fileName) throws IOException {
+		String strategy = systemConfigService.getOrDefault(Const.SystemConfigKey.FILE_ACCESS_STRATEGY, S3);
 		return switch (strategy) {
 			case S3 -> s3FileAccessStrategy.download(fileName);
 			case SYSTEM -> systemFileAccessStrategy.download(fileName);

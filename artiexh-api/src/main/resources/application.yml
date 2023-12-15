@@ -107,6 +107,8 @@ artiexh:
   ghtk:
     base-url: ${GHTK_BASE_URL:}
     token: ${GHTK_TOKEN:}
+  file-server:
+    path: ${FILE_SERVER_PATH:}
 cron:
   close-expired-sale-campaigns: ${CRON_CLOSE_EXPIRED_SALE_CAMPAIGNS:}
   close-timeout-orders: ${CRON_CLOSE_TIMEOUT_ORDERS:}
