@@ -1,14 +1,10 @@
-package com.artiexh.api.service.impl;
+package com.artiexh.api.service.media.impl;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.PresignedUrlDownloadRequest;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
 import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.base.utils.S3Util;
-import com.artiexh.api.config.S3ConfigurationProperties;
-import com.artiexh.api.service.StorageService;
+import com.artiexh.api.service.media.FileAccessProxy;
+import com.artiexh.api.service.media.FileStreamResponse;
+import com.artiexh.api.service.media.StorageService;
 import com.artiexh.data.jpa.entity.AccountEntity;
 import com.artiexh.data.jpa.entity.MediaEntity;
 import com.artiexh.data.jpa.repository.AccountRepository;
@@ -24,38 +20,30 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class StorageServiceImpl implements StorageService {
-	private final S3ConfigurationProperties s3Config;
-	private final AmazonS3 s3;
 	private final MediaRepository mediaRepository;
 	private final AccountRepository accountRepository;
+	private final FileAccessProxy fileAccessProxy;
 
 	@Override
 	@Transactional
 	public FileResponse upload(MultipartFile multipartFile, Long userId) {
-		String fileUrl = null;
 		File file = null;
-		MediaEntity entity = null;
-		String fileName = null;
 		try {
 			file = convertMultiPartToFile(multipartFile);
-			fileName = S3Util.generateFileName(multipartFile);
+			String fileName = S3Util.generateFileName(multipartFile);
+			String fileUrl;
+			MediaEntity entity = null;
+
 			if (userId == null) {
-				fileUrl = S3Util.getPresignedString(s3Config.getRegion(), s3Config.getPublicBucketName(), s3Config.getAccessKey(), s3Config.getSecretKey(), fileName, true);
-
-				s3.putObject(new PutObjectRequest(s3Config.getPublicBucketName(), fileName, file)
-					.withCannedAcl(CannedAccessControlList.PublicRead));
+				fileUrl = fileAccessProxy.upload(file, fileName, true);
 			} else {
-
-				s3.putObject(new PutObjectRequest(s3Config.getPrivateBucketName(), fileName, file));
-
+				fileUrl = fileAccessProxy.upload(file, fileName, false);
 				AccountEntity owner = accountRepository.getReferenceById(userId);
 				entity = MediaEntity.builder()
 					.owner(owner)
@@ -65,6 +53,13 @@ public class StorageServiceImpl implements StorageService {
 					.build();
 				mediaRepository.save(entity);
 			}
+
+			return FileResponse.builder()
+				.id(entity == null ? null : entity.getId())
+				.presignedUrl(fileUrl)
+				.name(entity == null ? "" : entity.getName())
+				.fileName(fileName)
+				.build();
 		} catch (IOException e) {
 			throw new IllegalStateException(e);
 		} finally {
@@ -72,12 +67,6 @@ public class StorageServiceImpl implements StorageService {
 				file.delete();
 			}
 		}
-		return FileResponse.builder()
-			.id(entity == null ? null : entity.getId())
-			.presignedUrl(fileUrl)
-			.name(entity == null ? "" : entity.getName())
-			.fileName(fileName)
-			.build();
 	}
 
 	@Override
@@ -112,20 +101,17 @@ public class StorageServiceImpl implements StorageService {
 	}
 
 	@Override
-	public S3Object download(Long id, Long userId, boolean isStaff) throws MalformedURLException {
+	public FileStreamResponse download(Long id, Long userId, boolean isStaff) throws IOException {
 		String fileName;
+		MediaEntity media;
 		if (!isStaff) {
-			MediaEntity media = mediaRepository.findByIdAndSharedUsersId(id, userId).orElseThrow(EntityNotFoundException::new);
-			fileName = media.getFileName();
+			media = mediaRepository.findByIdAndSharedUsersId(id, userId).orElseThrow(EntityNotFoundException::new);
 		} else {
-			MediaEntity media = mediaRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-			fileName = media.getFileName();
+			media = mediaRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 		}
+		fileName = media.getFileName();
 
-		URL url = new URL(S3Util.getPresignedString(s3Config.getRegion(), s3Config.getPrivateBucketName(), s3Config.getAccessKey(), s3Config.getSecretKey(), fileName, false));
-		return s3.download(new PresignedUrlDownloadRequest(
-			url
-		)).getS3Object();
+		return fileAccessProxy.download(fileName);
 	}
 
 	private File convertMultiPartToFile(MultipartFile file) throws IOException {
