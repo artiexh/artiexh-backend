@@ -41,7 +41,7 @@ public enum ErrorCode {
 	USER_NOT_ALLOWED(HttpStatus.FORBIDDEN, "User is not allowed to perform this action"),
 
 	//USER_ADDRESS
-	USER_ADDRESS_NOT_FOUND(HttpStatus.BAD_REQUEST, "Không tìm thấy địa ch giao hàng cua bạn"),
+	USER_ADDRESS_NOT_FOUND(HttpStatus.BAD_REQUEST, "Không tìm thấy địa chỉ giao hàng của bạn"),
 
 	//Artist
 	ARTIST_INFO_NOT_FOUND(HttpStatus.BAD_REQUEST, "Không tìm thấy thông tin artist"),

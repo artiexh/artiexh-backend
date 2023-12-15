@@ -34,6 +34,7 @@ import com.artiexh.model.rest.order.user.response.UserCampaignOrderDetailRespons
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -118,6 +119,15 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 		var addressEntity = userAddressRepository.findByIdAndUserId(getShippingFeeRequest.getAddressId(), userId)
 			.orElseThrow(() -> new InvalidException(ErrorCode.USER_ADDRESS_NOT_FOUND));
 
+		var enableGhtk = Boolean.valueOf(
+			systemConfigService.getOrDefault(Const.SystemConfigKey.GHTK_ENABLE,
+				"true")
+		);
+
+		if (!Boolean.TRUE.equals(enableGhtk)) {
+			return Mono.just(new ShipFeeResponse.ShipFee("area2", 22000, 0, null));
+		}
+
 		String artiexhPickAddress = systemConfigService.getOrThrow(
 			Const.SystemConfigKey.ARTIEXH_PICK_ADDRESS,
 			() -> new ArtiexhConfigException("Artiexh address is not configured")
@@ -156,6 +166,39 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 		if (campaignOrderEntity.getStatus() != CampaignOrderStatus.PREPARING.getByteValue()) {
 			throw new InvalidException(
 				ErrorCode.UPDATE_CAMPAIGN_ORDER_STATUS_FAILED, "Không thể cập nhật trạng thái đơn hàng từ" + CampaignOrderStatus.fromValue(campaignOrderEntity.getStatus()) + " sang SHIPPING");
+		}
+
+		String shippingLabel = createGhtkOrder(campaignOrderEntity, updateShippingOrderRequest);
+
+		campaignOrderEntity.setStatus(CampaignOrderStatus.SHIPPING.getByteValue());
+		campaignOrderEntity.setShippingLabel(shippingLabel);
+		campaignOrderRepository.save(campaignOrderEntity);
+
+		var orderHistoryEntity = OrderHistoryEntity.builder()
+			.id(new OrderHistoryId(orderId, OrderHistoryStatus.SHIPPED.getByteValue()))
+			.build();
+		var savedOrderHistoryEntity = orderHistoryRepository.save(orderHistoryEntity);
+
+		campaignOrderEntity.getOrderHistories().add(savedOrderHistoryEntity);
+
+		Long ownerId = campaignOrderEntity.getOrder().getUser().getId();
+		notificationService.sendTo(ownerId, NotificationMessage.builder()
+			.type(NotificationType.PRIVATE)
+			.ownerId(ownerId)
+			.title("Cập nhật trạng thái chiến dịch")
+			.content("Đơn hàng " + campaignOrderEntity.getId() + " đã được vận chuyển")
+			.referenceData(ReferenceData.builder()
+				.referenceEntity(ReferenceEntity.CAMPAIGN_ORDER)
+				.id(campaignOrderEntity.getId().toString())
+				.build())
+			.build());
+		return campaignOrderMapper.entityToAdminResponse(campaignOrderEntity);
+	}
+
+	private String createGhtkOrder(CampaignOrderEntity campaignOrderEntity, UpdateShippingOrderRequest updateShippingOrderRequest) {
+		var enableGhtk = Boolean.valueOf(systemConfigService.getOrDefault(Const.SystemConfigKey.GHTK_ENABLE, "true"));
+		if (!Boolean.TRUE.equals(enableGhtk)) {
+			return "S13433267." + RandomStringUtils.randomNumeric(10);
 		}
 
 		OrderEntity orderEntity = campaignOrderEntity.getOrder();
@@ -225,29 +268,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 			throw new InvalidException(ErrorCode.CREATE_GHTK_ORDER_FAILED, ghtkCreateOrderResponse.getMessage());
 		}
 
-		campaignOrderEntity.setStatus(CampaignOrderStatus.SHIPPING.getByteValue());
-		campaignOrderEntity.setShippingLabel(ghtkCreateOrderResponse.getOrder().getLabel());
-		campaignOrderRepository.save(campaignOrderEntity);
-
-		var orderHistoryEntity = OrderHistoryEntity.builder()
-			.id(new OrderHistoryId(orderId, OrderHistoryStatus.SHIPPED.getByteValue()))
-			.build();
-		var savedOrderHistoryEntity = orderHistoryRepository.save(orderHistoryEntity);
-
-		campaignOrderEntity.getOrderHistories().add(savedOrderHistoryEntity);
-
-		Long ownerId = campaignOrderEntity.getOrder().getUser().getId();
-		notificationService.sendTo(ownerId, NotificationMessage.builder()
-			.type(NotificationType.PRIVATE)
-			.ownerId(ownerId)
-			.title("Cập nhật trạng thái chiến dịch")
-			.content("Đơn hàng " + campaignOrderEntity.getId() + " đã được vận chuyển")
-			.referenceData(ReferenceData.builder()
-				.referenceEntity(ReferenceEntity.CAMPAIGN_ORDER)
-				.id(campaignOrderEntity.getId().toString())
-				.build())
-			.build());
-		return campaignOrderMapper.entityToAdminResponse(campaignOrderEntity);
+		return ghtkCreateOrderResponse.getOrder().getLabel();
 	}
 
 	@Transactional
@@ -323,7 +344,8 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 		order.setStatus(CampaignOrderStatus.REFUNDING.getByteValue());
 
 		//Cancel ghtk order
-		if (order.getStatus() == CampaignOrderStatus.SHIPPING.getByteValue()) {
+		var enableGhtk = Boolean.valueOf(systemConfigService.getOrDefault(Const.SystemConfigKey.GHTK_ENABLE, "true"));
+		if (Boolean.TRUE.equals(enableGhtk) && (order.getStatus() == CampaignOrderStatus.SHIPPING.getByteValue())) {
 			var cancelOrderGhtkResponse = ghtkOrderService.cancelOrder(order.getShippingLabel())
 				.doOnError(WebClientResponseException.class, throwable -> {
 					var response = throwable.getResponseBodyAs(GhtkResponse.class);
@@ -334,6 +356,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 			if (cancelOrderGhtkResponse == null || !cancelOrderGhtkResponse.isSuccess()) {
 				throw new InvalidException(ErrorCode.CANCEL_GHTK_ORDER_FAILED, (cancelOrderGhtkResponse != null ? cancelOrderGhtkResponse.getMessage() : ""));
 			}
+
 		}
 
 		order.setStatus(CampaignOrderStatus.REFUNDING.getByteValue());
