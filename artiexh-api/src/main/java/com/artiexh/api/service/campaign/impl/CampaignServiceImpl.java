@@ -671,6 +671,13 @@ public class CampaignServiceImpl implements CampaignService {
 			throw new InvalidException(ErrorCode.FINALIZED_CAMPAIGN_PRODUCT_VALIDATION);
 		}
 
+		Set<String> productCodes = request.stream()
+			.map(FinalizeProductRequest::getProductCode)
+			.collect(Collectors.toSet());
+		boolean isExistedCode = productInventoryRepository.existsAllByProductCodeIn(productCodes);
+		if (isExistedCode || productCodes.size() != request.size()) {
+			throw new InvalidException(ErrorCode.PRODUCT_CODE_DUPLICATED);
+		}
 		Set<ProductResponse> productResponses = new HashSet<>();
 		for (FinalizeProductRequest finalizeProductRequest : request) {
 			ProductInCampaignEntity productInCampaign =
