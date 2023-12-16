@@ -95,7 +95,7 @@ public interface CampaignOrderMapper {
 	@Mapping(target = "productCode", source = "product.id.productCode")
 	@Mapping(target = "status", source = "product.productInventory.status")
 	@Mapping(target = "price.unit", source = "product.priceUnit")
-	@Mapping(target = "price.amount", source = "product.priceAmount")
+	@Mapping(target = "price.amount", source = "priceAmount")
 	@Mapping(target = "name", source = "product.productInventory.name")
 	@Mapping(target = "thumbnailUrl", source = "product.productInventory.attaches", qualifiedByName = "getProductThumbnailUrl")
 	@Mapping(target = "description", source = "product.productInventory.description")
