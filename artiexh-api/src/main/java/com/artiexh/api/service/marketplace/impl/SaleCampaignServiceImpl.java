@@ -308,6 +308,11 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 
 		Set<ProductInventoryQuantity> productQuantities = entity.getProducts().stream()
 			.map(productEntity -> {
+				//check quantity and price
+				if (productEntity.getQuantity() == null || productEntity.getQuantity() == 0 || productEntity.getPriceAmount() == null) {
+					throw new InvalidException(ErrorCode.PRODUCT_IN_SALE_INVALID);
+				}
+
 				// update opensearch
 				productOpenSearchService.updateCampaignStatus(
 					entity.getId(),
