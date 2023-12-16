@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 public interface OrderRepository extends JpaRepository<OrderEntity, Long>, JpaSpecificationExecutor<OrderEntity> {
 	@Query(nativeQuery = true,
 		value = """
-			SELECT co.id as orderId, sum(p.price_amount * od.quantity) + co.shipping_fee as orderAmount, p.price_unit as priceUnit, o.user_id as ownerId, co.status as status, o.status, o.created_date as createdDate
+			SELECT co.id as orderId, sum(p.price_amount * od.quantity) + co.shipping_fee as orderAmount, p.price_unit as priceUnit, o.user_id as ownerId, co.status as status, o.status as orderStatus, o.created_date as createdDate
 			from `order` o
 			inner join campaign_order co on o.id = co.order_id
 			inner join order_detail od on co.id = od.campaign_order_id
