@@ -495,7 +495,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 				// add quantity
 				if (productEntity.getProductInventory().getQuantity() < (request.getQuantity() - productEntity.getQuantity())) {
 					throw new InvalidException(ErrorCode.QUANTITY_NOT_ENOUGH);
-				} else {
+				} else if (productEntity.getCampaignSale().getStatus() == CampaignSaleStatus.ACTIVE.getByteValue()) {
 					Set<ProductInventoryQuantity> productQuantities = Set.of(
 						ProductInventoryQuantity.builder()
 							.productCode(productEntity.getProductInventory().getProductCode())
@@ -508,7 +508,6 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 						SourceCategory.CAMPAIGN_SALE,
 						productQuantities
 					);
-					productEntity.setQuantity(request.getQuantity());
 				}
 			}
 
@@ -517,7 +516,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 				if (request.getQuantity() < productEntity.getSoldQuantity()) {
 					// check sold quantity
 					throw new InvalidException(ErrorCode.QUANTITY_INVALID);
-				} else {
+				} else if (productEntity.getCampaignSale().getStatus() == CampaignSaleStatus.ACTIVE.getByteValue()) {
 					Set<ProductInventoryQuantity> productQuantities = Set.of(
 						ProductInventoryQuantity.builder()
 							.productCode(productEntity.getProductInventory().getProductCode())
@@ -530,9 +529,10 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 						SourceCategory.CAMPAIGN_SALE,
 						productQuantities
 					);
-					productEntity.setQuantity(request.getQuantity());
 				}
 			}
+
+			productEntity.setQuantity(request.getQuantity());
 		}
 
 		return productMapper.domainToProductResponse(productService.update(productEntity));

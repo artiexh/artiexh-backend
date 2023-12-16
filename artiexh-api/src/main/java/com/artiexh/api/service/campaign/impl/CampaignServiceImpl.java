@@ -20,8 +20,11 @@ import com.artiexh.model.rest.PaginationAndSortingRequest;
 import com.artiexh.model.rest.campaign.request.*;
 import com.artiexh.model.rest.campaign.response.*;
 import com.artiexh.model.rest.product.response.ProductResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -36,8 +39,8 @@ import java.util.stream.Collectors;
 
 import static com.artiexh.api.base.common.Const.SystemConfigKey.DEFAULT_PROFIT_PERCENTAGE;
 import static com.artiexh.model.domain.CampaignStatus.ALLOWED_ADMIN_VIEW_STATUS;
-import static com.artiexh.model.domain.CampaignStatus.SAVED_PROVIDER_CONFIGS_STATUS;
 
+@Log4j2
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -57,11 +60,13 @@ public class CampaignServiceImpl implements CampaignService {
 	private final ProductInCampaignService productInCampaignService;
 	private final ProductTagMapper productTagMapper;
 	private final ProductCategoryMapper productCategoryMapper;
+	private final CustomProductMapper customProductMapper;
 	private final ProductInventoryJpaService productInventoryJpaService;
 	private final ProductInventoryRepository productInventoryRepository;
 	private final ProductVariantProviderRepository productVariantProviderRepository;
 	private final NotificationService notificationService;
 	private final SystemConfigService systemConfigService;
+	private final ObjectMapper jsonMapper;
 
 	@Override
 	@Transactional
@@ -364,13 +369,23 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 
 		if (campaignEntity.getStatus() == CampaignStatus.WAITING.getByteValue()) {
-			campaignEntity.getProductInCampaigns().stream()
-				.map(ProductInCampaignEntity::getCustomProduct)
-				.forEach(customProductEntity -> {
-					customProductEntity.setCampaignLock(null);
-					customProductRepository.save(customProductEntity);
-				});
+			campaignEntity.getProductInCampaigns().forEach(productInCampaignEntity -> {
+				var customProductEntity = productInCampaignEntity.getCustomProduct();
+				customProductEntity.setCampaignLock(null);
+				customProductRepository.save(customProductEntity);
+			});
 		}
+
+		campaignEntity.getProductInCampaigns().forEach(productInCampaignEntity -> {
+			var customProductEntity = productInCampaignEntity.getCustomProduct();
+			var savedCustomProduct = customProductMapper.entityToDetailResponse(customProductEntity);
+			try {
+				productInCampaignEntity.setSavedCustomProduct(jsonMapper.writeValueAsString(savedCustomProduct));
+				productInCampaignRepository.save(productInCampaignEntity);
+			} catch (JsonProcessingException e) {
+				log.error("Parse customProductResponse to json fail", e);
+			}
+		});
 
 		campaignEntity.setStatus(CampaignStatus.CANCELED.getByteValue());
 		campaignEntity.getCampaignHistories().add(
@@ -509,6 +524,13 @@ public class CampaignServiceImpl implements CampaignService {
 				productInCampaign.setBasePriceAmount(providerConfig.getBasePriceAmount());
 				productInCampaign.setManufacturingTime(providerConfig.getManufacturingTime());
 				productInCampaign.setMinQuantity(providerConfig.getMinQuantity());
+				var savedCustomProduct = customProductMapper.entityToDetailResponse(customProductEntity);
+				try {
+					productInCampaign.setSavedCustomProduct(jsonMapper.writeValueAsString(savedCustomProduct));
+					productInCampaignRepository.save(productInCampaign);
+				} catch (JsonProcessingException e) {
+					log.error("Parse customProductResponse to json fail", e);
+				}
 				productInCampaignRepository.save(productInCampaign);
 			});
 
@@ -535,12 +557,19 @@ public class CampaignServiceImpl implements CampaignService {
 			throw new InvalidException(ErrorCode.UPDATE_CAMPAIGN_STATUS_FAILED, "Trạng thái chiến dịch chỉ có thể cập nhật từ WAITING sang REJECTED");
 		}
 
-		campaignEntity.getProductInCampaigns().stream()
-			.map(ProductInCampaignEntity::getCustomProduct)
-			.forEach(inventoryItemEntity -> {
-				inventoryItemEntity.setCampaignLock(null);
-				customProductRepository.save(inventoryItemEntity);
-			});
+		campaignEntity.getProductInCampaigns().forEach(productInCampaignEntity -> {
+			var inventoryItemEntity = productInCampaignEntity.getCustomProduct();
+			inventoryItemEntity.setCampaignLock(null);
+			customProductRepository.save(inventoryItemEntity);
+
+			var savedCustomProduct = customProductMapper.entityToDetailResponse(productInCampaignEntity.getCustomProduct());
+			try {
+				productInCampaignEntity.setSavedCustomProduct(jsonMapper.writeValueAsString(savedCustomProduct));
+				productInCampaignRepository.save(productInCampaignEntity);
+			} catch (JsonProcessingException e) {
+				log.error("Parse customProductResponse to json fail", e);
+			}
+		});
 
 		campaignEntity.setStatus(CampaignStatus.REJECTED.getByteValue());
 		campaignEntity.getCampaignHistories().add(
