@@ -27,7 +27,7 @@ public enum ErrorCode {
 	QUANTITY_NOT_ENOUGH(HttpStatus.BAD_REQUEST, "Không đủ số lượng sản phẩm để thực hiện hành động này"),
 	PRODUCT_INVENTORY_INFO_NOT_FOUND(HttpStatus.BAD_REQUEST, "Không tìn thấy thông tin sản phẩm trong kho"),
 	PRODUCT_INVENTORY_OWNER_INVALID(HttpStatus.BAD_REQUEST, "Người sỡ hữu chiến dịch bán không sở hữu sản phẩm"),
-
+	PRODUCT_CODE_DUPLICATED(HttpStatus.BAD_REQUEST, "Mã sản phẩm đã bị trùng lặp. Vui lòng kiểm tra lại"),
 	//Product In Sale
 	PRODUCT_IN_SALE_NOT_FOUND(HttpStatus.NOT_FOUND, "Không tìm thấy sản phẩm bán"),
 	PRODUCT_IN_SALE_INVALID(HttpStatus.BAD_REQUEST, "Sản phẩm khng đủ thông tin hợp lệ"),
