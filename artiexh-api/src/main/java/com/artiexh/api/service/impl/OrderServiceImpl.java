@@ -239,6 +239,7 @@ public class OrderServiceImpl implements OrderService {
 						.campaignOrder(savedCampaignOrderEntity)
 						.product(cartItemEntity.getProduct())
 						.quantity(cartItemEntity.getQuantity())
+						.priceAmount(cartItemEntity.getProduct().getPriceAmount())
 						.build()
 					)
 					.collect(Collectors.toSet());

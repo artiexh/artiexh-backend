@@ -1,6 +1,7 @@
 package com.artiexh.model.mapper;
 
 import com.artiexh.data.jpa.entity.ProductEntity;
+import com.artiexh.data.jpa.projection.SoldProduct;
 import com.artiexh.data.opensearch.model.ProductDocument;
 import com.artiexh.model.domain.*;
 import com.artiexh.model.rest.marketplace.salecampaign.response.ProductInSaleCampaignResponse;
@@ -162,16 +163,24 @@ public interface ProductMapper {
 
 	ProductDocument.Campaign campaignToCampaignDocument(CampaignSale campaign);
 
-	default ProductStatisticResponse entityToStatisticResponse(ProductEntity product) {
+	default ProductStatisticResponse entityToStatisticResponse(SoldProduct product) {
+		BigDecimal revenue = BigDecimal.ZERO;
+		Long quantity = 0L;
+		if (product.getQuantity() != null) {
+			quantity = product.getQuantity();
+		}
+		if (product.getRevenue() != null) {
+			revenue = product.getRevenue();
+		}
 		return ProductStatisticResponse.builder()
-			.name(product.getProductInventory().getName())
-			.productCode(product.getProductInventory().getProductCode())
-			.soldQuantity(Long.valueOf(product.getSoldQuantity()))
+			.name(product.getName())
+			.productCode(product.getProductCode())
+			.soldQuantity(product.getSoldQuantity())
 			.revenue(Money.builder()
-				.amount(product.getPriceAmount().multiply(BigDecimal.valueOf(product.getSoldQuantity())))
+				.amount(revenue)
 				.unit("VND")
 				.build())
-			.quantity(Long.valueOf(product.getQuantity()))
+			.quantity(quantity)
 			.build();
 	}
 
