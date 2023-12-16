@@ -400,6 +400,12 @@ public class OrderServiceImpl implements OrderService {
 			orderEntity.getOrderTransactions().stream().anyMatch(transaction -> transaction.getResponseCode().equals(ResponseCode.SUCCESS.getCode()))) {
 			throw new InvalidException(ErrorCode.CANCEL_ORDER_FAIL);
 		}
+		orderEntity.getCampaignOrders().stream()
+			.filter(campaignOrderEntity -> campaignOrderEntity.getStatus() != CampaignOrderStatus.PAYING.getByteValue())
+			.findAny()
+			.ifPresent(campaignOrderEntity -> {
+				throw new InvalidException(ErrorCode.CANCEL_ORDER_FAIL);
+			});
 
 		for (var campaignOrderEntity : orderEntity.getCampaignOrders()) {
 			campaignOrderService.cancelOrder(campaignOrderEntity.getId(), message, userId);
