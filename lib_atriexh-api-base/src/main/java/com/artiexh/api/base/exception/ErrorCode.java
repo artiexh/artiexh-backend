@@ -28,8 +28,9 @@ public enum ErrorCode {
 	PRODUCT_INVENTORY_INFO_NOT_FOUND(HttpStatus.BAD_REQUEST, "Không tìn thấy thông tin sản phẩm trong kho"),
 	PRODUCT_INVENTORY_OWNER_INVALID(HttpStatus.BAD_REQUEST, "Người sỡ hữu chiến dịch bán không sở hữu sản phẩm"),
 
-	//Product In Sale Not Found
+	//Product In Sale
 	PRODUCT_IN_SALE_NOT_FOUND(HttpStatus.NOT_FOUND, "Không tìm thấy sản phẩm bán"),
+	PRODUCT_IN_SALE_INVALID(HttpStatus.BAD_REQUEST, "Sản phẩm khng đủ thông tin hợp lệ"),
 	//Attachment
 	ATTACHMENT_NOT_FOUND(HttpStatus.OK, "Attachment is not found"),
 
