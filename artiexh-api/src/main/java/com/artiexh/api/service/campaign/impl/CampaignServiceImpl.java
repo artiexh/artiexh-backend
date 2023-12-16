@@ -207,8 +207,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 		result.setCampaignHistories(campaignHistories);
 
-		if (!SAVED_PROVIDER_CONFIGS_STATUS.contains(CampaignStatus.fromValue(campaignEntity.getStatus()))
-			&& (campaignEntity.getProviderId() != null)) {
+		if (campaignEntity.getProviderId() != null) {
 			var provider = providerRepository.getReferenceById(campaignEntity.getProviderId());
 			result.setProvider(providerMapper.entityToInfo(provider));
 			fillProviderConfigToResponse(campaignEntity.getProviderId(), result.getProducts());
