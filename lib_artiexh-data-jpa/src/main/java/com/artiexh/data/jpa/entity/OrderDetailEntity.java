@@ -3,6 +3,8 @@ package com.artiexh.data.jpa.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @Builder
@@ -27,5 +29,8 @@ public class OrderDetailEntity {
 
 	@Column(name = "quantity", nullable = false)
 	private Integer quantity;
+
+	@Column(name = "price_amount")
+	private BigDecimal priceAmount;
 
 }
