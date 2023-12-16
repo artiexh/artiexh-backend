@@ -21,6 +21,11 @@ public class UpdateArtistProfileRequest {
 
 	private String shopThumbnailUrl;
 
-	@Size(max = 255)
+	@Size(max = 1000)
 	private String description;
+
+	private Object metaData;
+
+	@NotEmpty
+	private String bankAccountName;
 }

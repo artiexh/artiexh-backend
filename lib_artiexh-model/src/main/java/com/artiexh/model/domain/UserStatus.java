@@ -1,5 +1,10 @@
 package com.artiexh.model.domain;
 
+import lombok.Getter;
+
+import java.util.Set;
+
+@Getter
 public enum UserStatus {
 	BANNED(-1),
 	INACTIVE(0),
@@ -21,7 +26,7 @@ public enum UserStatus {
 		throw new IndexOutOfBoundsException("No such value for UserStatus: " + value);
 	}
 
-	public int getValue() {
-		return value;
+	public Byte getByteValue() {
+		return (byte) value;
 	}
 }

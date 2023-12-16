@@ -105,6 +105,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 		artistEntity.setPhone(request.getPhone());
 		artistEntity.setShopThumbnailUrl(request.getShopThumbnailUrl());
 		artistEntity.setDescription(request.getDescription());
+		artistEntity.setMetaData(request.getMetaData());
+		artistEntity.setBankAccountName(request.getBankAccountName());
 
 		artistEntity.setRole((byte) Role.ARTIST.getValue());
 		return artistMapper.basicArtistInfo(artistRepository.save(artistEntity));

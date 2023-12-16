@@ -3,6 +3,7 @@ package com.artiexh.api.service.impl;
 import com.artiexh.api.service.AuthenticationService;
 import com.artiexh.data.jpa.repository.AccountRepository;
 import com.artiexh.model.domain.Account;
+import com.artiexh.model.domain.UserStatus;
 import com.artiexh.model.mapper.AccountMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,7 +21,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 	@Override
 	public Optional<Account> login(String username, String password) {
-		return accountRepository.findByUsername(username)
+		return accountRepository.findByUsernameAndStatus(username, UserStatus.ACTIVE.getByteValue())
 			.filter(user -> passwordEncoder.matches(password, user.getPassword()))
 			.map(accountMapper::entityToDomain);
 	}
