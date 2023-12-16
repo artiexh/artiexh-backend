@@ -43,33 +43,35 @@ public interface ProductRepository extends JpaRepository<ProductEntity, ProductE
 
 	@Query(nativeQuery = true,
 	value = """
-  select p.product_code as productCode, 
-  pi.name as name, 
-  p.quantity as quantity, 
-  od.quantity as orderQuantity, 
-  od.campaign_order_id, 
-  p.sold_quantity as soldQuantity, 
-  od.price_amount as priceAmount, 
-  sum(od.price_amount * od.quantity) as revenue,
-  sum(od.quantity * p.artist_profit) as artistProfit 
-  from product p 
-  inner join product_inventory pi on p.product_code = pi.product_code 
-  left outer join order_detail od on p.product_code = od.product_code and p.campaign_sale_id = od.campaign_sale_id 
+  select p.product_code as productCode,
+         pi.name as name,
+         p.quantity as quantity,
+         temp.quantity as orderQuantity,
+         p.sold_quantity as soldQuantity,
+         sum(temp.price_amount * temp.quantity) as revenue,
+         sum(temp.quantity * p.artist_profit) as artistProfit
+  from product p
+           inner join product_inventory pi on p.product_code = pi.product_code
+           left outer join (select od.*
+                            from campaign_order co
+                                inner join order_detail od on co.id = od.campaign_order_id
+                            where co.status != 4 and co.campaign_id = :campaignSaleId) temp on p.campaign_sale_id = temp.campaign_sale_id and p.product_code = temp.product_code
   where p.campaign_sale_id = :campaignSaleId
   group by p.product_code, p.campaign_sale_id""",
 	countQuery = """
   select p.product_code as productCode,
-  pi.name as name,
-  p.quantity as quantity,
-  od.quantity as orderQuantity,
-  od.campaign_order_id,
-  p.sold_quantity as soldQuantity,
-  od.price_amount as priceAmount,
-  sum(od.price_amount * od.quantity) as revenue,
-  sum(od.quantity * p.artist_profit) as artistProfit
+         pi.name as name,
+         p.quantity as quantity,
+         temp.quantity as orderQuantity,
+         p.sold_quantity as soldQuantity,
+         sum(temp.price_amount * temp.quantity) as revenue,
+         sum(temp.quantity * p.artist_profit) as artistProfit
   from product p
-  inner join product_inventory pi on p.product_code = pi.product_code
-  left outer join order_detail od on p.product_code = od.product_code and p.campaign_sale_id = od.campaign_sale_id
+           inner join product_inventory pi on p.product_code = pi.product_code
+           left outer join (select od.*
+                            from campaign_order co
+                                inner join order_detail od on co.id = od.campaign_order_id
+                            where co.status != 4 and co.campaign_id = :campaignSaleId) temp on p.campaign_sale_id = temp.campaign_sale_id and p.product_code = temp.product_code
   where p.campaign_sale_id = :campaignSaleId
   group by p.product_code, p.campaign_sale_id""")
 	Page<SoldProduct> getSoldProducts(@Param("campaignSaleId") Long campaignSaleId, Pageable pageable);
