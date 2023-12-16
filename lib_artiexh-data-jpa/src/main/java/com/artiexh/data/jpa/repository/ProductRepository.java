@@ -43,10 +43,35 @@ public interface ProductRepository extends JpaRepository<ProductEntity, ProductE
 
 	@Query(nativeQuery = true,
 	value = """
-  select p.product_code as productCode, od.quantity as quantity, p.sold_quantity as soldQuantity, od.price_amount as priceAmount 
+  select p.product_code as productCode, 
+  pi.name as name, 
+  p.quantity as quantity, 
+  od.quantity as orderQuantity, 
+  od.campaign_order_id, 
+  p.sold_quantity as soldQuantity, 
+  od.price_amount as priceAmount, 
+  sum(od.price_amount * od.quantity) as revenue,
+  sum(od.quantity * p.artist_profit) as artistProfit 
   from product p 
+  inner join product_inventory pi on p.product_code = pi.product_code 
   left outer join order_detail od on p.product_code = od.product_code and p.campaign_sale_id = od.campaign_sale_id 
-  where p.campaign_sale_id = :campaignSaleId""")
-	Set<SoldProduct> getSoldProducts(@Param("campaignSaleId") String campaignSaleId);
+  where p.campaign_sale_id = :campaignSaleId
+  group by p.product_code, p.campaign_sale_id""",
+	countQuery = """
+  select p.product_code as productCode,
+  pi.name as name,
+  p.quantity as quantity,
+  od.quantity as orderQuantity,
+  od.campaign_order_id,
+  p.sold_quantity as soldQuantity,
+  od.price_amount as priceAmount,
+  sum(od.price_amount * od.quantity) as revenue,
+  sum(od.quantity * p.artist_profit) as artistProfit
+  from product p
+  inner join product_inventory pi on p.product_code = pi.product_code
+  left outer join order_detail od on p.product_code = od.product_code and p.campaign_sale_id = od.campaign_sale_id
+  where p.campaign_sale_id = :campaignSaleId
+  group by p.product_code, p.campaign_sale_id""")
+	Page<SoldProduct> getSoldProducts(@Param("campaignSaleId") Long campaignSaleId, Pageable pageable);
 
 }
