@@ -2,6 +2,8 @@ package com.artiexh.api.controller.campaign;
 
 import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.base.exception.ArtiexhConfigException;
+import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.base.service.SystemConfigService;
 import com.artiexh.api.service.campaign.CampaignService;
 import com.artiexh.api.service.marketplace.SaleCampaignService;
@@ -38,10 +40,8 @@ public class CampaignController {
 												@RequestBody @Valid Set<FinalizeProductRequest> request) {
 		try {
 			return campaignService.finalizeProduct(campaignId, request);
-		} catch (IllegalArgumentException ex) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		} catch (EntityNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+			throw new InvalidException(ErrorCode.ENTITY_NOT_FOUND, ex.getMessage());
 		}
 	}
 

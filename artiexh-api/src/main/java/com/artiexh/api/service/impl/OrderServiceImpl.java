@@ -396,7 +396,8 @@ public class OrderServiceImpl implements OrderService {
 		OrderEntity orderEntity = orderRepository.findById(orderId)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.ORDER_NOT_FOUND.getMessage()));
 
-		if (!orderEntity.getOrderTransactions().isEmpty()) {
+		if (!orderEntity.getOrderTransactions().isEmpty() &&
+			orderEntity.getOrderTransactions().stream().anyMatch(transaction -> transaction.getResponseCode().equals(ResponseCode.SUCCESS.getCode()))) {
 			throw new InvalidException(ErrorCode.CANCEL_ORDER_FAIL);
 		}
 
