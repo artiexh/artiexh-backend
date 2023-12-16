@@ -11,6 +11,7 @@ import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.entity.embededmodel.ReferenceData;
 import com.artiexh.data.jpa.entity.embededmodel.ReferenceEntity;
 import com.artiexh.data.jpa.projection.ProductInSaleId;
+import com.artiexh.data.jpa.projection.SoldProduct;
 import com.artiexh.data.jpa.repository.*;
 import com.artiexh.data.opensearch.model.ProductDocument;
 import com.artiexh.model.domain.*;
@@ -368,16 +369,15 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 
 		PaginationAndSortingRequest pagination = new PaginationAndSortingRequest();
 		pagination.setSortBy("soldQuantity");
-		List<ProductEntity> products = getSoldProduct(campaignId, pagination.getPageable()).getContent();
+		List<SoldProduct> products = getSoldProduct(campaignId, pagination.getPageable()).getContent();
 
 		BigDecimal revenue = BigDecimal.ZERO;
 		BigDecimal profit = BigDecimal.ZERO;
 		List<ProductStatisticResponse> productStatisticResponses = new LinkedList<>();
 
-		for (ProductEntity product : products) {
-			revenue = revenue.add(product.getPriceAmount().multiply(BigDecimal.valueOf(product.getSoldQuantity())));
-			profit = profit.add(product.getArtistProfit().multiply(BigDecimal.valueOf(product.getSoldQuantity())));
-
+		for (SoldProduct product : products) {
+			revenue = revenue.add(product.getRevenue() == null ? BigDecimal.ZERO : product.getRevenue());
+			profit = profit.add(product.getArtistProfit() == null ? BigDecimal.ZERO : product.getArtistProfit());
 			productStatisticResponses.add(
 				productMapper.entityToStatisticResponse(product)
 			);
@@ -572,7 +572,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 		return getSoldProduct(campaignSaleId, pageable).map(productMapper::entityToStatisticResponse);
 	}
 
-	private Page<ProductEntity> getSoldProduct(Long campaignSaleId, Pageable pageable) {
-		return productRepository.findProductEntitiesByCampaignSaleId(campaignSaleId, pageable);
+	private Page<SoldProduct> getSoldProduct(Long campaignSaleId, Pageable pageable) {
+		return productRepository.getSoldProducts(campaignSaleId, pageable);
 	}
 }
