@@ -2,6 +2,7 @@ package com.artiexh.api.service.media.impl;
 
 import com.artiexh.api.service.media.FileAccessStrategy;
 import com.artiexh.api.service.media.FileStreamResponse;
+import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,17 @@ import java.nio.file.StandardCopyOption;
 public class SystemFileAccessStrategy implements FileAccessStrategy {
 	private static final String PRIVATE_PATH = "private/";
 	private static final String PUBLIC_PATH = "public/";
+	private static final Tika TIKA = new Tika();
+
+
+	static {
+		try {
+			Files.createDirectories(Paths.get(PRIVATE_PATH));
+			Files.createDirectories(Paths.get(PUBLIC_PATH));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	@Value("${artiexh.file-server.path}")
 	private String fileServerPath;
@@ -38,6 +50,6 @@ public class SystemFileAccessStrategy implements FileAccessStrategy {
 	public FileStreamResponse download(String fileName) throws IOException {
 		Path path = Paths.get(PRIVATE_PATH + fileName);
 		InputStream inputStream = Files.newInputStream(path);
-		return new FileStreamResponse(inputStream, Files.probeContentType(path));
+		return new FileStreamResponse(inputStream, TIKA.detect(path));
 	}
 }

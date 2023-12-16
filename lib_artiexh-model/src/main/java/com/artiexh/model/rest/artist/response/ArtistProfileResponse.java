@@ -36,6 +36,10 @@ public class ArtistProfileResponse {
 
 	private String bankName;
 
+	private String bankAccountName;
+
+	private Object metaData;
+
 	private String shopThumbnailUrl;
 
 	private String description;

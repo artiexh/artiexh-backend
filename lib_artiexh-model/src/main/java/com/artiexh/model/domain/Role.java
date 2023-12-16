@@ -2,6 +2,8 @@ package com.artiexh.model.domain;
 
 import lombok.Getter;
 
+import java.util.Set;
+
 @Getter
 public enum Role {
 	ADMIN(0),
@@ -10,6 +12,8 @@ public enum Role {
 	STAFF(3);
 
 	private final int value;
+
+	public static final Set<Role> ALLOWED_STAFF_UPDATED_USER_STATUS = Set.of(USER, ARTIST);
 
 	Role(int value) {
 		this.value = value;

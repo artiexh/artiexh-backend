@@ -1,5 +1,7 @@
 package com.artiexh.api.service.impl;
 
+import com.artiexh.api.base.exception.ErrorCode;
+import com.artiexh.api.base.exception.InvalidException;
 import com.artiexh.api.service.AccountService;
 import com.artiexh.data.jpa.entity.AccountEntity;
 import com.artiexh.data.jpa.entity.ArtistEntity;
@@ -8,10 +10,7 @@ import com.artiexh.data.jpa.entity.UserEntity;
 import com.artiexh.data.jpa.repository.AccountRepository;
 import com.artiexh.data.jpa.repository.CartItemRepository;
 import com.artiexh.data.jpa.repository.SubscriptionRepository;
-import com.artiexh.model.domain.Account;
-import com.artiexh.model.domain.Artist;
-import com.artiexh.model.domain.Role;
-import com.artiexh.model.domain.User;
+import com.artiexh.model.domain.*;
 import com.artiexh.model.mapper.AccountMapper;
 import com.artiexh.model.mapper.ArtistMapper;
 import com.artiexh.model.mapper.StaffMapper;
@@ -24,6 +23,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -98,5 +99,34 @@ public class AccountServiceImpl implements AccountService {
 	public Page<Account> getAll(Specification<AccountEntity> specification, Pageable pageable) {
 		Page<AccountEntity> accounts = accountRepository.findAll(specification, pageable);
 		return accounts.map(accountMapper::entityToDomain);
+	}
+
+	@Override
+	@Transactional
+	public void updateAccountStatus(Long accountId, UserStatus status, Long updatedAccountId) {
+		AccountEntity account = accountRepository.findById(accountId).orElseThrow(EntityNotFoundException::new);
+		AccountEntity updatedAccount = accountRepository.findById(updatedAccountId).orElseThrow(EntityNotFoundException::new);
+
+		if (updatedAccount.getRole().equals(Role.STAFF.getByteValue()) && !Role.ALLOWED_STAFF_UPDATED_USER_STATUS.contains(Role.fromValue(account.getRole()))) {
+			throw new InvalidException(ErrorCode.ACCOUNT_NOT_ALLOWED_UPDATED);
+		}
+
+		switch (status) {
+			case BANNED -> {
+				if (!Objects.equals(account.getStatus(), UserStatus.ACTIVE.getByteValue())) {
+					throw new InvalidException(ErrorCode.USER_STATUS_NOT_ALLOWED_UPDATED);
+				}
+				account.setStatus(status.getByteValue());
+			}
+			case ACTIVE -> {
+				if (!Objects.equals(account.getStatus(), UserStatus.BANNED.getByteValue())) {
+					throw new InvalidException(ErrorCode.USER_STATUS_NOT_ALLOWED_UPDATED);
+				}
+				account.setStatus(status.getByteValue());
+			}
+			default -> throw new InvalidException(ErrorCode.USER_STATUS_NOT_ALLOWED_UPDATED);
+		}
+
+		accountRepository.save(account);
 	}
 }
