@@ -109,6 +109,10 @@ public enum ErrorCode {
 	//AUTH
 	ACCOUNT_INFO_NOT_FOUND(HttpStatus.BAD_REQUEST, "Can not get account information from request"),
 
+	//Account
+	ROOT_ACCOUNT_NOT_ALLOWED_UPDATED(HttpStatus.FORBIDDEN, "Tài khoản của quản trị viên không được phép cập nhật trạng thái"),
+	ACCOUNT_NOT_ALLOWED_UPDATED(HttpStatus.FORBIDDEN, "Bạn không được phép cập nhật trạng thái tài khoản này"),
+	USER_STATUS_NOT_ALLOWED_UPDATED(HttpStatus.BAD_REQUEST, "Bạn không thể cập nhật trạng thái này cho tài khoản"),
 	//Config
 	ARTIEXH_CONFIG_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Configuration is not found"),
 

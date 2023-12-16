@@ -15,6 +15,9 @@ public class RegistrationArtistRequest {
 	private String bankAccount;
 
 	@NotEmpty
+	private String bankAccountName;
+
+	@NotEmpty
 	private String bankName;
 
 	@NotEmpty
@@ -22,6 +25,8 @@ public class RegistrationArtistRequest {
 
 	private String shopThumbnailUrl;
 
-	@Size(max = 255)
+	@Size(max = 1000)
 	private String description;
+
+	private Object metaData;
 }

@@ -13,6 +13,8 @@ import java.util.Optional;
 @Repository
 public interface AccountRepository extends JpaRepository<AccountEntity, Long>, JpaSpecificationExecutor<AccountEntity> {
 
+	Optional<AccountEntity> findByUsernameAndStatus(String username, Byte status);
+
 	Optional<AccountEntity> findByUsername(String username);
 
 	@Query("select count(account.id) from AccountEntity account where account.id in :ids")

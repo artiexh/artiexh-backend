@@ -1,5 +1,6 @@
 package com.artiexh.data.jpa.entity;
 
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -7,6 +8,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Type;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.util.LinkedHashSet;
@@ -31,6 +33,13 @@ public class ArtistEntity extends UserEntity {
 
 	@Column(name = "bank_name")
 	private String bankName;
+
+	@Column(name = "bank_account_name")
+	private String bankAccountName;
+
+	@Type(JsonType.class)
+	@Column(name = "meta_data", columnDefinition = "json")
+	private Object metaData;
 
 	@OneToMany(mappedBy = "artist")
 	@ToString.Exclude

@@ -18,6 +18,8 @@ public class Artist extends User {
 	private Set<Subscription> subscriptionsFrom;
 	private String bankAccount;
 	private String bankName;
+	private String bankAccountName;
+	private Object metaData;
 	private String phone;
 	private String shopThumbnailUrl;
 	private String description;
