@@ -9,13 +9,11 @@ import com.artiexh.api.base.utils.SystemConfigHelper;
 import com.artiexh.api.service.CampaignOrderService;
 import com.artiexh.api.service.marketplace.ProductService;
 import com.artiexh.api.service.notification.NotificationService;
+import com.artiexh.api.service.productinventory.ProductInventoryJpaService;
 import com.artiexh.data.jpa.entity.*;
 import com.artiexh.data.jpa.entity.embededmodel.ReferenceData;
 import com.artiexh.data.jpa.entity.embededmodel.ReferenceEntity;
-import com.artiexh.data.jpa.repository.AccountRepository;
-import com.artiexh.data.jpa.repository.CampaignOrderRepository;
-import com.artiexh.data.jpa.repository.OrderHistoryRepository;
-import com.artiexh.data.jpa.repository.UserAddressRepository;
+import com.artiexh.data.jpa.repository.*;
 import com.artiexh.ghtk.client.model.GhtkResponse;
 import com.artiexh.ghtk.client.model.ShipmentRequest;
 import com.artiexh.ghtk.client.model.order.CreateOrderRequest;
@@ -54,6 +52,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class CampaignOrderServiceImpl implements CampaignOrderService {
+	private final ProductInventoryRepository productInventoryRepository;
 	private final UserAddressRepository userAddressRepository;
 	private final AccountRepository accountRepository;
 	private final ProductService productService;
@@ -64,6 +63,7 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 	private final SystemConfigService systemConfigService;
 	private final SystemConfigHelper systemConfigHelper;
 	private final NotificationService notificationService;
+	private final ProductInventoryJpaService productInventoryJpaService;
 
 	@Override
 	public Page<CampaignOrderResponsePage> getCampaignOrderInPage(Specification<CampaignOrderEntity> specification, Pageable pageable) {
@@ -322,6 +322,21 @@ public class CampaignOrderServiceImpl implements CampaignOrderService {
 			ProductEntity productInSale = orderDetail.getProduct();
 			productInSale.setSoldQuantity(productInSale.getSoldQuantity() - orderDetail.getQuantity());
 			productService.update(productInSale);
+
+			if (productInSale.getCampaignSale().getStatus() == CampaignSaleStatus.CLOSED.getByteValue()) {
+				Set<ProductInventoryQuantity> productQuantities = Set.of(
+					ProductInventoryQuantity.builder()
+						.productCode(productInSale.getProductInventory().getProductCode())
+						.quantity((long) orderDetail.getQuantity())
+						.build()
+				);
+				productInventoryJpaService.refundQuantity(
+					productInSale.getCampaignSale().getId(),
+					productInSale.getCampaignSale().getName(),
+					SourceCategory.CAMPAIGN_SALE,
+					productQuantities
+				);
+			}
 		}
 	}
 

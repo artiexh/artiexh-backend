@@ -18,6 +18,8 @@ public final class Const {
 		public static final String ORDER_PAYING_TIMEOUT = "order.paying.timeout";
 		public static final String GHTK_ENABLE = "order.ghtk.enable";
 		public static final String FILE_ACCESS_STRATEGY = "file.access.strategy";
+		public static final String OFF_PAYMENT_FROM = "order.payment.off.from";
+		public static final String OFF_PAYMENT_TO = "order.payment.off.to";
 	}
 
 }
