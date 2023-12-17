@@ -159,7 +159,6 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			})
 			.collect(Collectors.toSet());
 
-		reduceProductInventory(entity, CampaignSaleStatus.DRAFT, productEntities);
 		productEntities.forEach(productService::create);
 
 		Long ownerId = campaignEntity.getOwner().getId();
