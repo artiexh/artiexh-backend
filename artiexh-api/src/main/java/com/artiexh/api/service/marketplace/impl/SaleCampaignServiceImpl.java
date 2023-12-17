@@ -141,23 +141,27 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			throw new InvalidException(ErrorCode.PRODUCT_FINALIZED_NOT_ENOUGH);
 		}
 
+		Set<ProductEntity> productEntities = productInventoryEntities.stream()
+			.map(productInventory -> {
+				var profit = productInventory.getPriceAmount()
+					.subtract(productInventory.getManufacturingPrice());
+				var artistProfit = profit.subtract(
+					profit.multiply(profitPercentage).divide(BigDecimal.valueOf(100), RoundingMode.HALF_EVEN)
+				);
+				return ProductEntity.builder()
+					.id(new ProductEntityId(productInventory.getProductCode(), entity.getId()))
+					.productInventory(productInventory)
+					.campaignSale(entity)
+					.priceAmount(productInventory.getPriceAmount())
+					.priceUnit(productInventory.getPriceUnit())
+					.artistProfit(artistProfit)
+					.build();
+			})
+			.collect(Collectors.toSet());
 
-		for (var productInventory : productInventoryEntities) {
-			var profit = productInventory.getPriceAmount()
-				.subtract(productInventory.getManufacturingPrice());
-			var artistProfit = profit.subtract(
-				profit.multiply(profitPercentage).divide(BigDecimal.valueOf(100), RoundingMode.HALF_EVEN)
-			);
-			productService.create(ProductEntity.builder()
-				.id(new ProductEntityId(productInventory.getProductCode(), entity.getId()))
-				.productInventory(productInventory)
-				.campaignSale(entity)
-				.priceAmount(productInventory.getPriceAmount())
-				.priceUnit(productInventory.getPriceUnit())
-				.quantity(productInventory.getQuantity().intValue())
-				.artistProfit(artistProfit)
-				.build());
-		}
+		reduceProductInventory(entity, CampaignSaleStatus.DRAFT, productEntities);
+		productEntities.forEach(productService::create);
+
 		Long ownerId = campaignEntity.getOwner().getId();
 		notificationService.sendTo(ownerId, NotificationMessage.builder()
 			.type(NotificationType.PRIVATE)
@@ -188,14 +192,12 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			if (now.isAfter(entity.getTo())) {
 				throw new InvalidException(ErrorCode.UPDATE_SALE_CAMPAIGN_FAILED);
 			}
+			if (now.isAfter(entity.getFrom()) && request.getFrom() != entity.getFrom()) {
+				throw new InvalidException(ErrorCode.UPDATE_FROM_FAILED);
 
-			if (now.isAfter(entity.getFrom())) {
-				if (request.getFrom() != entity.getFrom()) {
-					throw new InvalidException(ErrorCode.UPDATE_FROM_FAILED);
-				}
-				if (request.getPublicDate() != entity.getPublicDate()) {
-					throw new InvalidException(ErrorCode.UPDATE_PUBLIC_DATE_FAILED);
-				}
+			}
+			if (entity.getPublicDate() != null && now.isAfter(entity.getPublicDate()) && request.getPublicDate() != entity.getPublicDate()) {
+				throw new InvalidException(ErrorCode.UPDATE_PUBLIC_DATE_FAILED);
 			}
 		}
 
@@ -275,60 +277,39 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 		if (status == CampaignSaleStatus.CLOSED) {
 			entity.setStatus(status.getByteValue());
 			campaignSaleRepository.save(entity);
+			refundProductInventory(entity, status, entity.getProducts());
 		} else { // ACTIVE
 			entity.setStatus(status.getByteValue());
 			campaignSaleRepository.save(entity);
-
-			Set<ProductInventoryQuantity> productQuantities = entity.getProducts().stream()
-				.map(productEntity -> {
-					// check quantity
-					if (productEntity.getQuantity() > productEntity.getProductInventory().getQuantity()) {
-						throw new InvalidException(ErrorCode.QUANTITY_NOT_ENOUGH);
-					}
-					// update opensearch
-					productOpenSearchService.updateCampaignStatus(
-						entity.getId(),
-						productEntity.getProductInventory().getProductCode(),
-						status
-					);
-					return ProductInventoryQuantity.builder()
-						.productCode(productEntity.getProductInventory().getProductCode())
-						.quantity((long) productEntity.getQuantity() - productEntity.getSoldQuantity())
-						.build();
-				})
-				.collect(Collectors.toSet());
-
-			// reduce inventory quantity
-			productInventoryJpaService.reduceQuantity(entity.getId(), entity.getName(), SourceCategory.CAMPAIGN_SALE, productQuantities);
-		}
-	}
-
-	private void updateCampaignFromActive(CampaignSaleEntity entity, CampaignSaleStatus status) {
-		entity.setStatus(status.getByteValue());
-		campaignSaleRepository.save(entity);
-
-		Set<ProductInventoryQuantity> productQuantities = entity.getProducts().stream()
-			.map(productEntity -> {
-				//check quantity and price
-				if (productEntity.getQuantity() == null || productEntity.getQuantity() == 0 || productEntity.getPriceAmount() == null) {
-					throw new InvalidException(ErrorCode.PRODUCT_IN_SALE_INVALID);
-				}
-
-				// update opensearch
+			for (var productEntity : entity.getProducts()) {
 				productOpenSearchService.updateCampaignStatus(
 					entity.getId(),
 					productEntity.getProductInventory().getProductCode(),
 					status
 				);
-				return ProductInventoryQuantity.builder()
-					.productCode(productEntity.getProductInventory().getProductCode())
-					.quantity((long) productEntity.getQuantity() - productEntity.getSoldQuantity())
-					.build();
-			})
-			.collect(Collectors.toSet());
+			}
+		}
+	}
 
-		// reduce inventory quantity
-		productInventoryJpaService.refundQuantity(entity.getId(), entity.getName(), SourceCategory.CAMPAIGN_SALE, productQuantities);
+	private void updateCampaignFromActive(CampaignSaleEntity entity, CampaignSaleStatus status) {
+		if (status == CampaignSaleStatus.DRAFT) {
+			Instant now = Instant.now();
+			if (now.isAfter(entity.getFrom())) {
+				throw new InvalidException(ErrorCode.NOT_ALLOWED_DRAFT_CAMPAIGN);
+			}
+			for (var productEntity : entity.getProducts()) {
+				productOpenSearchService.updateCampaignStatus(
+					entity.getId(),
+					productEntity.getProductInventory().getProductCode(),
+					status
+				);
+			}
+		} else {
+			refundProductInventory(entity, status, entity.getProducts());
+		}
+
+		entity.setStatus(status.getByteValue());
+		campaignSaleRepository.save(entity);
 	}
 
 	@Override
@@ -423,7 +404,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			throw new InvalidException(ErrorCode.OWNER_NOT_FOUND);
 		}
 
-		Stream<Product> result = requests.stream()
+		Set<ProductEntity> products = requests.stream()
 			.map(request -> {
 				ProductInventoryEntity productInventory = productInventoryRepository.findById(request.getProductCode())
 					.orElseThrow(() -> new InvalidException(ErrorCode.PRODUCT_INVENTORY_INFO_NOT_FOUND));
@@ -436,23 +417,28 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 				return Pair.of(request, productInventory);
 			})
 			.map(pair -> {
-					var productEntityBuilder = ProductEntity.builder()
-						.id(new ProductEntityId(pair.getFirst().getProductCode(), entity.getId()))
-						.productInventory(pair.getSecond())
-						.campaignSale(entity)
-						.artistProfit(pair.getFirst().getArtistProfit());
-					if (pair.getFirst().getPrice() != null) {
-						productEntityBuilder
-							.priceAmount(pair.getFirst().getPrice().getAmount())
-							.priceUnit(pair.getFirst().getPrice().getUnit());
-					}
-					if (pair.getFirst().getQuantity() != null) {
-						productEntityBuilder.quantity(pair.getFirst().getQuantity());
-					}
+				var productEntityBuilder = ProductEntity.builder()
+					.id(new ProductEntityId(pair.getFirst().getProductCode(), entity.getId()))
+					.productInventory(pair.getSecond())
+					.campaignSale(entity)
+					.artistProfit(pair.getFirst().getArtistProfit());
 
-					return productService.create(productEntityBuilder.build());
+				if (pair.getFirst().getPrice() != null) {
+					productEntityBuilder
+						.priceAmount(pair.getFirst().getPrice().getAmount())
+						.priceUnit(pair.getFirst().getPrice().getUnit());
 				}
-			);
+
+				if (pair.getFirst().getQuantity() != null) {
+					productEntityBuilder.quantity(pair.getFirst().getQuantity());
+				}
+
+				return productEntityBuilder.build();
+			})
+			.collect(Collectors.toSet());
+
+		reduceProductInventory(entity, CampaignSaleStatus.DRAFT, products);
+		Stream<Product> result = products.stream().map(productService::create);
 		productService.refreshOpenSearchIndex();
 
 		return result.map(productMapper::domainToProductResponse)
@@ -468,6 +454,11 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			.orElseThrow(() -> new EntityNotFoundException("Product " + productCode + " in campaign " + campaignId + " not found"));
 
 		if (productEntity.getCampaignSale().getStatus() == CampaignSaleStatus.CLOSED.getByteValue()) {
+			throw new InvalidException(ErrorCode.UPDATE_PRODUCT_CAMPAIGN_SALE_FAILED);
+		}
+
+		Instant now = Instant.now();
+		if (now.isAfter(productEntity.getCampaignSale().getTo())) {
 			throw new InvalidException(ErrorCode.UPDATE_PRODUCT_CAMPAIGN_SALE_FAILED);
 		}
 
@@ -495,7 +486,7 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 				// add quantity
 				if (productEntity.getProductInventory().getQuantity() < (request.getQuantity() - productEntity.getQuantity())) {
 					throw new InvalidException(ErrorCode.QUANTITY_NOT_ENOUGH);
-				} else if (productEntity.getCampaignSale().getStatus() == CampaignSaleStatus.ACTIVE.getByteValue()) {
+				} else {
 					Set<ProductInventoryQuantity> productQuantities = Set.of(
 						ProductInventoryQuantity.builder()
 							.productCode(productEntity.getProductInventory().getProductCode())
@@ -514,9 +505,8 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			if (compareResult < 0) {
 				// reduce quantity
 				if (request.getQuantity() < productEntity.getSoldQuantity()) {
-					// check sold quantity
 					throw new InvalidException(ErrorCode.QUANTITY_INVALID);
-				} else if (productEntity.getCampaignSale().getStatus() == CampaignSaleStatus.ACTIVE.getByteValue()) {
+				} else {
 					Set<ProductInventoryQuantity> productQuantities = Set.of(
 						ProductInventoryQuantity.builder()
 							.productCode(productEntity.getProductInventory().getProductCode())
@@ -552,11 +542,14 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			throw new InvalidException((ErrorCode.DELETE_PRODUCT_CAMPAIGN_SALE_FROM_REQUEST_FAILED));
 		}
 
-		for (var productCode : productCodes) {
-			var productEntity = productRepository.findById(new ProductEntityId(productCode, campaignId))
-				.orElseThrow(EntityNotFoundException::new);
-			productService.delete(productEntity);
-		}
+		Set<ProductEntity> productEntities = productCodes.stream()
+			.map(productCode -> productRepository.findById(new ProductEntityId(productCode, campaignId))
+				.orElseThrow(EntityNotFoundException::new)
+			)
+			.collect(Collectors.toSet());
+
+		refundProductInventory(entity, CampaignSaleStatus.DRAFT, productEntities);
+		productEntities.forEach(productService::delete);
 	}
 
 	@Override
@@ -574,5 +567,54 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 
 	private Page<SoldProduct> getSoldProduct(Long campaignSaleId, Pageable pageable) {
 		return productRepository.getSoldProducts(campaignSaleId, pageable);
+	}
+
+	private void reduceProductInventory(CampaignSaleEntity entity, CampaignSaleStatus status, Set<ProductEntity> products) {
+		Set<ProductInventoryQuantity> productQuantities = products.stream()
+			.map(productEntity -> {
+				// check quantity
+				if (productEntity.getQuantity() > productEntity.getProductInventory().getQuantity()) {
+					throw new InvalidException(ErrorCode.QUANTITY_NOT_ENOUGH);
+				}
+				// update opensearch
+				productOpenSearchService.updateCampaignStatus(
+					entity.getId(),
+					productEntity.getProductInventory().getProductCode(),
+					status
+				);
+				return ProductInventoryQuantity.builder()
+					.productCode(productEntity.getProductInventory().getProductCode())
+					.quantity((long) productEntity.getQuantity() - productEntity.getSoldQuantity())
+					.build();
+			})
+			.collect(Collectors.toSet());
+
+		// reduce inventory quantity
+		productInventoryJpaService.reduceQuantity(entity.getId(), entity.getName(), SourceCategory.CAMPAIGN_SALE, productQuantities);
+	}
+
+	private void refundProductInventory(CampaignSaleEntity entity, CampaignSaleStatus status, Set<ProductEntity> products) {
+		Set<ProductInventoryQuantity> productQuantities = products.stream()
+			.map(productEntity -> {
+				//check quantity and price
+				if (productEntity.getQuantity() == null || productEntity.getQuantity() == 0 || productEntity.getPriceAmount() == null) {
+					throw new InvalidException(ErrorCode.PRODUCT_IN_SALE_INVALID);
+				}
+
+				// update opensearch
+				productOpenSearchService.updateCampaignStatus(
+					entity.getId(),
+					productEntity.getProductInventory().getProductCode(),
+					status
+				);
+				return ProductInventoryQuantity.builder()
+					.productCode(productEntity.getProductInventory().getProductCode())
+					.quantity((long) productEntity.getQuantity() - productEntity.getSoldQuantity())
+					.build();
+			})
+			.collect(Collectors.toSet());
+
+		// reduce inventory quantity
+		productInventoryJpaService.refundQuantity(entity.getId(), entity.getName(), SourceCategory.CAMPAIGN_SALE, productQuantities);
 	}
 }
