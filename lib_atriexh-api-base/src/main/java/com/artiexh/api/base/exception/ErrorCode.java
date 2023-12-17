@@ -150,6 +150,7 @@ public enum ErrorCode {
 	FROM_DATE_INVALID(HttpStatus.BAD_REQUEST, "Ngày mở bán chiến dịch phải diễn ra trước ngày kết thúc chiến dịch"),
 	NOT_ALLOWED_OWNER_UPDATED(HttpStatus.BAD_REQUEST, "Không cho phép cập nhật thông tin người sở hữu"),
 	NOT_ALLOWED_CLOSED_CAMPAIGN(HttpStatus.BAD_REQUEST, "Không cho phép đóng campaign"),
+	NOT_ALLOWED_DRAFT_CAMPAIGN(HttpStatus.BAD_REQUEST, "Không cho phép đưa campaign về trạng thái nháp"),
 	OWNER_NOT_FOUND(HttpStatus.BAD_REQUEST, "Chiến dịch bán phải có người sở hữu trước khi thêm sản phẩm"),
 	CAMPAIGN_SALE_NOT_FOUND(HttpStatus.NOT_FOUND, "Chiến dịch bán hàng này không tồn tại");
 	private final HttpStatus statusCode;
