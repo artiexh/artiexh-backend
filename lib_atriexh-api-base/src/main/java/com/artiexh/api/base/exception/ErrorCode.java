@@ -20,6 +20,7 @@ public enum ErrorCode {
 	PRODUCT_CURRENCY_INVALID(HttpStatus.BAD_REQUEST, "Product currency is invalid"),
 	UNAVAILABLE_PRODUCT(HttpStatus.BAD_REQUEST, "Hiện không thể đặt hàng sản phẩm "),
 	PAYMENT_METHOD_UNACCEPTED(HttpStatus.BAD_REQUEST, "Hiện tại không hỗ trợ phương thưc thanh toán cho sản phẩm "),
+	OFF_PAYMENT_TIME(HttpStatus.BAD_REQUEST, "Hệ thống đang bảo trì, không thể thanh toán đơn hàng"),
 	LIMIT_PER_ORDER(HttpStatus.BAD_REQUEST, "có số lượng sản phẩm trong đơn hàng vượt quá số lượng cho phép "),
 
 	//Product Inventory

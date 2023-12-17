@@ -188,20 +188,19 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 
 		if (entity.getStatus() == CampaignSaleStatus.ACTIVE.getByteValue()) {
 			Instant now = Instant.now();
-
 			if (now.isAfter(entity.getTo())) {
 				throw new InvalidException(ErrorCode.UPDATE_SALE_CAMPAIGN_FAILED);
 			}
-			if (now.isAfter(entity.getFrom()) && request.getFrom() != entity.getFrom()) {
+			if (now.isAfter(entity.getFrom()) && !entity.getFrom().equals(request.getFrom())) {
 				throw new InvalidException(ErrorCode.UPDATE_FROM_FAILED);
-
 			}
-			if (entity.getPublicDate() != null && now.isAfter(entity.getPublicDate()) && request.getPublicDate() != entity.getPublicDate()) {
+			if (entity.getPublicDate() != null && now.isAfter(entity.getPublicDate())
+				&& !entity.getPublicDate().equals(request.getPublicDate())) {
 				throw new InvalidException(ErrorCode.UPDATE_PUBLIC_DATE_FAILED);
 			}
 		}
 
-		if (request.getPublicDate().isAfter(request.getFrom())) {
+		if (request.getPublicDate() != null && request.getPublicDate().isAfter(request.getFrom())) {
 			throw new InvalidException(ErrorCode.PUBLIC_DATE_INVALID);
 		} else {
 			entity.setPublicDate(request.getPublicDate());

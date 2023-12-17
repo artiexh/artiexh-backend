@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.time.LocalTime;
 
 @Log4j2
 @Service
@@ -48,6 +49,20 @@ public class SystemConfigHelper {
 		} catch (Exception ex) {
 			log.warn("Duration is not a valid format");
 			return Duration.ofMillis(defaultMillis);
+		}
+	}
+
+	public LocalTime getLocalTime(String key, LocalTime defaultValue) {
+		try {
+			String value = systemConfigService.get(key);
+			if (value == null) {
+				log.warn("LocalTime is not configured, using default value");
+				return defaultValue;
+			}
+			return LocalTime.parse(value);
+		} catch (Exception ex) {
+			log.warn("LocalTime is not a valid format");
+			return defaultValue;
 		}
 	}
 

@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Set;
@@ -304,6 +305,20 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public String payment(Long id, PaymentQueryProperties paymentQueryProperties, Long userId, String confirmUrl) {
+		LocalTime offPaymentTimeFrom = systemConfigHelper.getLocalTime(
+			Const.SystemConfigKey.OFF_PAYMENT_FROM,
+			LocalTime.of(1, 30)
+		);
+		LocalTime offPaymentTimeTo = systemConfigHelper.getLocalTime(
+			Const.SystemConfigKey.OFF_PAYMENT_TO,
+			LocalTime.of(2, 30)
+		);
+
+		LocalTime now = LocalTime.now(); // system zone
+		if (now.isAfter(offPaymentTimeFrom) && now.isBefore(offPaymentTimeTo)) {
+			throw new InvalidException(ErrorCode.OFF_PAYMENT_TIME);
+		}
+
 		List<Bill> bills = orderRepository.getBillInfo(id);
 
 		if (bills == null || bills.isEmpty()) {
