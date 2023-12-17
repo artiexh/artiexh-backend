@@ -194,7 +194,6 @@ public class SaleCampaignServiceImpl implements SaleCampaignService {
 			}
 			if (now.isAfter(entity.getFrom()) && request.getFrom() != entity.getFrom()) {
 				throw new InvalidException(ErrorCode.UPDATE_FROM_FAILED);
-
 			}
 			if (entity.getPublicDate() != null && now.isAfter(entity.getPublicDate()) && request.getPublicDate() != entity.getPublicDate()) {
 				throw new InvalidException(ErrorCode.UPDATE_PUBLIC_DATE_FAILED);
