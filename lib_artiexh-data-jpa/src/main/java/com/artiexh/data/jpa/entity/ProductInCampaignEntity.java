@@ -2,7 +2,6 @@ package com.artiexh.data.jpa.entity;
 
 import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,7 +48,6 @@ public class ProductInCampaignEntity extends BaseAuditEntity {
 	@Column(name = "base_price_amount", precision = 38, scale = 2)
 	private BigDecimal basePriceAmount;
 
-	@Size(max = 10)
 	@Column(name = "manufacturing_time", length = 10)
 	private String manufacturingTime;
 
