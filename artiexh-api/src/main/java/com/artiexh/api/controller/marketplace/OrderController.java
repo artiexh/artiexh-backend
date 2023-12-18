@@ -130,10 +130,4 @@ public class OrderController {
 		campaignOrderService.updateShipment(request);
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
-	@PostMapping("/close-timeout")
-	public void closeTimeoutOrder() {
-		orderService.closedTimeoutOrder();
-	}
-
 }
