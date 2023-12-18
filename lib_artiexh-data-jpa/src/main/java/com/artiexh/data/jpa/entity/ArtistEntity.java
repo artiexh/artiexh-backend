@@ -44,6 +44,7 @@ public class ArtistEntity extends UserEntity {
 	@ToString.Exclude
 	private Set<SubscriptionEntity> subscriptionsFrom;
 
+	@Column(name = "shop_phone")
 	private String phone;
 
 	@Column(name = "shop_thumbnail_url")
