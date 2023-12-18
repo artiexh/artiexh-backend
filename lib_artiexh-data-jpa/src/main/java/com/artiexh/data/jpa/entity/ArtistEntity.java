@@ -5,7 +5,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Type;
@@ -45,8 +44,6 @@ public class ArtistEntity extends UserEntity {
 	@ToString.Exclude
 	private Set<SubscriptionEntity> subscriptionsFrom;
 
-	@Size(max = 15)
-	@Column(name = "shop_phone", length = 15)
 	private String phone;
 
 	@Column(name = "shop_thumbnail_url")
