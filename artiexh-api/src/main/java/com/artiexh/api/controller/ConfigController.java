@@ -4,6 +4,8 @@ import com.artiexh.api.base.common.Endpoint;
 import com.artiexh.api.base.exception.ErrorCode;
 import com.artiexh.api.base.service.SystemConfigService;
 import com.artiexh.api.service.ConfigService;
+import com.artiexh.api.service.OrderService;
+import com.artiexh.api.service.marketplace.SaleCampaignService;
 import com.artiexh.model.domain.ProductInCampaign;
 import com.artiexh.model.domain.SystemConfig;
 import com.artiexh.model.rest.PageResponse;
@@ -23,6 +25,8 @@ import java.util.List;
 public class ConfigController {
 	private final ConfigService configService;
 	private final SystemConfigService systemConfigService;
+	private final OrderService orderService;
+	private final SaleCampaignService saleCampaignService;
 
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping(Endpoint.Config.SYNC_PRODUCT_OPEN_SEARCH)
@@ -81,5 +85,17 @@ public class ConfigController {
 	@PreAuthorize("hasAuthority('ADMIN')")
 	public void reload() {
 		systemConfigService.reload();
+	}
+
+	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
+	@PostMapping("/close-order-timeout")
+	public void closeTimeoutOrder() {
+		orderService.closedTimeoutOrder();
+	}
+
+	@PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
+	@PostMapping("/close-sale-campaign-expire")
+	public void closeSaleCampaignExpire() {
+		saleCampaignService.closeExpiredSaleCampaigns();
 	}
 }
