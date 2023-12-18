@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.opensearch.data.client.orhlc.NativeSearchQueryBuilder;
 import org.opensearch.index.query.QueryBuilders;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -31,12 +30,7 @@ public class ConfigServiceImpl implements ConfigService {
 	public void syncProductToOpenSearch() {
 		IndexCoordinates coordinates = openSearchTemplate.getIndexCoordinatesFor(ProductDocument.class);
 		Query query = new NativeSearchQueryBuilder().withQuery(QueryBuilders.matchAllQuery()).build();
-		String[] ids = openSearchTemplate.search(query, ProductDocument.class, coordinates)
-			.stream()
-			.map(SearchHit::getId)
-			.toArray(String[]::new);
-		Query idsQuery = new NativeSearchQueryBuilder().withQuery(QueryBuilders.idsQuery().addIds(ids)).build();
-		openSearchTemplate.delete(idsQuery, ProductDocument.class, coordinates);
+		openSearchTemplate.delete(query, ProductDocument.class, coordinates);
 
 		productRepository.streamAll()
 			.forEach(product -> {
