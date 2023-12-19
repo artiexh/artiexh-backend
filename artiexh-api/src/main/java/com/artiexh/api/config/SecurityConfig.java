@@ -73,6 +73,8 @@ public class SecurityConfig {
 				.requestMatchers("/ws/**").permitAll()
 				.requestMatchers("/socket.io/**").permitAll()
 				.requestMatchers("/order/shipment").permitAll()
+				.requestMatchers("/order/payment/vnpay-return").permitAll()
+				.requestMatchers("/config/**").permitAll()
 				.anyRequest().authenticated()
 			)
 			.oauth2Login(oauth2 -> oauth2
